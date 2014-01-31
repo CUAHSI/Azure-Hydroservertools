@@ -1,0 +1,16 @@
+﻿table {
+            max-width: none;
+            text-align:center;
+        }
+        td { padding:0px}
+        table.display {
+            /*margin: 0 auto;*/
+            /*width: 100%;*/
+            /*clear: both;*/
+            border-collapse:collapse;
+            table-layout:fixed;
+            word-wrap:break-word;
+            border-width: 1px;
+            overflow-wrap:break-word;
+            border-width:1px;
+        }

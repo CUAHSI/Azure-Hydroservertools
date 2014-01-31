@@ -1,0 +1,93 @@
+﻿
+@model HydroServerTools.Models.SitesViewModel
+
+@{
+    ViewBag.Title = "Sites";
+    ViewBag.Name = "Sites";
+
+}
+
+@section styles
+{
+<link href="~/Content/DataTables-1.9.4/media/css/demo_page.css" rel="stylesheet" />
+<link href="~/Content/DataTables-1.9.4/media/css/demo_table.css" rel="stylesheet" />
+@*<link href="~/Content/DataTables-1.9.4/media/css/demo_table_jui.css" rel="stylesheet" />*@
+<link href="~/Content/DataTables-1.9.4/extras/TableTools/media/css/TableTools.css" rel="stylesheet" />
+@*<link href="~/Content/DataTables-1.9.4/media/css/jquery.dataTables_themeroller.css" rel="stylesheet" />*@
+<link href="~/Content/DataTables-1.9.4/extras/TableTools/media/css/TableTools_JUI.css" rel="stylesheet" />
+<link href="~/Content/themes/base/minified/jquery-ui.min.css" rel="stylesheet" />
+<link href="~/Content/ViewData.css" rel="stylesheet" />
+}
+@Html.Action("_Breadcrumb", "CSVUpload", new { name = ViewBag.Name })
+@if (Model == null)
+{
+    Html.RenderPartial("_UploadForm");
+} 
+
+
+    @if (Model != null)
+{
+
+    <div id="tabs">
+        <ul>
+            <li><a href="#tabs-1">Added</a></li>
+            <li><a href="#tabs-2">Rejected</a></li>
+            <li><a href="#tabs-3">Edited</a></li>
+            <li><a href="#tabs-4">Duplicate</a></li>
+        </ul>
+
+        @*<div class="panel panel-info">
+            <span class="green">You successfully added @ViewBag.numberOfCorrectRecords new record(s) to the @ViewBag.Name table. @ViewBag.numberOfDuplicateRecords record(s) were duplicates.</span>
+        </div>*@
+        <div id="tabs-1">
+            @if (Model.listOfCorrectRecords.Count() > 0)
+                {
+                {Html.RenderPartial("_UploadDataBaseTable", Model.listOfCorrectRecords);}
+            
+                }
+        </div>
+        <div id="tabs-2">
+            @if (Model.listOfIncorrectRecords.Count() > 0)
+             {
+                @*<h4>List of rejected  @ViewBag.Name please review and re-upload</h4>*@
+                {Html.RenderPartial("_UploadDataBaseTable", Model.listOfIncorrectRecords);}
+              }
+        </div>
+        <div id="tabs-3">
+            @if (Model.listOfEditedRecords.Count() > 0)
+             {
+        
+      @*          <h4>List of edited  @ViewBag.Name please review and re-upload</h4>*@
+                {Html.RenderPartial("_UploadDataBaseTable", Model.listOfEditedRecords);}
+           
+             }
+
+        </div>
+        <div id="tabs-4">
+            @if (Model.listOfDuplicateRecords.Count() > 0)
+             {
+           
+   @*             <h4>List of duplicate  @ViewBag.Name please review and re-upload</h4>*@
+                {Html.RenderPartial("_UploadDataBaseTable", Model.listOfDuplicateRecords);}
+                }
+
+        </div>
+    </div>
+}
+
+@section scripts
+{
+    <script type='text/javascript' src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+    <script type='text/javascript' src="http://datatables.net/release-datatables/media/js/jquery.dataTables.js"></script>
+
+    <script src="~/Scripts/DataTables-1.9.4/extras/TableTools/media/js/TableTools.js"></script>
+    <script src="~/Scripts/DataTables-1.9.4/extras/TableTools/media/js/ZeroClipboard.js"></script>
+
+
+    <script src="~/Scripts/custom/CSVUploadHelper.js"></script>
+    <script>
+
+    </script>
+}
+
+

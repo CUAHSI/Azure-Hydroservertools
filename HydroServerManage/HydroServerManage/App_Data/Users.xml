@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<users>
+  <user>
+    <id>0</id>
+    <username>default</username>
+    <connectionname>default</connectionname>
+    <role>user</role>
+  </user>
+  <user>
+    <id>1</id>
+    <username>admin</username>
+    <connectionname>default</connectionname>
+    <role>admin</role>
+  </user>
+  <user>
+    <id>2</id>
+    <username>martin.seul@yahoo.com</username>
+    <connectionname>default</connectionname>
+    <role>admin</role>
+  </user>
+</users>

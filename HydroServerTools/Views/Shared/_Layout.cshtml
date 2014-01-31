@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - HydroServerTools</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @RenderSection("styles", required: false)
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <img src="~/Images/Hydroserver/HydroserverLogo.png" class="center img-thumbnail" style="border:0px; vertical-align:top"/>
+        </div>
+    </div>
+    <div class="navbar navbar-inverse">
+        <div class="container">
+            <div class="navbar-header ">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                  
+        </div>
+            <div class="navbar-collapse collapse ">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                    <li>@Html.ActionLink("About", "About", "Home")</li>
+                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                    <li>@Html.ActionLink("Datatable1", "Datatable1", "Home")</li>
+                    <li>@Html.ActionLink("Datatable2", "Datatable2", "Home")</li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">View Data<b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li>@Html.ActionLink("View Sites", "ViewTableData", "ViewData", new { identifier = "Sites" }, null)</li>
+                            <li>@Html.ActionLink("View Variables", "ViewTableData", "ViewData", new { identifier = "Variables" }, null)</li>                            
+                            <li>@Html.ActionLink("View OffsetTypes", "ViewTableData", "ViewData", new { identifier = "OffsetTypes" }, null)</li>
+                            <li>@Html.ActionLink("View ISOMetadata", "ViewTableData", "ViewData", new { identifier = "ISOMetadata" }, null)</li>
+                            <li>@Html.ActionLink("View Sources", "ViewTableData", "ViewData", new { identifier = "Sources" }, null)</li>
+                            <li>@Html.ActionLink("View Methods", "ViewTableData", "ViewData", new { identifier = "Methods" }, null)</li>
+                            <li>@Html.ActionLink("View LabMethods", "ViewTableData", "ViewData", new { identifier = "LabMethods" }, null)</li>
+                            <li>@Html.ActionLink("View Samples", "ViewTableData", "ViewData", new { identifier = "Samples" }, null)</li>
+                            <li>@Html.ActionLink("View Qualifiers", "ViewTableData", "ViewData", new { identifier = "Qualifiers" }, null)</li>
+                            <li>@Html.ActionLink("View QualityControlLevels", "ViewTableData", "ViewData", new { identifier = "QualityControlLevels" }, null)</li>
+                            <li>@Html.ActionLink("View DataValues", "ViewTableData", "ViewData", new { identifier = "DataValues" }, null)</li>
+                            <li>@Html.ActionLink("View GroupDescriptions", "ViewTableData", "ViewData", new { identifier = "GroupDescriptions" }, null)</li>
+                            <li>@Html.ActionLink("View Groups", "ViewTableData", "ViewData", new { identifier = "Groups" }, null)</li>
+                            <li>@Html.ActionLink("View DerivedFrom", "ViewTableData", "ViewData", new { identifier = "DerivedFrom" }, null)</li>
+                            <li>@Html.ActionLink("View Categories", "ViewTableData", "ViewData", new { identifier = "Categories" }, null)</li>
+
+                            <li><a href="#">View OffsetTypes</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#">View DateTyp CV</a></li>
+                        </ul>
+                    </li>
+
+                </ul>
+                @Html.Partial("_LoginPartial")
+            </div>
+        </div>
+    </div>
+  
+    <div class="container body-content">
+      
+          @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - &copy; CUAHSI </p>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+  
+</body>
+</html> 

@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<users>
+  <user>
+    <id>0</id>
+    <username>default</username>
+    <useremail>default</useremail>
+    <connectionname>default</connectionname>
+    <role>user</role>
+  </user>
+  <user>
+    <id>1</id>
+    <username>admin</username>
+    <useremail>default</useremail>
+    <connectionname>default</connectionname>
+    <role>admin</role>
+  </user>
+  <user>
+    <id>2</id>
+    <username>lonnig</username>
+    <useremail>lonnig@gmail.com</useremail>
+    <connectionname>LittleBear_1_1_1</connectionname>
+    <role>admin</role>
+  </user>
+  <user>
+    <id>3</id>
+    <username>Hydroservertest1</username>
+    <useremail>hydroservertest1@gmail.com</useremail>
+    <connectionname>Hydroservertest1</connectionname>
+    <role>admin</role>
+  </user>
+  <user>
+    <id>4</id>
+    <username>Hydroservertest2</username>
+    <useremail>hydroservertest2@gmail.com</useremail>
+    <connectionname>Hydroservertest2</connectionname>
+    <role>admin</role>
+  </user>
+  <user>
+    <id>5</id>
+    <username>Hydroservertest3</username>
+    <useremail>hydroservertest3@gmail.com</useremail>
+    <connectionname>Hydroservertest3</connectionname>
+    <role>admin</role>
+  </user>
+</users>

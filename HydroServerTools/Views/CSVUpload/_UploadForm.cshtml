@@ -1,0 +1,14 @@
+﻿
+<div class="jumbotron">
+    <h2>Upload @ViewBag.Title</h2>
+
+    @using (Html.BeginForm("Import", "CSVUpload", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <div>
+        @Html.ValidationSummary(false)
+        </div>
+        <input type="hidden" name="viewname" value=@ViewBag.Name />
+        <input type="file" class="btn btn-primary" name="file" required placeholder="Please select a csv file " />
+        <input type="submit" class="btn btn-primary btn-info" value="Upload and Process" />
+    }
+</div>

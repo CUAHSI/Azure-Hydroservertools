@@ -1,0 +1,272 @@
+﻿@model HydroServerTools.Models.ConnectionModel
+@{
+    ViewBag.Title = "VerticalTab";
+}
+@section styles{
+<link href="~/Content/themes/base/jquery-ui.css" rel="stylesheet" />
+
+<link href="~/Content/DataTables-1.9.4/media/css/demo_table.css" rel="stylesheet" />
+   
+}
+<h1>Please set up connection</h1>
+<div>
+  
+    @using (Html.BeginForm("TestConnection", "Home", new {@class = "form-horizontal" }))
+    {
+        
+        <div class="control-group">
+        @Html.LabelFor(m => m.ServerName, new { @class = "control-label" })
+        <div class="controls">
+            @Html.TextBoxFor(m => m.ServerName, new { @value="mseul-cuahsi" })
+            @Html.ValidationMessageFor(m  => m.ServerName, null, new { @class="help-inline" })
+        </div>
+    </div>
+    <div class="control-group">
+        @Html.LabelFor(m => m.DataSourceName, new { @class="control-label" })
+        <div class="controls">
+            @Html.TextBoxFor(m => m.DataSourceName, new { @value="LittleBear_1_1_1" })
+            @Html.ValidationMessageFor(m => m.DataSourceName, null, new { @class = "help-inline" })
+        </div>
+    </div>
+    <div class="control-group">
+        @Html.LabelFor(m => m.Username, new { @class = "control-label" })
+        <div class="controls">
+            @Html.TextBoxFor(m => m.Username, new {@value="martin"})
+            @Html.ValidationMessageFor(m => m.Username, null, new { @class = "help-inline" })
+        </div>
+    </div>
+    <div class="control-group">
+        @Html.LabelFor(m => m.Password, new { @class="control-label" })
+        <div class="controls">
+            @Html.PasswordFor(m => m.Password)
+            @Html.ValidationMessageFor(m  => m.Password, null, new { @class="help-inline" })
+        </div>
+    </div>
+    
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">CONNECT</button>
+   @*   <button type="button" class="btn">Cancel</button>*@
+    </div>
+
+        
+        
+        @*@Html.ValidationSummary(true)
+    <div class="row">
+        <fieldset>
+            <div class="editor-label">
+                @Html.LabelFor(model => model.ServerName);
+
+            </div>
+            <div class="editor-field">
+                @Html.TextBoxFor(model => model.ServerName, new { @Value = "mseul-cuahsi", @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.ServerName)
+             
+         
+            </div>
+            <div class="editor-label">
+                @Html.LabelFor(model => model.DataSourceName);
+            </div> <div class="editor-field">
+                @Html.TextBoxFor(model => model.DataSourceName, new { @Value = "LittleBear_1_1_1", @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.DataSourceName)
+            </div>
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Username);
+            </div><div class="editor-field">
+                @Html.TextBoxFor(model => model.Username, new { @Value = "martin", @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Username)
+            </div>
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Password)
+            </div><div class="editor-field">
+                @Html.EditorFor(model => model.Password, new { @Value = "ms", @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Password)
+            </div>
+
+
+        </fieldset>
+    </div>
+         <div class="row">
+            <input type="submit" class="btn btn-primary" value="connect" />
+        </div>
+            *@
+        if (@Model != null)
+        {
+
+            if (@Model.Status != null)
+            {
+                if (Model.Message.ToString().Length > 0)
+                {
+                    if (@Model.Status.ToLower() == "success")
+                    {
+
+                        <p><div class="alert alert-success">@Model.Message;</div></p>
+                                 
+                    }
+                    else
+                    {
+                        <p><div class="alert alert-danger">@Model.Message;</div></p>
+                    }
+                    
+                }
+            }
+
+        }
+        @*if (@Model.Message != null)
+            {
+                @Model.Message;
+            }*@
+    }
+
+</div>
+
+
+<div class="hidden" id="tabs">
+    <ul>
+        <li>
+            <a href="#a">Connection Setting</a>
+        </li>
+        <li>
+            <a href="#b">Load Sites</a>
+        </li>
+        <li>
+            <a href="#c">Load Variables</a>
+        </li>
+        <li>
+            <a href="#d">Load OffsetTypes</a>
+        </li>
+        <li>
+            <a href="#e">Load ISOMetadata</a>
+        </li>
+        <li>
+            <a href="#f">Load Sources</a>
+        </li>
+        <li>
+            <a href="#g">Load Methods</a>
+        </li>
+        <li>
+            <a href="#h">Load LabMethods</a>
+        </li>
+        <li>
+            <a href="#i">Load Samples</a>
+        </li>
+        <li>
+            <a href="#j">Load QualityControlLevels</a>
+        </li>
+        <li>
+            <a href="#k">Load DataValues</a>
+        </li>
+        <li>
+            <a href="#l">Load GroupDescriptions</a>
+        </li>
+        <li>
+            <a href="#m">Load Groups</a>
+        </li>
+        <li>
+            <a href="#n">Load DerivedFrom</a>
+        </li>
+        <li>
+            <a href="#o">Load Categories</a>
+        </li>
+
+    </ul>
+    <div id="a">
+    
+
+    </div>
+    <div id="b">
+            @using (Html.BeginForm("Import", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                <input type="file" name="file" />
+                <input type="submit" value="OK" />
+            }                                 
+        <div class="">
+            @*<h4>Input Groups</h4>
+                <div class="input-group">*@
+            <span class="input-group-btn" style="display:inline">
+                <span >
+                    Browse&hellip; <input class="btn btn-primary btn-file" type="file">
+                </span>
+                <input type="text" class="form-control" readonly>
+            </span>
+            <input type="submit" value="OK" />
+            @* </div> *@
+           
+        </div>
+        
+
+
+    </div>
+
+
+
+            <div id="c">
+                <div class="">
+                    <h4>Input Variables</h4>
+                    <div class="input-group">
+                            @using (Html.BeginForm("Import", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                            {
+                            <input size="500" type="text" class="form-control" readonly>
+                            <span class="btn btn-primary btn-file">
+                                Browse&hellip; <input type="file" multiple>
+                            </span>  
+                                
+                                   <span><input class="btn btn-default" type="submit" value="Submit" /></span>
+             
+                            }   
+                       
+                    </div>
+                      <span class="help-block">
+                        Try selecting one or more files and watch the feedback
+                    </span>
+                  
+                </div>
+                
+            </div>
+            <div id="d">
+                Content of D
+            </div>
+            <div id="e">
+                Content of e
+            </div>
+            <div id="f">
+                Content of f
+            </div>
+            <div id="g">
+                Content of g
+            </div>
+            <div id="h">
+            Content of h
+            <div id="i">
+                Content of i
+            </div>
+            <div id="j">
+                Content of j
+            </div>
+            <div id="k">
+                Content of k
+            </div>
+            <div id="l">
+                Content of l
+            </div>
+            <div id="m">
+                Content of m
+            </div>
+            <div id="n">
+                Content of n
+            </div>
+            <div id="o">
+                Content of o
+            </div>
+
+        </div>
+    </div>
+        @section scripts{
+            <script src="~/Scripts/jquery-ui-1.10.3.js"></script>
+            <script src="~/Scripts/DataTables-1.9.4/media/js/jquery.dataTables.js"></script>
+            <script src="~/Scripts/UploadHelper.js"></script>
+            <script>
+   
+
+            </script>
+
+        }

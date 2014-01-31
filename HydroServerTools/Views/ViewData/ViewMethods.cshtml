@@ -1,0 +1,42 @@
+﻿@model IEnumerable<HydroserverToolsBusinessObjects.Models.MethodModel>
+
+@{
+    ViewBag.Title = "View Method";
+}
+
+<h2>Method</h2>
+
+@section styles
+{
+    <link href="~/Content/DataTables-1.9.4/media/css/demo_page.css" rel="stylesheet" />
+    <link href="~/Content/DataTables-1.9.4/media/css/demo_table.css" rel="stylesheet" />
+    <link href="~/Content/DataTables-1.9.4/media/css/jquery.dataTables_themeroller.css" rel="stylesheet" />
+    <link href="~/Content/DataTables-1.9.4/extras/TableTools/media/css/TableTools_JUI.css" rel="stylesheet" />
+    <link href="~/Content/ViewData.css" rel="stylesheet" />   
+} 
+<div>
+    <h2>Show Data</h2>
+</div>
+
+    @if (Model != null)
+    {
+        if (Model.Count() > 0)
+        {
+            <div class="display" id="SitesTable">
+                @{Html.RenderPartial("_DataBaseTable", Model);}
+            </div>
+        }
+    }
+    else
+    {
+        <div><h2>No Data available</h2></div>
+
+    }
+
+@section scripts
+{
+    <script src="~/Scripts/DataTables-1.9.4/media/js/jquery.dataTables.js"></script>
+    <script src="~/Scripts/DataTables-1.9.4/extras/TableTools/media/js/TableTools.min.js"></script>
+    <script src="~/Scripts/custom/ViewDataHelper.js"></script>
+   
+}

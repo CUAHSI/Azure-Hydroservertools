@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="f4773a3e65c0414ca8cf42286305e919" Name="Diagram1" >
+        <EntityTypeShape EntityType="ODM_1_1_1EFModel.Category" Width="1.5" PointX="5.25" PointY="3.75" />
+        <EntityTypeShape EntityType="ODM_1_1_1EFModel.CensorCodeCV" Width="1.5" PointX="3" PointY="41.875" />
+        <EntityTypeShape EntityType="ODM_1_1_1EFModel.DataTypeCV" Width="1.5" PointX="0.75" PointY="3.375" />
+        <EntityTypeShape EntityType="ODM_1_1_1EFModel.DataValue" Width="1.5" PointX="5.25" PointY="6.75" />
+        <EntityTypeShape EntityType="ODM_1_1_1EFModel.DerivedFrom" Width="1.5" PointX="7.5" PointY="11.875" />
+        <EntityTypeShape EntityType="ODM_1_1_1EFModel.GeneralCategoryCV" Width="1.5" PointX="0.75" PointY="9.75" />
+        <EntityTypeShape EntityType="ODM_1_1_1EFModel.GroupDescription" Width="1.5" PointX="5.25" PointY="14.125" />
+        <EntityTypeShape EntityType="ODM_1_1_1EFModel.Group" Width="1.5" PointX="7.5" PointY="9" />
+        <EntityTypeShape EntityType="ODM_1_1_1EFModel.ISOMetadata" Width="1.5" PointX="0.75" PointY="27.875" />
+        <EntityTypeShape EntityType="ODM_1_1_1EFModel.LabMethod" Width="1.5" PointX="0.75" PointY="39.75" />
+        <EntityTypeShape EntityType="ODM_1_1_1EFModel.Method" Width="1.5" PointX="3" PointY="34.875" />
+        <EntityTypeShape EntityType="ODM_1_1_1EFModel.ODMVersion" Width="1.5" PointX="10.125" PointY="0.625" />
+        <EntityTypeShape EntityType="ODM_1_1_1EFModel.OffsetType" Width="1.5" PointX="3" PointY="13" />
+        <EntityTypeShape EntityType="ODM_1_1_1EFModel.Qualifier" Width="1.5" PointX="3" PointY="44.25" />
+        <EntityTypeShape EntityType="ODM_1_1_1EFModel.QualityControlLevel" Width="1.5" PointX="3" PointY="15.75" />
+        <EntityTypeShape EntityType="ODM_1_1_1EFModel.SampleMediumCV" Width="1.5" PointX="0.75" PointY="12.125" />
+        <EntityTypeShape EntityType="ODM_1_1_1EFModel.Sample" Width="1.5" PointX="3" PointY="38.625" />
+        <EntityTypeShape EntityType="ODM_1_1_1EFModel.SampleTypeCV" Width="1.5" PointX="0.75" PointY="37.5" />
+        <EntityTypeShape EntityType="ODM_1_1_1EFModel.SeriesCatalog" Width="1.5" PointX="7.75" PointY="0.75" />
+        <EntityTypeShape EntityType="ODM_1_1_1EFModel.Site" Width="1.5" PointX="3" PointY="20.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="ODM_1_1_1EFModel.SiteTypeCV" Width="1.5" PointX="0.75" PointY="19.5" />
+        <EntityTypeShape EntityType="ODM_1_1_1EFModel.Source" Width="1.5" PointX="3" PointY="27.25" />
+        <EntityTypeShape EntityType="ODM_1_1_1EFModel.SpatialReference" Width="1.5" PointX="0.75" PointY="21.75" />
+        <EntityTypeShape EntityType="ODM_1_1_1EFModel.SpeciationCV" Width="1.5" PointX="0.75" PointY="14.5" />
+        <EntityTypeShape EntityType="ODM_1_1_1EFModel.TopicCategoryCV" Width="1.5" PointX="1.5" PointY="32.375" />
+        <EntityTypeShape EntityType="ODM_1_1_1EFModel.Unit" Width="1.5" PointX="0.5" PointY="6.125" />
+        <EntityTypeShape EntityType="ODM_1_1_1EFModel.ValueTypeCV" Width="1.5" PointX="0.75" PointY="16.875" />
+        <EntityTypeShape EntityType="ODM_1_1_1EFModel.VariableNameCV" Width="1.5" PointX="0.75" PointY="1.125" />
+        <EntityTypeShape EntityType="ODM_1_1_1EFModel.Variable" Width="1.5" PointX="14.375" PointY="4" />
+        <EntityTypeShape EntityType="ODM_1_1_1EFModel.VerticalDatumCV" Width="1.5" PointX="0.75" PointY="24.875" />
+        <AssociationConnector Association="ODM_1_1_1EFModel.FK_Categories_Variables" />
+        <AssociationConnector Association="ODM_1_1_1EFModel.FK_DataValues_CensorCodeCV" />
+        <AssociationConnector Association="ODM_1_1_1EFModel.FK_Variables_DataTypeCV" />
+        <AssociationConnector Association="ODM_1_1_1EFModel.FK_DataValues_Methods" />
+        <AssociationConnector Association="ODM_1_1_1EFModel.FK_DataValues_OffsetTypes" />
+        <AssociationConnector Association="ODM_1_1_1EFModel.FK_DataValues_Qualifiers" />
+        <AssociationConnector Association="ODM_1_1_1EFModel.FK_DataValues_QualityControlLevels" />
+        <AssociationConnector Association="ODM_1_1_1EFModel.FK_DataValues_Samples" />
+        <AssociationConnector Association="ODM_1_1_1EFModel.FK_DataValues_Sites" />
+        <AssociationConnector Association="ODM_1_1_1EFModel.FK_DataValues_Sources" />
+        <AssociationConnector Association="ODM_1_1_1EFModel.FK_DataValues_Variables" />
+        <AssociationConnector Association="ODM_1_1_1EFModel.FK_DerivedFrom_DataValues" />
+        <AssociationConnector Association="ODM_1_1_1EFModel.FK_Groups_DataValues" />
+        <AssociationConnector Association="ODM_1_1_1EFModel.FK_Variables_GeneralCategoryCV" />
+        <AssociationConnector Association="ODM_1_1_1EFModel.FK_Groups_GroupDescriptions" />
+        <AssociationConnector Association="ODM_1_1_1EFModel.FK_ISOMetadata_TopicCategoryCV" />
+        <AssociationConnector Association="ODM_1_1_1EFModel.FK_Sources_ISOMetaData" />
+        <AssociationConnector Association="ODM_1_1_1EFModel.FK_Samples_LabMethods" />
+        <AssociationConnector Association="ODM_1_1_1EFModel.FK_OffsetTypes_Units" />
+        <AssociationConnector Association="ODM_1_1_1EFModel.FK_Variables_SampleMediumCV" />
+        <AssociationConnector Association="ODM_1_1_1EFModel.FK_Samples_SampleTypeCV" />
+        <AssociationConnector Association="ODM_1_1_1EFModel.FK_Sites_SiteTypeCV" />
+        <AssociationConnector Association="ODM_1_1_1EFModel.FK_Sites_SpatialReferences" />
+        <AssociationConnector Association="ODM_1_1_1EFModel.FK_Sites_SpatialReferences1" />
+        <AssociationConnector Association="ODM_1_1_1EFModel.FK_Sites_VerticalDatumCV" />
+        <AssociationConnector Association="ODM_1_1_1EFModel.FK_Variables_SpeciationCV" />
+        <AssociationConnector Association="ODM_1_1_1EFModel.FK_Variables_Units" />
+        <AssociationConnector Association="ODM_1_1_1EFModel.FK_Variables_Units1" />
+        <AssociationConnector Association="ODM_1_1_1EFModel.FK_Variables_ValueTypeCV" />
+        <AssociationConnector Association="ODM_1_1_1EFModel.FK_Variables_VariableNameCV" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

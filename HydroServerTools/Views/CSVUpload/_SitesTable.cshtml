@@ -1,0 +1,78 @@
+﻿<table id="table_id" >
+    <thead>
+        <tr>
+           
+            @{var props =   Model[0].GetType().GetProperties();
+                foreach (var prop in props)
+                { 
+                <th>@prop.Name</th>
+                }
+            }
+            @*<th>SiteID</th>
+            <th>SiteCode</th>
+            <th>SiteName</th>
+            <th>Latitude</th>
+            <th>Longitude</th>
+            <th>LatLongDatumID</th>
+            <th>Elevation_m</th>
+            <th>VerticalDatum</th>
+            <th>LocalX</th>
+            <th>LocalY</th>
+            <th>LocalProjectionID</th>
+            <th>PosAccuracy_m</th>
+            <th>State</th>
+            <th>County</th>
+            <th>Comments</th>
+            <th>SiteType</th>*@
+        </tr>
+    </thead>
+    <tbody>
+
+        @*@for(var i = 1; i <= 5; i++){*@
+        @if (Model != null)
+        {
+         
+            foreach (var item in Model)
+            {
+                   <tr>
+                       @{var itemProps = item.GetType().GetProperties();
+                         foreach (var itemProp in itemProps)
+                       {
+                           <th>@itemProp.GetValue(item, null) </th>
+                       }
+                       }   
+                    @*<td>@item.SiteID</td>
+                    <td>@item.SiteCode</td>
+                    <td>@item.SiteName</td>
+                    <td>@item.Latitude</td>
+                    <td>@item.Longitude</td>
+                    <td>@item.LatLongDatumID</td>
+                    <td>@item.Elevation_m</td>
+                    <td>@item.VerticalDatum</td>
+                    <td>@item.LocalX</td>
+                    <td>@item.LocalY</td>
+                    <td>@item.LocalProjectionID</td>
+                    <td>@item.PosAccuracy_m</td>
+                    <td>@item.State</td>
+                    <td>@item.County</td>
+                    <td>@item.Comments</td>
+                    <td>@item.SiteType</td>*@
+                </tr>
+            }
+        }
+
+    </tbody>
+</table>
+@*<div>
+    @if (Model != null)
+    {
+        foreach(var property in ViewData.ModelMetadata.Properties)
+            {
+                <div class="editor-line">
+                    <label>@(property.DisplayName??property.PropertyName)</label>
+                    @Html.Editor(property.PropertyName)
+                </div>
+            }            
+       
+    }
+</div>*@

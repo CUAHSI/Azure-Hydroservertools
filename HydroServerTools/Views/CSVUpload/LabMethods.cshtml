@@ -1,0 +1,41 @@
+﻿@model IEnumerable<HydroserverToolsBusinessObjects.Models.LabMethodModel>
+
+@{
+    ViewBag.Title = "LabMethods";
+    ViewBag.Name = "Labmethods";   
+}
+
+
+
+@section styles
+{
+    <link href="~/Content/DataTables-1.9.4/media/css/demo_page.css" rel="stylesheet" />
+    <link href="~/Content/DataTables-1.9.4/media/css/jquery.dataTables_themeroller.css" rel="stylesheet" />
+    <link href="~/Content/DataTables-1.9.4/extras/TableTools/media/css/TableTools_JUI.css" rel="stylesheet" />
+    <link href="~/Content/ViewData.css" rel="stylesheet" />
+}
+@Html.Action("_Breadcrumb", "CSVUpload", new { name = ViewBag.Name })
+@if (Model == null)
+{
+    Html.RenderPartial("_UploadForm");
+}
+@if (Model != null)
+{
+    <div class="panel panel-info">
+        <span class="red">You successfully added @ViewBag.numberOfCorrectRecords new record(s) to the @ViewBag.Name table. @ViewBag.numberOfDuplicateRecords record(s) were duplicates.</span>
+    </div>
+    if (Model.Count() > 0)
+    {
+        <div class="display" id="DBTable">
+            <h4>List of rejected  @ViewBag.Name please review and re-upload</h4>
+            @{Html.RenderPartial("_DataBaseTable", Model);}
+        </div>
+    }
+}
+@section scripts
+{
+    <script src="~/Scripts/DataTables-1.9.4/media/js/jquery.dataTables.js"></script>
+    <script src="~/Scripts/DataTables-1.9.4/extras/TableTools/media/js/TableTools.min.js"></script>
+    <script src="~/Scripts/custom/ViewDataHelper.js"></script>
+}
+

@@ -1,0 +1,137 @@
+﻿@model HydroServerTools.Models.ConnectionModel
+@{
+    ViewBag.Title = "VerticalTab";
+}
+@section styles{
+    <link href="~/Content/themes/base/jquery-ui.css" rel="stylesheet" />
+
+    <link href="~/Content/DataTables-1.9.4/media/css/demo_table.css" rel="stylesheet" />
+
+}
+<h1>Please set up connection</h1>
+<div>
+
+    @using (Html.BeginForm("TestConnection", "CSVUpload", new { @class = "form-horizontal" }))
+    {
+
+        <div class="control-group">
+            @Html.LabelFor(m => m.ServerName, new { @class = "control-label" })
+            <div class="controls">
+                @Html.TextBoxFor(m => m.ServerName, new { @value = "mseul-cuahsi" })
+                @Html.ValidationMessageFor(m => m.ServerName, null, new { @class = "help-inline" })
+            </div>
+        </div>
+        <div class="control-group">
+            @Html.LabelFor(m => m.DataSourceName, new { @class = "control-label" })
+            <div class="controls">
+                @Html.TextBoxFor(m => m.DataSourceName, new { @value = "LittleBear_1_1_1" })
+                @Html.ValidationMessageFor(m => m.DataSourceName, null, new { @class = "help-inline" })
+            </div>
+        </div>
+        <div class="control-group">
+            @Html.LabelFor(m => m.Username, new { @class = "control-label" })
+            <div class="controls">
+                @Html.TextBoxFor(m => m.Username, new { @value = "martin" })
+                @Html.ValidationMessageFor(m => m.Username, null, new { @class = "help-inline" })
+            </div>
+        </div>
+        <div class="control-group">
+            @Html.LabelFor(m => m.Password, new { @class = "control-label" })
+            <div class="controls">
+                @Html.PasswordFor(m => m.Password)
+                @Html.ValidationMessageFor(m => m.Password, null, new { @class = "help-inline" })
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Test Connection</button>
+            <a href="/CSVUpload/Upload" class="btn btn-default active" role="button">Link</a>
+
+        </div>
+
+
+
+        @*@Html.ValidationSummary(true)
+            <div class="row">
+                <fieldset>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.ServerName);
+
+                    </div>
+                    <div class="editor-field">
+                        @Html.TextBoxFor(model => model.ServerName, new { @Value = "mseul-cuahsi", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.ServerName)
+
+
+                    </div>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.DataSourceName);
+                    </div> <div class="editor-field">
+                        @Html.TextBoxFor(model => model.DataSourceName, new { @Value = "LittleBear_1_1_1", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.DataSourceName)
+                    </div>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Username);
+                    </div><div class="editor-field">
+                        @Html.TextBoxFor(model => model.Username, new { @Value = "martin", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Username)
+                    </div>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Password)
+                    </div><div class="editor-field">
+                        @Html.EditorFor(model => model.Password, new { @Value = "ms", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Password)
+                    </div>
+
+
+                </fieldset>
+            </div>
+                 <div class="row">
+                    <input type="submit" class="btn btn-primary" value="connect" />
+                </div>
+        *@
+        if (@Model != null)
+        {
+
+            if (@Model.Status != null)
+            {
+                if (Model.Message.ToString().Length > 0)
+                {
+                    if (@Model.Status.ToLower() == "success")
+                    {
+
+                        <p><div class="alert alert-success">@Model.Message;</div></p>
+
+                    }
+                    else
+                    {
+                        <p><div class="alert alert-danger">@Model.Message;</div></p>
+                    }
+
+                }
+            }
+
+        }
+        @*if (@Model.Message != null)
+            {
+                @Model.Message;
+            }*@
+    }
+
+</div>
+
+
+@section scripts{
+    <script src="~/Scripts/jquery-ui-1.10.3.js"></script>
+    <script src="~/Scripts/DataTables-1.9.4/media/js/jquery.dataTables.js"></script>
+    <script src="~/Scripts/UploadHelper.js"></script>
+    <script>
+
+
+    </script>
+
+}
+
+
+
+

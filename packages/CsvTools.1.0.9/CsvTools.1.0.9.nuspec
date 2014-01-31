@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>CsvTools</id>
+    <version>1.0.9</version>
+    <title>CSV Reader</title>
+    <authors>Mike Stall</authors>
+    <owners>Mike Stall</owners>
+    <projectUrl>https://github.com/MikeStall/DataTable</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Open source libary for easy reading, writing, and manipulation of CSV files. 
+
+This handles linq to CSV, creating tables from IEnumerable&lt;T&gt;, dictionaries, in-memory mutable tables,  streaming through large tables.
+
+It also includes basic data table operations like join, histogram, and filter duplicates.</description>
+    <summary>Open source C# Libary for easy reading, writing, and manipulation of CSV files.</summary>
+    <releaseNotes />
+    <copyright />
+    <language />
+    <tags>csv reader table</tags>
+  </metadata>
+</package>

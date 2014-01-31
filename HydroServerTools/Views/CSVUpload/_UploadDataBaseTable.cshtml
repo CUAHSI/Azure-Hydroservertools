@@ -1,0 +1,28 @@
+﻿<table cellpadding="2" cellspacing="0" border="1" class="display" style="width:100%">
+    <thead>
+        <tr>           
+            @{var props =   Model[0].GetType().GetProperties();
+                foreach (var prop in props)
+                { 
+                <th>@prop.Name</th>
+                }
+            }           
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null)
+        {        
+            foreach (var item in Model)
+            {
+                 <tr>
+                    @{var itemProps = item.GetType().GetProperties();
+                        foreach (var itemProp in itemProps)
+                        {
+                            <th>@itemProp.GetValue(item, null) </th>
+                        }
+                    }                  
+                </tr>
+            }
+        }
+    </tbody>
+</table>

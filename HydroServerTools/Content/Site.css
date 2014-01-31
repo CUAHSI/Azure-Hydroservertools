@@ -1,0 +1,137 @@
+﻿body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+
+/* styles for validation helpers */
+.field-validation-error {
+    color: #b94a48;
+}
+
+.field-validation-valid {
+    display: none;
+}
+
+input.input-validation-error {
+    border: 1px solid #b94a48;
+}
+
+input[type="checkbox"].input-validation-error {
+    border: 0 none;
+}
+
+.validation-summary-errors {
+    color: #b94a48;
+}
+
+.validation-summary-valid {
+    display: none;
+}
+
+
+
+.ui-tabs.ui-tabs-vertical {
+padding: 0;
+width: 100%;
+height:100%;
+background: lightgray;
+}
+
+.ui-tabs.ui-tabs-vertical .ui-widget-header {
+border: none;
+}
+
+.ui-tabs.ui-tabs-vertical .ui-tabs-nav {
+float: left;
+width: 10em;
+background: #CCC;
+border-radius: 4px 0 0 4px;
+border-right: 1px solid gray;
+}
+
+.ui-tabs.ui-tabs-vertical .ui-tabs-nav li {
+clear: left;
+width: 100%;
+margin: 0.2em 0;
+border: 1px solid gray;
+border-width: 1px 0 1px 1px;
+border-radius: 4px 0 0 4px;
+overflow: hidden;
+position: relative;
+right: -2px;
+z-index: 2;
+    }
+
+.ui-tabs.ui-tabs-vertical .ui-tabs-nav li a {
+    display: block;
+    width: 100%;
+    padding: 0.6em 1em;
+                        
+}
+
+    .ui-tabs.ui-tabs-vertical .ui-tabs-nav li a:hover {
+        cursor: pointer;
+    }
+
+.ui-tabs.ui-tabs-vertical .ui-tabs-nav li.ui-tabs-active {
+    margin-bottom: 0.2em;
+    padding-bottom: 0;
+    border-right: 1px solid white;
+                        
+}
+
+.ui-tabs.ui-tabs-vertical .ui-tabs-nav {
+    width: 20em;
+}
+
+    .ui-tabs.ui-tabs-vertical .ui-tabs-nav li:last-child {
+        margin-bottom: 10px;
+    }
+
+.ui-tabs.ui-tabs-vertical .ui-tabs-panel {
+    float: left;
+    width: 28em;
+    border-left: 1px solid gray;
+    border-radius: 0;
+    position: relative;
+    left: -1px;
+}
+  
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+
+    .btn-file input[type=file] {
+        position: absolute;
+        top: 0;
+        right: 0;
+        min-width: 100%;
+        min-height: 100%;
+        font-size: 999px;
+        text-align: right;
+        filter: alpha(opacity=0);
+        opacity: 0;
+        background: red;
+        cursor: inherit;
+        display: block;
+    }
+input[readonly] {
+    background-color: white !important;
+    cursor: text !important;
+}
+
+
