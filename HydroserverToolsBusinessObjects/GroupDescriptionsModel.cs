@@ -9,6 +9,6 @@ namespace HydroserverToolsBusinessObjects.Models
     public class GroupDescriptionModel
     {
         public string GroupID { get; set; }
-        public string GroupDescription { get; set; }
+        public string GroupDescription1 { get; set; }//named to match EF model name
     }
 }

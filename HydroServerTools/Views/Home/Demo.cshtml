@@ -1,0 +1,56 @@
+﻿@using MvcFileUploader.HtmlHelper
+@using MvcFileUploader.Models
+@{
+    ViewBag.Title = "Demo";
+
+    var showingInline = Model != null && Model == true;
+    
+    //option for inline view only
+    var ui = "jquery".Equals(Request.Params["ui"]) ? UploadUI.JQueryUI : UploadUI.Bootstrap;
+    var toggleUi = ui == UploadUI.Bootstrap ? "jquery" : "bootstrap";
+    
+    //setting layout based on ui
+    //Layout = "~/Views/Shared/" + (ui == UploadUI.Bootstrap ? "_MvcFileUploaderLayout.cshtml" : "_MvcFileUploaderLayout_jui.cshtml");
+}
+<!-- Blueimp styles / see blueimp docs for styling requirements for jquery ui -->
+<link rel="stylesheet" href="/Content/mvcfileupload/blueimp/jquery.fileupload.css">
+<link rel="stylesheet" href="/Content/mvcfileupload/blueimp/jquery.fileupload-ui.css">
+
+    <div class="well">
+        <legend>Upload Inline</legend>
+        <p class="help-block">jpg/png size max 5 MB</p>
+        @(
+        Html.MvcFileUpload()
+        .UploadAt(Url.Action("Import","CSVUpload"))
+        .UIStyle(ui)
+        .WithFileTypes(@"/(\.|\/)(jpe?g|csv)$/i")
+        .WithMaxFileSize(5000000)
+        .AddFormField("viewname", "sites")       
+        .RenderInline("_MvcFileuploadMS")
+        )
+        
+    </div>
+    
+    @*<div class="well">
+        <legend>Another inline uploader in same page</legend>
+        <p class="help-block">jpg/png size max 5 MB, max number of files 1, image preview disabled</p>
+        <p class="help-block">note: do not set thumbnailUrl in returned json from server side controller in case image preview is disabled, in this demo it is being set, so tumbnail is shown after upload.</p>
+        @(
+        Html.MvcFileUpload() 
+        .UploadAt(Url.Action("UploadFile")) 
+        .WithFileTypes(@"/(\.|\/)(jpe?g|csv)$/i")
+        .WithMaxFileSize(5000000)
+        .MaxNumberOfFiles(1)
+        .DisableImagePreview()
+        .ExcludeSharedScript()  //this should be called as this page contains another inline widget which loaded shared scripts
+        //.RenderInline("_MvcFileupload")
+        )
+    </div>*@       
+    
+
+
+
+
+
+
+

@@ -11,7 +11,7 @@
         <EntityTypeShape EntityType="ODM_1_1_1EFModel.DataValue" Width="1.5" PointX="5.25" PointY="6.75" />
         <EntityTypeShape EntityType="ODM_1_1_1EFModel.DerivedFrom" Width="1.5" PointX="7.5" PointY="11.875" />
         <EntityTypeShape EntityType="ODM_1_1_1EFModel.GeneralCategoryCV" Width="1.5" PointX="0.75" PointY="9.75" />
-        <EntityTypeShape EntityType="ODM_1_1_1EFModel.GroupDescription" Width="1.5" PointX="5.25" PointY="14.125" />
+        <EntityTypeShape EntityType="ODM_1_1_1EFModel.GroupDescription" Width="1.5" PointX="10.625" PointY="11.375" />
         <EntityTypeShape EntityType="ODM_1_1_1EFModel.Group" Width="1.5" PointX="7.5" PointY="9" />
         <EntityTypeShape EntityType="ODM_1_1_1EFModel.ISOMetadata" Width="1.5" PointX="0.75" PointY="27.875" />
         <EntityTypeShape EntityType="ODM_1_1_1EFModel.LabMethod" Width="1.5" PointX="0.75" PointY="39.75" />

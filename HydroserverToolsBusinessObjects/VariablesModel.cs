@@ -8,7 +8,7 @@ namespace HydroserverToolsBusinessObjects.Models
 {
     public class VariablesModel
     {
-        //public string VariableID { get; set; }
+        public string VariableID { get; set; }
         public string VariableCode { get; set; }
         public string VariableName { get; set; }
         public string Speciation { get; set; }

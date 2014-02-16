@@ -5,8 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - HydroServerTools</title>
     @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
+    @*@Scripts.Render("~/bundles/modernizr")*@
+    
     @RenderSection("styles", required: false)
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/jquery-ui-1.10.3.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -29,8 +33,9 @@
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
                     <li>@Html.ActionLink("About", "About", "Home")</li>
                     <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                    <li>@Html.ActionLink("MVCUploder", "Demo", "Home")</li>
                     <li>@Html.ActionLink("Datatable1", "Datatable1", "Home")</li>
-                    <li>@Html.ActionLink("Datatable2", "Datatable2", "Home")</li>
+                    <li>@Html.ActionLink("Datatable2", "Datatable2", "Home", new { identifier = "Sites" }, null)</li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">View Data<b class="caret"></b></a>
                         <ul class="dropdown-menu">
@@ -52,7 +57,8 @@
 
                             <li><a href="#">View OffsetTypes</a></li>
                             <li class="divider"></li>
-                            <li><a href="#">View DateTyp CV</a></li>
+                            <li>@Html.ActionLink("View Sites", "ViewTableData", "Home", new { identifier = "Sites" }, null)</li>
+
                         </ul>
                     </li>
 
@@ -71,8 +77,10 @@
         </footer>
     </div>
 
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
+   @* @Scripts.Render("~/bundles/jquery")*@
+  @*  @Scripts.Render("~/bundles/bootstrap")*@
+
+  
     @RenderSection("scripts", required: false)
   
 </body>

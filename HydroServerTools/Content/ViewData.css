@@ -10,7 +10,11 @@
             border-collapse:collapse;
             table-layout:fixed;
             word-wrap:break-word;
-            border-width: 1px;
             overflow-wrap:break-word;
-            border-width:1px;
+            border-width:0px;
+            padding-bottom:10px;
         }
+
+#tabs {
+        padding-bottom:1em;
+}

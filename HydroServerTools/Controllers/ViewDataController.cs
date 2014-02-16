@@ -68,7 +68,7 @@ namespace HydroServerTools.Controllers
             if (identifier.ToLower() == "qualifiers") { var repo = new QualifiersRepository(); return View("ViewQualifiers", repo.GetAll(entityConnectionString)); };
             if (identifier.ToLower() == "qualitycontrollevels") { var repo = new QualityControlLevelsRepository(); return View("ViewQualityControlLevels", repo.GetAll(entityConnectionString)); };
             if (identifier.ToLower() == "datavalues") { var repo = new DataValuesRepository(); return View("ViewDataValues", repo.GetAll(entityConnectionString)); };
-            if (identifier.ToLower() == "groupdescriptions") { var repo = new GroupDescriptionsRepository(); return View("ViewGroupDescriptions", repo.GetAll(entityConnectionString)); };
+            if (identifier.ToLower() == "groupdescriptions") { var repo = new GroupDescriptionsRepository(); return View("ViewGroupDescription", repo.GetAll(entityConnectionString)); };
             if (identifier.ToLower() == "groups") { var repo = new GroupsRepository(); return View("ViewGroups", repo.GetAll(entityConnectionString)); };
             if (identifier.ToLower() == "derivedfrom") { var repo = new DerivedFromRepository(); return View("ViewDerivedFrom", repo.GetAll(entityConnectionString)); };
             if (identifier.ToLower() == "categories") { var repo = new CategoriesRepository(); return View("ViewCategories", repo.GetAll(entityConnectionString)); };

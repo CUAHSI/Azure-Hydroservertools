@@ -51,18 +51,21 @@ namespace HydroServerToolsRepository.Repository
                 var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
                 var objContext = ((IObjectContextAdapter)context).ObjectContext;
 
-                foreach (var s in sites)
+                var LatLongDatum = context.SpatialReferences.ToDictionary(p => p.SRSName.Trim(),p => p.SpatialReferenceID);
+
+                foreach (var item in sites)
                 {
-                    var item = new ODM_1_1_1EFModel.Site();
+                    //var item = new ODM_1_1_1EFModel.Site();
 
                     try
                     {
-                        var d = Mapper.Map<SiteModel, Site>(s);
+                        var d = Mapper.Map<SiteModel, Site>(item);
                         
-                        var LatLongDatumID = context.SpatialReferences
-                                             .Where (a => a.SRSName == s.LatLongDatumSRSName)
-                                             .Select (a => a.SpatialReferenceID)
-                                             .FirstOrDefault();
+                        //var LatLongDatumID = context.SpatialReferences
+                        //                     .Where (a => a.SRSName == s.LatLongDatumSRSName)
+                        //                     .Select (a => a.SpatialReferenceID)
+                        //                     .FirstOrDefault();
+                        var LatLongDatumID = LatLongDatum[item.LatLongDatumSRSName];
                         d.LatLongDatumID = LatLongDatumID;
 
                         ////d.SiteID = s.SiteID;
@@ -95,14 +98,14 @@ namespace HydroServerToolsRepository.Repository
                    
                         //var objectSet = objContext.CreateObjectSet<Site>().EntitySet;//.EntitySet;
 
-                        var existingItem = context.Sites.Where(a => a.SiteCode == s.SiteCode).FirstOrDefault();
+                        var existingItem = context.Sites.Where(a => a.SiteCode == item.SiteCode).FirstOrDefault();
                         //var j = context.Sites.Find(s.SiteCode);
 
                         if (existingItem == null)
                         { 
                             context.Sites.Add(d);
                             context.SaveChanges();
-                            listOfCorrectRecords.Add(s);
+                            listOfCorrectRecords.Add(item);
                         }
                         else
                         {
@@ -126,11 +129,11 @@ namespace HydroServerToolsRepository.Repository
                             if (editedFields.Count() > 0)
                             {
                                 context.SaveChanges();
-                                listOfEditedRecords.Add(s);
+                                listOfEditedRecords.Add(item);
                             }
                             else
                             {
-                                listOfDuplicateRecords.Add(s);
+                                listOfDuplicateRecords.Add(item);
                             }
                            //var modifiedEntries = this.ObjectStateManager.GetObjectStateEntries(EntityState.Modified);
 
@@ -170,14 +173,10 @@ namespace HydroServerToolsRepository.Repository
                     }
                     catch (Exception ex)
                     {
-                        listOfIncorrectRecords.Add(s);
-
-
+                        listOfIncorrectRecords.Add(item);
                     }
 
                 }
-
-
                 return;
             }
         }
@@ -238,7 +237,7 @@ namespace HydroServerToolsRepository.Repository
                     model.TimeUnitsID = timeUnitsID;
 
                     //lookup duplicates
-                    var objectSet = objContext.CreateObjectSet<ODM_1_1_1EFModel.Variable>().EntitySet;//.EntitySet;
+                    //var objectSet = objContext.CreateObjectSet<ODM_1_1_1EFModel.Variable>().EntitySet;//.EntitySet;
                     //check if item with this variablecode exists in the database
                     var existingItem = context.Variables.Where(a => a.VariableCode == item.VariableCode).FirstOrDefault();
 
@@ -297,80 +296,94 @@ namespace HydroServerToolsRepository.Repository
 
            var items = from obj in context.OffsetTypes
                        select obj;
+
+           var Units = context.Units.ToDictionary(p =>  p.UnitsID,p => p.UnitsName.Trim());
+
            var modelList = new List<OffsetTypesModel>();
            foreach (var item in items)
            {
 
                var model = Mapper.Map<OffsetType, OffsetTypesModel>(item);
 
+               if (Units.ContainsKey(item.OffsetUnitsID))
+               {
+                   var offsetUnitName = Units[item.OffsetUnitsID];
+                   //update model
+                   model.OffsetUnitsName = offsetUnitName;
+               }                    
+               
                modelList.Add(model);
            }
            return modelList;
        }
 
-       public void AddOffsetTypes(List<OffsetTypesModel> itemList, string entityConnectionString, out List<OffsetTypesModel> listOfIncorrectRecords, out List<OffsetTypesModel> listOfCorrectRecords, out List<OffsetTypesModel> listOfDuplicateRecords)
+       public void AddOffsetTypes(List<OffsetTypesModel> itemList, string entityConnectionString, out List<OffsetTypesModel> listOfIncorrectRecords, out List<OffsetTypesModel> listOfCorrectRecords, out List<OffsetTypesModel> listOfDuplicateRecords, out List<OffsetTypesModel> listOfEditedRecords)
        {
            listOfIncorrectRecords = new List<OffsetTypesModel>();
            listOfCorrectRecords = new List<OffsetTypesModel>();
            listOfDuplicateRecords = new List<OffsetTypesModel>();
-
+           listOfEditedRecords = new List<OffsetTypesModel>();
 
            var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
-           var objContext = ((IObjectContextAdapter)context).ObjectContext;
+           //prefetch Units for quick lookup
+           var offsetUnits = context.Units.ToDictionary(p => p.UnitsName.Trim(), p => p.UnitsID);
 
            foreach (var item in itemList)
            {
 
-               var model = Mapper.Map<OffsetTypesModel, OffsetType>(item);
-
                try
                {
+                   var model = Mapper.Map<OffsetTypesModel, OffsetType>(item);
 
-                   var objectSet = objContext.CreateObjectSet<OffsetType>().EntitySet;//.EntitySet;
-
-                   ////check if entry with this key exists
-                   object value;
-
-                   var key = Utils.GetEntityKey(objectSet, model);
-
-                   if (!objContext.TryGetObjectByKey(key, out value))
+                   //need to look up Id's for OffsetUnitsID
+                   //User has no concept of ID's
+                   //lookup OffsetUnitsID
+                   if (offsetUnits.ContainsKey(item.OffsetUnitsName))
                    {
-                       try
-                       {
-                           // var objContext = ((IObjectContextAdapter)context).ObjectContext;
-                           objContext.Connection.Open();
-                           objContext.ExecuteStoreCommand("SET IDENTITY_INSERT [dbo].[OffsetTypes] ON");
-                           objContext.AddObject(objectSet.Name, model);
-                           //context.Sites.Add(d);
-                           objContext.SaveChanges();
-                           listOfCorrectRecords.Add(item);
-                           objContext.Connection.Close();
-                       }
-                       catch (Exception ex)
-                       {
-                           throw;
-                       }
+                       var offsetUnitId = offsetUnits[item.OffsetUnitsName];
+                       //update model
+                       model.OffsetUnitsID = offsetUnitId;
                    }
                    else
                    {
-                       listOfDuplicateRecords.Add(item);
+                       listOfIncorrectRecords.Add(item);
+                       continue;
+
                    }
 
+                   //lookup duplicates
+                   var existingItem = context.OffsetTypes.Where(a => a.OffsetUnitsID == model.OffsetUnitsID && a.OffsetDescription == model.OffsetDescription).FirstOrDefault();
+
+                   if (existingItem == null)
+                   {
+                       context.OffsetTypes.Add(model);
+                       context.SaveChanges();
+                       listOfCorrectRecords.Add(item);
+                   }
+                   else
+                   {
+                       var editedFields = new List<string>();
+                       if (editedFields.Count() > 0)
+                       {
+                           context.SaveChanges();
+                           listOfEditedRecords.Add(item);
+                       }
+                       else
+                       {
+                           listOfDuplicateRecords.Add(item);
+                       }
+                   }
+                  
                }
                catch (Exception ex)
                {
                    listOfIncorrectRecords.Add(item);
-
-
-               }
-
+               }           
+               
            }
-
            return;
        }
-
    }
-
  //  ISOMetadata
    public class ISOMetadataRepository : IISOMetadataRepository
    {
@@ -393,12 +406,12 @@ namespace HydroServerToolsRepository.Repository
            return modelList;
        }
 
-       public void AddISOMetadata(List<ISOMetadataModel> itemList, string entityConnectionString, out List<ISOMetadataModel> listOfIncorrectRecords, out List<ISOMetadataModel> listOfCorrectRecords, out List<ISOMetadataModel> listOfDuplicateRecords)
+       public void AddISOMetadata(List<ISOMetadataModel> itemList, string entityConnectionString, out List<ISOMetadataModel> listOfIncorrectRecords, out List<ISOMetadataModel> listOfCorrectRecords, out List<ISOMetadataModel> listOfDuplicateRecords, out List<ISOMetadataModel> listOfEditedRecords)
        {
            listOfIncorrectRecords = new List<ISOMetadataModel>();
            listOfCorrectRecords = new List<ISOMetadataModel>();
            listOfDuplicateRecords = new List<ISOMetadataModel>();
-
+           listOfEditedRecords = new List<ISOMetadataModel>();
 
            var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
            var objContext = ((IObjectContextAdapter)context).ObjectContext;
@@ -541,7 +554,6 @@ namespace HydroServerToolsRepository.Repository
                   
                    //update model
                    model.MetadataID = metadataId;
-
                  
                    context.Sources.Add(model);
                    context.SaveChanges();
@@ -653,6 +665,7 @@ namespace HydroServerToolsRepository.Repository
        }
 
    }
+
     //  LabMethods
    public class LabMethodsRepository : ILabMethodsRepository
    {
@@ -675,68 +688,66 @@ namespace HydroServerToolsRepository.Repository
            return modelList;
        }
 
-       public void AddLabMethods(List<LabMethodModel> itemList, string entityConnectionString, out List<LabMethodModel> listOfIncorrectRecords, out List<LabMethodModel> listOfCorrectRecords, out List<LabMethodModel> listOfDuplicateRecords)
+       public void AddLabMethods(List<LabMethodModel> itemList, string entityConnectionString, out List<LabMethodModel> listOfIncorrectRecords, out List<LabMethodModel> listOfCorrectRecords, out List<LabMethodModel> listOfDuplicateRecords, out List<LabMethodModel> listOfEditedRecords)
        {
            listOfIncorrectRecords = new List<LabMethodModel>();
            listOfCorrectRecords = new List<LabMethodModel>();
            listOfDuplicateRecords = new List<LabMethodModel>();
-
+           listOfEditedRecords = new List<LabMethodModel>();
 
            var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
-           var objContext = ((IObjectContextAdapter)context).ObjectContext;
+           //prefetch Units for quick lookup
+           var offsetUnits = context.Units.ToDictionary(p => p.UnitsName.Trim(), p => p.UnitsID);
 
            foreach (var item in itemList)
            {
 
-               var model = Mapper.Map<LabMethodModel, LabMethod>(item);
-
                try
                {
+                   var model = Mapper.Map<LabMethodModel, LabMethod>(item);
 
-                   var objectSet = objContext.CreateObjectSet<LabMethod>().EntitySet;//.EntitySet;
+                   
+                   //lookup duplicates
+                   var existingItem = context.LabMethods
+                                                .Where(
+                                                    a => a.LabMethodName == model.LabMethodName && 
+                                                         a.LabOrganization == model.LabOrganization &&
+                                                         a.LabMethodName == model.LabMethodName &&
+                                                         a.LabMethodDescription == a.LabMethodDescription &&
+                                                         a.LabMethodLink == a.LabMethodLink)
+                                                         .FirstOrDefault();
 
-                   ////check if entry with this key exists
-                   object value;
-
-                   var key = Utils.GetEntityKey(objectSet, model);
-
-                   if (!objContext.TryGetObjectByKey(key, out value))
+                   if (existingItem == null)
                    {
-                       try
-                       {
-                           // var objContext = ((IObjectContextAdapter)context).ObjectContext;
-                           objContext.Connection.Open();
-                           objContext.ExecuteStoreCommand("SET IDENTITY_INSERT [dbo].[LabMethods] ON");
-                           objContext.AddObject(objectSet.Name, model);
-                           //context.Sites.Add(d);
-                           objContext.SaveChanges();
-                           listOfCorrectRecords.Add(item);
-                           objContext.Connection.Close();
-                       }
-                       catch (Exception ex)
-                       {
-                           throw;
-                       }
+                       context.LabMethods.Add(model);
+                       context.SaveChanges();
+                       listOfCorrectRecords.Add(item);
                    }
                    else
                    {
-                       listOfDuplicateRecords.Add(item);
+                       var editedFields = new List<string>();
+                       if (editedFields.Count() > 0)
+                       {
+                           context.SaveChanges();
+                           listOfEditedRecords.Add(item);
+                       }
+                       else
+                       {
+                           listOfDuplicateRecords.Add(item);
+                       }
                    }
 
                }
                catch (Exception ex)
                {
                    listOfIncorrectRecords.Add(item);
-
-
                }
 
            }
-
            return;
        }
-
    }
+
     //  Samples
    public class SamplesRepository : ISamplesRepository
    {
@@ -748,79 +759,115 @@ namespace HydroServerToolsRepository.Repository
 
            var items = from obj in context.Samples
                        select obj;
+
+           var LabMethods = context.LabMethods.ToDictionary(p => p.LabMethodID, p => p.LabMethodName.Trim());
            var modelList = new List<SampleModel>();
            foreach (var item in items)
            {
 
                var model = Mapper.Map<ODM_1_1_1EFModel.Sample, HydroserverToolsBusinessObjects.Models.SampleModel>(item);
-
+               if (LabMethods.ContainsKey(item.LabMethodID))
+               {
+                   var labMethodsName = LabMethods[item.LabMethodID];
+                   //update model
+                   model.LabMethodName = labMethodsName;
+               } 
                modelList.Add(model);
            }
            return modelList;
        }
 
-       public void AddSamples(List<SampleModel> itemList, string entityConnectionString, out List<SampleModel> listOfIncorrectRecords, out List<SampleModel> listOfCorrectRecords, out List<SampleModel> listOfDuplicateRecords)
+       public void AddSamples(List<SampleModel> itemList, string entityConnectionString, out List<SampleModel> listOfIncorrectRecords, out List<SampleModel> listOfCorrectRecords, out List<SampleModel> listOfDuplicateRecords, out List<SampleModel> listOfEditedRecords)
        {
            listOfIncorrectRecords = new List<SampleModel>();
            listOfCorrectRecords = new List<SampleModel>();
            listOfDuplicateRecords = new List<SampleModel>();
-
+           listOfEditedRecords = new List<SampleModel>();
 
            var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
-           var objContext = ((IObjectContextAdapter)context).ObjectContext;
+           //prefetch Units for quick lookup
+           var labMethods = context.LabMethods.ToDictionary(p => p.LabMethodName.Trim(), p => p.LabMethodID);
 
            foreach (var item in itemList)
            {
 
-               var model = Mapper.Map<SampleModel, Sample>(item);
-
                try
                {
+                   var model = Mapper.Map<SampleModel, Sample>(item);
 
-                   var objectSet = objContext.CreateObjectSet<Sample>().EntitySet;//.EntitySet;
-
-                   ////check if entry with this key exists
-                   object value;
-
-                   var key = Utils.GetEntityKey(objectSet, model);
-
-                   if (!objContext.TryGetObjectByKey(key, out value))
+                   //need to look up Id's for LabMethodId
+                   //User has no concept of ID's
+                   //lookup LabmethodId
+                   if (item.LabMethodName != null)
                    {
-                       try
+                       if (labMethods.ContainsKey(item.LabMethodName))
                        {
-                           // var objContext = ((IObjectContextAdapter)context).ObjectContext;
-                           objContext.Connection.Open();
-                           objContext.ExecuteStoreCommand("SET IDENTITY_INSERT [dbo].[Samples] ON");
-                           objContext.AddObject(objectSet.Name, model);
-                           //context.Sites.Add(d);
-                           objContext.SaveChanges();
-                           listOfCorrectRecords.Add(item);
-                           objContext.Connection.Close();
+                           var labMethodsId = labMethods[item.LabMethodName];
+                           //update model
+                           model.LabMethodID = labMethodsId;
                        }
-                       catch (Exception ex)
+                       else
                        {
-                           throw;
+                           //if CSV has LabMethidId specified convert and process
+                           int labMethodId;
+                           bool res = int.TryParse(item.LabMethodName, out labMethodId);
+                           if (res)
+                           {
+                               //update model
+                               model.LabMethodID = labMethodId;
+                           }
+                           else
+                           {
+                               listOfIncorrectRecords.Add(item);
+                               continue;
+
+                           }
                        }
                    }
                    else
                    {
-                       listOfDuplicateRecords.Add(item);
+                       return;
+                   }
+                   
+                   
+                   
+                   //lookup duplicates
+                   var existingItem = context.Samples.Where(a => a.SampleType == model.SampleType && 
+                                                                 a.LabSampleCode == model.LabSampleCode &&
+                                                                 a.LabMethodID == a.LabMethodID
+                                                                 ).FirstOrDefault();
+
+                   if (existingItem == null)
+                   {
+                       context.Samples.Add(model);
+                       context.SaveChanges();
+                       listOfCorrectRecords.Add(item);
+                   }
+                   else
+                   {
+                       var editedFields = new List<string>();
+                       if (editedFields.Count() > 0)
+                       {
+                           context.SaveChanges();
+                           listOfEditedRecords.Add(item);
+                       }
+                       else
+                       {
+                           listOfDuplicateRecords.Add(item);
+                       }
                    }
 
                }
                catch (Exception ex)
                {
                    listOfIncorrectRecords.Add(item);
-
-
                }
 
            }
-
            return;
        }
-
    }
+
     //  Qualifiers
    public class QualifiersRepository : IQualifiersRepository
    {
@@ -843,69 +890,58 @@ namespace HydroServerToolsRepository.Repository
            return modelList;
        }
 
-       public void AddQualifiers(List<QualifiersModel> itemList, string entityConnectionString, out List<QualifiersModel> listOfIncorrectRecords, out List<QualifiersModel> listOfCorrectRecords, out List<QualifiersModel> listOfDuplicateRecords)
+       public void AddQualifiers(List<QualifiersModel> itemList, string entityConnectionString, out List<QualifiersModel> listOfIncorrectRecords, out List<QualifiersModel> listOfCorrectRecords, out List<QualifiersModel> listOfDuplicateRecords, out List<QualifiersModel> listOfEditedRecords)
        {
            listOfIncorrectRecords = new List<QualifiersModel>();
            listOfCorrectRecords = new List<QualifiersModel>();
            listOfDuplicateRecords = new List<QualifiersModel>();
-
+           listOfEditedRecords = new List<QualifiersModel>();
 
            var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
-           var objContext = ((IObjectContextAdapter)context).ObjectContext;
-
+          
            foreach (var item in itemList)
            {
 
-               var model = Mapper.Map<QualifiersModel, Qualifier>(item);
-
                try
                {
+                   var model = Mapper.Map<QualifiersModel, Qualifier>(item);
 
-                   var objectSet = objContext.CreateObjectSet<Qualifier>().EntitySet;//.EntitySet;
+                   
 
-                   ////check if entry with this key exists
-                   object value;
+                   //lookup duplicates
+                   var existingItem = context.Qualifiers.Where(a => a.QualifierCode == model.QualifierCode && a.QualifierDescription == model.QualifierDescription).FirstOrDefault();
 
-                   var key = Utils.GetEntityKey(objectSet, model);
-
-                   if (!objContext.TryGetObjectByKey(key, out value))
+                   if (existingItem == null)
                    {
-                       try
-                       {
-                           // var objContext = ((IObjectContextAdapter)context).ObjectContext;
-                           objContext.Connection.Open();
-                           objContext.ExecuteStoreCommand("SET IDENTITY_INSERT [dbo].[Qualifiers] ON");
-                           objContext.AddObject(objectSet.Name, model);
-                           //context.Sites.Add(d);
-                           objContext.SaveChanges();
-                           listOfCorrectRecords.Add(item);
-                           objContext.Connection.Close();
-                       }
-                       catch (Exception ex)
-                       {
-                           throw;
-                       }
+                       context.Qualifiers.Add(model);
+                       context.SaveChanges();
+                       listOfCorrectRecords.Add(item);
                    }
                    else
                    {
-                       listOfDuplicateRecords.Add(item);
+                       var editedFields = new List<string>();
+                       if (editedFields.Count() > 0)
+                       {
+                           context.SaveChanges();
+                           listOfEditedRecords.Add(item);
+                       }
+                       else
+                       {
+                           listOfDuplicateRecords.Add(item);
+                       }
                    }
 
                }
                catch (Exception ex)
                {
                    listOfIncorrectRecords.Add(item);
-
-
                }
 
            }
-
            return;
        }
-
-   }
-    //  QualityControlLevels
+   }    
+   //  QualityControlLevels
    public class QualityControlLevelsRepository : IQualityControlLevelRepository
    {
 
@@ -927,67 +963,59 @@ namespace HydroServerToolsRepository.Repository
            return modelList;
        }
 
-       public void AddQualityControlLevel(List<QualityControlLevelModel> itemList, string entityConnectionString, out List<QualityControlLevelModel> listOfIncorrectRecords, out List<QualityControlLevelModel> listOfCorrectRecords, out List<QualityControlLevelModel> listOfDuplicateRecords)
+       public void AddQualityControlLevel(List<QualityControlLevelModel> itemList, string entityConnectionString, out List<QualityControlLevelModel> listOfIncorrectRecords, out List<QualityControlLevelModel> listOfCorrectRecords, out List<QualityControlLevelModel> listOfDuplicateRecords, out List<QualityControlLevelModel> listOfEditedRecords)
        {
            listOfIncorrectRecords = new List<QualityControlLevelModel>();
            listOfCorrectRecords = new List<QualityControlLevelModel>();
            listOfDuplicateRecords = new List<QualityControlLevelModel>();
-
+           listOfEditedRecords = new List<QualityControlLevelModel>();
 
            var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
-           var objContext = ((IObjectContextAdapter)context).ObjectContext;
 
            foreach (var item in itemList)
            {
 
-               var model = Mapper.Map<QualityControlLevelModel, QualityControlLevel>(item);
-
                try
                {
+                   var model = Mapper.Map<QualityControlLevelModel, QualityControlLevel>(item);
 
-                   var objectSet = objContext.CreateObjectSet<QualityControlLevel>().EntitySet;//.EntitySet;
 
-                   ////check if entry with this key exists
-                   object value;
 
-                   var key = Utils.GetEntityKey(objectSet, model);
+                   //lookup duplicates
+                   var existingItem = context.QualityControlLevels.Where(a => a.QualityControlLevelCode == model.QualityControlLevelCode && 
+                                                                              a.Definition == model.Definition &&
+                                                                              a.Explanation== model.Explanation
+                                                                              ).FirstOrDefault();
 
-                   if (!objContext.TryGetObjectByKey(key, out value))
+                   if (existingItem == null)
                    {
-                       try
-                       {
-                           // var objContext = ((IObjectContextAdapter)context).ObjectContext;
-                           objContext.Connection.Open();
-                           objContext.ExecuteStoreCommand("SET IDENTITY_INSERT [dbo].[QualityControlLevels] ON");
-                           objContext.AddObject(objectSet.Name, model);
-                           //context.Sites.Add(d);
-                           objContext.SaveChanges();
-                           listOfCorrectRecords.Add(item);
-                           objContext.Connection.Close();
-                       }
-                       catch (Exception ex)
-                       {
-                           throw;
-                       }
+                       context.QualityControlLevels.Add(model);
+                       context.SaveChanges();
+                       listOfCorrectRecords.Add(item);
                    }
                    else
                    {
-                       listOfDuplicateRecords.Add(item);
+                       var editedFields = new List<string>();
+                       if (editedFields.Count() > 0)
+                       {
+                           context.SaveChanges();
+                           listOfEditedRecords.Add(item);
+                       }
+                       else
+                       {
+                           listOfDuplicateRecords.Add(item);
+                       }
                    }
 
                }
                catch (Exception ex)
                {
                    listOfIncorrectRecords.Add(item);
-
-
                }
 
            }
-
            return;
        }
-
    }
     //  DataValues
    public class DataValuesRepository : IDataValuesRepository
@@ -1155,6 +1183,7 @@ namespace HydroServerToolsRepository.Repository
        }
 
    }
+
     //  GroupDescriptions
    public class GroupDescriptionsRepository : IGroupDescriptionsRepository
    {
@@ -1177,69 +1206,56 @@ namespace HydroServerToolsRepository.Repository
            return modelList;
        }
 
-       public void AddGroupDescriptions(List<GroupDescriptionModel> itemList, string entityConnectionString, out List<GroupDescriptionModel> listOfIncorrectRecords, out List<GroupDescriptionModel> listOfCorrectRecords, out List<GroupDescriptionModel> listOfDuplicateRecords)
+       public void AddGroupDescriptions(List<GroupDescriptionModel> itemList, string entityConnectionString, out List<GroupDescriptionModel> listOfIncorrectRecords, out List<GroupDescriptionModel> listOfCorrectRecords, out List<GroupDescriptionModel> listOfDuplicateRecords, out List<GroupDescriptionModel> listOfEditedRecords)
        {
            listOfIncorrectRecords = new List<GroupDescriptionModel>();
            listOfCorrectRecords = new List<GroupDescriptionModel>();
            listOfDuplicateRecords = new List<GroupDescriptionModel>();
-
-
+           listOfEditedRecords = new List<GroupDescriptionModel>();
+           
            var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
-           var objContext = ((IObjectContextAdapter)context).ObjectContext;
 
            foreach (var item in itemList)
            {
-
-               var model = Mapper.Map<GroupDescriptionModel, GroupDescription>(item);
-
                try
                {
+                   var model = Mapper.Map<GroupDescriptionModel, GroupDescription>(item);
 
-                   var objectSet = objContext.CreateObjectSet<GroupDescription>().EntitySet;//.EntitySet;
+                   //lookup duplicates
+                   var existingItem = context.GroupDescriptions.Where(a => a.GroupDescription1 == model.GroupDescription1
+                                                                              ).FirstOrDefault();
 
-                   ////check if entry with this key exists
-                   object value;
-
-                   var key = Utils.GetEntityKey(objectSet, model);
-
-                   if (!objContext.TryGetObjectByKey(key, out value))
+                   if (existingItem == null)
                    {
-                       try
-                       {
-                           // var objContext = ((IObjectContextAdapter)context).ObjectContext;
-                           objContext.Connection.Open();
-                           objContext.ExecuteStoreCommand("SET IDENTITY_INSERT [dbo].[GroupDescriptions] ON");
-                           objContext.AddObject(objectSet.Name, model);
-                           //context.Sites.Add(d);
-                           objContext.SaveChanges();
-                           listOfCorrectRecords.Add(item);
-                           objContext.Connection.Close();
-                       }
-                       catch (Exception ex)
-                       {
-                           throw;
-                       }
+                       context.GroupDescriptions.Add(model);
+                       context.SaveChanges();
+                       listOfCorrectRecords.Add(item);
                    }
                    else
                    {
-                       listOfDuplicateRecords.Add(item);
+                       var editedFields = new List<string>();
+                       if (editedFields.Count() > 0)
+                       {
+                           context.SaveChanges();
+                           listOfEditedRecords.Add(item);
+                       }
+                       else
+                       {
+                           listOfDuplicateRecords.Add(item);
+                       }
                    }
 
                }
                catch (Exception ex)
                {
                    listOfIncorrectRecords.Add(item);
-
-
                }
 
            }
-
            return;
        }
-
    }
-    //  Groups
+   //  Groups
    public class GroupsRepository : IGroupsRepository
    {
 
@@ -1261,68 +1277,61 @@ namespace HydroServerToolsRepository.Repository
            return modelList;
        }
 
-       public void AddGroups(List<GroupsModel> itemList, string entityConnectionString, out List<GroupsModel> listOfIncorrectRecords, out List<GroupsModel> listOfCorrectRecords, out List<GroupsModel> listOfDuplicateRecords)
+       public void AddGroups(List<GroupsModel> itemList, string entityConnectionString, out List<GroupsModel> listOfIncorrectRecords, out List<GroupsModel> listOfCorrectRecords, out List<GroupsModel> listOfDuplicateRecords, out List<GroupsModel> listOfEditedRecords)
        {
            listOfIncorrectRecords = new List<GroupsModel>();
            listOfCorrectRecords = new List<GroupsModel>();
            listOfDuplicateRecords = new List<GroupsModel>();
-
+           listOfEditedRecords = new List<GroupsModel>();
 
            var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
-           var objContext = ((IObjectContextAdapter)context).ObjectContext;
 
            foreach (var item in itemList)
            {
 
-               var model = Mapper.Map<GroupsModel, Group>(item);
-
                try
                {
+                   var model = Mapper.Map<GroupsModel, Group>(item);
 
-                   var objectSet = objContext.CreateObjectSet<Group>().EntitySet;//.EntitySet;
 
-                   ////check if entry with this key exists
-                   object value;
 
-                   var key = Utils.GetEntityKey(objectSet, model);
+                   //lookup duplicates
+                   var existingItem = context.Groups.Where(a => a.GroupID == model.GroupID &&
+                                                                              a.ValueID == model.ValueID 
+                                                                              ).FirstOrDefault();
 
-                   if (!objContext.TryGetObjectByKey(key, out value))
+                   if (existingItem == null)
                    {
-                       try
-                       {
-                           // var objContext = ((IObjectContextAdapter)context).ObjectContext;
-                           objContext.Connection.Open();
-                           objContext.ExecuteStoreCommand("SET IDENTITY_INSERT [dbo].[Groups] ON");
-                           objContext.AddObject(objectSet.Name, model);
-                           //context.Sites.Add(d);
-                           objContext.SaveChanges();
-                           listOfCorrectRecords.Add(item);
-                           objContext.Connection.Close();
-                       }
-                       catch (Exception ex)
-                       {
-                           throw;
-                       }
+                       context.Groups.Add(model);
+                       context.SaveChanges();
+                       listOfCorrectRecords.Add(item);
                    }
                    else
                    {
-                       listOfDuplicateRecords.Add(item);
+                       var editedFields = new List<string>();
+                       if (editedFields.Count() > 0)
+                       {
+                           context.SaveChanges();
+                           listOfEditedRecords.Add(item);
+                       }
+                       else
+                       {
+                           listOfDuplicateRecords.Add(item);
+                       }
                    }
 
                }
                catch (Exception ex)
                {
                    listOfIncorrectRecords.Add(item);
-
-
                }
 
            }
-
            return;
        }
 
    }
+
     //  DerivedFrom
    public class DerivedFromRepository : IDerivedFromRepository
    {
@@ -1345,60 +1354,55 @@ namespace HydroServerToolsRepository.Repository
            return modelList;
        }
 
-       public void AddDerivedFrom(List<DerivedFromModel> itemList, string entityConnectionString, out List<DerivedFromModel> listOfIncorrectRecords, out List<DerivedFromModel> listOfCorrectRecords, out List<DerivedFromModel> listOfDuplicateRecords)
+       public void AddDerivedFrom(List<DerivedFromModel> itemList, string entityConnectionString, out List<DerivedFromModel> listOfIncorrectRecords, out List<DerivedFromModel> listOfCorrectRecords, out List<DerivedFromModel> listOfDuplicateRecords, out List<DerivedFromModel> listOfEditedRecords)
        {
            listOfIncorrectRecords = new List<DerivedFromModel>();
            listOfCorrectRecords = new List<DerivedFromModel>();
            listOfDuplicateRecords = new List<DerivedFromModel>();
-
+           listOfEditedRecords = new List<DerivedFromModel>();
 
            var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
-           var objContext = ((IObjectContextAdapter)context).ObjectContext;
+         
+                 
 
            foreach (var item in itemList)
            {
 
-               var model = Mapper.Map<DerivedFromModel, DerivedFrom>(item);
-
                try
                {
+                   var model = Mapper.Map<DerivedFromModel, DerivedFrom>(item);
 
-                   var objectSet = objContext.CreateObjectSet<Group>().EntitySet;//.EntitySet;
 
-                   ////check if entry with this key exists
-                   object value;
 
-                   var key = Utils.GetEntityKey(objectSet, model);
+                   //lookup duplicates
+                   var existingItem = context.DerivedFroms.Where(a => a.DerivedFromID == model.DerivedFromID &&
+                                                                              a.ValueID == model.ValueID 
+                                                                              ).FirstOrDefault();
 
-                   if (!objContext.TryGetObjectByKey(key, out value))
+                   if (existingItem == null)
                    {
-                       try
-                       {
-                           // var objContext = ((IObjectContextAdapter)context).ObjectContext;
-                           objContext.Connection.Open();
-                           objContext.ExecuteStoreCommand("SET IDENTITY_INSERT [dbo].[DerivedFrom] ON");
-                           objContext.AddObject(objectSet.Name, model);
-                           //context.Sites.Add(d);
-                           objContext.SaveChanges();
-                           listOfCorrectRecords.Add(item);
-                           objContext.Connection.Close();
-                       }
-                       catch (Exception ex)
-                       {
-                           throw;
-                       }
+                       context.DerivedFroms.Add(model);
+                       context.SaveChanges();
+                       listOfCorrectRecords.Add(item);
                    }
                    else
                    {
-                       listOfDuplicateRecords.Add(item);
+                       var editedFields = new List<string>();
+                       if (editedFields.Count() > 0)
+                       {
+                           context.SaveChanges();
+                           listOfEditedRecords.Add(item);
+                       }
+                       else
+                       {
+                           listOfDuplicateRecords.Add(item);
+                       }
                    }
 
                }
                catch (Exception ex)
                {
                    listOfIncorrectRecords.Add(item);
-
-
                }
 
            }
@@ -1407,6 +1411,7 @@ namespace HydroServerToolsRepository.Repository
        }
 
    }
+
     //  Categories
    public class CategoriesRepository : ICategoriesRepository
    {
@@ -1429,12 +1434,12 @@ namespace HydroServerToolsRepository.Repository
            return modelList;
        }
 
-       public void AddCategories(List<CategoriesModel> itemList, string entityConnectionString, out List<CategoriesModel> listOfIncorrectRecords, out List<CategoriesModel> listOfCorrectRecords, out List<CategoriesModel> listOfDuplicateRecords)
+       public void AddCategories(List<CategoriesModel> itemList, string entityConnectionString, out List<CategoriesModel> listOfIncorrectRecords, out List<CategoriesModel> listOfCorrectRecords, out List<CategoriesModel> listOfDuplicateRecords, out List<CategoriesModel> listOfEditedRecords)
        {
            listOfIncorrectRecords = new List<CategoriesModel>();
            listOfCorrectRecords = new List<CategoriesModel>();
            listOfDuplicateRecords = new List<CategoriesModel>();
-
+           listOfEditedRecords = new List<CategoriesModel>();
 
            var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
            var objContext = ((IObjectContextAdapter)context).ObjectContext;
@@ -1442,47 +1447,40 @@ namespace HydroServerToolsRepository.Repository
            foreach (var item in itemList)
            {
 
-               var model = Mapper.Map<CategoriesModel, Category>(item);
-
                try
                {
+                var model = Mapper.Map<CategoriesModel, Category>(item);
 
-                   var objectSet = objContext.CreateObjectSet<Group>().EntitySet;//.EntitySet;
+                   //lookup duplicates
+                   var existingItem = context.Categories.Where(a => a.VariableID == model.VariableID &&
+                                                                              a.DataValue == model.DataValue &&
+                                                                              a.CategoryDescription == model.CategoryDescription
+                                                                              ).FirstOrDefault();
 
-                   ////check if entry with this key exists
-                   object value;
-
-                   var key = Utils.GetEntityKey(objectSet, model);
-
-                   if (!objContext.TryGetObjectByKey(key, out value))
+                   if (existingItem == null)
                    {
-                       try
-                       {
-                           // var objContext = ((IObjectContextAdapter)context).ObjectContext;
-                           objContext.Connection.Open();
-                           objContext.ExecuteStoreCommand("SET IDENTITY_INSERT [dbo].[Categories] ON");
-                           objContext.AddObject(objectSet.Name, model);
-                           //context.Sites.Add(d);
-                           objContext.SaveChanges();
-                           listOfCorrectRecords.Add(item);
-                           objContext.Connection.Close();
-                       }
-                       catch (Exception ex)
-                       {
-                           throw;
-                       }
+                       context.Categories.Add(model);
+                       context.SaveChanges();
+                       listOfCorrectRecords.Add(item);
                    }
                    else
                    {
-                       listOfDuplicateRecords.Add(item);
+                       var editedFields = new List<string>();
+                       if (editedFields.Count() > 0)
+                       {
+                           context.SaveChanges();
+                           listOfEditedRecords.Add(item);
+                       }
+                       else
+                       {
+                           listOfDuplicateRecords.Add(item);
+                       }
                    }
 
                }
                catch (Exception ex)
                {
                    listOfIncorrectRecords.Add(item);
-
-
                }
 
            }
@@ -1492,29 +1490,30 @@ namespace HydroServerToolsRepository.Repository
 
    }
 
-   public static class myExtentions
-    {
-        public static bool EntityExists<T>(this ObjectContext context, T entity)
-        where T : EntityObject
-        {
-            object value;
-            var entityKeyValues = new List<KeyValuePair<string, object>>();
-            var objectSet = context.CreateObjectSet<T>().EntitySet;
-            foreach (var member in objectSet.ElementType.KeyMembers)
-            {
-                var info = entity.GetType().GetProperty(member.Name);
-                var tempValue = info.GetValue(entity, null);
-                var pair = new KeyValuePair<string, object>(member.Name, tempValue);
-                entityKeyValues.Add(pair);
-            }
-            var key = new EntityKey(objectSet.EntityContainer.Name + "." + objectSet.Name, entityKeyValues);
-            if (context.TryGetObjectByKey(key, out value))
-            {
-                return value != null;
-            }
-            return false;
-        }
-    }
+
+   //public static class myExtentions
+   // {
+   //     public static bool EntityExists<T>(this ObjectContext context, T entity)
+   //     where T : EntityObject
+   //     {
+   //         object value;
+   //         var entityKeyValues = new List<KeyValuePair<string, object>>();
+   //         var objectSet = context.CreateObjectSet<T>().EntitySet;
+   //         foreach (var member in objectSet.ElementType.KeyMembers)
+   //         {
+   //             var info = entity.GetType().GetProperty(member.Name);
+   //             var tempValue = info.GetValue(entity, null);
+   //             var pair = new KeyValuePair<string, object>(member.Name, tempValue);
+   //             entityKeyValues.Add(pair);
+   //         }
+   //         var key = new EntityKey(objectSet.EntityContainer.Name + "." + objectSet.Name, entityKeyValues);
+   //         if (context.TryGetObjectByKey(key, out value))
+   //         {
+   //             return value != null;
+   //         }
+   //         return false;
+   //     }
+   // }
 
    
 }

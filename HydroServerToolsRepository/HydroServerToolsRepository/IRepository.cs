@@ -38,7 +38,7 @@ namespace HydroServerToolsRepository.Repository
 
         //bool Save();
 
-        void AddOffsetTypes(List<OffsetTypesModel> list, string entityConnectionString, out List<OffsetTypesModel> listOfIncorrectRecords, out List<OffsetTypesModel> listOfCorrectRecords, out List<OffsetTypesModel> listOfDuplicateRecords);
+        void AddOffsetTypes(List<OffsetTypesModel> list, string entityConnectionString, out List<OffsetTypesModel> listOfIncorrectRecords, out List<OffsetTypesModel> listOfCorrectRecords, out List<OffsetTypesModel> listOfDuplicateRecords, out List<OffsetTypesModel> listOfEditedRecords);
 
     }
     
@@ -49,7 +49,7 @@ namespace HydroServerToolsRepository.Repository
 
         //bool Save();
 
-        void AddISOMetadata(List<ISOMetadataModel> list, string entityConnectionString, out List<ISOMetadataModel> listOfIncorrectRecords, out List<ISOMetadataModel> listOfCorrectRecords, out List<ISOMetadataModel> listOfDuplicateRecords);
+        void AddISOMetadata(List<ISOMetadataModel> list, string entityConnectionString, out List<ISOMetadataModel> listOfIncorrectRecords, out List<ISOMetadataModel> listOfCorrectRecords, out List<ISOMetadataModel> listOfDuplicateRecords, out List<ISOMetadataModel> listOfEditedRecords);
 
     }
     
@@ -82,7 +82,7 @@ namespace HydroServerToolsRepository.Repository
 
         //bool Save();
 
-        void AddLabMethods(List<LabMethodModel> list, string entityConnectionString, out List<LabMethodModel> listOfIncorrectRecords, out List<LabMethodModel> listOfCorrectRecords, out List<LabMethodModel> listOfDuplicateRecords);
+        void AddLabMethods(List<LabMethodModel> list, string entityConnectionString, out List<LabMethodModel> listOfIncorrectRecords, out List<LabMethodModel> listOfCorrectRecords, out List<LabMethodModel> listOfDuplicateRecords, out List<LabMethodModel> listOfEditedRecords);
 
     }
 
@@ -93,7 +93,7 @@ namespace HydroServerToolsRepository.Repository
 
         //bool Save();
 
-        void AddSamples(List<SampleModel> list, string entityConnectionString, out List<SampleModel> listOfIncorrectRecords, out List<SampleModel> listOfCorrectRecords, out List<SampleModel> listOfDuplicateRecords);
+        void AddSamples(List<SampleModel> list, string entityConnectionString, out List<SampleModel> listOfIncorrectRecords, out List<SampleModel> listOfCorrectRecords, out List<SampleModel> listOfDuplicateRecords, out List<SampleModel> listOfEditedRecords);
 
     }
 
@@ -104,7 +104,7 @@ namespace HydroServerToolsRepository.Repository
 
         //bool Save();
 
-        void AddQualifiers(List<QualifiersModel> list, string entityConnectionString, out List<QualifiersModel> listOfIncorrectRecords, out List<QualifiersModel> listOfCorrectRecords, out List<QualifiersModel> listOfDuplicateRecords);
+        void AddQualifiers(List<QualifiersModel> list, string entityConnectionString, out List<QualifiersModel> listOfIncorrectRecords, out List<QualifiersModel> listOfCorrectRecords, out List<QualifiersModel> listOfDuplicateRecords, out List<QualifiersModel> listOfEditedRecords);
 
     }
 
@@ -115,7 +115,7 @@ namespace HydroServerToolsRepository.Repository
 
         //bool Save();
 
-        void AddQualityControlLevel(List<QualityControlLevelModel> list, string entityConnectionString, out List<QualityControlLevelModel> listOfIncorrectRecords, out List<QualityControlLevelModel> listOfCorrectRecords, out List<QualityControlLevelModel> listOfDuplicateRecords);
+        void AddQualityControlLevel(List<QualityControlLevelModel> list, string entityConnectionString, out List<QualityControlLevelModel> listOfIncorrectRecords, out List<QualityControlLevelModel> listOfCorrectRecords, out List<QualityControlLevelModel> listOfDuplicateRecords, out List<QualityControlLevelModel> listOfEditedRecords);
 
     }
     //DataValues
@@ -136,7 +136,7 @@ namespace HydroServerToolsRepository.Repository
 
         //bool Save();
 
-        void AddGroupDescriptions(List<GroupDescriptionModel> list, string entityConnectionString, out List<GroupDescriptionModel> listOfIncorrectRecords, out List<GroupDescriptionModel> listOfCorrectRecords, out List<GroupDescriptionModel> listOfDuplicateRecords);
+        void AddGroupDescriptions(List<GroupDescriptionModel> list, string entityConnectionString, out List<GroupDescriptionModel> listOfIncorrectRecords, out List<GroupDescriptionModel> listOfCorrectRecords, out List<GroupDescriptionModel> listOfDuplicateRecords, out List<GroupDescriptionModel> listOfEditedRecords);
 
     }
 
@@ -147,7 +147,7 @@ namespace HydroServerToolsRepository.Repository
 
         //bool Save();
 
-        void AddGroups(List<GroupsModel> list, string entityConnectionString, out List<GroupsModel> listOfIncorrectRecords, out List<GroupsModel> listOfCorrectRecords, out List<GroupsModel> listOfDuplicateRecords);
+        void AddGroups(List<GroupsModel> list, string entityConnectionString, out List<GroupsModel> listOfIncorrectRecords, out List<GroupsModel> listOfCorrectRecords, out List<GroupsModel> listOfDuplicateRecords, out List<GroupsModel> listOfEditedRecords);
 
     }
 
@@ -158,7 +158,7 @@ namespace HydroServerToolsRepository.Repository
 
         //bool Save();
 
-        void AddDerivedFrom(List<DerivedFromModel> list, string entityConnectionString, out List<DerivedFromModel> listOfIncorrectRecords, out List<DerivedFromModel> listOfCorrectRecords, out List<DerivedFromModel> listOfDuplicateRecords);
+        void AddDerivedFrom(List<DerivedFromModel> list, string entityConnectionString, out List<DerivedFromModel> listOfIncorrectRecords, out List<DerivedFromModel> listOfCorrectRecords, out List<DerivedFromModel> listOfDuplicateRecords, out List<DerivedFromModel> listOfEditedRecords);
 
     }
     //Categories
@@ -168,7 +168,7 @@ namespace HydroServerToolsRepository.Repository
 
         //bool Save();
 
-        void AddCategories(List<CategoriesModel> list, string entityConnectionString, out List<CategoriesModel> listOfIncorrectRecords, out List<CategoriesModel> listOfCorrectRecords, out List<CategoriesModel> listOfDuplicateRecords);
+        void AddCategories(List<CategoriesModel> list, string entityConnectionString, out List<CategoriesModel> listOfIncorrectRecords, out List<CategoriesModel> listOfCorrectRecords, out List<CategoriesModel> listOfDuplicateRecords, out List<CategoriesModel> listOfEditedRecords);
 
     }
 

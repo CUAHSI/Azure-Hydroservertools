@@ -8,7 +8,7 @@ namespace HydroserverToolsBusinessObjects.Models
 {
     public class DataValuesModel
     {
-        //public string ValueID { get; set; }
+        public string ValueID { get; set; }
         public string DataValue { get; set; }
         public string ValueAccuracy { get; set; }
         public string LocalDateTime { get; set; }

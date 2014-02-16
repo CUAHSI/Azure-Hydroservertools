@@ -43,8 +43,8 @@ namespace HydroServerToolsRepository
 
             //  Sites
             Mapper.CreateMap<Site, SiteModel>();
-            Mapper.CreateMap<SiteModel, Site>()
-                .ForMember(dest => dest.LatLongDatumID, opt => opt.Ignore());
+            Mapper.CreateMap<SiteModel, Site>();
+                //.ForMember(dest => dest.LatLongDatumID, opt => opt.Ignore());
                 //ForMember(dest => dest.LatLongDatumID, opt  => opt.ResolveUsing<MyLongLatDatumIdResolver>());
                 //     .ForMember(x => x.LatLongDatumID, c => c.MapFrom(src => src ));
                 //.ForMember()
@@ -131,7 +131,7 @@ namespace HydroServerToolsRepository
     {
         protected override int ConvertCore(string source)
         {
-            if (source == null)
+            if (source == null )
                 throw new MappingException("null string value cannot convert to non-nullable return type.");
             else
                 return Int32.Parse(source);
@@ -262,7 +262,7 @@ namespace HydroServerToolsRepository
     {
         protected override double ConvertCore(string source)
         {
-            if (source == null || source.ToLower() == "null")
+            if (source == null || source.ToLower() == "null" || source.Length == 0)
                 throw new MappingException("null string value cannot convert to non-nullable return type.");
             else
                 return double.Parse(source);

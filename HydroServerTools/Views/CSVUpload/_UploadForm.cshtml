@@ -1,14 +1,27 @@
-﻿
+﻿@using MvcFileUploader.HtmlHelper
+@using MvcFileUploader.Models
 <div class="jumbotron">
-    <h2>Upload @ViewBag.Title</h2>
 
-    @using (Html.BeginForm("Import", "CSVUpload", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    <div>
+        Upload @ViewBag.Title 
+        
+            <a id="pop"
+               href="#"
+               class="btn btn-lg"
+               data-toggle="popover"
+               data-content="@ViewBag.Help"><span class="glyphicon glyphicon-question-sign"></span></a>
+           
+        
+    </div>
+        @using (Html.BeginForm("Import", "CSVUpload", FormMethod.Post, new { enctype = "multipart/form-data" }))
     {
         <div>
         @Html.ValidationSummary(false)
         </div>
         <input type="hidden" name="viewname" value=@ViewBag.Name />
-        <input type="file" class="btn btn-primary" name="file" required placeholder="Please select a csv file " />
-        <input type="submit" class="btn btn-primary btn-info" value="Upload and Process" />
+        <input type="file" class="btn btn-primary" name="file" required placeholder="Please select a csv file " /> 
+       
+        <input type="submit" class="btn btn-primary btn-info" value="Upload and Process" /> <div class="span4 info"></div>
     }
 </div>
+

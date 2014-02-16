@@ -8,8 +8,9 @@ namespace HydroserverToolsBusinessObjects.Models
 {
     public class OffsetTypesModel
     {
-        public string OffsetTypeID { get; set; }
-        public string OffsetUnitsID { get; set; }
+        //public string OffsetTypeID { get; set; }
+        //public string OffsetUnitsID { get; set; }
+        public string OffsetUnitsName { get; set; }
         public string OffsetDescription { get; set; }
     }
 }

@@ -138,63 +138,6 @@ namespace HydroServerTools.Helper
 
         }
 
-        public static string GetDatatableForModel<T>(T var)
-        {
-            
-            StringBuilder table = new StringBuilder();
-            table.Append("<table id='table_id' cellpadding='0' cellspacing='0' border='0' class='display datatable' style='width:100%'>");
-            table.Append(" <thead>");
-            table.Append("  <tr>");
-            table.Append("<th>");
-            table.Append("<th>SiteCode</th>");
-            table.Append("<th>SiteName</th>");
-            table.Append("<th>Latitude</th>");
-            table.Append("<th>Longitude</th>");
-            table.Append("<th>LatLongDatumID</th>");
-            table.Append("<th>Elevation_m</th>");
-            table.Append("<th>VerticalDatum</th>");
-            table.Append("<th>LocalX</th>");
-            table.Append("<th>LocalY</th>");
-            table.Append("<th>LocalProjectionID</th>");
-            table.Append("<th>PosAccuracy_m</th>");
-            table.Append("<th>State</th>");
-            table.Append("<th>County</th>");
-            table.Append("<th>Comments</th>");
-            table.Append("<th>SiteType</th>");
-            table.Append("</th>");
-            table.Append("</tr>");
-            table.Append("</thead>");
-            table.Append("<tbody>");
-            table.Append("@if (Model != null");
-            table.Append("{");
-            table.Append("foreach (var item in Model");
-            table.Append("{");  
-            table.Append(" <tr>");
-            table.Append(" <td>");
-            table.Append("<td>@item.SiteCode</td>");
-            table.Append("<td>@item.SiteName</td>");
-            table.Append("<td>@item.Latitude</td>");
-            table.Append("<td>@item.Longitude</td>");
-            table.Append("<td>@item.LatLongDatumID</td>");
-            table.Append("<td>@item.Elevation_m</td>");
-            table.Append("<td>@item.VerticalDatum</td>");
-            table.Append("<td>@item.LocalX</td>");
-            table.Append("<td>@item.LocalY</td>");
-            table.Append("<td>@item.LocalProjectionID</td>");
-            table.Append("<td>@item.PosAccuracy_m</td>");
-            table.Append("<td>@item.State</td>");
-            table.Append("<td>@item.County</td>");
-            table.Append("<td>@item.Comments</td>");
-            table.Append("<td>@item.SiteType</td>");
-            table.Append("</td>");
-            table.Append("}");
-            table.Append("}");
-            table.Append("</tbody>");          
-            table.Append("</table>");                  
-   
-            return table.ToString();
-        }
-
         public static string GetUserEmailForCurrentUser(string userName)
         {
             string userEmail = string.Empty;

@@ -4,6 +4,9 @@ using HydroServerTools.Models;
 using HydroserverToolsBusinessObjects;
 using HydroserverToolsBusinessObjects.Models;
 using HydroServerToolsRepository.Repository;
+using ICSharpCode.SharpZipLib.Core;
+using ICSharpCode.SharpZipLib.Zip;
+
 using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
@@ -85,9 +88,9 @@ namespace HydroServerTools.Controllers
             return View("Index", model);
         }
 
-        public ActionResult Upload()
+        public ActionResult UploadData()
         {
-            return View("Upload");
+            return View("UploadData");
         }
 
         public ActionResult Sites()
@@ -160,11 +163,10 @@ namespace HydroServerTools.Controllers
             html.Append("<ol class='breadcrumb h6'>");
             foreach (var item in vars)
             {
-                if (name.ToLower() == item.ToLower()) html.Append("<li class='active h4'><strong>" + item + "</strong></li>");
+                if (name.ToLower() == item.ToLower()) html.Append("<li class='active h5'><strong>" + item + "</strong></li>");
 
                 else
-                {
-                    
+                {                    
                     html.Append("<li><a href ='");
                     html.Append("/CSVUpload/");
                     html.Append(item);
@@ -183,12 +185,20 @@ namespace HydroServerTools.Controllers
         {
             //string userName = HttpContext.User.Identity.Name;//  "martin.seul@yahoo.com";
             //var Db = new ApplicationDbContext();
-            //var userEmail = Db.Users.First(u => u.UserName == userName).UserEmail;
+            //var userEmail = Db.Users.First(u => u.UserName == userName).UserEmail
+
+            //file = Request.Files[0];
+            string viewName = collection["viewname"];
             
+            if (!file.FileName.ToLower().EndsWith(".csv"))
+            {
+                ModelState.AddModelError(String.Empty, Ressources.FILETYPE_NOT_CSV);
+                return View(viewName);              
+            }
             //Get Connection string
             var connectionName = Utils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
             var entityConnectionString = Utils.GetDBConnectionStringByName(connectionName);
-            string viewName = collection["viewname"];
+            
             if (String.IsNullOrEmpty(connectionName))
             { 
                 ModelState.AddModelError(String.Empty, Ressources.HYDROSERVER_USERLOOKUP_FAILED);
@@ -203,6 +213,7 @@ namespace HydroServerTools.Controllers
                 {
                     List<SiteModel> values = null;
 
+                  
                     var siteViewModel = new SitesViewModel();
                     var listOfIncorrectRecords = new List<SiteModel>();
                     var listOfCorrectRecords = new List<SiteModel>();
@@ -234,8 +245,8 @@ namespace HydroServerTools.Controllers
                     siteViewModel.listOfIncorrectRecords = listOfIncorrectRecords;
                     siteViewModel.listOfEditedRecords = listOfEditedRecords;
                     siteViewModel.listOfDuplicateRecords = listOfDuplicateRecords;
-
-                    return View(viewName, siteViewModel);
+                    return RedirectToAction("Sites", siteViewModel);
+                    //return View(viewName, siteViewModel);
                 } 
                 #endregion
                 
@@ -287,6 +298,8 @@ namespace HydroServerTools.Controllers
                     var listOfIncorrectRecords = new List<ISOMetadataModel>();
                     var listOfCorrectRecords = new List<ISOMetadataModel>();
                     var listOfDuplicateRecords = new List<ISOMetadataModel>();
+                    var listOfEditedRecords = new List<ISOMetadataModel>();
+
                     // Verify that the user selected a file
                     if (file != null && file.ContentLength > 0)
                     {
@@ -299,7 +312,7 @@ namespace HydroServerTools.Controllers
                     {
                         var repository = new ISOMetadataRepository();
 
-                        repository.AddISOMetadata(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords);
+                        repository.AddISOMetadata(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
                     }
 
                     //var table = Utils.GetDatatableForModel<SiteModel>(sites[0]);
@@ -316,9 +329,11 @@ namespace HydroServerTools.Controllers
                 if (viewName.ToLower() == "offsettypes")
                 {
                     List<OffsetTypesModel> values = null;
+                    var offsetTypesViewModel = new OffsetTypesViewModel();
                     var listOfIncorrectRecords = new List<OffsetTypesModel>();
                     var listOfCorrectRecords = new List<OffsetTypesModel>();
                     var listOfDuplicateRecords = new List<OffsetTypesModel>();
+                    var listOfEditedRecords = new List<OffsetTypesModel>();
                     // Verify that the user selected a file
                     if (file != null && file.ContentLength > 0)
                     {
@@ -331,7 +346,7 @@ namespace HydroServerTools.Controllers
                     {
                         var repository = new OffsetTypesRepository();
 
-                        repository.AddOffsetTypes(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords);
+                        repository.AddOffsetTypes(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords );
                     }
 
                     //var table = Utils.GetDatatableForModel<SiteModel>(sites[0]);
@@ -339,7 +354,13 @@ namespace HydroServerTools.Controllers
                     @ViewBag.numberOfCorrectRecords = listOfCorrectRecords.Count();
                     @ViewBag.numberOfDuplicateRecords = listOfDuplicateRecords.Count();
                     // redirect back to the index action to show the form once again
-                    return View(viewName, listOfIncorrectRecords);
+
+                    offsetTypesViewModel.listOfCorrectRecords = listOfCorrectRecords;
+                    offsetTypesViewModel.listOfIncorrectRecords = listOfIncorrectRecords;
+                    offsetTypesViewModel.listOfEditedRecords = listOfEditedRecords;
+                    offsetTypesViewModel.listOfDuplicateRecords = listOfDuplicateRecords;
+
+                    return View(viewName, offsetTypesViewModel);
                 }
                 
                 #endregion   
@@ -431,9 +452,11 @@ namespace HydroServerTools.Controllers
                 if (viewName.ToLower() == "labmethods")
                 {
                     List<LabMethodModel> values = null;
+                    var labMethodsViewModel = new LabMethodsViewModel(); 
                     var listOfIncorrectRecords = new List<LabMethodModel>();
                     var listOfCorrectRecords = new List<LabMethodModel>();
                     var listOfDuplicateRecords = new List<LabMethodModel>();
+                    var listOfEditedRecords = new List<LabMethodModel>();
                     // Verify that the user selected a file
                     if (file != null && file.ContentLength > 0)
                     {
@@ -446,15 +469,20 @@ namespace HydroServerTools.Controllers
                     {
                         var repository = new LabMethodsRepository();
 
-                        repository.AddLabMethods(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords);
+                        repository.AddLabMethods(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords );
                     }
 
                     //var table = Utils.GetDatatableForModel<SiteModel>(sites[0]);
 
                     @ViewBag.numberOfCorrectRecords = listOfCorrectRecords.Count();
                     @ViewBag.numberOfDuplicateRecords = listOfDuplicateRecords.Count();
-                    // redirect back to the index action to show the form once again
-                    return View(viewName, listOfIncorrectRecords);
+
+                    labMethodsViewModel.listOfCorrectRecords = listOfCorrectRecords;
+                    labMethodsViewModel.listOfIncorrectRecords = listOfIncorrectRecords;
+                    labMethodsViewModel.listOfEditedRecords = listOfEditedRecords;
+                    labMethodsViewModel.listOfDuplicateRecords = listOfDuplicateRecords;
+
+                    return View(viewName, labMethodsViewModel);
                 } 
                 #endregion
 
@@ -462,9 +490,12 @@ namespace HydroServerTools.Controllers
                 if (viewName.ToLower() == "samples")
                 {
                     List<SampleModel> values = null;
+                    var sampleViewModel = new SamplesViewModel();
                     var listOfIncorrectRecords = new List<SampleModel>();
                     var listOfCorrectRecords = new List<SampleModel>();
                     var listOfDuplicateRecords = new List<SampleModel>();
+                    var listOfEditedRecords = new List<SampleModel>();
+                  
                     // Verify that the user selected a file
                     if (file != null && file.ContentLength > 0)
                     {
@@ -476,7 +507,7 @@ namespace HydroServerTools.Controllers
                     {
                         var repository = new SamplesRepository();
 
-                        repository.AddSamples(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords);
+                        repository.AddSamples(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords );
                     }
 
                     //var table = Utils.GetDatatableForModel<SiteModel>(sites[0]);
@@ -484,7 +515,13 @@ namespace HydroServerTools.Controllers
                     @ViewBag.numberOfCorrectRecords = listOfCorrectRecords.Count();
                     @ViewBag.numberOfDuplicateRecords = listOfDuplicateRecords.Count();
                     // redirect back to the index action to show the form once again
-                    return View(viewName, listOfIncorrectRecords);
+
+                    sampleViewModel.listOfCorrectRecords = listOfCorrectRecords;
+                    sampleViewModel.listOfIncorrectRecords = listOfIncorrectRecords;
+                    sampleViewModel.listOfEditedRecords = listOfEditedRecords;
+                    sampleViewModel.listOfDuplicateRecords = listOfDuplicateRecords;
+
+                    return View(viewName, sampleViewModel);
                 } 
                 #endregion
 
@@ -492,9 +529,12 @@ namespace HydroServerTools.Controllers
                 if (viewName.ToLower() == "qualifiers")
                 {
                     List<QualifiersModel> values = null;
+                    var qualifiersViewModel = new QualifiersViewModel();
                     var listOfIncorrectRecords = new List<QualifiersModel>();
                     var listOfCorrectRecords = new List<QualifiersModel>();
                     var listOfDuplicateRecords = new List<QualifiersModel>();
+                    var listOfEditedRecords = new List<QualifiersModel>();
+                  
                     // Verify that the user selected a file
                     if (file != null && file.ContentLength > 0)
                     {
@@ -507,7 +547,7 @@ namespace HydroServerTools.Controllers
                     {
                         var repository = new QualifiersRepository();
 
-                        repository.AddQualifiers(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords);
+                        repository.AddQualifiers(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords );
                     }
 
                     //var table = Utils.GetDatatableForModel<SiteModel>(sites[0]);
@@ -515,7 +555,12 @@ namespace HydroServerTools.Controllers
                     @ViewBag.numberOfCorrectRecords = listOfCorrectRecords.Count();
                     @ViewBag.numberOfDuplicateRecords = listOfDuplicateRecords.Count();
                     // redirect back to the index action to show the form once again
-                    return View(viewName, listOfIncorrectRecords);
+
+                    qualifiersViewModel.listOfCorrectRecords = listOfCorrectRecords;
+                    qualifiersViewModel.listOfIncorrectRecords = listOfIncorrectRecords;
+                    qualifiersViewModel.listOfEditedRecords = listOfEditedRecords;
+                    qualifiersViewModel.listOfDuplicateRecords = listOfDuplicateRecords;
+                    return View(viewName, qualifiersViewModel);
                 } 
                 #endregion
 
@@ -523,9 +568,12 @@ namespace HydroServerTools.Controllers
                 if (viewName.ToLower() == "qualitycontrollevels")
                 {
                     List<QualityControlLevelModel> values = null;
+                    var qualityControlLevelViewModel = new QualityControlLevelsViewModel();
                     var listOfIncorrectRecords = new List<QualityControlLevelModel>();
                     var listOfCorrectRecords = new List<QualityControlLevelModel>();
                     var listOfDuplicateRecords = new List<QualityControlLevelModel>();
+                    var listOfEditedRecords = new List<QualityControlLevelModel>();
+                 
                     // Verify that the user selected a file
                     if (file != null && file.ContentLength > 0)
                     {
@@ -538,7 +586,7 @@ namespace HydroServerTools.Controllers
                     {
                         var repository = new QualityControlLevelsRepository();
 
-                        repository.AddQualityControlLevel(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords);
+                        repository.AddQualityControlLevel(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords );
                     }
 
                     //var table = Utils.GetDatatableForModel<SiteModel>(sites[0]);
@@ -546,7 +594,13 @@ namespace HydroServerTools.Controllers
                     @ViewBag.numberOfCorrectRecords = listOfCorrectRecords.Count();
                     @ViewBag.numberOfDuplicateRecords = listOfDuplicateRecords.Count();
                     // redirect back to the index action to show the form once again
-                    return View(viewName, listOfIncorrectRecords);
+
+                    qualityControlLevelViewModel.listOfCorrectRecords = listOfCorrectRecords;
+                    qualityControlLevelViewModel.listOfIncorrectRecords = listOfIncorrectRecords;
+                    qualityControlLevelViewModel.listOfEditedRecords = listOfEditedRecords;
+                    qualityControlLevelViewModel.listOfDuplicateRecords = listOfDuplicateRecords;
+
+                    return View(viewName, qualityControlLevelViewModel);
                 } 
                 #endregion
 
@@ -594,9 +648,12 @@ namespace HydroServerTools.Controllers
                 if (viewName.ToLower() == "groupdescriptions")
                 {
                     List<GroupDescriptionModel> values = null;
+                    var groupDescriptionsViewModel = new GroupDescriptionsViewModel();
                     var listOfIncorrectRecords = new List<GroupDescriptionModel>();
                     var listOfCorrectRecords = new List<GroupDescriptionModel>();
                     var listOfDuplicateRecords = new List<GroupDescriptionModel>();
+                    var listOfEditedRecords = new List<GroupDescriptionModel>();
+                  
                     // Verify that the user selected a file
                     if (file != null && file.ContentLength > 0)
                     {
@@ -609,7 +666,7 @@ namespace HydroServerTools.Controllers
                     {
                         var repository = new GroupDescriptionsRepository();
 
-                        repository.AddGroupDescriptions(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords);
+                        repository.AddGroupDescriptions(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords );
                     }
 
                     //var table = Utils.GetDatatableForModel<SiteModel>(sites[0]);
@@ -619,7 +676,12 @@ namespace HydroServerTools.Controllers
 
 
                     // redirect back to the index action to show the form once again
-                    return View(viewName, listOfIncorrectRecords);
+
+                    groupDescriptionsViewModel.listOfCorrectRecords = listOfCorrectRecords;
+                    groupDescriptionsViewModel.listOfIncorrectRecords = listOfIncorrectRecords;
+                    groupDescriptionsViewModel.listOfEditedRecords = listOfEditedRecords;
+                    groupDescriptionsViewModel.listOfDuplicateRecords = listOfDuplicateRecords;
+                    return View(viewName, groupDescriptionsViewModel);
                 }
                 
                 #endregion 
@@ -628,9 +690,12 @@ namespace HydroServerTools.Controllers
                 if (viewName.ToLower() == "groups")
                 {
                     List<GroupsModel> values = null;
+                    var groupsViewModel = new GroupsViewModel();
                     var listOfIncorrectRecords = new List<GroupsModel>();
                     var listOfCorrectRecords = new List<GroupsModel>();
                     var listOfDuplicateRecords = new List<GroupsModel>();
+                    var listOfEditedRecords = new List<GroupsModel>();
+                  
                     // Verify that the user selected a file
                     if (file != null && file.ContentLength > 0)
                     {
@@ -643,7 +708,7 @@ namespace HydroServerTools.Controllers
                     {
                         var repository = new GroupsRepository();
 
-                        repository.AddGroups(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords);
+                        repository.AddGroups(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords );
                     }
 
                     //var table = Utils.GetDatatableForModel<SiteModel>(sites[0]);
@@ -651,7 +716,12 @@ namespace HydroServerTools.Controllers
                     @ViewBag.numberOfCorrectRecords = listOfCorrectRecords.Count();
                     @ViewBag.numberOfDuplicateRecords = listOfDuplicateRecords.Count();
                     // redirect back to the index action to show the form once again
-                    return View(viewName, listOfIncorrectRecords);
+
+                    groupsViewModel.listOfCorrectRecords = listOfCorrectRecords;
+                    groupsViewModel.listOfIncorrectRecords = listOfIncorrectRecords;
+                    groupsViewModel.listOfEditedRecords = listOfEditedRecords;
+                    groupsViewModel.listOfDuplicateRecords = listOfDuplicateRecords;
+                    return View(viewName, groupsViewModel);
                 } 
                 #endregion
 
@@ -659,9 +729,12 @@ namespace HydroServerTools.Controllers
                 if (viewName.ToLower() == "derivedfrom")
                 {
                     List<DerivedFromModel> values = null;
+                    var derivedFromViewModel = new DerivedFromViewModel();
                     var listOfIncorrectRecords = new List<DerivedFromModel>();
                     var listOfCorrectRecords = new List<DerivedFromModel>();
                     var listOfDuplicateRecords = new List<DerivedFromModel>();
+                    var listOfEditedRecords = new List<DerivedFromModel>();
+                  
                     // Verify that the user selected a file
                     if (file != null && file.ContentLength > 0)
                     {
@@ -674,7 +747,7 @@ namespace HydroServerTools.Controllers
                     {
                         var repository = new DerivedFromRepository();
 
-                        repository.AddDerivedFrom(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords);
+                        repository.AddDerivedFrom(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords );
                     }
 
                     //var table = Utils.GetDatatableForModel<SiteModel>(sites[0]);
@@ -682,7 +755,13 @@ namespace HydroServerTools.Controllers
                     @ViewBag.numberOfCorrectRecords = listOfCorrectRecords.Count();
                     @ViewBag.numberOfDuplicateRecords = listOfDuplicateRecords.Count();
                     // redirect back to the index action to show the form once again
-                    return View(viewName, listOfIncorrectRecords);
+
+					derivedFromViewModel.listOfCorrectRecords = listOfCorrectRecords;
+                    derivedFromViewModel.listOfIncorrectRecords = listOfIncorrectRecords;
+                    derivedFromViewModel.listOfEditedRecords = listOfEditedRecords;
+                    derivedFromViewModel.listOfDuplicateRecords = listOfDuplicateRecords;
+
+                    return View(viewName, derivedFromViewModel);
                 } 
                 #endregion
 
@@ -690,9 +769,12 @@ namespace HydroServerTools.Controllers
                 if (viewName.ToLower() == "categories")
                 {
                     List<CategoriesModel> values = null;
+                    var categoriesViewModel = new CategoriesViewModel();
                     var listOfIncorrectRecords = new List<CategoriesModel>();
                     var listOfCorrectRecords = new List<CategoriesModel>();
                     var listOfDuplicateRecords = new List<CategoriesModel>();
+                    var listOfEditedRecords = new List<CategoriesModel>();
+                  
                     // Verify that the user selected a file
                     if (file != null && file.ContentLength > 0)
                     {
@@ -705,7 +787,7 @@ namespace HydroServerTools.Controllers
                     {
                         var repository = new CategoriesRepository();
 
-                        repository.AddCategories(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords);
+                        repository.AddCategories(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords );
                     }
 
                     //var table = Utils.GetDatatableForModel<SiteModel>(sites[0]);
@@ -713,13 +795,19 @@ namespace HydroServerTools.Controllers
                     @ViewBag.numberOfCorrectRecords = listOfCorrectRecords.Count();
                     @ViewBag.numberOfDuplicateRecords = listOfDuplicateRecords.Count();
                     // redirect back to the index action to show the form once again
-                    return View(viewName, listOfIncorrectRecords);
+
+					categoriesViewModel.listOfCorrectRecords = listOfCorrectRecords;
+                    categoriesViewModel.listOfIncorrectRecords = listOfIncorrectRecords;
+                    categoriesViewModel.listOfEditedRecords = listOfEditedRecords;
+                    categoriesViewModel.listOfDuplicateRecords = listOfDuplicateRecords;
+
+                    return View(viewName, categoriesViewModel);
                 } 
                 #endregion
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(String.Empty, Ressources.IMPORT_FAILED + ": " + ex.Message);
+                ModelState.AddModelError(String.Empty, Ressources.IMPORT_FAILED );//+ ": " + ex.Message
             }
             return View(viewName);
         }
@@ -727,40 +815,87 @@ namespace HydroServerTools.Controllers
         private static List<T> parseCSV<T>(HttpPostedFileBase file)
         {
             var s = new List<T>();
-             using (var filestream = file.InputStream)
+            var ms = new MemoryStream();
+            StreamReader reader = null;
+            var outFolder = "";
+
+            
+            
+
+            if (file.FileName.ToLower().EndsWith(".zip"))
             {
-                using (var reader = new StreamReader(filestream, Encoding.GetEncoding("iso-8859-1")))
+
+                file.InputStream.Position = 0;
+
+                ZipInputStream zipInputStream = new ZipInputStream(file.InputStream);
+                ZipEntry zipEntry = zipInputStream.GetNextEntry();
+                while (zipEntry != null)
                 {
-                    var csvReader = new CsvHelper.CsvReader(reader);
-                
+                    String entryFileName = zipEntry.Name;
+                    // to remove the folder from the entry:- entryFileName = Path.GetFileName(entryFileName);
+                    // Optionally match entrynames against a selection list here to skip as desired.
+                    // The unpacked length is available in the zipEntry.Size property.
 
-                    //while (csvReader.Read())
-                    //{
-                    //var intField = csvReader.GetField<int>(0);
-                    csvReader.Configuration.IsHeaderCaseSensitive = false;
-                    csvReader.Configuration.WillThrowOnMissingField = false;
-                  
-                    //while (csvReader.Read())
-                    //{
-                    try
-                    {
-                          s = csvReader.GetRecords<T>().ToList();
-                    }
-                    catch (CsvMissingFieldException ex)
-                    {
-                        
+                    byte[] buffer = new byte[4096];     // 4K is optimum
+
+                    // Manipulate the output filename here as desired.
+                    String fullZipToPath = Path.Combine(outFolder, entryFileName);
+                    string directoryName = Path.GetDirectoryName(fullZipToPath);
+                    if (directoryName.Length > 0)
+                        Directory.CreateDirectory(directoryName);
+
+                    // Unzip file in buffered chunks. This is just as fast as unpacking to a buffer the full size
+                    // of the file, but does not waste memory.
+                    // The "using" will close the stream even if an exception occurs.
+                    MemoryStream streamWriter = new MemoryStream();
+
+                    StreamUtils.Copy(zipInputStream, ms, buffer);
                     
-                        throw;
-                    }
-
+                    zipEntry = zipInputStream.GetNextEntry();
                     
                 }
+                ms.Position = 0;
+                reader = new StreamReader(ms, Encoding.GetEncoding("iso-8859-1"));
+               
             }
+            else
+            {
+                reader = new StreamReader(file.InputStream, Encoding.GetEncoding("iso-8859-1"));
+            }
+
+
+             var csvReader = new CsvHelper.CsvReader(reader);
+
+
+            //while (csvReader.Read())
+            //{
+            //var intField = csvReader.GetField<int>(0);
+            csvReader.Configuration.IsHeaderCaseSensitive = false;
+            csvReader.Configuration.WillThrowOnMissingField = false;
+
+            //while (csvReader.Read())
+            //{
+            try
+            {
+                s = csvReader.GetRecords<T>().ToList();
+            }
+            catch (CsvMissingFieldException ex)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+                //clean up ressources
+                ms.Close();
+                reader.Close();
+            }
+
+
             return s;
         }
-
-       
-
-        
 	}
 }

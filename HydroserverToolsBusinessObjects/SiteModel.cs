@@ -19,7 +19,7 @@ namespace HydroserverToolsBusinessObjects.Models
         public string VerticalDatum { get; set; }
         public string LocalX { get; set; }
         public string LocalY { get; set; }
-        //public string LocalProjectionID { get; set; }
+        public string LocalProjectionID { get; set; }
         public string PosAccuracy_m { get; set; }
         public string State { get; set; }
        

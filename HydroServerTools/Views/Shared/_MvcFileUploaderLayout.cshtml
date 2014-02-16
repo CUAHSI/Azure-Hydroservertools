@@ -1,0 +1,27 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>@ViewBag.Title</title>    
+           
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>        
+    
+    <!-- Bootstrap styles -->
+    <link rel="stylesheet" href="/Content/mvcfileupload/vendor/bootstrap.min.css">   
+    
+</head>
+<body>
+ 
+
+    <div class="container">
+        <h3>Mvc File uploader Demo</h3>
+        
+        @RenderBody()
+
+    </div> <!-- /container -->    
+            
+  
+
+    @RenderSection("Scripts", false)
+</body>
+</html>

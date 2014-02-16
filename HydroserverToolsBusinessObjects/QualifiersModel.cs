@@ -8,7 +8,7 @@ namespace HydroserverToolsBusinessObjects.Models
 {
     public class QualifiersModel
     {
-        public string QualifierID { get; set; }
+        //public string QualifierID { get; set; }
         public string QualifierCode { get; set; }
         public string QualifierDescription { get; set; }
     }

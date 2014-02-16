@@ -18,21 +18,26 @@
         ]
     });
  
+    //$("#tabs", tabs-1).tabs({
+    //    "show": function (event, ui) {
+    //        var oTable = $('div.dataTables_scrollBody>table.display', ui.panel).dataTable();
+    //        if (oTable.length > 0) {
+    //            oTable.fnAdjustColumnSizing();
+    //            oTable.fnResizeButtons();
+    //            alert("buttons should work");
+    //        }
+    //    }
+    //});
+
+
     $("#tabs").tabs({
-        "show": function (event, ui) {
+        activate: function (event, ui) {
             var oTable = $('div.dataTables_scrollBody>table.display', ui.panel).dataTable();
             if (oTable.length > 0) {
-                oTable.fnAdjustColumnSizing();
-            }
-        }
-    });
-
-
-    $("#tabs").tabs({
-        "activate": function (event, ui) {
-            var table = $.fn.dataTable.fnTables(true);
-            if (table.length > 0) {
-                $(table).dataTable().fnAdjustColumnSizing();
+                var oTableTools = TableTools.fnGetInstance(oTable[0]);
+                oTable.dataTable().fnAdjustColumnSizing();
+                oTableTools.fnResizeButtons();
+               // alert("buttons should work");
             }
 
           
@@ -40,4 +45,10 @@
         }
 
     });
+    $('[data-toggle="popover"]').popover({
+        trigger: 'hover',
+        'placement': 'top'
+    });
+
+
 });

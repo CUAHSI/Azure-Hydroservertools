@@ -95,7 +95,7 @@
           <Key>
             <PropertyRef Name="LabMethodID" />
           </Key>
-          <Property Name="LabMethodID" Type="int" StoreGeneratedPattern="None" Nullable="false" />
+          <Property Name="LabMethodID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="LabName" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="LabOrganization" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="LabMethodName" Type="nvarchar" MaxLength="255" Nullable="false" />
@@ -129,7 +129,7 @@
           <Key>
             <PropertyRef Name="QualifierID" />
           </Key>
-          <Property Name="QualifierID" Type="int" StoreGeneratedPattern="None" Nullable="false" />
+          <Property Name="QualifierID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="QualifierCode" Type="nvarchar" MaxLength="50" />
           <Property Name="QualifierDescription" Type="nvarchar(max)" Nullable="false" />
         </EntityType>
@@ -153,7 +153,7 @@
           <Key>
             <PropertyRef Name="SampleID" />
           </Key>
-          <Property Name="SampleID" Type="int" StoreGeneratedPattern="None" Nullable="false" />
+          <Property Name="SampleID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="SampleType" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="LabSampleCode" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="LabMethodID" Type="int" Nullable="false" />
@@ -1098,7 +1098,7 @@
           <Key>
             <PropertyRef Name="LabMethodID" />
           </Key>
-          <Property Name="LabMethodID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="None" />
+          <Property Name="LabMethodID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="LabName" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="LabOrganization" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="LabMethodName" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
@@ -1136,7 +1136,7 @@
           <Key>
             <PropertyRef Name="QualifierID" />
           </Key>
-          <Property Name="QualifierID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="None" />
+          <Property Name="QualifierID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="QualifierCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="QualifierDescription" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="DataValues" Relationship="ODM_1_1_1EFModel.FK_DataValues_Qualifiers" FromRole="Qualifier" ToRole="DataValue" />
@@ -1163,7 +1163,7 @@
           <Key>
             <PropertyRef Name="SampleID" />
           </Key>
-          <Property Name="SampleID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="None" />
+          <Property Name="SampleID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="SampleType" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="LabSampleCode" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="LabMethodID" Type="Int32" Nullable="false" />

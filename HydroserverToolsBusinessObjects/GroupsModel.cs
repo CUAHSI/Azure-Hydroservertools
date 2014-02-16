@@ -8,7 +8,7 @@ namespace HydroserverToolsBusinessObjects.Models
 {
     public class GroupsModel
     {
-        public string GroupID { get; set; }
+        public string GroupID { get; set; }      
         public string ValueID { get; set; }
     }
 }
