@@ -1,31 +1,33 @@
-﻿@model IEnumerable<HydroserverToolsBusinessObjects.Models.VariablesModel>
+﻿@model HydroserverToolsBusinessObjects.Models.VariablesModel
 
 @{
-    ViewBag.Title = "View Sites";
+    ViewBag.Title = "View Variables";
 }
 
 <h2>Variables</h2>
 
 @section styles
 {
-    <link href="~/Content/DataTables-1.9.4/media/css/demo_page.css" rel="stylesheet" />
+    @*<link href="~/Content/DataTables-1.9.4/media/css/demo_page.css" rel="stylesheet" />
     <link href="~/Content/DataTables-1.9.4/media/css/demo_table.css" rel="stylesheet" />
     <link href="~/Content/DataTables-1.9.4/media/css/jquery.dataTables_themeroller.css" rel="stylesheet" />
-    <link href="~/Content/DataTables-1.9.4/extras/TableTools/media/css/TableTools_JUI.css" rel="stylesheet" />
+    <link href="~/Content/DataTables-1.9.4/extras/TableTools/media/css/TableTools_JUI.css" rel="stylesheet" />*@
+
+
+@*<link href="~/Content/DataTables-1.9.4/media/css/demo_page.css" rel="stylesheet" />
+    <link href="~/Content/DataTables-1.9.4/media/css/demo_table.css" rel="stylesheet" />*@
     <link href="~/Content/ViewData.css" rel="stylesheet" />
+
+<link href="~/Content/DataTables-1.9.4/media/css/demo_table.css" rel="stylesheet" />
+
 }
-<div>
-    <h2>Show Data</h2>
-</div>
 
 @if (Model != null)
 {
-    if (Model.Count() > 0)
-    {
         <div class="display" id="ViewTable">
             @{Html.RenderPartial("_DataBaseTable", Model);}
         </div>
-    }
+   
 }
 else
 {
@@ -38,5 +40,45 @@ else
     <script src="~/Scripts/DataTables-1.9.4/media/js/jquery.dataTables.js"></script>
     <script src="~/Scripts/DataTables-1.9.4/extras/TableTools/media/js/TableTools.min.js"></script>
     <script src="~/Scripts/custom/ViewDataHelper.js"></script>
+
+<script src="~/Scripts/custom/ViewDataHelper.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#myDataTable').dataTable({
+            "bServerSide": true,
+            "sAjaxSource": "VariablesSearch",
+            "bProcessing": true,
+            "sServerMethod": "POST",
+            "sPaginationType": "full_numbers",
+            "sScrollX": "100%",
+            "sScrollXInner": "150%",
+            "bScrollCollapse": true,
+            "aoColumnDefs":
+             [
+                //{ "aTargets": [0], "sName": "VariableID" },
+                { "aTargets": [0], "sName": "VariableCode" },
+                { "aTargets": [1], "sName": "VariableName" },
+                { "aTargets": [2], "sName": "Speciation" },
+                { "aTargets": [3], "sName": "VariableUnitsName" },
+                { "aTargets": [4], "sName": "SampleMedium" },
+                { "aTargets": [5], "sName": "ValueType" },
+                { "aTargets": [6], "sName": "IsRegular" },
+                { "aTargets": [7], "sName": "TimeSupport" },
+                { "aTargets": [8], "sName": "TimeUnitsName" },
+                { "aTargets": [9], "sName": "DataType"},
+                { "aTargets": [10], "sName": "GeneralCategory" },
+                { "aTargets": [11], "sName": "NoDataValue" }
+             ]
+        });
+    });
+
+    $("#myDataTable").show(function () {
+        var table = $.fn.dataTable.fnTables(true);
+        if (table.length > 0) {
+            $(table).dataTable().fnAdjustColumnSizing();
+        }
+    }
+ )
+</script>
 
 }

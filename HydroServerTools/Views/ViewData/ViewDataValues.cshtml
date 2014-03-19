@@ -1,42 +1,105 @@
-﻿@model IEnumerable<HydroserverToolsBusinessObjects.Models.DataValuesModel>
+﻿@model HydroserverToolsBusinessObjects.Models.DataValuesModel
 
 @{
     ViewBag.Title = "View DataValues";
 }
 
 <h2>DataValues</h2>
-
 @section styles
 {
-    <link href="~/Content/DataTables-1.9.4/media/css/demo_page.css" rel="stylesheet" />
+    @*<link href="~/Content/DataTables-1.9.4/media/css/demo_page.css" rel="stylesheet" />
+        <link href="~/Content/DataTables-1.9.4/media/css/demo_table.css" rel="stylesheet" />
+        <link href="~/Content/DataTables-1.9.4/media/css/jquery.dataTables_themeroller.css" rel="stylesheet" />
+        <link href="~/Content/DataTables-1.9.4/extras/TableTools/media/css/TableTools_JUI.css" rel="stylesheet" />*@
+
+
+    @*<link href="~/Content/DataTables-1.9.4/media/css/demo_page.css" rel="stylesheet" />
+        <link href="~/Content/DataTables-1.9.4/media/css/demo_table.css" rel="stylesheet" />*@
+    <link href="~/Content/ViewData.css" rel="stylesheet" />
+
     <link href="~/Content/DataTables-1.9.4/media/css/demo_table.css" rel="stylesheet" />
-    <link href="~/Content/DataTables-1.9.4/media/css/jquery.dataTables_themeroller.css" rel="stylesheet" />
-    <link href="~/Content/DataTables-1.9.4/extras/TableTools/media/css/TableTools_JUI.css" rel="stylesheet" />
-    <link href="~/Content/ViewData.css" rel="stylesheet" />   
-} 
-<div>
-    <h2>Show Data</h2>
-</div>
 
-    @if (Model != null)
-    {
-        if (Model.Count() > 0)
-        {
-            <div class="display" id="SitesTable">
-                @{Html.RenderPartial("_DataBaseTable", Model);}
-            </div>
-        }
-    }
-    else
-    {
-        <div><h2>No Data available</h2></div>
+}
 
-    }
+@if (Model != null)
+{
+    @*<div class="display" id="ViewTable">
+        @{Html.RenderPartial("_DataBaseTable", Model);}
+    </div>*@
+    <table id="myDataTable" cellpadding="2" cellspacing="0" border="1" class="display">
+    <thead>
+        <tr>
+                <th>ValueID</th>
+                <th>DataValue</th>
+                <th>ValueAccuracy</th>
+                <th>LocalDateTime</th>
+                <th>UTCOffset</th>
+                <th>DateTimeUTC</th>
+                <th>SiteCode</th>
+                @*<th>VariableID</th>*@
+                <th>VariableCode</th>
+                <th>OffsetValue</th>
+                <th>OffsetTypeID</th>
+                <th>CensorCode</th>
+                <th>QualifierID</th>
+                <th>MethodID</th>
+                <th>SourceID</th>
+                <th>SampleID</th>
+                <th>DerivedFromID</th>
+                <th>QualityControlLevelID</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        
+    </tbody>
+</table>
+}
+else
+{
+    <div><h2>No Data available</h2></div>
+
+}
 
 @section scripts
 {
     <script src="~/Scripts/DataTables-1.9.4/media/js/jquery.dataTables.js"></script>
     <script src="~/Scripts/DataTables-1.9.4/extras/TableTools/media/js/TableTools.min.js"></script>
     <script src="~/Scripts/custom/ViewDataHelper.js"></script>
-   
+    <script>
+        $(document).ready(function () {
+            $('#myDataTable').dataTable({
+                "bServerSide": true,
+                "sAjaxSource": "DatavaluesSearch",
+                "bProcessing": true,
+                "sServerMethod": "POST",
+                "sPaginationType": "full_numbers",
+                "sScrollX": "100%",
+                "sScrollXInner": "200%",
+                "bScrollCollapse": true,
+                "aoColumnDefs":
+                 [
+                    { "aTargets": [0], "sName": "ValueID" },
+                    { "aTargets": [1], "sName": "DataValue" },
+                    { "aTargets": [2], "sName": "ValueAccuracy" },
+                    { "aTargets": [3], "sName": "LocalDateTime" },
+                    { "aTargets": [4], "sName": "UTCOffset" },
+                    { "aTargets": [5], "sName": "DateTimeUTC" },
+                    { "aTargets": [6], "sName": "SiteCode" },
+                    { "aTargets": [7], "sName": "VariableCode" },
+                    { "aTargets": [8], "sName": "OffsetValue" },
+                    { "aTargets": [9], "sName": "OffsetTypeID" },
+                    { "aTargets": [10], "sName": "CensorCode" },
+                    { "aTargets": [11], "sName": "QualifierID" },
+                    { "aTargets": [12], "sName": "MethodID" },
+                    { "aTargets": [13], "sName": "SourceID" },
+                    { "aTargets": [14], "sName": "SampleID" },
+                    { "aTargets": [15], "sName": "DerivedFromID" },
+                    { "aTargets": [16], "sName": "QualityControlLevelID" }
+                 ]
+            });
+        });
+
+
+    </script>
 }

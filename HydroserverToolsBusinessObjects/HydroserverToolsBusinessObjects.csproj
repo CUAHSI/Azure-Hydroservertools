@@ -31,6 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -42,6 +43,7 @@
     <Compile Include="CategoriesModel.cs" />
     <Compile Include="DataValuesModel.cs" />
     <Compile Include="DerivedFromModel.cs" />
+    <Compile Include="ErrorModel.cs" />
     <Compile Include="GroupDescriptionsModel.cs" />
     <Compile Include="GroupsModel.cs" />
     <Compile Include="HISRessources.Designer.cs">
@@ -60,8 +62,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="SampleModel.cs" />
+    <Compile Include="SeriesCatalogDBModel.cs" />
     <Compile Include="SiteModel.cs" />
     <Compile Include="SourcesModel.cs" />
+    <Compile Include="SeriesCatalogModel.cs" />
     <Compile Include="VariablesModel.cs" />
   </ItemGroup>
   <ItemGroup>

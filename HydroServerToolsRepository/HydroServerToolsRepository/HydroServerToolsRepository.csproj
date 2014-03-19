@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutoMapperConfiguration.cs" />
+    <Compile Include="DatatablesHelper.cs" />
     <Compile Include="ISitesRepository.cs" />
     <Compile Include="IRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -67,6 +68,10 @@
     <ProjectReference Include="..\..\HydroserverToolsBusinessObjects\HydroserverToolsBusinessObjects.csproj">
       <Project>{7cab9a1b-dedf-4c2f-801e-05cc8f136455}</Project>
       <Name>HydroserverToolsBusinessObjects</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\jQuery.DataTables.Mvc\jQuery.DataTables.Mvc.csproj">
+      <Project>{3383d0e2-c499-4f02-9d29-f744741aa999}</Project>
+      <Name>jQuery.DataTables.Mvc</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\ODM_1_1_1EFModel\ODM_1_1_1EFModel\ODM_1_1_1EFModel.csproj">
       <Project>{4f03e897-3890-4762-8a71-18c379bb7957}</Project>

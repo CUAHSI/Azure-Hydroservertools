@@ -4,7 +4,7 @@ using System.Web.Mvc;
 using MvcFileUploader;
 using MvcFileUploader.Models;
 
-namespace HydroServerTools.Controllers
+namespace $rootnamespace$.Controllers
 {
      public class MvcUploaderTestController : Controller
     {

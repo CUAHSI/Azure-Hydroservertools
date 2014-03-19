@@ -1,4 +1,4 @@
-﻿<table cellpadding="2" cellspacing="0" border="1" class="display" style="width:100%">
+﻿@*<table cellpadding="2" cellspacing="0" border="1" class="display" style="width:100%">
     <thead>
         <tr>           
             @{var props =   Model[0].GetType().GetProperties();
@@ -25,4 +25,24 @@
             }
         }
     </tbody>
+</table>*@
+
+
+<table id = "@ViewData["index"]" class="display">
+    <thead>
+        <tr>
+
+            @{var props = Model.GetType().GetProperties();
+            foreach (var prop in props)
+                {
+                    <th>@prop.Name</th>
+                }
+            }
+        </tr>
+    </thead>
+    <tbody></tbody>
 </table>
+
+<div class="row pull-left">
+    @Html.ActionLink("Download as CSV", "Download", "Export", new { identifier = @ViewData["index"], viewName = @ViewData["viewName"] }, new { target = "_blank" })
+</div>

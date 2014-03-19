@@ -9,6 +9,8 @@ namespace HydroserverToolsBusinessObjects
     public class Ressources
     {
         public const string EFMODEL = @"res://*/ODM_1_1_1EFModel.csdl|res://*/ODM_1_1_1EFModel.ssdl|res://*/ODM_1_1_1EFModel.msl";
+        public const string EFMODELDEF_IN_CONNECTIONSTRING = @"metadata=res://*/ODM_1_1_1EFModel.csdl|res://*/ODM_1_1_1EFModel.ssdl|res://*/ODM_1_1_1EFModel.msl;provider=System.Data.SqlClient;provider connection string=";
+            
         public const string CONNECTION_SUCCESS = "Database connection succesful";
         public const string CONNECTION_FAILED_SERVERNAME = "Database connection failed. Please validate that the name of the Server is correct";
         public const string CONNECTION_FAILED_DATASOURCENAME = "Database connection failed. Please validate that the name of the Datasource is correct";
@@ -17,6 +19,10 @@ namespace HydroserverToolsBusinessObjects
         public const string IMPORT_FAILED = "The Import failed please validate your input. Please make sure the file contains all necessary fields.";
         public const string FILETYPE_NOT_CSV = "The uploaded file is not a CSV file. Please upload a correct file.";
         public const string UPLOAD_SITES_HELP = "Sites Help";
-        //public const string ENTITYCONNECTIONSTRING_LOOKUP_FAILED = "THe "
+        public const string IMPORT_FAILED_MISSINGMANDATORYFIELDS = "The import failed.Missing mandatory field(s): {0} ";
+        public const string IMPORT_VALUE_NOT_IN_CV = "The value {0} is not in {1} CV. Please validate you input.";
+        public const string IMPORT_VALUE_NOT_IN_DATABASE = "The value  {0}  is not in  {1} Table. Please validate you input.";
+
+     
     }
 }

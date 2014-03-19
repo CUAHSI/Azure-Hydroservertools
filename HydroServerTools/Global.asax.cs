@@ -1,4 +1,5 @@
-﻿using System;
+﻿using jQuery.DataTables.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -18,6 +19,10 @@ namespace HydroServerTools
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            // Lets MVC know that anytime there is a JQueryDataTablesModel as a parameter in an action to use the
+            // JQueryDataTablesModelBinder when binding the model.
+            ModelBinders.Binders.Add(typeof(JQueryDataTablesModel), new JQueryDataTablesModelBinder());
         }
     }
 }

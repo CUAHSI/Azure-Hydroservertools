@@ -10,7 +10,7 @@
     var toggleUi = ui == UploadUI.Bootstrap ? "jquery" : "bootstrap";
     
     //setting layout based on ui
-    //Layout = "~/Views/Shared/" + (ui == UploadUI.Bootstrap ? "_MvcFileUploaderLayout.cshtml" : "_MvcFileUploaderLayout_jui.cshtml");
+    Layout = "~/Views/Shared/" + (ui == UploadUI.Bootstrap ? "_MvcFileUploaderLayout.cshtml" : "_MvcFileUploaderLayout_jui.cshtml");
 }
 
 @if(!showingInline)
@@ -59,11 +59,11 @@
         <p class="help-block">jpg/png size max 5 MB</p>
         @(
         Html.MvcFileUpload()
-        .UploadAt(Url.Action("Import","CSVUpload"))
+        .UploadAt(Url.Action("UploadFile"))
         .UIStyle(ui)
-        .WithFileTypes(@"/(\.|\/)(jpe?g|csv)$/i")
-        .WithMaxFileSize(5000000)
-        .AddFormField("viewname", "sites")       
+        .WithFileTypes(@"/(\.|\/)(jpe?g|png)$/i")
+        .WithMaxFileSize(5000000)        
+        .AddFormField("entityId", "1234")
         .RenderInline("_MvcFileupload")
         )
         
@@ -76,7 +76,7 @@
         @(
         Html.MvcFileUpload() 
         .UploadAt(Url.Action("UploadFile")) 
-        .WithFileTypes(@"/(\.|\/)(jpe?g|csv)$/i")
+        .WithFileTypes(@"/(\.|\/)(jpe?g|png)$/i")
         .WithMaxFileSize(5000000)
         .MaxNumberOfFiles(1)
         .DisableImagePreview()
@@ -94,7 +94,7 @@
         .WithMaxFileSize(5000000) 
         .AddFormField("entityId", "13")
         .ExcludeSharedScript()  //this should be called as this page contains another inline widget which loaded shared scripts
-        .RenderInline("_MvcFileupload")        
+        .RenderInline("_MvcFileupload")
         )
     </div>
     

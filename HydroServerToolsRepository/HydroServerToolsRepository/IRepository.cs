@@ -1,6 +1,8 @@
 ﻿using HydroserverToolsBusinessObjects.Models;
+using jQuery.DataTables.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,10 +16,16 @@ namespace HydroServerToolsRepository.Repository
     {
         List<SiteModel> GetAll(string connectionString);
 
-        //bool Save();
+        List<SiteModel> GetSites(string connectionString, int startIndex,
+            int pageSize,
+            ReadOnlyCollection<SortedColumn> sortedColumns,
+            out int totalRecordCount,
+            out int searchRecordCount,
+            string searchString);
 
-        void AddSites(List<SiteModel> sites, string entityConnectionString, out List<SiteModel> listOfIncorrectRecords, out List<SiteModel> listOfCorrectRecords, out List<SiteModel> listOfDuplicateRecords, out List<SiteModel> listOfEditedRecords);
-
+        void AddSites(List<SiteModel> sites, string entityConnectionString, out List<SiteModel> listOfIncorrectRecords, out List<SiteModel> listOfCorrectRecords, out List<SiteModel> listOfDuplicateRecords, out List<SiteModel> listOfEditedRecords, out List<ErrorModel> listOfErrors);
+        
+        void deleteAll(string entityConnectionString);
     }
     
     //Variables
@@ -25,10 +33,16 @@ namespace HydroServerToolsRepository.Repository
     {
         List<VariablesModel> GetAll(string connectionString);
 
-        //bool Save();
+        List<VariablesModel> GetVariables(string connectionString, int startIndex,
+          int pageSize,
+          ReadOnlyCollection<SortedColumn> sortedColumns,
+          out int totalRecordCount,
+          out int searchRecordCount,
+          string searchString);
 
-        void AddVariables(List<VariablesModel> list, string entityConnectionString, out List<VariablesModel> listOfIncorrectRecords, out List<VariablesModel> listOfCorrectRecords, out List<VariablesModel> listOfDuplicateRecords, out List<VariablesModel> listOfEditedRecords);
+        void AddVariables(List<VariablesModel> list, string entityConnectionString, out List<VariablesModel> listOfIncorrectRecords, out List<VariablesModel> listOfCorrectRecords, out List<VariablesModel> listOfDuplicateRecords, out List<VariablesModel> listOfEditedRecords, out List<ErrorModel>listOfErrors);
 
+        void deleteAll(string entityConnectionString);
     }
     
     //OffsetTypes
@@ -36,32 +50,44 @@ namespace HydroServerToolsRepository.Repository
     {
         List<OffsetTypesModel> GetAll(string connectionString);
 
-        //bool Save();
+        List<OffsetTypesModel> GetOffsetTypes(string connectionString, int startIndex,
+          int pageSize,
+          ReadOnlyCollection<SortedColumn> sortedColumns,
+          out int totalRecordCount,
+          out int searchRecordCount,
+          string searchString);
 
-        void AddOffsetTypes(List<OffsetTypesModel> list, string entityConnectionString, out List<OffsetTypesModel> listOfIncorrectRecords, out List<OffsetTypesModel> listOfCorrectRecords, out List<OffsetTypesModel> listOfDuplicateRecords, out List<OffsetTypesModel> listOfEditedRecords);
+        void AddOffsetTypes(List<OffsetTypesModel> list, string entityConnectionString, out List<OffsetTypesModel> listOfIncorrectRecords, out List<OffsetTypesModel> listOfCorrectRecords, out List<OffsetTypesModel> listOfDuplicateRecords, out List<OffsetTypesModel> listOfEditedRecords, out List<ErrorModel> listOfErrors);
 
+        void deleteAll(string entityConnectionString);
     }
     
     //ISOMetaData
-    interface IISOMetadataRepository
-    {
-        List<ISOMetadataModel> GetAll(string connectionString);
+    //interface IISOMetadataRepository
+    //{
+    //    List<ISOMetadataModel> GetAll(string connectionString);
 
-        //bool Save();
+    //    //bool Save();
 
-        void AddISOMetadata(List<ISOMetadataModel> list, string entityConnectionString, out List<ISOMetadataModel> listOfIncorrectRecords, out List<ISOMetadataModel> listOfCorrectRecords, out List<ISOMetadataModel> listOfDuplicateRecords, out List<ISOMetadataModel> listOfEditedRecords);
+    //    void AddISOMetadata(List<ISOMetadataModel> list, string entityConnectionString, out List<ISOMetadataModel> listOfIncorrectRecords, out List<ISOMetadataModel> listOfCorrectRecords, out List<ISOMetadataModel> listOfDuplicateRecords, out List<ISOMetadataModel> listOfEditedRecords);
 
-    }
+    //}
     
     //Sources
     interface ISourcesRepository
     {
         List<SourcesModel> GetAll(string connectionString);
 
-        //bool Save();
+        List<SourcesModel> GetSources(string connectionString, int startIndex,
+            int pageSize,
+            ReadOnlyCollection<SortedColumn> sortedColumns,
+            out int totalRecordCount,
+            out int searchRecordCount,
+            string searchString);
 
-        void AddSources(List<SourcesModel> list, string entityConnectionString, out List<SourcesModel> listOfIncorrectRecords, out List<SourcesModel> listOfCorrectRecords, out List<SourcesModel> listOfDuplicateRecords, out List<SourcesModel> listOfEditedRecords);
+        void AddSources(List<SourcesModel> list, string entityConnectionString, out List<SourcesModel> listOfIncorrectRecords, out List<SourcesModel> listOfCorrectRecords, out List<SourcesModel> listOfDuplicateRecords, out List<SourcesModel> listOfEditedRecords, out List<ErrorModel> listOfErrors);
 
+        void deleteAll(string entityConnectionString);
     }
 
     //Methods
@@ -69,10 +95,16 @@ namespace HydroServerToolsRepository.Repository
     {
         List<MethodModel> GetAll(string connectionString);
 
-        //bool Save();
+        List<MethodModel> GetMethods(string connectionString, int startIndex,
+           int pageSize,
+           ReadOnlyCollection<SortedColumn> sortedColumns,
+           out int totalRecordCount,
+           out int searchRecordCount,
+           string searchString);
 
-        void AddMethods(List<MethodModel> list, string entityConnectionString, out List<MethodModel> listOfIncorrectRecords, out List<MethodModel> listOfCorrectRecords, out List<MethodModel> listOfDuplicateRecords, out List<MethodModel> listOfEditedRecords);
+        void AddMethods(List<MethodModel> list, string entityConnectionString, out List<MethodModel> listOfIncorrectRecords, out List<MethodModel> listOfCorrectRecords, out List<MethodModel> listOfDuplicateRecords, out List<MethodModel> listOfEditedRecords, out List<ErrorModel> listOfErrors);
 
+        void deleteAll(string entityConnectionString);
     }
 
     //LabMethods
@@ -80,10 +112,16 @@ namespace HydroServerToolsRepository.Repository
     {
         List<LabMethodModel> GetAll(string connectionString);
 
-        //bool Save();
+        List<LabMethodModel> GetLabMethods(string connectionString, int startIndex,
+           int pageSize,
+           ReadOnlyCollection<SortedColumn> sortedColumns,
+           out int totalRecordCount,
+           out int searchRecordCount,
+           string searchString);
 
-        void AddLabMethods(List<LabMethodModel> list, string entityConnectionString, out List<LabMethodModel> listOfIncorrectRecords, out List<LabMethodModel> listOfCorrectRecords, out List<LabMethodModel> listOfDuplicateRecords, out List<LabMethodModel> listOfEditedRecords);
+        void AddLabMethods(List<LabMethodModel> list, string entityConnectionString, out List<LabMethodModel> listOfIncorrectRecords, out List<LabMethodModel> listOfCorrectRecords, out List<LabMethodModel> listOfDuplicateRecords, out List<LabMethodModel> listOfEditedRecords, out List<ErrorModel> listOfErrors);
 
+        void deleteAll(string entityConnectionString);
     }
 
     //Samples
@@ -91,10 +129,16 @@ namespace HydroServerToolsRepository.Repository
     {
         List<SampleModel> GetAll(string connectionString);
 
-        //bool Save();
+        List<SampleModel> GetSamples(string connectionString, int startIndex,
+                                       int pageSize,
+                                       ReadOnlyCollection<SortedColumn> sortedColumns,
+                                       out int totalRecordCount,
+                                       out int searchRecordCount,
+                                       string searchString);
 
-        void AddSamples(List<SampleModel> list, string entityConnectionString, out List<SampleModel> listOfIncorrectRecords, out List<SampleModel> listOfCorrectRecords, out List<SampleModel> listOfDuplicateRecords, out List<SampleModel> listOfEditedRecords);
+        void AddSamples(List<SampleModel> list, string entityConnectionString, out List<SampleModel> listOfIncorrectRecords, out List<SampleModel> listOfCorrectRecords, out List<SampleModel> listOfDuplicateRecords, out List<SampleModel> listOfEditedRecords, out List<ErrorModel> listOfErrors);
 
+        void deleteAll(string entityConnectionString);
     }
 
     //Qualifiers
@@ -102,10 +146,16 @@ namespace HydroServerToolsRepository.Repository
     {
         List<QualifiersModel> GetAll(string connectionString);
 
-        //bool Save();
+        List<QualifiersModel> GetQualifiers(string connectionString, int startIndex,
+          int pageSize,
+          ReadOnlyCollection<SortedColumn> sortedColumns,
+          out int totalRecordCount,
+          out int searchRecordCount,
+          string searchString);
 
-        void AddQualifiers(List<QualifiersModel> list, string entityConnectionString, out List<QualifiersModel> listOfIncorrectRecords, out List<QualifiersModel> listOfCorrectRecords, out List<QualifiersModel> listOfDuplicateRecords, out List<QualifiersModel> listOfEditedRecords);
+        void AddQualifiers(List<QualifiersModel> list, string entityConnectionString, out List<QualifiersModel> listOfIncorrectRecords, out List<QualifiersModel> listOfCorrectRecords, out List<QualifiersModel> listOfDuplicateRecords, out List<QualifiersModel> listOfEditedRecords, out List<ErrorModel> listOfErrors);
 
+        void deleteAll(string entityConnectionString);
     }
 
     //QualityControlLevel;
@@ -113,31 +163,50 @@ namespace HydroServerToolsRepository.Repository
     {
         List<QualityControlLevelModel> GetAll(string connectionString);
 
-        //bool Save();
+        List<QualityControlLevelModel> GetQualityControlLevels(string connectionString, int startIndex,
+          int pageSize,
+          ReadOnlyCollection<SortedColumn> sortedColumns,
+          out int totalRecordCount,
+          out int searchRecordCount,
+          string searchString);
 
-        void AddQualityControlLevel(List<QualityControlLevelModel> list, string entityConnectionString, out List<QualityControlLevelModel> listOfIncorrectRecords, out List<QualityControlLevelModel> listOfCorrectRecords, out List<QualityControlLevelModel> listOfDuplicateRecords, out List<QualityControlLevelModel> listOfEditedRecords);
 
+        void AddQualityControlLevel(List<QualityControlLevelModel> list, string entityConnectionString, out List<QualityControlLevelModel> listOfIncorrectRecords, out List<QualityControlLevelModel> listOfCorrectRecords, out List<QualityControlLevelModel> listOfDuplicateRecords, out List<QualityControlLevelModel> listOfEditedRecords, out List<ErrorModel> listOfErrors);
+
+        void deleteAll(string entityConnectionString);
     }
     //DataValues
     interface IDataValuesRepository
     {
         List<DataValuesModel> GetAll(string connectionString);
 
-        //bool Save();
+        List<DataValuesModel> GetDatavalues(string connectionString, int startIndex,
+                                     int pageSize,
+                                     ReadOnlyCollection<SortedColumn> sortedColumns,
+                                     out int totalRecordCount,
+                                     out int searchRecordCount,
+                                     string searchString);
 
-        void AddDataValues(List<DataValuesModel> list, string entityConnectionString, out List<DataValuesModel> listOfIncorrectRecords, out List<DataValuesModel> listOfCorrectRecords, out List<DataValuesModel> listOfDuplicateRecords, out List<DataValuesModel> listOfEditedRecords);
+        void AddDataValues(List<DataValuesModel> list, string entityConnectionString, out List<DataValuesModel> listOfIncorrectRecords, out List<DataValuesModel> listOfCorrectRecords, out List<DataValuesModel> listOfDuplicateRecords, out List<DataValuesModel> listOfEditedRecords, out List<ErrorModel> listOfErrors);
 
+        void deleteAll(string entityConnectionString);
     }
-
+    
     //GroupDescription
     interface IGroupDescriptionsRepository
     {
         List<GroupDescriptionModel> GetAll(string connectionString);
 
-        //bool Save();
+        List<GroupDescriptionModel> GetGroupDescriptions(string connectionString, int startIndex,
+                                   int pageSize,
+                                   ReadOnlyCollection<SortedColumn> sortedColumns,
+                                   out int totalRecordCount,
+                                   out int searchRecordCount,
+                                   string searchString);
 
-        void AddGroupDescriptions(List<GroupDescriptionModel> list, string entityConnectionString, out List<GroupDescriptionModel> listOfIncorrectRecords, out List<GroupDescriptionModel> listOfCorrectRecords, out List<GroupDescriptionModel> listOfDuplicateRecords, out List<GroupDescriptionModel> listOfEditedRecords);
+        void AddGroupDescriptions(List<GroupDescriptionModel> list, string entityConnectionString, out List<GroupDescriptionModel> listOfIncorrectRecords, out List<GroupDescriptionModel> listOfCorrectRecords, out List<GroupDescriptionModel> listOfDuplicateRecords, out List<GroupDescriptionModel> listOfEditedRecords, out List<ErrorModel> listOfErrors);
 
+        void deleteAll(string entityConnectionString);
     }
 
     //Groups
@@ -145,10 +214,16 @@ namespace HydroServerToolsRepository.Repository
     {
         List<GroupsModel> GetAll(string connectionString);
 
-        //bool Save();
+        List<GroupsModel> GetGroups(string connectionString, int startIndex,
+                                   int pageSize,
+                                   ReadOnlyCollection<SortedColumn> sortedColumns,
+                                   out int totalRecordCount,
+                                   out int searchRecordCount,
+                                   string searchString);
 
-        void AddGroups(List<GroupsModel> list, string entityConnectionString, out List<GroupsModel> listOfIncorrectRecords, out List<GroupsModel> listOfCorrectRecords, out List<GroupsModel> listOfDuplicateRecords, out List<GroupsModel> listOfEditedRecords);
+        void AddGroups(List<GroupsModel> list, string entityConnectionString, out List<GroupsModel> listOfIncorrectRecords, out List<GroupsModel> listOfCorrectRecords, out List<GroupsModel> listOfDuplicateRecords, out List<GroupsModel> listOfEditedRecords, out List<ErrorModel> listOfErrors);
 
+        void deleteAll(string entityConnectionString);
     }
 
     //DerivedFrom
@@ -156,20 +231,41 @@ namespace HydroServerToolsRepository.Repository
     {
         List<DerivedFromModel> GetAll(string connectionString);
 
-        //bool Save();
+        List<DerivedFromModel> GetDerivedFrom(string connectionString, int startIndex,
+                                int pageSize,
+                                ReadOnlyCollection<SortedColumn> sortedColumns,
+                                out int totalRecordCount,
+                                out int searchRecordCount,
+                                string searchString);
 
-        void AddDerivedFrom(List<DerivedFromModel> list, string entityConnectionString, out List<DerivedFromModel> listOfIncorrectRecords, out List<DerivedFromModel> listOfCorrectRecords, out List<DerivedFromModel> listOfDuplicateRecords, out List<DerivedFromModel> listOfEditedRecords);
+        void AddDerivedFrom(List<DerivedFromModel> list, string entityConnectionString, out List<DerivedFromModel> listOfIncorrectRecords, out List<DerivedFromModel> listOfCorrectRecords, out List<DerivedFromModel> listOfDuplicateRecords, out List<DerivedFromModel> listOfEditedRecords, out List<ErrorModel> listOfErrors);
 
+        void deleteAll(string entityConnectionString);
     }
     //Categories
     interface ICategoriesRepository
     {
         List<CategoriesModel> GetAll(string connectionString);
 
-        //bool Save();
+        List<CategoriesModel> GetCategories(string connectionString, int startIndex,
+                            int pageSize,
+                            ReadOnlyCollection<SortedColumn> sortedColumns,
+                            out int totalRecordCount,
+                            out int searchRecordCount,
+                            string searchString);
 
-        void AddCategories(List<CategoriesModel> list, string entityConnectionString, out List<CategoriesModel> listOfIncorrectRecords, out List<CategoriesModel> listOfCorrectRecords, out List<CategoriesModel> listOfDuplicateRecords, out List<CategoriesModel> listOfEditedRecords);
+        void AddCategories(List<CategoriesModel> list, string entityConnectionString, out List<CategoriesModel> listOfIncorrectRecords, out List<CategoriesModel> listOfCorrectRecords, out List<CategoriesModel> listOfDuplicateRecords, out List<CategoriesModel> listOfEditedRecords, out List<ErrorModel> listOfError);
 
+        void deleteAll(string entityConnectionString);
     }
-
+    //SeriesCatalog
+    interface ISeriesCatalogRepository
+    {
+        List<SeriesCatalogModel> GetSeriesCatalog(string connectionString, int startIndex,
+                            int pageSize,
+                            ReadOnlyCollection<SortedColumn> sortedColumns,
+                            out int totalRecordCount,
+                            out int searchRecordCount,
+                            string searchString);
+    }
 }

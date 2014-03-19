@@ -21,7 +21,7 @@
         <p class="help-block">jpg/png size max 5 MB</p>
         @(
         Html.MvcFileUpload()
-        .UploadAt(Url.Action("Import","CSVUpload"))
+        .UploadAt(Url.Action("UploadFiles", "Home"))
         .UIStyle(ui)
         .WithFileTypes(@"/(\.|\/)(jpe?g|csv)$/i")
         .WithMaxFileSize(5000000)

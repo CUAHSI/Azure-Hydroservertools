@@ -1,8 +1,11 @@
 ﻿using HydroServerTools.Models;
+using HydroserverToolsBusinessObjects.Models;
+using Microsoft.ApplicationServer.Caching;
 using Microsoft.AspNet.Identity;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Data.Entity.Core.EntityClient;
 using System.Data.SqlClient;
 using System.IO;
@@ -88,12 +91,14 @@ namespace HydroServerTools.Helper
         {
             //string userName = context.User.Identity.Name;//  "martin.seul@yahoo.com";
             var Db = new ApplicationDbContext();
-            var userEmail = Db.Users.First(u => u.UserName == userName).UserEmail; 
             string result = string.Empty;
 
             //string path = "http://" + this.Request.RequestUri.Authority + "XML/users.xml";
             try
             {
+                var userEmail = Db.Users.First(u => u.UserName == userName).UserEmail; 
+            
+                
                 string path = HttpContext.Current.Server.MapPath("~/XML/users.xml");
                 XElement doc = XElement.Load(path);
                 IEnumerable<XElement> users = doc.Elements();
@@ -146,14 +151,113 @@ namespace HydroServerTools.Helper
             return userEmail;
         }
 
-       public static bool ValidateMandatoryFields(string tableName, List<string> columnHeaders)
+        public static List<string> ValidateFields<T>(List<string> columnHeaders)
         {
-           bool isValid = false;
+            //Sites
+            //get mandatory fields
+            var missingMandatoryFields = new List<string>();
+            var model = typeof(T);
+            //check attribute
+            var properties = model.GetProperties();
+            foreach (var p in properties)
+            {
+                Attribute a = Attribute.GetCustomAttribute(p, typeof(RequiredAttribute));
+                if (a != null)
+                {
+                    if (!columnHeaders.Contains(p.Name, StringComparer.OrdinalIgnoreCase))
+                        missingMandatoryFields.Add(p.Name.ToLower());
+                }
+            }
+            //compare 
 
-           return isValid;
+            return missingMandatoryFields;
         }
 
+        public static bool IsLocalHostServer()
+        {
+            string host = HttpContext.Current.Request.Url.Host.ToLower();
+            return (host == "localhost");
+        }
 
+        public static List<T> GetRecordsFromCache<T>(int id, string dataCacheName)
+        {
+            var listOfRecords = new List<T>();
+
+            
+            if (Utils.IsLocalHostServer())
+            {
+                var httpContext = new HttpContextWrapper(System.Web.HttpContext.Current);
+
+                switch (id)
+                {
+                    case 0:
+                        if (System.Web.HttpContext.Current.Session["listOfCorrectRecords"] != null) listOfRecords = (List<T>)System.Web.HttpContext.Current.Session["listOfCorrectRecords"];
+                        break;
+                    case 1:
+                        if (System.Web.HttpContext.Current.Session["listOfIncorrectRecords"] != null) listOfRecords = (List<T>)System.Web.HttpContext.Current.Session["listOfIncorrectRecords"];
+                        break;
+                    case 2:
+                        if (System.Web.HttpContext.Current.Session["listOfEditedRecords"] != null) listOfRecords = (List<T>)System.Web.HttpContext.Current.Session["listOfEditedRecords"];
+                        break;
+                    case 3:
+                        if (System.Web.HttpContext.Current.Session["listOfDuplicateRecords"] != null) listOfRecords = (List<T>)System.Web.HttpContext.Current.Session["listOfDuplicateRecords"];
+                        break;
+                }
+            }
+            else
+            {
+                DataCache cache = new DataCache(dataCacheName);
+                var httpContext = new HttpContextWrapper(System.Web.HttpContext.Current);
+                //hack to provide unique id, work around the problem with the session and google ID
+                var identifier = HttpContext.Current.User.Identity.Name;
+               
+              
+                switch (id)
+                {
+                    case 0:
+                        if (cache.Get(identifier + "listOfCorrectRecords") != null) listOfRecords = (List<T>)cache.Get(identifier + "listOfCorrectRecords");
+                        break;
+                    case 1:
+                        if (cache.Get(identifier + "listOfIncorrectRecords") != null) listOfRecords = (List<T>)cache.Get(identifier + "listOfIncorrectRecords");
+                        break;
+                    case 2:
+                        if (cache.Get(identifier + "listOfEditedRecords") != null) listOfRecords = (List<T>)cache.Get(identifier + "listOfEditedRecords");
+                        break;
+                    case 3:
+                        if (cache.Get(identifier + "listOfDuplicateRecords") != null) listOfRecords = (List<T>)cache.Get(identifier + "listOfDuplicateRecords");
+                        break;
+                }
+            }
+
+
+
+
+
+
+            return listOfRecords;
+        }
+
+        public static String stripNonValidXMLCharacters(string textIn)
+        {
+            StringBuilder textOut = new StringBuilder(); // Used to hold the output.
+            char current; // Used to reference the current character.
+
+
+            if (textIn == null || textIn == string.Empty) return string.Empty; // vacancy test.
+            for (int i = 0; i < textIn.Length; i++) {
+                current = textIn[i];
+
+
+                if ((current == 0x9 || current == 0xA || current == 0xD) ||
+                    ((current >= 0x20) && (current <= 0xD7FF)) ||
+                    ((current >= 0xE000) && (current <= 0xFFFD))
+                    )
+                {
+                    textOut.Append(current);
+                }
+            }
+            return textOut.ToString();
+        }
        
 
     }
