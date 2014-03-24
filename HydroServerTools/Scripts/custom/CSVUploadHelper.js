@@ -216,18 +216,18 @@ function getDatatableOptions(name, index) {
                 "aoColumnDefs":
                  [
                     //{ "aTargets": [0], "sName": "VariableID", "bVisible": false },
-                    { "aTargets": [1], "sName": "VariableCode" },
-                    { "aTargets": [2], "sName": "VariableName" },
-                    { "aTargets": [3], "sName": "Speciation" },
-                    { "aTargets": [4], "sName": "VariableUnitsName" },
-                    { "aTargets": [5], "sName": "SampleMedium" },
-                    { "aTargets": [6], "sName": "ValueType" },
-                    { "aTargets": [7], "sName": "IsRegular" },
-                    { "aTargets": [8], "sName": "TimeSupport" },
-                    { "aTargets": [9], "sName": "TimeUnitsName" },
-                    { "aTargets": [10], "sName": "DataType" },
-                    { "aTargets": [11], "sName": "GeneralCategory" },
-                    { "aTargets": [12], "sName": "NoDataValue" }
+                    { "aTargets": [0], "sName": "VariableCode" },
+                    { "aTargets": [1], "sName": "VariableName" },
+                    { "aTargets": [2], "sName": "Speciation" },
+                    { "aTargets": [3], "sName": "VariableUnitsName" },
+                    { "aTargets": [4], "sName": "SampleMedium" },
+                    { "aTargets": [5], "sName": "ValueType" },
+                    { "aTargets": [6], "sName": "IsRegular" },
+                    { "aTargets": [7], "sName": "TimeSupport" },
+                    { "aTargets": [8], "sName": "TimeUnitsName" },
+                    { "aTargets": [9], "sName": "DataType" },
+                    { "aTargets": [10], "sName": "GeneralCategory" },
+                    { "aTargets": [11], "sName": "NoDataValue" }
                  ]
             }
             break;
@@ -279,7 +279,7 @@ function getDatatableOptions(name, index) {
                     { "aTargets": [11], "sName": "Citation", "sWidth": "200px" },
                     { "aTargets": [12], "sName": "TopicCategory" },
                     { "aTargets": [13], "sName": "Title", "sWidth": "100px" },
-                    { "aTargets": [14], "sName": "Abstract", "sWidth": "200px" },
+                    { "aTargets": [14], "sName": "Abstract", "sWidth": "300px" },
                     { "aTargets": [15], "sName": "ProfileVersion" },
                     { "aTargets": [16], "sName": "MetadataLink", "sWidth": "200px" }
                  ]
@@ -377,13 +377,13 @@ function getDatatableOptions(name, index) {
                 "sServerMethod": "POST",
                 "sPaginationType": "full_numbers",
                 "sScrollX": "100%",
-                "sScrollXInner": "150%",
+                "sScrollXInner": "100%",
                 "bScrollCollapse": true,
                 "bDestroy": true,
                 //"bRetrieve": true,
                 "aoColumnDefs":
                  [
-                    { "aTargets": [0], "sName": "QualityControlLevelCode" },
+                    { "aTargets": [0], "sName": "QualityControlLevelCode", "sWidth": "110px" },
                     { "aTargets": [1], "sName": "Definition" },
                     { "aTargets": [2], "sName": "Explanation" }
                  ]
@@ -457,8 +457,8 @@ function getDatatableOptions(name, index) {
                 //"bRetrieve": true,
                 "aoColumnDefs":
                  [
-                    { "aTargets": [0], "sName": "GroupID", "bVisible": false },
-                    { "aTargets": [1], "sName": "ValueID" }
+                    { "aTargets": [0], "sName": "GroupID" },
+                    { "aTargets": [1], "sName": "ValueID", "sWidth": "300px" }
                  ]
             }
             break;
@@ -495,7 +495,7 @@ function getDatatableOptions(name, index) {
                 //"bRetrieve": true,
                 "aoColumnDefs":
                  [
-                    { "aTargets": [0], "sName": "VariableID" },
+                    { "aTargets": [0], "sName": "VariableCode" },
                     { "aTargets": [1], "sName": "Datavalue" },
                     { "aTargets": [2], "sName": "CategoryDescription" }
                  ]
