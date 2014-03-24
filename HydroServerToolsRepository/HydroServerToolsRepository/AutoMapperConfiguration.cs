@@ -50,48 +50,62 @@ namespace HydroServerToolsRepository
                 //.ForMember()
              //  Variables
             Mapper.CreateMap<Variable, VariablesModel>();
-            Mapper.CreateMap<VariablesModel, Variable>();
+            Mapper.CreateMap<VariablesModel, Variable>()
+                  .ForMember(c => c.VariableID, opt => opt.Ignore());
 
             //  OffsetTypes
             Mapper.CreateMap<OffsetType, OffsetTypesModel>();
-            Mapper.CreateMap<OffsetTypesModel, OffsetType>();
+            Mapper.CreateMap<OffsetTypesModel, OffsetType>()
+                 .ForMember(c => c.OffsetTypeID, opt => opt.Ignore()); ;
 
             //  ISOMetadata
-            Mapper.CreateMap<ISOMetadata, ISOMetadataModel>();
-            Mapper.CreateMap<ISOMetadataModel, ISOMetadata>();
+            //Mapper.CreateMap<ISOMetadata, ISOMetadataModel>();
+            //Mapper.CreateMap<ISOMetadataModel, ISOMetadata>();
 
             //  Sources
             Mapper.CreateMap<Source, SourcesModel>();
-            Mapper.CreateMap<SourcesModel, Source>();
+            Mapper.CreateMap<SourcesModel, Source>()
+                 .ForMember(c => c.SourceID, opt => opt.Ignore()); ;
 
             //  Methods
             Mapper.CreateMap<Method, MethodModel>();
-            Mapper.CreateMap<MethodModel, Method>();
+            Mapper.CreateMap<MethodModel, Method>()
+                 .ForMember(c => c.MethodID, opt => opt.Ignore()); ;
 
             //  LabMethods
             Mapper.CreateMap<LabMethod, LabMethodModel>();
-            Mapper.CreateMap<LabMethodModel, LabMethod>();
+            Mapper.CreateMap<LabMethodModel, LabMethod>()
+                 .ForMember(c => c.LabMethodID, opt => opt.Ignore()); ;
 
             //  Samples
             Mapper.CreateMap<Sample, SampleModel>();
-            Mapper.CreateMap<SampleModel, Sample>();
+            Mapper.CreateMap<SampleModel, Sample>()
+                 .ForMember(c => c.SampleID, opt => opt.Ignore()); ;
 
             //  Qualifiers
             Mapper.CreateMap<Qualifier, QualifiersModel>();
-            Mapper.CreateMap<QualifiersModel, Qualifier>();
+            Mapper.CreateMap<QualifiersModel, Qualifier>()
+                 .ForMember(c => c.QualifierID, opt => opt.Ignore()); ;
 
             //  QualityControlLevels
             Mapper.CreateMap<QualityControlLevel, QualityControlLevelModel>();
-            Mapper.CreateMap<QualityControlLevelModel, QualityControlLevel>();
+            Mapper.CreateMap<QualityControlLevelModel, QualityControlLevel>()
+                 .ForMember(c => c.QualityControlLevelID, opt => opt.Ignore()); ;
 
             //  DataValues
-            Mapper.CreateMap<DataValue, DataValuesModel>();
-            Mapper.CreateMap<DataValuesModel, DataValue>();
+            Mapper.CreateMap<DataValue, DataValuesModel>()
+                .ForMember(c => c.DataValue, m=>m.MapFrom(s=>s.DataValue1));
+            Mapper.CreateMap<DataValuesModel, DataValue>()
+                .ForMember(c => c.ValueID, opt => opt.Ignore())
+                .ForMember(c => c.VariableID, opt => opt.Ignore())
+                .ForMember(c => c.DataValue1, m => m.MapFrom(s => s.DataValue)); 
 
             //  GroupDescriptions
-            Mapper.CreateMap<GroupDescription, GroupDescriptionModel>();
-            Mapper.CreateMap<GroupDescriptionModel, GroupDescription>();
-
+            Mapper.CreateMap<GroupDescription, GroupDescriptionModel>()
+                 .ForMember(c => c.GroupDescription, m => m.MapFrom(s => s.GroupDescription1));
+            Mapper.CreateMap<GroupDescriptionModel, GroupDescription>()
+                  .ForMember(c => c.GroupID, opt => opt.Ignore())
+                  .ForMember(c => c.GroupDescription1, m => m.MapFrom(s => s.GroupDescription));
             //  Groups
             Mapper.CreateMap<Group, GroupsModel>();
             Mapper.CreateMap<GroupsModel, Group>();
@@ -103,6 +117,11 @@ namespace HydroServerToolsRepository
             //  Categories
             Mapper.CreateMap<Category, CategoriesModel>();
             Mapper.CreateMap<CategoriesModel, Category>();
+
+            //  Categories
+            Mapper.CreateMap<SeriesCatalog, SeriesCatalogModel>();
+            Mapper.CreateMap<SeriesCatalogModel, SeriesCatalog>();
+
 
         }
     }
@@ -262,7 +281,7 @@ namespace HydroServerToolsRepository
     {
         protected override double ConvertCore(string source)
         {
-            if (source == null || source.ToLower() == "null" || source.Length == 0)
+            if (source == null || source.ToLower() == "null" || source.Length == 0 || String.IsNullOrWhiteSpace(source) )
                 throw new MappingException("null string value cannot convert to non-nullable return type.");
             else
                 return double.Parse(source);

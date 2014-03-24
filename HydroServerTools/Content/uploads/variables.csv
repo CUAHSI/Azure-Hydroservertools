@@ -1,0 +1,4 @@
+VariableCode,VariableName,Speciation,VariableUnitsName,SampleMedium,ValueType,IsRegular,TimeSupport,TimeUnitsName,DataType,GeneralCategory,NoDataValue
+1,Precipitation,Not Applicable,millimeter,Precipitation,Field Observation,TRUE,1,day,Cumulative,Climate,-9999
+2,Temperature,Not Applicable,degree celsius,Air,Field Observation,TRUE,1,day,average,Climate,-9999
+3,Discharge,Not Applicable,cubic meters per second,Surface Water,Field Observation,TRUE,1,second,average,Hydrology,-9999

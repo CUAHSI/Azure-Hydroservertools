@@ -1,0 +1,19 @@
+﻿
+@{
+    ViewBag.Title = "JQupload";
+  ViewBag.Name = "Sites";
+}
+<script src="~/Scripts/bootstrap.file-input.js"></script>
+@*<script src="~/Scripts/jquery.jqupload.min.js"></script>*@
+<script src="~/Scripts/custom/Upload.js"></script>
+
+
+<h2>JQupload</h2>
+<div id="demo_message"></div>
+<form id="my_form" name="my_form" method="post" action="/CSVUpload/Import2" enctype="multipart/form-data">
+    <input type="hidden" name="viewname" value=@ViewBag.Name />
+    <input type="file" name="file" title="Search for a file to add">
+    <button id="btnUploadAll" class="btn btn-success pull-left" type="submit">
+        Upload All
+    </button>
+</form>

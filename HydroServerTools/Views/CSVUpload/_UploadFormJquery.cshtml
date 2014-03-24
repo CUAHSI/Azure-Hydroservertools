@@ -1,0 +1,65 @@
+﻿@using MvcFileUploader.HtmlHelper
+@using MvcFileUploader.Models
+@*<div class="jumbotron">
+
+    <div>
+        Upload @ViewBag.Title 
+        
+            <a id="pop"
+               href="#"
+               class="btn btn-lg"
+               data-toggle="popover"
+               data-content="@ViewBag.Help"><span class="glyphicon glyphicon-question-sign"></span></a>
+           
+        
+    </div>
+        @using (Html.BeginForm("Import", "CSVUpload", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <div>
+        @Html.ValidationSummary(false)
+        </div>
+        <input type="hidden" name="viewname" value=@ViewBag.Name />
+        <input type="file" class="btn btn-primary" name="file" required placeholder="Please select a csv file " /> 
+       
+        <input type="submit" class="btn btn-primary btn-info" value="Upload and Process" /> <div class="span4 info"></div>
+    }
+</div>*@
+
+
+
+@{
+    ViewBag.Title = "Upload Data";
+
+    var showingInline = Model != null && Model == true;
+
+    //option for inline view only
+    var ui = "jquery".Equals(Request.Params["ui"]) ? UploadUI.JQueryUI : UploadUI.Bootstrap;
+    var toggleUi = ui == UploadUI.Bootstrap ? "jquery" : "bootstrap";
+
+    //setting layout based on ui
+    //Layout = "~/Views/Shared/" + (ui == UploadUI.Bootstrap ? "_MvcFileUploaderLayout.cshtml" : "_MvcFileUploaderLayout_jui.cshtml");
+}
+<!-- Blueimp styles / see blueimp docs for styling requirements for jquery ui -->
+<link rel="stylesheet" href="/Content/mvcfileupload/blueimp/jquery.fileupload.css">
+<link rel="stylesheet" href="/Content/mvcfileupload/blueimp/jquery.fileupload-ui.css">
+
+<div class="well">
+    <legend>Upload Inline</legend>
+    <p class="help-block">jpg/png size max 5 MB</p>
+    @(
+ Html.MvcFileUpload()
+        .UploadAt(Url.Action("Import", "CSVUpload"))
+        .ReturnAt("/Demo")
+        .WithFileTypes(@"/(\.|\/)(jpe?g|csv)$/i")
+        .WithMaxFileSize(5000000)
+        .MaxNumberOfFiles(1)
+        .DisableImagePreview()
+        .AddFormField("viewname", "sites")
+        .RenderInline("_MvcFileuploadMS")
+        
+          
+        
+    )
+
+</div>
+

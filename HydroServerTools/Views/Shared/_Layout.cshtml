@@ -11,6 +11,7 @@
     <script src="~/Scripts/jquery-1.10.2.min.js"></script>
     <script src="~/Scripts/jquery-ui-1.10.3.min.js"></script>
     <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/purl.js"></script>@*//url parser*@
 </head>
 <body>
     <div class="container">
@@ -26,23 +27,52 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                  
+                
         </div>
             <div class="navbar-collapse collapse ">
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("About", "About", "Home")</li>
+                    @*<li>@Html.ActionLink("About", "About", "Home")</li>*@
                     <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
-                    <li>@Html.ActionLink("MVCUploder", "Demo", "Home")</li>
+                    <li>@Html.ActionLink("Manage", "Manage", "Home")</li>
+
+                    @*<li>@Html.ActionLink("MVCUploder", "Demo", "Home")</li>
+                    <li>@Html.ActionLink("JQupload", "JQupload", "Home", new { identifier = "Sites" }, null)</li>
+                    <li>@Html.ActionLink("JQuploaddemo", "JQuploaddemo", "Home", new { identifier = "Sites" }, null)</li>
+                    <li>@Html.ActionLink("SimpleUpload", "SimpleUpload", "Home")</li>*@
+                    @*<li>@Html.ActionLink("JQueryApI", "JQueryApI", "Home", new { identifier = "Sites" }, null)</li>
+
                     <li>@Html.ActionLink("Datatable1", "Datatable1", "Home")</li>
-                    <li>@Html.ActionLink("Datatable2", "Datatable2", "Home", new { identifier = "Sites" }, null)</li>
+                    <li>@Html.ActionLink("Datatable2", "Datatable2", "Home", new { identifier = "Sites" }, null)</li>*@
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Import CSV Data<b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li>@Html.ActionLink("Import Sites", "UploadData", "CSVUpload", new { id = "Sites" }, null)</li>
+                            <li>@Html.ActionLink("Import Variables", "UploadData", "CSVUpload", new { id = "Variables" }, null)</li>
+                            <li>@Html.ActionLink("Import OffsetTypes", "UploadData", "CSVUpload", new { id = "OffsetTypes" }, null)</li>
+                            @*<li>@Html.ActionLink("Import ISOMetadata", "ViewTableData", "ViewData", new { identifier = "ISOMetadata" }, null)</li>*@
+                            <li>@Html.ActionLink("Import Sources", "UploadData", "CSVUpload", new { id = "Sources" }, null)</li>
+                            <li>@Html.ActionLink("Import Methods", "UploadData", "CSVUpload", new { id = "Methods" }, null)</li>
+                            <li>@Html.ActionLink("Import LabMethods", "UploadData", "CSVUpload", new { id = "LabMethods" }, null)</li>
+                            <li>@Html.ActionLink("Import Samples", "UploadData", "CSVUpload", new { id = "Samples" }, null)</li>
+                            <li>@Html.ActionLink("Import Qualifiers", "UploadData", "CSVUpload", new { id = "Qualifiers" }, null)</li>
+                            <li>@Html.ActionLink("Import QualityControlLevels", "UploadData", "CSVUpload", new { id = "QualityControlLevels" }, null)</li>
+                            <li>@Html.ActionLink("Import DataValues", "UploadData", "CSVUpload", new { id = "DataValues" }, null)</li>
+                            <li>@Html.ActionLink("Import GroupDescriptions", "UploadData", "CSVUpload", new { id = "GroupDescriptions" }, null)</li>
+                            <li>@Html.ActionLink("Import Groups", "UploadData", "CSVUpload", new { id = "Groups" }, null)</li>
+                            <li>@Html.ActionLink("Import DerivedFrom", "UploadData", "CSVUpload", new { id = "DerivedFrom" }, null)</li>
+                            <li>@Html.ActionLink("Import Categories", "UploadData", "CSVUpload", new { id = "Categories" }, null)</li>
+
+                        </ul>
+                    </li>
+
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">View Data<b class="caret"></b></a>
                         <ul class="dropdown-menu">
                             <li>@Html.ActionLink("View Sites", "ViewTableData", "ViewData", new { identifier = "Sites" }, null)</li>
-                            <li>@Html.ActionLink("View Variables", "ViewTableData", "ViewData", new { identifier = "Variables" }, null)</li>                            
+                            <li>@Html.ActionLink("View Variables", "ViewTableData", "ViewData", new { identifier = "Variables" }, null)</li>
                             <li>@Html.ActionLink("View OffsetTypes", "ViewTableData", "ViewData", new { identifier = "OffsetTypes" }, null)</li>
-                            <li>@Html.ActionLink("View ISOMetadata", "ViewTableData", "ViewData", new { identifier = "ISOMetadata" }, null)</li>
+                           @* <li>@Html.ActionLink("View ISOMetadata", "ViewTableData", "ViewData", new { identifier = "ISOMetadata" }, null)</li>*@
                             <li>@Html.ActionLink("View Sources", "ViewTableData", "ViewData", new { identifier = "Sources" }, null)</li>
                             <li>@Html.ActionLink("View Methods", "ViewTableData", "ViewData", new { identifier = "Methods" }, null)</li>
                             <li>@Html.ActionLink("View LabMethods", "ViewTableData", "ViewData", new { identifier = "LabMethods" }, null)</li>
@@ -54,10 +84,30 @@
                             <li>@Html.ActionLink("View Groups", "ViewTableData", "ViewData", new { identifier = "Groups" }, null)</li>
                             <li>@Html.ActionLink("View DerivedFrom", "ViewTableData", "ViewData", new { identifier = "DerivedFrom" }, null)</li>
                             <li>@Html.ActionLink("View Categories", "ViewTableData", "ViewData", new { identifier = "Categories" }, null)</li>
-
-                            <li><a href="#">View OffsetTypes</a></li>
                             <li class="divider"></li>
-                            <li>@Html.ActionLink("View Sites", "ViewTableData", "Home", new { identifier = "Sites" }, null)</li>
+                            <li>@Html.ActionLink("View SeriesCatalog", "ViewTableData", "ViewData", new { identifier = "SeriesCatalog" }, null)</li>
+
+                        </ul>
+                    </li>
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Download Templates<b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li>@Html.ActionLink("Sites Template", "DownloadTemplate", "Export", new { id = "Sites" }, new { target = "_blank" })</li>
+                            <li>@Html.ActionLink("Variables Template", "DownloadTemplate", "Export", new { id = "Variables" }, new { target = "_blank" })</li>
+                            <li>@Html.ActionLink("OffsetTypes ", "DownloadTemplate", "Export", new { id = "OffsetTypes" }, new { target = "_blank" })</li>
+                            @*<li>@Html.ActionLink("Import ISOMetadata", "ViewTableData", "ViewData", new { identifier = "ISOMetadata" }, null)</li>*@
+                            <li>@Html.ActionLink("Sources Template", "DownloadTemplate", "Export", new { id = "Sources" }, new { target = "_blank" })</li>
+                            <li>@Html.ActionLink("MethodsTemplate", "DownloadTemplate", "Export", new { id = "Methods" }, new { target = "_blank" })</li>
+                            <li>@Html.ActionLink("LabMethods Template", "DownloadTemplate", "Export", new { id = "LabMethods" }, new { target = "_blank" })</li>
+                            <li>@Html.ActionLink("Samples Template", "DownloadTemplate", "Export", new { id = "Samples" }, new { target = "_blank" })</li>
+                            <li>@Html.ActionLink("Qualifiers Template", "DownloadTemplate", "Export", new { id = "Qualifiers" }, new { target = "_blank" })</li>
+                            <li>@Html.ActionLink("QualityControlLevels DownloadTemplate", "Export", "Export", new { id = "QualityControlLevels" }, new { target = "_blank" })</li>
+                            <li>@Html.ActionLink("DataValues Template", "DownloadTemplate", "Export", new { id = "DataValues" }, new { target = "_blank" })</li>
+                            <li>@Html.ActionLink("GroupDescriptions Template", "DownloadTemplate", "Export", new { id = "GroupDescriptions" }, new { target = "_blank" })</li>
+                            <li>@Html.ActionLink("Groups Template", "DownloadTemplate", "Export", new { id = "Groups" }, new { target = "_blank" })</li>
+                            <li>@Html.ActionLink("DerivedFrom Template", "DownloadTemplate", "Export", new { id = "DerivedFrom" }, new { target = "_blank" })</li>
+                            <li>@Html.ActionLink("Categories Template", "DownloadTemplate", "Export", new { id = "Categories" }, new { target = "_blank" })</li>
 
                         </ul>
                     </li>
@@ -71,12 +121,15 @@
     <div class="container body-content">
       
           @RenderBody()
-        <hr />
+      
+    </div>
+    <div class="container">
         <footer>
+            <hr />
+
             <p>&copy; @DateTime.Now.Year - &copy; CUAHSI </p>
         </footer>
     </div>
-
    @* @Scripts.Render("~/bundles/jquery")*@
   @*  @Scripts.Render("~/bundles/bootstrap")*@
 

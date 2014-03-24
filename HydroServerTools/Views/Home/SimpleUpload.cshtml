@@ -1,0 +1,70 @@
+﻿@model HydroServerTools.Models.MyModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+    <script src="~/Scripts/mvcfileupload/blueimp/jquery.fileupload.js"></script> 
+    <script src="~/Scripts/mvcfileupload/blueimp/jquery.fileupload-ui.js"></script>
+    <script src="~/Scripts/mvcfileupload/blueimp/jquery.iframe-transport.js"></script>
+
+
+<script>
+    $(function () {
+    'use strict';
+
+        // Initialize the jQuery File Upload widget:
+        $('#fu-my-file').fileupload();
+
+        $('#fu-my-file').fileupload('option', {
+            autoUpload: true,
+            url: '/Upload/UploadMyFile',
+            dataType: 'json',
+        //maxFileSize: 2000000, // Size in Bytes – 2 MB
+        add: function (e, data) {
+            var goUpload = true;
+            var uploadFile = data.files[0];
+
+            if (!(/\.(gif|jpg|jpeg|tiff|png|csv)$/i).test(uploadFile.name)) {
+                alert('Wrong type');
+                goUpload = false;
+            } else if (uploadFile.size > 2000000) { // 2mb
+                alert('Please upload a smaller file, max size is 2 MB');
+                goUpload = false;
+            }
+
+            if (goUpload == true) {
+                showLoader();
+                var jqXHR = data.submit()
+                .success(function (result, textStatus, jqXHR) { 
+
+                    if (result.isValid) {
+
+                    }
+                    else {
+
+                    }
+                })
+                .error(function (jqXHR, textStatus, errorThrown) {
+                    if (typeof (jqXHR) != 'undefined' || typeof (textStatus) != 'undefined' || typeof (errorThrown) != 'undefined') {
+                        alert(textStatus + errorThrown + jqXHR);
+                    }
+                });
+            }
+        },
+        fail: function (event, data) {
+            if (data.files[0].error) {
+                alert(data.files[0].error);
+            }
+        }
+    });
+    });
+
+
+</script>
+
+        <input type="file" id="fu-my-file" name="fileupload" accept="text/*" @* multiple="multiple"*@>
+        <button id="btnUploadAll" class="btn btn-success pull-left" type="button">
+            Upload All
+        </button>
+

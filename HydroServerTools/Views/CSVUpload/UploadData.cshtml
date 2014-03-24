@@ -1,54 +1,80 @@
-﻿@using MvcFileUploader.HtmlHelper
-@using MvcFileUploader.Models
-@{
-    ViewBag.Title = "Upload Data";
-
-    var showingInline = Model != null && Model == true;
-
-    //option for inline view only
-    var ui = "jquery".Equals(Request.Params["ui"]) ? UploadUI.JQueryUI : UploadUI.Bootstrap;
-    var toggleUi = ui == UploadUI.Bootstrap ? "jquery" : "bootstrap";
-
-    //setting layout based on ui
-    //Layout = "~/Views/Shared/" + (ui == UploadUI.Bootstrap ? "_MvcFileUploaderLayout.cshtml" : "_MvcFileUploaderLayout_jui.cshtml");
+﻿@{
+    ViewBag.Title = "Upload";
+    //Layout = null;
 }
-<!-- Blueimp styles / see blueimp docs for styling requirements for jquery ui -->
-<link rel="stylesheet" href="/Content/mvcfileupload/blueimp/jquery.fileupload.css">
-<link rel="stylesheet" href="/Content/mvcfileupload/blueimp/jquery.fileupload-ui.css">
 
-<div class="well">
-    <legend>Upload Inline</legend>
-    <p class="help-block">jpg/png size max 5 MB</p>
-    @(
- Html.MvcFileUpload()
-        .UploadAt(Url.Action("Import", "CSVUpload"))
-        .UIStyle(ui)
-        .WithFileTypes(@"/(\.|\/)(jpe?g|csv)$/i")
-        .WithMaxFileSize(5000000)
-        .AddFormField("viewname", "sites")
-        .RenderInline("_MvcFileuploadMS")
-    )
+@*<link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">*@
+<link rel="stylesheet" href="~/Content/mvcfileupload/blueimp/jquery.fileupload.css" />
+@*<link rel="stylesheet" href="/Content/mvcfileupload/blueimp/jquery.fileupload-ui.css">*@
 
+
+<script src="~/Scripts/mvcfileupload/vendor/jquery.ui.widget.js"></script>
+
+
+@Html.Action("_Breadcrumb", "CSVUpload", new { id = ViewBag.Name })
+<div class="container">
+    <form id="uploadForm" action="/api/upload" method="POST" enctype="multipart/form-data">
+
+        <div class="panel panel-default">
+
+            <div class="panel-heading">
+                <h3 class="panel-title">Currently importing: @ViewBag.Name</h3>
+            </div>
+            <div class="panel-body">
+                <i class="icon-plus"></i><p>Please select or drag-in your file</p>
+                @*<input type="file" id="fileupload" name="fileupload" accept=".csv,.zip" >*@
+                <p>
+                    <span class="btn btn-success fileinput-button">
+                        <i class="glyphicon glyphicon-plus"></i>
+                        <span>Add files...</span>
+                        <input type="file" id="fileupload" class="required" name=" fileupload" accept=".csv,.zip">
+                    </span>
+                    @*<button id="btnUploadAll" class="btn btn-success pull-right"  type="button">
+                         Upload All
+                        </button>*@
+                    <button type="button" id="startupload" class="btn btn-primary start disabled">
+                        <i class="glyphicon glyphicon-upload"></i>
+                        <span>Start upload</span>
+                    </button>
+                    <button type="reset" id="reset" class="btn btn-warning cancel disabled">
+                        <i class="glyphicon glyphicon-ban-circle"></i>
+                        <span>Reset</span>
+                    </button>
+                    <div class="clearfix">
+                    </div>
+                    <p>
+                        <div class="well-sm hide h5" id="filelistholder">
+
+                            @*<div id="progressbar"></div>*@
+                        </div>
+                    </p>
+                    <div class="well-sm alert-info hide" id="loading">
+                        Processing...
+                        <img src="~/Images/ajax-loader.gif" />
+                    </div>
+                    @*<div class="progress">
+                         <div class="bar" id="overallbar" style="width: 0%">
+                         </div>
+                        </div>*@
+                </p>
+            </div>
+
+        </div>
+    </form>
 </div>
 
-@*<div class="well">
-        <legend>Another inline uploader in same page</legend>
-        <p class="help-block">jpg/png size max 5 MB, max number of files 1, image preview disabled</p>
-        <p class="help-block">note: do not set thumbnailUrl in returned json from server side controller in case image preview is disabled, in this demo it is being set, so tumbnail is shown after upload.</p>
-        @(
-        Html.MvcFileUpload()
-        .UploadAt(Url.Action("UploadFile"))
-        .WithFileTypes(@"/(\.|\/)(jpe?g|csv)$/i")
-        .WithMaxFileSize(5000000)
-        .MaxNumberOfFiles(1)
-        .DisableImagePreview()
-        .ExcludeSharedScript()  //this should be called as this page contains another inline widget which loaded shared scripts
-        //.RenderInline("_MvcFileupload")
-        )
-    </div>*@
-
-
-
+  
+@Html.Action("_Pager", "CSVUpload", new { name = ViewBag.Name })
+@*<script src="~/Scripts/JQueryUpload/jquery.fileupload.js"></script>
+    <script src="~/Scripts/JQueryUpload/jquery.iframe-transport.js"></script>*@
+<script src="~/Scripts/mvcfileupload/blueimp/jquery.fileupload.js"></script>
+<script src="~/Scripts/mvcfileupload/blueimp/jquery.fileupload-ui.js"></script>
+<script src="~/Scripts/mvcfileupload/blueimp/jquery.iframe-transport.js"></script>
+@*<script src="~/Scripts/mvcfileupload/blueimp/jquery.fileupload-process.js"></script>
+    <script src="~/Scripts/mvcfileupload/blueimp/jquery.fileupload-validate.js"></script>*@
+@*<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/additional-methods.min.js"></script>*@
+<script src="~/Scripts/custom/UploadHelper.js"></script>
 
 
 

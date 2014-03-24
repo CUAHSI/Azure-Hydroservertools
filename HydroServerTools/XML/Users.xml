@@ -39,7 +39,78 @@
     <id>5</id>
     <username>Hydroservertest3</username>
     <useremail>hydroservertest3@gmail.com</useremail>
-    <connectionname>HisServertestDanFuka</connectionname>
+    <connectionname>Hydroservertest3</connectionname>
     <role>admin</role>
   </user>
+  <user>
+    <id>6</id>
+    <username>HIS.QA.user1</username>
+    <useremail>his.qa.user1@gmail.com</useremail>
+    <connectionname>HIS_QA_user1</connectionname>
+    <role>admin</role>
+  </user>
+  <user>
+    <id>7</id>
+    <username>his.qa.user2</username>
+    <useremail>his.qa.user2@gmail.com</useremail>
+    <connectionname>HIS_QA_user2</connectionname>
+    <role>admin</role>
+  </user>
+  <user>
+    <id>8</id>
+    <username>his.qa.user3</username>
+    <useremail>his.qa.user3@gmail.com</useremail>
+    <connectionname>HIS_QA_user3</connectionname>
+    <role>admin</role>
+  </user>
+  <user>
+    <id>9</id>
+    <username>his.qa.user4</username>
+    <useremail>his.qa.user4@gmail.com</useremail>
+    <connectionname>HIS_QA_user4</connectionname>
+    <role>admin</role>
+  </user>
+  <user>
+    <id>10</id>
+    <username>his.qa.user5</username>
+    <useremail>his.qa.user5@gmail.com</useremail>
+    <connectionname>HIS_QA_user5</connectionname>
+    <role>admin</role>
+  </user>
+  <user>
+    <id>11</id>
+    <username>his.qa.user6</username>
+    <useremail>his.qa.user6@gmail.com</useremail>
+    <connectionname>HIS_QA_user6</connectionname>
+    <role>admin</role>
+  </user>
+  <user>
+    <id>12</id>
+    <username>his.qa.user7</username>
+    <useremail>his.qa.user7@gmail.com</useremail>
+    <connectionname>HIS_QA_user7</connectionname>
+    <role>admin</role>
+  </user>
+  <user>
+    <id>13</id>
+    <username>his.qa.user8</username>
+    <useremail>his.qa.user8@gmail.com</useremail>
+    <connectionname>HIS_QA_user8</connectionname>
+    <role>admin</role>
+  </user>
+  <user>
+    <id>14</id>
+    <username>his.qa.user9</username>
+    <useremail>his.qa.user9@gmail.com</useremail>
+    <connectionname>HIS_QA_user9</connectionname>
+    <role>admin</role>
+  </user>
+  <user>
+    <id>15</id>
+    <username>his.qa.jpollak</username>
+    <useremail>his.qa.jpollak@gmail.com</useremail>
+    <connectionname>HIS_QA_jpollak</connectionname>
+    <role>admin</role>
+  </user>
+ 
 </users>

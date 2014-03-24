@@ -3,22 +3,28 @@ using HydroServerTools.Models;
 using HydroserverToolsBusinessObjects;
 using HydroserverToolsBusinessObjects.Models;
 using HydroServerToolsRepository.Repository;
+using MvcFileUploader;
+using MvcFileUploader.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Core;
 using System.Data.Entity.Core.EntityClient;
+using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
+using System.Web.UI.WebControls;
 
 namespace HydroServerTools.Controllers
 {
-  
+    [Authorize]
     public class HomeController : Controller
     {
 
@@ -35,6 +41,13 @@ namespace HydroServerTools.Controllers
         }
 
         public ActionResult Contact()
+        {
+            ViewBag.Message = "";
+
+            return View();
+        }
+
+        public ActionResult Manage()
         {
             ViewBag.Message = "";
 
@@ -71,23 +84,26 @@ namespace HydroServerTools.Controllers
             ViewBag.Message = "JqueryUpload";
             return View();
         }
-        [HttpPost]
-        public ContentResult UploadFiles()
+
+        public ActionResult SimpleUpload()
         {
-            
-            foreach (string file in Request.Files)
+            ViewBag.Message = "SimpleUpload";
+            return View();
+        }
+        [HttpPost]
+        public ActionResult UploadFile(HttpPostedFileBase file)
+        {
+            HttpPostedFileBase myFile = Request.Files["MyFile"];
+            bool isUploaded = false;
+            string message = "File upload failed";
+
+            if (myFile != null && myFile.ContentLength != 0)
             {
-                HttpPostedFileBase hpf = Request.Files[file] as HttpPostedFileBase;
-                if (hpf.ContentLength == 0)
-                    continue;
-
-                string savedFileName = Path.Combine(Server.MapPath("~/App_Data"), Path.GetFileName(hpf.FileName));
-                //hpf.SaveAs(savedFileName); // Save the file
-
-               
+                string pathForSaving = Server.MapPath("~/Uploads");
+                message = "File uploaded successfully!";
+                  
             }
-            // Returns json
-            return Content("{\"name\":\"}", "application/json");
+            return Json(new { isUploaded = isUploaded, message = message }, "text/html");
         }
 
 
@@ -110,6 +126,19 @@ namespace HydroServerTools.Controllers
         public ActionResult Demo(bool? inline, string ui = "bootstrap")
         {
             return View(inline);
+        }
+
+        public ActionResult JQupload(bool? inline, string ui = "bootstrap")
+        {
+            return View(inline);
+        }
+        public ActionResult JQuploaddemo()
+        {
+            return View();
+        }
+        public ActionResult JQueryApI()
+        {
+            return View();
         }
         public ActionResult AjaxHandler(jQueryDataTableParamModel param, string identifier)
         {
@@ -159,7 +188,7 @@ namespace HydroServerTools.Controllers
                                         c.VerticalDatum,  
                                         c.LocalX,  
                                         c.LocalY,  
-                                        c.LocalProjectionID,  
+                                        c.LocalProjectionSRSName,  
                                         c.PosAccuracy_m,  
                                         c.State,  
                                         c.County,  
@@ -187,6 +216,56 @@ namespace HydroServerTools.Controllers
 
             },
             JsonRequestBehavior.AllowGet);
+        }
+        [HttpPost]
+        [Authorize]
+        public ActionResult ClearTablesHandler(FormCollection collection)
+        {
+             string connectionName = Utils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name.ToString());
+
+            var entityConnectionString = Utils.GetDBConnectionStringByName(connectionName);
+            //"Sites", "Variables", "OffsetTypes", "ISOMetadata", "Sources", "Methods", "LabMethods", "Samples", "Qualifiers", "QualityControlLevels", "DataValues", "GroupDescriptions", "Groups", "DerivedFrom", "Categories"};
+
+            //Sites
+ 
+            try
+            {
+                if (collection.HasKeys())
+                {
+                    //do in this order to remove foreign keys in order
+                    if (collection.AllKeys.Contains("categories")) { var repo = new CategoriesRepository(); repo.deleteAll(entityConnectionString); }
+                    if (collection.AllKeys.Contains("derivedfrom")) { var repo = new DerivedFromRepository(); repo.deleteAll(entityConnectionString); }
+                    if (collection.AllKeys.Contains("groups")) { var repo = new GroupsRepository(); repo.deleteAll(entityConnectionString); }
+                    if (collection.AllKeys.Contains("groupdescriptions")) { var repo = new GroupDescriptionsRepository(); repo.deleteAll(entityConnectionString); }
+                    if (collection.AllKeys.Contains("datavalues")) { var repo = new DataValuesRepository(); repo.deleteAll(entityConnectionString); }                  
+                    if (collection.AllKeys.Contains("qualitycontrollevels")) { var repo = new QualityControlLevelsRepository(); repo.deleteAll(entityConnectionString); }
+                    if (collection.AllKeys.Contains("qualifiers")) { var repo = new QualifiersRepository(); repo.deleteAll(entityConnectionString); }
+                    if (collection.AllKeys.Contains("samples")) { var repo = new SamplesRepository(); repo.deleteAll(entityConnectionString); }
+                    if (collection.AllKeys.Contains("labmethods")) { var repo = new LabMethodsRepository(); repo.deleteAll(entityConnectionString); }
+                    if (collection.AllKeys.Contains("methods")) { var repo = new MethodsRepository(); repo.deleteAll(entityConnectionString); }
+                    if (collection.AllKeys.Contains("sources")) { var repo = new SourcesRepository(); repo.deleteAll(entityConnectionString); }
+                    if (collection.AllKeys.Contains("offsettypes")) { var repo = new OffsetTypesRepository(); repo.deleteAll(entityConnectionString); }
+                    if (collection.AllKeys.Contains("variables")) { var repo = new VariablesRepository(); repo.deleteAll(entityConnectionString); }
+                    if (collection.AllKeys.Contains("sites")) { var repo = new SitesRepository(); repo.deleteAll(entityConnectionString); }
+
+                    
+                }
+            }
+            catch (DbUpdateException ex)
+            {
+                //HttpContext.Response.ContentType = "text/plain";
+                Response.StatusCode = (int)HttpStatusCode.BadRequest; 
+                return Json(new { success = false });
+
+            }
+           
+            // Now we need to wire up a response so that the calling script understands what happened
+            HttpContext.Response.ContentType = "text/plain";
+            HttpContext.Response.StatusCode = 200;
+
+            // For compatibility with IE's "done" event we need to return a result as well as setting the context.response
+            return Json(new { success = true });
+
         }
 
     }

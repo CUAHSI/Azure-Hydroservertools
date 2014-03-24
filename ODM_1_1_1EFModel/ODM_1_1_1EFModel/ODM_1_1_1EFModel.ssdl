@@ -1,0 +1,828 @@
+<Schema Namespace="ODM_1_1_1EFModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="Categories">
+    <Key>
+      <PropertyRef Name="AutoCounter" />
+    </Key>
+    <Property Name="AutoCounter" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="VariableID" Type="int" Nullable="false" />
+    <Property Name="DataValue" Type="float" Nullable="false" />
+    <Property Name="CategoryDescription" Type="nvarchar(max)" Nullable="false" />
+  </EntityType>
+  <EntityType Name="CensorCodeCV">
+    <Key>
+      <PropertyRef Name="Term" />
+    </Key>
+    <Property Name="Term" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="Definition" Type="nvarchar(max)" />
+  </EntityType>
+  <EntityType Name="DataTypeCV">
+    <Key>
+      <PropertyRef Name="Term" />
+    </Key>
+    <Property Name="Term" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="Definition" Type="nvarchar(max)" />
+  </EntityType>
+  <EntityType Name="DataValues">
+    <Key>
+      <PropertyRef Name="ValueID" />
+    </Key>
+    <Property Name="ValueID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="DataValue" Type="float" Nullable="false" />
+    <Property Name="ValueAccuracy" Type="float" />
+    <Property Name="LocalDateTime" Type="datetime" Nullable="false" />
+    <Property Name="UTCOffset" Type="float" Nullable="false" />
+    <Property Name="DateTimeUTC" Type="datetime" Nullable="false" />
+    <Property Name="SiteID" Type="int" Nullable="false" />
+    <Property Name="VariableID" Type="int" Nullable="false" />
+    <Property Name="OffsetValue" Type="float" />
+    <Property Name="OffsetTypeID" Type="int" />
+    <Property Name="CensorCode" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="QualifierID" Type="int" />
+    <Property Name="MethodID" Type="int" Nullable="false" />
+    <Property Name="SourceID" Type="int" Nullable="false" />
+    <Property Name="SampleID" Type="int" />
+    <Property Name="DerivedFromID" Type="int" />
+    <Property Name="QualityControlLevelID" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="DerivedFrom">
+    <Key>
+      <PropertyRef Name="AutoCounter" />
+    </Key>
+    <Property Name="DerivedFromID" Type="int" Nullable="false" />
+    <Property Name="ValueID" Type="int" Nullable="false" />
+    <Property Name="AutoCounter" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+  </EntityType>
+  <EntityType Name="GeneralCategoryCV">
+    <Key>
+      <PropertyRef Name="Term" />
+    </Key>
+    <Property Name="Term" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="Definition" Type="nvarchar(max)" />
+  </EntityType>
+  <EntityType Name="GroupDescriptions">
+    <Key>
+      <PropertyRef Name="GroupID" />
+    </Key>
+    <Property Name="GroupID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="GroupDescription" Type="nvarchar(max)" />
+  </EntityType>
+  <EntityType Name="Groups">
+    <Key>
+      <PropertyRef Name="AutoCounter" />
+    </Key>
+    <Property Name="GroupID" Type="int" Nullable="false" />
+    <Property Name="ValueID" Type="int" Nullable="false" />
+    <Property Name="AutoCounter" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+  </EntityType>
+  <EntityType Name="ISOMetadata">
+    <Key>
+      <PropertyRef Name="MetadataID" />
+    </Key>
+    <Property Name="MetadataID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="TopicCategory" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="Title" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="Abstract" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="ProfileVersion" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="MetadataLink" Type="nvarchar" MaxLength="500" />
+  </EntityType>
+  <EntityType Name="LabMethods">
+    <Key>
+      <PropertyRef Name="LabMethodID" />
+    </Key>
+    <Property Name="LabMethodID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="LabName" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="LabOrganization" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="LabMethodName" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="LabMethodDescription" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="LabMethodLink" Type="nvarchar" MaxLength="500" />
+  </EntityType>
+  <EntityType Name="Methods">
+    <Key>
+      <PropertyRef Name="MethodID" />
+    </Key>
+    <Property Name="MethodID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="MethodDescription" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="MethodLink" Type="nvarchar" MaxLength="500" />
+  </EntityType>
+  <EntityType Name="ODMVersion">
+    <Key>
+      <PropertyRef Name="AutoCounter" />
+    </Key>
+    <Property Name="VersionNumber" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="AutoCounter" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="OffsetTypes">
+    <Key>
+      <PropertyRef Name="OffsetTypeID" />
+    </Key>
+    <Property Name="OffsetTypeID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="OffsetUnitsID" Type="int" Nullable="false" />
+    <Property Name="OffsetDescription" Type="nvarchar(max)" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Qualifiers">
+    <Key>
+      <PropertyRef Name="QualifierID" />
+    </Key>
+    <Property Name="QualifierID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="QualifierCode" Type="nvarchar" MaxLength="50" />
+    <Property Name="QualifierDescription" Type="nvarchar(max)" Nullable="false" />
+  </EntityType>
+  <EntityType Name="QualityControlLevels">
+    <Key>
+      <PropertyRef Name="QualityControlLevelID" />
+    </Key>
+    <Property Name="QualityControlLevelID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="QualityControlLevelCode" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="Definition" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="Explanation" Type="nvarchar(max)" Nullable="false" />
+  </EntityType>
+  <EntityType Name="SampleMediumCV">
+    <Key>
+      <PropertyRef Name="Term" />
+    </Key>
+    <Property Name="Term" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="Definition" Type="nvarchar(max)" />
+  </EntityType>
+  <EntityType Name="Samples">
+    <Key>
+      <PropertyRef Name="SampleID" />
+    </Key>
+    <Property Name="SampleID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="SampleType" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="LabSampleCode" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="LabMethodID" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="SampleTypeCV">
+    <Key>
+      <PropertyRef Name="Term" />
+    </Key>
+    <Property Name="Term" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="Definition" Type="nvarchar(max)" />
+  </EntityType>
+  <EntityType Name="SeriesCatalog">
+    <Key>
+      <PropertyRef Name="SeriesID" />
+    </Key>
+    <Property Name="SeriesID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="SiteID" Type="int" />
+    <Property Name="SiteCode" Type="nvarchar" MaxLength="50" />
+    <Property Name="SiteName" Type="nvarchar" MaxLength="255" />
+    <Property Name="SiteType" Type="nvarchar" MaxLength="255" />
+    <Property Name="VariableID" Type="int" />
+    <Property Name="VariableCode" Type="nvarchar" MaxLength="50" />
+    <Property Name="VariableName" Type="nvarchar" MaxLength="255" />
+    <Property Name="Speciation" Type="nvarchar" MaxLength="255" />
+    <Property Name="VariableUnitsID" Type="int" />
+    <Property Name="VariableUnitsName" Type="nvarchar" MaxLength="255" />
+    <Property Name="SampleMedium" Type="nvarchar" MaxLength="255" />
+    <Property Name="ValueType" Type="nvarchar" MaxLength="255" />
+    <Property Name="TimeSupport" Type="float" />
+    <Property Name="TimeUnitsID" Type="int" />
+    <Property Name="TimeUnitsName" Type="nvarchar" MaxLength="255" />
+    <Property Name="DataType" Type="nvarchar" MaxLength="255" />
+    <Property Name="GeneralCategory" Type="nvarchar" MaxLength="255" />
+    <Property Name="MethodID" Type="int" />
+    <Property Name="MethodDescription" Type="nvarchar(max)" />
+    <Property Name="SourceID" Type="int" />
+    <Property Name="Organization" Type="nvarchar" MaxLength="255" />
+    <Property Name="SourceDescription" Type="nvarchar(max)" />
+    <Property Name="Citation" Type="nvarchar(max)" />
+    <Property Name="QualityControlLevelID" Type="int" />
+    <Property Name="QualityControlLevelCode" Type="nvarchar" MaxLength="50" />
+    <Property Name="BeginDateTime" Type="datetime" />
+    <Property Name="EndDateTime" Type="datetime" />
+    <Property Name="BeginDateTimeUTC" Type="datetime" />
+    <Property Name="EndDateTimeUTC" Type="datetime" />
+    <Property Name="ValueCount" Type="int" />
+  </EntityType>
+  <EntityType Name="Sites">
+    <Key>
+      <PropertyRef Name="SiteID" />
+    </Key>
+    <Property Name="SiteID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="SiteCode" Type="nvarchar" MaxLength="50" Nullable="false" StoreGeneratedPattern="None" />
+    <Property Name="SiteName" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="Latitude" Type="float" Nullable="false" />
+    <Property Name="Longitude" Type="float" Nullable="false" />
+    <Property Name="LatLongDatumID" Type="int" Nullable="false" />
+    <Property Name="Elevation_m" Type="float" />
+    <Property Name="VerticalDatum" Type="nvarchar" MaxLength="255" />
+    <Property Name="LocalX" Type="float" />
+    <Property Name="LocalY" Type="float" />
+    <Property Name="LocalProjectionID" Type="int" />
+    <Property Name="PosAccuracy_m" Type="float" />
+    <Property Name="State" Type="nvarchar" MaxLength="255" />
+    <Property Name="County" Type="nvarchar" MaxLength="255" />
+    <Property Name="Comments" Type="nvarchar(max)" />
+    <Property Name="SiteType" Type="nvarchar" MaxLength="255" />
+  </EntityType>
+  <EntityType Name="SiteTypeCV">
+    <Key>
+      <PropertyRef Name="Term" />
+    </Key>
+    <Property Name="Term" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="Definition" Type="nvarchar(max)" />
+  </EntityType>
+  <EntityType Name="Sources">
+    <Key>
+      <PropertyRef Name="SourceID" />
+    </Key>
+    <Property Name="SourceID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Organization" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="SourceDescription" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="SourceLink" Type="nvarchar" MaxLength="500" />
+    <Property Name="ContactName" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="Phone" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="Email" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="Address" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="City" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="State" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="ZipCode" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="Citation" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="MetadataID" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="SpatialReferences">
+    <Key>
+      <PropertyRef Name="SpatialReferenceID" />
+    </Key>
+    <Property Name="SpatialReferenceID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="SRSID" Type="int" />
+    <Property Name="SRSName" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="IsGeographic" Type="bit" />
+    <Property Name="Notes" Type="nvarchar(max)" />
+  </EntityType>
+  <EntityType Name="SpeciationCV">
+    <Key>
+      <PropertyRef Name="Term" />
+    </Key>
+    <Property Name="Term" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="Definition" Type="nvarchar(max)" />
+  </EntityType>
+  <EntityType Name="TopicCategoryCV">
+    <Key>
+      <PropertyRef Name="Term" />
+    </Key>
+    <Property Name="Term" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="Definition" Type="nvarchar(max)" />
+  </EntityType>
+  <EntityType Name="Units">
+    <Key>
+      <PropertyRef Name="UnitsID" />
+    </Key>
+    <Property Name="UnitsID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="UnitsName" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="UnitsType" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="UnitsAbbreviation" Type="nvarchar" MaxLength="255" Nullable="false" />
+  </EntityType>
+  <EntityType Name="ValueTypeCV">
+    <Key>
+      <PropertyRef Name="Term" />
+    </Key>
+    <Property Name="Term" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="Definition" Type="nvarchar(max)" />
+  </EntityType>
+  <EntityType Name="VariableNameCV">
+    <Key>
+      <PropertyRef Name="Term" />
+    </Key>
+    <Property Name="Term" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="Definition" Type="nvarchar(max)" />
+  </EntityType>
+  <EntityType Name="Variables">
+    <Key>
+      <PropertyRef Name="VariableID" />
+    </Key>
+    <Property Name="VariableID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="VariableCode" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="VariableName" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="Speciation" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="VariableUnitsID" Type="int" Nullable="false" />
+    <Property Name="SampleMedium" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="ValueType" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="IsRegular" Type="bit" Nullable="false" />
+    <Property Name="TimeSupport" Type="float" Nullable="false" />
+    <Property Name="TimeUnitsID" Type="int" Nullable="false" />
+    <Property Name="DataType" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="GeneralCategory" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="NoDataValue" Type="float" Nullable="false" />
+  </EntityType>
+  <EntityType Name="VerticalDatumCV">
+    <Key>
+      <PropertyRef Name="Term" />
+    </Key>
+    <Property Name="Term" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="Definition" Type="nvarchar(max)" />
+  </EntityType>
+  <Association Name="FK_Categories_Variables">
+    <End Role="Variables" Type="Self.Variables" Multiplicity="1" />
+    <End Role="Categories" Type="Self.Categories" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Variables">
+        <PropertyRef Name="VariableID" />
+      </Principal>
+      <Dependent Role="Categories">
+        <PropertyRef Name="VariableID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_DataValues_CensorCodeCV">
+    <End Role="CensorCodeCV" Type="Self.CensorCodeCV" Multiplicity="1" />
+    <End Role="DataValues" Type="Self.DataValues" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="CensorCodeCV">
+        <PropertyRef Name="Term" />
+      </Principal>
+      <Dependent Role="DataValues">
+        <PropertyRef Name="CensorCode" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_DataValues_Methods">
+    <End Role="Methods" Type="Self.Methods" Multiplicity="1" />
+    <End Role="DataValues" Type="Self.DataValues" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Methods">
+        <PropertyRef Name="MethodID" />
+      </Principal>
+      <Dependent Role="DataValues">
+        <PropertyRef Name="MethodID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_DataValues_OffsetTypes">
+    <End Role="OffsetTypes" Type="Self.OffsetTypes" Multiplicity="0..1" />
+    <End Role="DataValues" Type="Self.DataValues" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="OffsetTypes">
+        <PropertyRef Name="OffsetTypeID" />
+      </Principal>
+      <Dependent Role="DataValues">
+        <PropertyRef Name="OffsetTypeID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_DataValues_Qualifiers">
+    <End Role="Qualifiers" Type="Self.Qualifiers" Multiplicity="0..1" />
+    <End Role="DataValues" Type="Self.DataValues" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Qualifiers">
+        <PropertyRef Name="QualifierID" />
+      </Principal>
+      <Dependent Role="DataValues">
+        <PropertyRef Name="QualifierID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_DataValues_QualityControlLevels">
+    <End Role="QualityControlLevels" Type="Self.QualityControlLevels" Multiplicity="1" />
+    <End Role="DataValues" Type="Self.DataValues" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="QualityControlLevels">
+        <PropertyRef Name="QualityControlLevelID" />
+      </Principal>
+      <Dependent Role="DataValues">
+        <PropertyRef Name="QualityControlLevelID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_DataValues_Samples">
+    <End Role="Samples" Type="Self.Samples" Multiplicity="0..1" />
+    <End Role="DataValues" Type="Self.DataValues" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Samples">
+        <PropertyRef Name="SampleID" />
+      </Principal>
+      <Dependent Role="DataValues">
+        <PropertyRef Name="SampleID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_DataValues_Sites">
+    <End Role="Sites" Type="Self.Sites" Multiplicity="1" />
+    <End Role="DataValues" Type="Self.DataValues" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Sites">
+        <PropertyRef Name="SiteID" />
+      </Principal>
+      <Dependent Role="DataValues">
+        <PropertyRef Name="SiteID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_DataValues_Sources">
+    <End Role="Sources" Type="Self.Sources" Multiplicity="1" />
+    <End Role="DataValues" Type="Self.DataValues" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Sources">
+        <PropertyRef Name="SourceID" />
+      </Principal>
+      <Dependent Role="DataValues">
+        <PropertyRef Name="SourceID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_DataValues_Variables">
+    <End Role="Variables" Type="Self.Variables" Multiplicity="1" />
+    <End Role="DataValues" Type="Self.DataValues" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Variables">
+        <PropertyRef Name="VariableID" />
+      </Principal>
+      <Dependent Role="DataValues">
+        <PropertyRef Name="VariableID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_DerivedFrom_DataValues">
+    <End Role="DataValues" Type="Self.DataValues" Multiplicity="1" />
+    <End Role="DerivedFrom" Type="Self.DerivedFrom" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="DataValues">
+        <PropertyRef Name="ValueID" />
+      </Principal>
+      <Dependent Role="DerivedFrom">
+        <PropertyRef Name="ValueID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Groups_DataValues">
+    <End Role="DataValues" Type="Self.DataValues" Multiplicity="1" />
+    <End Role="Groups" Type="Self.Groups" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="DataValues">
+        <PropertyRef Name="ValueID" />
+      </Principal>
+      <Dependent Role="Groups">
+        <PropertyRef Name="ValueID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Groups_GroupDescriptions">
+    <End Role="GroupDescriptions" Type="Self.GroupDescriptions" Multiplicity="1" />
+    <End Role="Groups" Type="Self.Groups" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="GroupDescriptions">
+        <PropertyRef Name="GroupID" />
+      </Principal>
+      <Dependent Role="Groups">
+        <PropertyRef Name="GroupID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_ISOMetadata_TopicCategoryCV">
+    <End Role="TopicCategoryCV" Type="Self.TopicCategoryCV" Multiplicity="1" />
+    <End Role="ISOMetadata" Type="Self.ISOMetadata" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="TopicCategoryCV">
+        <PropertyRef Name="Term" />
+      </Principal>
+      <Dependent Role="ISOMetadata">
+        <PropertyRef Name="TopicCategory" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_OffsetTypes_Units">
+    <End Role="Units" Type="Self.Units" Multiplicity="1" />
+    <End Role="OffsetTypes" Type="Self.OffsetTypes" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Units">
+        <PropertyRef Name="UnitsID" />
+      </Principal>
+      <Dependent Role="OffsetTypes">
+        <PropertyRef Name="OffsetUnitsID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Samples_LabMethods">
+    <End Role="LabMethods" Type="Self.LabMethods" Multiplicity="1" />
+    <End Role="Samples" Type="Self.Samples" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="LabMethods">
+        <PropertyRef Name="LabMethodID" />
+      </Principal>
+      <Dependent Role="Samples">
+        <PropertyRef Name="LabMethodID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Samples_SampleTypeCV">
+    <End Role="SampleTypeCV" Type="Self.SampleTypeCV" Multiplicity="1" />
+    <End Role="Samples" Type="Self.Samples" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="SampleTypeCV">
+        <PropertyRef Name="Term" />
+      </Principal>
+      <Dependent Role="Samples">
+        <PropertyRef Name="SampleType" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Sites_SiteTypeCV">
+    <End Role="SiteTypeCV" Type="Self.SiteTypeCV" Multiplicity="0..1" />
+    <End Role="Sites" Type="Self.Sites" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="SiteTypeCV">
+        <PropertyRef Name="Term" />
+      </Principal>
+      <Dependent Role="Sites">
+        <PropertyRef Name="SiteType" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Sites_SpatialReferences">
+    <End Role="SpatialReferences" Type="Self.SpatialReferences" Multiplicity="1" />
+    <End Role="Sites" Type="Self.Sites" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="SpatialReferences">
+        <PropertyRef Name="SpatialReferenceID" />
+      </Principal>
+      <Dependent Role="Sites">
+        <PropertyRef Name="LatLongDatumID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Sites_SpatialReferences1">
+    <End Role="SpatialReferences" Type="Self.SpatialReferences" Multiplicity="0..1" />
+    <End Role="Sites" Type="Self.Sites" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="SpatialReferences">
+        <PropertyRef Name="SpatialReferenceID" />
+      </Principal>
+      <Dependent Role="Sites">
+        <PropertyRef Name="LocalProjectionID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Sites_VerticalDatumCV">
+    <End Role="VerticalDatumCV" Type="Self.VerticalDatumCV" Multiplicity="0..1" />
+    <End Role="Sites" Type="Self.Sites" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="VerticalDatumCV">
+        <PropertyRef Name="Term" />
+      </Principal>
+      <Dependent Role="Sites">
+        <PropertyRef Name="VerticalDatum" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Sources_ISOMetaData">
+    <End Role="ISOMetadata" Type="Self.ISOMetadata" Multiplicity="1" />
+    <End Role="Sources" Type="Self.Sources" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="ISOMetadata">
+        <PropertyRef Name="MetadataID" />
+      </Principal>
+      <Dependent Role="Sources">
+        <PropertyRef Name="MetadataID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Variables_DataTypeCV">
+    <End Role="DataTypeCV" Type="Self.DataTypeCV" Multiplicity="1" />
+    <End Role="Variables" Type="Self.Variables" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="DataTypeCV">
+        <PropertyRef Name="Term" />
+      </Principal>
+      <Dependent Role="Variables">
+        <PropertyRef Name="DataType" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Variables_GeneralCategoryCV">
+    <End Role="GeneralCategoryCV" Type="Self.GeneralCategoryCV" Multiplicity="1" />
+    <End Role="Variables" Type="Self.Variables" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="GeneralCategoryCV">
+        <PropertyRef Name="Term" />
+      </Principal>
+      <Dependent Role="Variables">
+        <PropertyRef Name="GeneralCategory" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Variables_SampleMediumCV">
+    <End Role="SampleMediumCV" Type="Self.SampleMediumCV" Multiplicity="1" />
+    <End Role="Variables" Type="Self.Variables" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="SampleMediumCV">
+        <PropertyRef Name="Term" />
+      </Principal>
+      <Dependent Role="Variables">
+        <PropertyRef Name="SampleMedium" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Variables_SpeciationCV">
+    <End Role="SpeciationCV" Type="Self.SpeciationCV" Multiplicity="1" />
+    <End Role="Variables" Type="Self.Variables" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="SpeciationCV">
+        <PropertyRef Name="Term" />
+      </Principal>
+      <Dependent Role="Variables">
+        <PropertyRef Name="Speciation" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Variables_Units">
+    <End Role="Units" Type="Self.Units" Multiplicity="1" />
+    <End Role="Variables" Type="Self.Variables" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Units">
+        <PropertyRef Name="UnitsID" />
+      </Principal>
+      <Dependent Role="Variables">
+        <PropertyRef Name="VariableUnitsID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Variables_Units1">
+    <End Role="Units" Type="Self.Units" Multiplicity="1" />
+    <End Role="Variables" Type="Self.Variables" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Units">
+        <PropertyRef Name="UnitsID" />
+      </Principal>
+      <Dependent Role="Variables">
+        <PropertyRef Name="TimeUnitsID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Variables_ValueTypeCV">
+    <End Role="ValueTypeCV" Type="Self.ValueTypeCV" Multiplicity="1" />
+    <End Role="Variables" Type="Self.Variables" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="ValueTypeCV">
+        <PropertyRef Name="Term" />
+      </Principal>
+      <Dependent Role="Variables">
+        <PropertyRef Name="ValueType" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Variables_VariableNameCV">
+    <End Role="VariableNameCV" Type="Self.VariableNameCV" Multiplicity="1" />
+    <End Role="Variables" Type="Self.Variables" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="VariableNameCV">
+        <PropertyRef Name="Term" />
+      </Principal>
+      <Dependent Role="Variables">
+        <PropertyRef Name="VariableName" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="ODM_1_1_1EFModelStoreContainer">
+    <EntitySet Name="Categories" EntityType="Self.Categories" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="CensorCodeCV" EntityType="Self.CensorCodeCV" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="DataTypeCV" EntityType="Self.DataTypeCV" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="DataValues" EntityType="Self.DataValues" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="DerivedFrom" EntityType="Self.DerivedFrom" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="GeneralCategoryCV" EntityType="Self.GeneralCategoryCV" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="GroupDescriptions" EntityType="Self.GroupDescriptions" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Groups" EntityType="Self.Groups" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="ISOMetadata" EntityType="Self.ISOMetadata" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="LabMethods" EntityType="Self.LabMethods" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Methods" EntityType="Self.Methods" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="ODMVersion" EntityType="Self.ODMVersion" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="OffsetTypes" EntityType="Self.OffsetTypes" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Qualifiers" EntityType="Self.Qualifiers" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="QualityControlLevels" EntityType="Self.QualityControlLevels" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="SampleMediumCV" EntityType="Self.SampleMediumCV" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Samples" EntityType="Self.Samples" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="SampleTypeCV" EntityType="Self.SampleTypeCV" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="SeriesCatalog" EntityType="Self.SeriesCatalog" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Sites" EntityType="Self.Sites" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="SiteTypeCV" EntityType="Self.SiteTypeCV" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Sources" EntityType="Self.Sources" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="SpatialReferences" EntityType="Self.SpatialReferences" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="SpeciationCV" EntityType="Self.SpeciationCV" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="TopicCategoryCV" EntityType="Self.TopicCategoryCV" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Units" EntityType="Self.Units" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="ValueTypeCV" EntityType="Self.ValueTypeCV" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="VariableNameCV" EntityType="Self.VariableNameCV" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Variables" EntityType="Self.Variables" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="VerticalDatumCV" EntityType="Self.VerticalDatumCV" Schema="dbo" store:Type="Tables" />
+    <AssociationSet Name="FK_Categories_Variables" Association="Self.FK_Categories_Variables">
+      <End Role="Variables" EntitySet="Variables" />
+      <End Role="Categories" EntitySet="Categories" />
+    </AssociationSet>
+    <AssociationSet Name="FK_DataValues_CensorCodeCV" Association="Self.FK_DataValues_CensorCodeCV">
+      <End Role="CensorCodeCV" EntitySet="CensorCodeCV" />
+      <End Role="DataValues" EntitySet="DataValues" />
+    </AssociationSet>
+    <AssociationSet Name="FK_DataValues_Methods" Association="Self.FK_DataValues_Methods">
+      <End Role="Methods" EntitySet="Methods" />
+      <End Role="DataValues" EntitySet="DataValues" />
+    </AssociationSet>
+    <AssociationSet Name="FK_DataValues_OffsetTypes" Association="Self.FK_DataValues_OffsetTypes">
+      <End Role="OffsetTypes" EntitySet="OffsetTypes" />
+      <End Role="DataValues" EntitySet="DataValues" />
+    </AssociationSet>
+    <AssociationSet Name="FK_DataValues_Qualifiers" Association="Self.FK_DataValues_Qualifiers">
+      <End Role="Qualifiers" EntitySet="Qualifiers" />
+      <End Role="DataValues" EntitySet="DataValues" />
+    </AssociationSet>
+    <AssociationSet Name="FK_DataValues_QualityControlLevels" Association="Self.FK_DataValues_QualityControlLevels">
+      <End Role="QualityControlLevels" EntitySet="QualityControlLevels" />
+      <End Role="DataValues" EntitySet="DataValues" />
+    </AssociationSet>
+    <AssociationSet Name="FK_DataValues_Samples" Association="Self.FK_DataValues_Samples">
+      <End Role="Samples" EntitySet="Samples" />
+      <End Role="DataValues" EntitySet="DataValues" />
+    </AssociationSet>
+    <AssociationSet Name="FK_DataValues_Sites" Association="Self.FK_DataValues_Sites">
+      <End Role="Sites" EntitySet="Sites" />
+      <End Role="DataValues" EntitySet="DataValues" />
+    </AssociationSet>
+    <AssociationSet Name="FK_DataValues_Sources" Association="Self.FK_DataValues_Sources">
+      <End Role="Sources" EntitySet="Sources" />
+      <End Role="DataValues" EntitySet="DataValues" />
+    </AssociationSet>
+    <AssociationSet Name="FK_DataValues_Variables" Association="Self.FK_DataValues_Variables">
+      <End Role="Variables" EntitySet="Variables" />
+      <End Role="DataValues" EntitySet="DataValues" />
+    </AssociationSet>
+    <AssociationSet Name="FK_DerivedFrom_DataValues" Association="Self.FK_DerivedFrom_DataValues">
+      <End Role="DataValues" EntitySet="DataValues" />
+      <End Role="DerivedFrom" EntitySet="DerivedFrom" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Groups_DataValues" Association="Self.FK_Groups_DataValues">
+      <End Role="DataValues" EntitySet="DataValues" />
+      <End Role="Groups" EntitySet="Groups" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Groups_GroupDescriptions" Association="Self.FK_Groups_GroupDescriptions">
+      <End Role="GroupDescriptions" EntitySet="GroupDescriptions" />
+      <End Role="Groups" EntitySet="Groups" />
+    </AssociationSet>
+    <AssociationSet Name="FK_ISOMetadata_TopicCategoryCV" Association="Self.FK_ISOMetadata_TopicCategoryCV">
+      <End Role="TopicCategoryCV" EntitySet="TopicCategoryCV" />
+      <End Role="ISOMetadata" EntitySet="ISOMetadata" />
+    </AssociationSet>
+    <AssociationSet Name="FK_OffsetTypes_Units" Association="Self.FK_OffsetTypes_Units">
+      <End Role="Units" EntitySet="Units" />
+      <End Role="OffsetTypes" EntitySet="OffsetTypes" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Samples_LabMethods" Association="Self.FK_Samples_LabMethods">
+      <End Role="LabMethods" EntitySet="LabMethods" />
+      <End Role="Samples" EntitySet="Samples" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Samples_SampleTypeCV" Association="Self.FK_Samples_SampleTypeCV">
+      <End Role="SampleTypeCV" EntitySet="SampleTypeCV" />
+      <End Role="Samples" EntitySet="Samples" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Sites_SiteTypeCV" Association="Self.FK_Sites_SiteTypeCV">
+      <End Role="SiteTypeCV" EntitySet="SiteTypeCV" />
+      <End Role="Sites" EntitySet="Sites" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Sites_SpatialReferences" Association="Self.FK_Sites_SpatialReferences">
+      <End Role="SpatialReferences" EntitySet="SpatialReferences" />
+      <End Role="Sites" EntitySet="Sites" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Sites_SpatialReferences1" Association="Self.FK_Sites_SpatialReferences1">
+      <End Role="SpatialReferences" EntitySet="SpatialReferences" />
+      <End Role="Sites" EntitySet="Sites" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Sites_VerticalDatumCV" Association="Self.FK_Sites_VerticalDatumCV">
+      <End Role="VerticalDatumCV" EntitySet="VerticalDatumCV" />
+      <End Role="Sites" EntitySet="Sites" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Sources_ISOMetaData" Association="Self.FK_Sources_ISOMetaData">
+      <End Role="ISOMetadata" EntitySet="ISOMetadata" />
+      <End Role="Sources" EntitySet="Sources" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Variables_DataTypeCV" Association="Self.FK_Variables_DataTypeCV">
+      <End Role="DataTypeCV" EntitySet="DataTypeCV" />
+      <End Role="Variables" EntitySet="Variables" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Variables_GeneralCategoryCV" Association="Self.FK_Variables_GeneralCategoryCV">
+      <End Role="GeneralCategoryCV" EntitySet="GeneralCategoryCV" />
+      <End Role="Variables" EntitySet="Variables" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Variables_SampleMediumCV" Association="Self.FK_Variables_SampleMediumCV">
+      <End Role="SampleMediumCV" EntitySet="SampleMediumCV" />
+      <End Role="Variables" EntitySet="Variables" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Variables_SpeciationCV" Association="Self.FK_Variables_SpeciationCV">
+      <End Role="SpeciationCV" EntitySet="SpeciationCV" />
+      <End Role="Variables" EntitySet="Variables" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Variables_Units" Association="Self.FK_Variables_Units">
+      <End Role="Units" EntitySet="Units" />
+      <End Role="Variables" EntitySet="Variables" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Variables_Units1" Association="Self.FK_Variables_Units1">
+      <End Role="Units" EntitySet="Units" />
+      <End Role="Variables" EntitySet="Variables" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Variables_ValueTypeCV" Association="Self.FK_Variables_ValueTypeCV">
+      <End Role="ValueTypeCV" EntitySet="ValueTypeCV" />
+      <End Role="Variables" EntitySet="Variables" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Variables_VariableNameCV" Association="Self.FK_Variables_VariableNameCV">
+      <End Role="VariableNameCV" EntitySet="VariableNameCV" />
+      <End Role="Variables" EntitySet="Variables" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

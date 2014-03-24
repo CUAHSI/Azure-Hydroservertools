@@ -1,0 +1,5 @@
+﻿,SiteName,Latitude,Longitude,LatLongDatumSRSName,Elevation_m,VerticalDatum,LocalX,LocalY,LocalProjectionID,PosAccuracy_m,State,County,Comments,SiteType
+USU-LBR-Mendon,"Little Bear River at Mendon Road near Mendon, Utah",41.718473,-111.946402,2,1345,WGS84,421276.323,4618952.04,105,NULL,Utah,Cache,Located below county road bridge at Mendon Road crossing,Stream
+USU-LBR-SFWeather,"Little Bear River South Fork Weather Station near Avon, Utah",41.4967,-111.8193,2,1601,WGS84,NULL,NULL,NULL,10,Utah,Cache,This is a continuous weather station.,Atmosphere
+USU-LBR-SFWeather,"Little Bear River South Fork Weather Station near Avon, Utah",41.4967,-111.8193,2,1601,NGVD29,NULL,NULL,NULL,10,Utah,Cache,This is a continuous weather station.,Atmosphere
+USU-LBR-SFWeather,"Little Bear River South Fork Weather Station near Avon, Utah",41.4967,-111.8193,2,1601,NGVD29,NULL,NULL,NULL,10,Utah,Cache,This is a continuous weather station.,Atmosphere

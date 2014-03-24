@@ -1,0 +1,348 @@
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="ODM_1_1_1EFModelStoreContainer" CdmEntityContainer="ODM_1_1_1Entities">
+    <EntitySetMapping Name="Categories">
+      <EntityTypeMapping TypeName="ODM_1_1_1EFModel.Category">
+        <MappingFragment StoreEntitySet="Categories">
+          <ScalarProperty Name="CategoryDescription" ColumnName="CategoryDescription" />
+          <ScalarProperty Name="DataValue" ColumnName="DataValue" />
+          <ScalarProperty Name="VariableID" ColumnName="VariableID" />
+          <ScalarProperty Name="AutoCounter" ColumnName="AutoCounter" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="CensorCodeCVs">
+      <EntityTypeMapping TypeName="ODM_1_1_1EFModel.CensorCodeCV">
+        <MappingFragment StoreEntitySet="CensorCodeCV">
+          <ScalarProperty Name="Definition" ColumnName="Definition" />
+          <ScalarProperty Name="Term" ColumnName="Term" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="DataTypeCVs">
+      <EntityTypeMapping TypeName="ODM_1_1_1EFModel.DataTypeCV">
+        <MappingFragment StoreEntitySet="DataTypeCV">
+          <ScalarProperty Name="Definition" ColumnName="Definition" />
+          <ScalarProperty Name="Term" ColumnName="Term" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="DataValues">
+      <EntityTypeMapping TypeName="ODM_1_1_1EFModel.DataValue">
+        <MappingFragment StoreEntitySet="DataValues">
+          <ScalarProperty Name="QualityControlLevelID" ColumnName="QualityControlLevelID" />
+          <ScalarProperty Name="DerivedFromID" ColumnName="DerivedFromID" />
+          <ScalarProperty Name="SampleID" ColumnName="SampleID" />
+          <ScalarProperty Name="SourceID" ColumnName="SourceID" />
+          <ScalarProperty Name="MethodID" ColumnName="MethodID" />
+          <ScalarProperty Name="QualifierID" ColumnName="QualifierID" />
+          <ScalarProperty Name="CensorCode" ColumnName="CensorCode" />
+          <ScalarProperty Name="OffsetTypeID" ColumnName="OffsetTypeID" />
+          <ScalarProperty Name="OffsetValue" ColumnName="OffsetValue" />
+          <ScalarProperty Name="VariableID" ColumnName="VariableID" />
+          <ScalarProperty Name="SiteID" ColumnName="SiteID" />
+          <ScalarProperty Name="DateTimeUTC" ColumnName="DateTimeUTC" />
+          <ScalarProperty Name="UTCOffset" ColumnName="UTCOffset" />
+          <ScalarProperty Name="LocalDateTime" ColumnName="LocalDateTime" />
+          <ScalarProperty Name="ValueAccuracy" ColumnName="ValueAccuracy" />
+          <ScalarProperty Name="DataValue1" ColumnName="DataValue" />
+          <ScalarProperty Name="ValueID" ColumnName="ValueID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="DerivedFroms">
+      <EntityTypeMapping TypeName="ODM_1_1_1EFModel.DerivedFrom">
+        <MappingFragment StoreEntitySet="DerivedFrom">
+          <ScalarProperty Name="AutoCounter" ColumnName="AutoCounter" />
+          <ScalarProperty Name="ValueID" ColumnName="ValueID" />
+          <ScalarProperty Name="DerivedFromID" ColumnName="DerivedFromID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="GeneralCategoryCVs">
+      <EntityTypeMapping TypeName="ODM_1_1_1EFModel.GeneralCategoryCV">
+        <MappingFragment StoreEntitySet="GeneralCategoryCV">
+          <ScalarProperty Name="Definition" ColumnName="Definition" />
+          <ScalarProperty Name="Term" ColumnName="Term" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="GroupDescriptions">
+      <EntityTypeMapping TypeName="ODM_1_1_1EFModel.GroupDescription">
+        <MappingFragment StoreEntitySet="GroupDescriptions">
+          <ScalarProperty Name="GroupDescription1" ColumnName="GroupDescription" />
+          <ScalarProperty Name="GroupID" ColumnName="GroupID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Groups">
+      <EntityTypeMapping TypeName="ODM_1_1_1EFModel.Group">
+        <MappingFragment StoreEntitySet="Groups">
+          <ScalarProperty Name="AutoCounter" ColumnName="AutoCounter" />
+          <ScalarProperty Name="ValueID" ColumnName="ValueID" />
+          <ScalarProperty Name="GroupID" ColumnName="GroupID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ISOMetadatas">
+      <EntityTypeMapping TypeName="ODM_1_1_1EFModel.ISOMetadata">
+        <MappingFragment StoreEntitySet="ISOMetadata">
+          <ScalarProperty Name="MetadataLink" ColumnName="MetadataLink" />
+          <ScalarProperty Name="ProfileVersion" ColumnName="ProfileVersion" />
+          <ScalarProperty Name="Abstract" ColumnName="Abstract" />
+          <ScalarProperty Name="Title" ColumnName="Title" />
+          <ScalarProperty Name="TopicCategory" ColumnName="TopicCategory" />
+          <ScalarProperty Name="MetadataID" ColumnName="MetadataID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="LabMethods">
+      <EntityTypeMapping TypeName="ODM_1_1_1EFModel.LabMethod">
+        <MappingFragment StoreEntitySet="LabMethods">
+          <ScalarProperty Name="LabMethodLink" ColumnName="LabMethodLink" />
+          <ScalarProperty Name="LabMethodDescription" ColumnName="LabMethodDescription" />
+          <ScalarProperty Name="LabMethodName" ColumnName="LabMethodName" />
+          <ScalarProperty Name="LabOrganization" ColumnName="LabOrganization" />
+          <ScalarProperty Name="LabName" ColumnName="LabName" />
+          <ScalarProperty Name="LabMethodID" ColumnName="LabMethodID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Methods">
+      <EntityTypeMapping TypeName="ODM_1_1_1EFModel.Method">
+        <MappingFragment StoreEntitySet="Methods">
+          <ScalarProperty Name="MethodLink" ColumnName="MethodLink" />
+          <ScalarProperty Name="MethodDescription" ColumnName="MethodDescription" />
+          <ScalarProperty Name="MethodID" ColumnName="MethodID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ODMVersions">
+      <EntityTypeMapping TypeName="ODM_1_1_1EFModel.ODMVersion">
+        <MappingFragment StoreEntitySet="ODMVersion">
+          <ScalarProperty Name="AutoCounter" ColumnName="AutoCounter" />
+          <ScalarProperty Name="VersionNumber" ColumnName="VersionNumber" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="OffsetTypes">
+      <EntityTypeMapping TypeName="ODM_1_1_1EFModel.OffsetType">
+        <MappingFragment StoreEntitySet="OffsetTypes">
+          <ScalarProperty Name="OffsetDescription" ColumnName="OffsetDescription" />
+          <ScalarProperty Name="OffsetUnitsID" ColumnName="OffsetUnitsID" />
+          <ScalarProperty Name="OffsetTypeID" ColumnName="OffsetTypeID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Qualifiers">
+      <EntityTypeMapping TypeName="ODM_1_1_1EFModel.Qualifier">
+        <MappingFragment StoreEntitySet="Qualifiers">
+          <ScalarProperty Name="QualifierDescription" ColumnName="QualifierDescription" />
+          <ScalarProperty Name="QualifierCode" ColumnName="QualifierCode" />
+          <ScalarProperty Name="QualifierID" ColumnName="QualifierID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="QualityControlLevels">
+      <EntityTypeMapping TypeName="ODM_1_1_1EFModel.QualityControlLevel">
+        <MappingFragment StoreEntitySet="QualityControlLevels">
+          <ScalarProperty Name="Explanation" ColumnName="Explanation" />
+          <ScalarProperty Name="Definition" ColumnName="Definition" />
+          <ScalarProperty Name="QualityControlLevelCode" ColumnName="QualityControlLevelCode" />
+          <ScalarProperty Name="QualityControlLevelID" ColumnName="QualityControlLevelID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SampleMediumCVs">
+      <EntityTypeMapping TypeName="ODM_1_1_1EFModel.SampleMediumCV">
+        <MappingFragment StoreEntitySet="SampleMediumCV">
+          <ScalarProperty Name="Definition" ColumnName="Definition" />
+          <ScalarProperty Name="Term" ColumnName="Term" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Samples">
+      <EntityTypeMapping TypeName="ODM_1_1_1EFModel.Sample">
+        <MappingFragment StoreEntitySet="Samples">
+          <ScalarProperty Name="LabMethodID" ColumnName="LabMethodID" />
+          <ScalarProperty Name="LabSampleCode" ColumnName="LabSampleCode" />
+          <ScalarProperty Name="SampleType" ColumnName="SampleType" />
+          <ScalarProperty Name="SampleID" ColumnName="SampleID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SampleTypeCVs">
+      <EntityTypeMapping TypeName="ODM_1_1_1EFModel.SampleTypeCV">
+        <MappingFragment StoreEntitySet="SampleTypeCV">
+          <ScalarProperty Name="Definition" ColumnName="Definition" />
+          <ScalarProperty Name="Term" ColumnName="Term" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SeriesCatalogs">
+      <EntityTypeMapping TypeName="ODM_1_1_1EFModel.SeriesCatalog">
+        <MappingFragment StoreEntitySet="SeriesCatalog">
+          <ScalarProperty Name="ValueCount" ColumnName="ValueCount" />
+          <ScalarProperty Name="EndDateTimeUTC" ColumnName="EndDateTimeUTC" />
+          <ScalarProperty Name="BeginDateTimeUTC" ColumnName="BeginDateTimeUTC" />
+          <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
+          <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
+          <ScalarProperty Name="QualityControlLevelCode" ColumnName="QualityControlLevelCode" />
+          <ScalarProperty Name="QualityControlLevelID" ColumnName="QualityControlLevelID" />
+          <ScalarProperty Name="Citation" ColumnName="Citation" />
+          <ScalarProperty Name="SourceDescription" ColumnName="SourceDescription" />
+          <ScalarProperty Name="Organization" ColumnName="Organization" />
+          <ScalarProperty Name="SourceID" ColumnName="SourceID" />
+          <ScalarProperty Name="MethodDescription" ColumnName="MethodDescription" />
+          <ScalarProperty Name="MethodID" ColumnName="MethodID" />
+          <ScalarProperty Name="GeneralCategory" ColumnName="GeneralCategory" />
+          <ScalarProperty Name="DataType" ColumnName="DataType" />
+          <ScalarProperty Name="TimeUnitsName" ColumnName="TimeUnitsName" />
+          <ScalarProperty Name="TimeUnitsID" ColumnName="TimeUnitsID" />
+          <ScalarProperty Name="TimeSupport" ColumnName="TimeSupport" />
+          <ScalarProperty Name="ValueType" ColumnName="ValueType" />
+          <ScalarProperty Name="SampleMedium" ColumnName="SampleMedium" />
+          <ScalarProperty Name="VariableUnitsName" ColumnName="VariableUnitsName" />
+          <ScalarProperty Name="VariableUnitsID" ColumnName="VariableUnitsID" />
+          <ScalarProperty Name="Speciation" ColumnName="Speciation" />
+          <ScalarProperty Name="VariableName" ColumnName="VariableName" />
+          <ScalarProperty Name="VariableCode" ColumnName="VariableCode" />
+          <ScalarProperty Name="VariableID" ColumnName="VariableID" />
+          <ScalarProperty Name="SiteType" ColumnName="SiteType" />
+          <ScalarProperty Name="SiteName" ColumnName="SiteName" />
+          <ScalarProperty Name="SiteCode" ColumnName="SiteCode" />
+          <ScalarProperty Name="SiteID" ColumnName="SiteID" />
+          <ScalarProperty Name="SeriesID" ColumnName="SeriesID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Sites">
+      <EntityTypeMapping TypeName="ODM_1_1_1EFModel.Site">
+        <MappingFragment StoreEntitySet="Sites">
+          <ScalarProperty Name="SiteType" ColumnName="SiteType" />
+          <ScalarProperty Name="Comments" ColumnName="Comments" />
+          <ScalarProperty Name="County" ColumnName="County" />
+          <ScalarProperty Name="State" ColumnName="State" />
+          <ScalarProperty Name="PosAccuracy_m" ColumnName="PosAccuracy_m" />
+          <ScalarProperty Name="LocalProjectionID" ColumnName="LocalProjectionID" />
+          <ScalarProperty Name="LocalY" ColumnName="LocalY" />
+          <ScalarProperty Name="LocalX" ColumnName="LocalX" />
+          <ScalarProperty Name="VerticalDatum" ColumnName="VerticalDatum" />
+          <ScalarProperty Name="Elevation_m" ColumnName="Elevation_m" />
+          <ScalarProperty Name="LatLongDatumID" ColumnName="LatLongDatumID" />
+          <ScalarProperty Name="Longitude" ColumnName="Longitude" />
+          <ScalarProperty Name="Latitude" ColumnName="Latitude" />
+          <ScalarProperty Name="SiteName" ColumnName="SiteName" />
+          <ScalarProperty Name="SiteCode" ColumnName="SiteCode" />
+          <ScalarProperty Name="SiteID" ColumnName="SiteID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SiteTypeCVs">
+      <EntityTypeMapping TypeName="ODM_1_1_1EFModel.SiteTypeCV">
+        <MappingFragment StoreEntitySet="SiteTypeCV">
+          <ScalarProperty Name="Definition" ColumnName="Definition" />
+          <ScalarProperty Name="Term" ColumnName="Term" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Sources">
+      <EntityTypeMapping TypeName="ODM_1_1_1EFModel.Source">
+        <MappingFragment StoreEntitySet="Sources">
+          <ScalarProperty Name="MetadataID" ColumnName="MetadataID" />
+          <ScalarProperty Name="Citation" ColumnName="Citation" />
+          <ScalarProperty Name="ZipCode" ColumnName="ZipCode" />
+          <ScalarProperty Name="State" ColumnName="State" />
+          <ScalarProperty Name="City" ColumnName="City" />
+          <ScalarProperty Name="Address" ColumnName="Address" />
+          <ScalarProperty Name="Email" ColumnName="Email" />
+          <ScalarProperty Name="Phone" ColumnName="Phone" />
+          <ScalarProperty Name="ContactName" ColumnName="ContactName" />
+          <ScalarProperty Name="SourceLink" ColumnName="SourceLink" />
+          <ScalarProperty Name="SourceDescription" ColumnName="SourceDescription" />
+          <ScalarProperty Name="Organization" ColumnName="Organization" />
+          <ScalarProperty Name="SourceID" ColumnName="SourceID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SpatialReferences">
+      <EntityTypeMapping TypeName="ODM_1_1_1EFModel.SpatialReference">
+        <MappingFragment StoreEntitySet="SpatialReferences">
+          <ScalarProperty Name="Notes" ColumnName="Notes" />
+          <ScalarProperty Name="IsGeographic" ColumnName="IsGeographic" />
+          <ScalarProperty Name="SRSName" ColumnName="SRSName" />
+          <ScalarProperty Name="SRSID" ColumnName="SRSID" />
+          <ScalarProperty Name="SpatialReferenceID" ColumnName="SpatialReferenceID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SpeciationCVs">
+      <EntityTypeMapping TypeName="ODM_1_1_1EFModel.SpeciationCV">
+        <MappingFragment StoreEntitySet="SpeciationCV">
+          <ScalarProperty Name="Definition" ColumnName="Definition" />
+          <ScalarProperty Name="Term" ColumnName="Term" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="TopicCategoryCVs">
+      <EntityTypeMapping TypeName="ODM_1_1_1EFModel.TopicCategoryCV">
+        <MappingFragment StoreEntitySet="TopicCategoryCV">
+          <ScalarProperty Name="Definition" ColumnName="Definition" />
+          <ScalarProperty Name="Term" ColumnName="Term" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Units">
+      <EntityTypeMapping TypeName="ODM_1_1_1EFModel.Unit">
+        <MappingFragment StoreEntitySet="Units">
+          <ScalarProperty Name="UnitsAbbreviation" ColumnName="UnitsAbbreviation" />
+          <ScalarProperty Name="UnitsType" ColumnName="UnitsType" />
+          <ScalarProperty Name="UnitsName" ColumnName="UnitsName" />
+          <ScalarProperty Name="UnitsID" ColumnName="UnitsID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ValueTypeCVs">
+      <EntityTypeMapping TypeName="ODM_1_1_1EFModel.ValueTypeCV">
+        <MappingFragment StoreEntitySet="ValueTypeCV">
+          <ScalarProperty Name="Definition" ColumnName="Definition" />
+          <ScalarProperty Name="Term" ColumnName="Term" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="VariableNameCVs">
+      <EntityTypeMapping TypeName="ODM_1_1_1EFModel.VariableNameCV">
+        <MappingFragment StoreEntitySet="VariableNameCV">
+          <ScalarProperty Name="Definition" ColumnName="Definition" />
+          <ScalarProperty Name="Term" ColumnName="Term" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Variables">
+      <EntityTypeMapping TypeName="ODM_1_1_1EFModel.Variable">
+        <MappingFragment StoreEntitySet="Variables">
+          <ScalarProperty Name="NoDataValue" ColumnName="NoDataValue" />
+          <ScalarProperty Name="GeneralCategory" ColumnName="GeneralCategory" />
+          <ScalarProperty Name="DataType" ColumnName="DataType" />
+          <ScalarProperty Name="TimeUnitsID" ColumnName="TimeUnitsID" />
+          <ScalarProperty Name="TimeSupport" ColumnName="TimeSupport" />
+          <ScalarProperty Name="IsRegular" ColumnName="IsRegular" />
+          <ScalarProperty Name="ValueType" ColumnName="ValueType" />
+          <ScalarProperty Name="SampleMedium" ColumnName="SampleMedium" />
+          <ScalarProperty Name="VariableUnitsID" ColumnName="VariableUnitsID" />
+          <ScalarProperty Name="Speciation" ColumnName="Speciation" />
+          <ScalarProperty Name="VariableName" ColumnName="VariableName" />
+          <ScalarProperty Name="VariableCode" ColumnName="VariableCode" />
+          <ScalarProperty Name="VariableID" ColumnName="VariableID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="VerticalDatumCVs">
+      <EntityTypeMapping TypeName="ODM_1_1_1EFModel.VerticalDatumCV">
+        <MappingFragment StoreEntitySet="VerticalDatumCV">
+          <ScalarProperty Name="Definition" ColumnName="Definition" />
+          <ScalarProperty Name="Term" ColumnName="Term" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>

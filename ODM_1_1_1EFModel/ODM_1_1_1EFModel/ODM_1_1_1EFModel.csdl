@@ -1,0 +1,888 @@
+<Schema Namespace="ODM_1_1_1EFModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityContainer Name="ODM_1_1_1Entities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Categories" EntityType="ODM_1_1_1EFModel.Category" />
+    <EntitySet Name="CensorCodeCVs" EntityType="ODM_1_1_1EFModel.CensorCodeCV" />
+    <EntitySet Name="DataTypeCVs" EntityType="ODM_1_1_1EFModel.DataTypeCV" />
+    <EntitySet Name="DataValues" EntityType="ODM_1_1_1EFModel.DataValue" />
+    <EntitySet Name="DerivedFroms" EntityType="ODM_1_1_1EFModel.DerivedFrom" />
+    <EntitySet Name="GeneralCategoryCVs" EntityType="ODM_1_1_1EFModel.GeneralCategoryCV" />
+    <EntitySet Name="GroupDescriptions" EntityType="ODM_1_1_1EFModel.GroupDescription" />
+    <EntitySet Name="Groups" EntityType="ODM_1_1_1EFModel.Group" />
+    <EntitySet Name="ISOMetadatas" EntityType="ODM_1_1_1EFModel.ISOMetadata" />
+    <EntitySet Name="LabMethods" EntityType="ODM_1_1_1EFModel.LabMethod" />
+    <EntitySet Name="Methods" EntityType="ODM_1_1_1EFModel.Method" />
+    <EntitySet Name="ODMVersions" EntityType="ODM_1_1_1EFModel.ODMVersion" />
+    <EntitySet Name="OffsetTypes" EntityType="ODM_1_1_1EFModel.OffsetType" />
+    <EntitySet Name="Qualifiers" EntityType="ODM_1_1_1EFModel.Qualifier" />
+    <EntitySet Name="QualityControlLevels" EntityType="ODM_1_1_1EFModel.QualityControlLevel" />
+    <EntitySet Name="SampleMediumCVs" EntityType="ODM_1_1_1EFModel.SampleMediumCV" />
+    <EntitySet Name="Samples" EntityType="ODM_1_1_1EFModel.Sample" />
+    <EntitySet Name="SampleTypeCVs" EntityType="ODM_1_1_1EFModel.SampleTypeCV" />
+    <EntitySet Name="SeriesCatalogs" EntityType="ODM_1_1_1EFModel.SeriesCatalog" />
+    <EntitySet Name="Sites" EntityType="ODM_1_1_1EFModel.Site" />
+    <EntitySet Name="SiteTypeCVs" EntityType="ODM_1_1_1EFModel.SiteTypeCV" />
+    <EntitySet Name="Sources" EntityType="ODM_1_1_1EFModel.Source" />
+    <EntitySet Name="SpatialReferences" EntityType="ODM_1_1_1EFModel.SpatialReference" />
+    <EntitySet Name="SpeciationCVs" EntityType="ODM_1_1_1EFModel.SpeciationCV" />
+    <EntitySet Name="TopicCategoryCVs" EntityType="ODM_1_1_1EFModel.TopicCategoryCV" />
+    <EntitySet Name="Units" EntityType="ODM_1_1_1EFModel.Unit" />
+    <EntitySet Name="ValueTypeCVs" EntityType="ODM_1_1_1EFModel.ValueTypeCV" />
+    <EntitySet Name="VariableNameCVs" EntityType="ODM_1_1_1EFModel.VariableNameCV" />
+    <EntitySet Name="Variables" EntityType="ODM_1_1_1EFModel.Variable" />
+    <EntitySet Name="VerticalDatumCVs" EntityType="ODM_1_1_1EFModel.VerticalDatumCV" />
+    <AssociationSet Name="FK_Categories_Variables" Association="ODM_1_1_1EFModel.FK_Categories_Variables">
+      <End Role="Variable" EntitySet="Variables" />
+      <End Role="Category" EntitySet="Categories" />
+    </AssociationSet>
+    <AssociationSet Name="FK_DataValues_CensorCodeCV" Association="ODM_1_1_1EFModel.FK_DataValues_CensorCodeCV">
+      <End Role="CensorCodeCV" EntitySet="CensorCodeCVs" />
+      <End Role="DataValue" EntitySet="DataValues" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Variables_DataTypeCV" Association="ODM_1_1_1EFModel.FK_Variables_DataTypeCV">
+      <End Role="DataTypeCV" EntitySet="DataTypeCVs" />
+      <End Role="Variable" EntitySet="Variables" />
+    </AssociationSet>
+    <AssociationSet Name="FK_DataValues_Methods" Association="ODM_1_1_1EFModel.FK_DataValues_Methods">
+      <End Role="Method" EntitySet="Methods" />
+      <End Role="DataValue" EntitySet="DataValues" />
+    </AssociationSet>
+    <AssociationSet Name="FK_DataValues_OffsetTypes" Association="ODM_1_1_1EFModel.FK_DataValues_OffsetTypes">
+      <End Role="OffsetType" EntitySet="OffsetTypes" />
+      <End Role="DataValue" EntitySet="DataValues" />
+    </AssociationSet>
+    <AssociationSet Name="FK_DataValues_Qualifiers" Association="ODM_1_1_1EFModel.FK_DataValues_Qualifiers">
+      <End Role="Qualifier" EntitySet="Qualifiers" />
+      <End Role="DataValue" EntitySet="DataValues" />
+    </AssociationSet>
+    <AssociationSet Name="FK_DataValues_QualityControlLevels" Association="ODM_1_1_1EFModel.FK_DataValues_QualityControlLevels">
+      <End Role="QualityControlLevel" EntitySet="QualityControlLevels" />
+      <End Role="DataValue" EntitySet="DataValues" />
+    </AssociationSet>
+    <AssociationSet Name="FK_DataValues_Samples" Association="ODM_1_1_1EFModel.FK_DataValues_Samples">
+      <End Role="Sample" EntitySet="Samples" />
+      <End Role="DataValue" EntitySet="DataValues" />
+    </AssociationSet>
+    <AssociationSet Name="FK_DataValues_Sites" Association="ODM_1_1_1EFModel.FK_DataValues_Sites">
+      <End Role="Site" EntitySet="Sites" />
+      <End Role="DataValue" EntitySet="DataValues" />
+    </AssociationSet>
+    <AssociationSet Name="FK_DataValues_Sources" Association="ODM_1_1_1EFModel.FK_DataValues_Sources">
+      <End Role="Source" EntitySet="Sources" />
+      <End Role="DataValue" EntitySet="DataValues" />
+    </AssociationSet>
+    <AssociationSet Name="FK_DataValues_Variables" Association="ODM_1_1_1EFModel.FK_DataValues_Variables">
+      <End Role="Variable" EntitySet="Variables" />
+      <End Role="DataValue" EntitySet="DataValues" />
+    </AssociationSet>
+    <AssociationSet Name="FK_DerivedFrom_DataValues" Association="ODM_1_1_1EFModel.FK_DerivedFrom_DataValues">
+      <End Role="DataValue" EntitySet="DataValues" />
+      <End Role="DerivedFrom" EntitySet="DerivedFroms" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Groups_DataValues" Association="ODM_1_1_1EFModel.FK_Groups_DataValues">
+      <End Role="DataValue" EntitySet="DataValues" />
+      <End Role="Group" EntitySet="Groups" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Variables_GeneralCategoryCV" Association="ODM_1_1_1EFModel.FK_Variables_GeneralCategoryCV">
+      <End Role="GeneralCategoryCV" EntitySet="GeneralCategoryCVs" />
+      <End Role="Variable" EntitySet="Variables" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Groups_GroupDescriptions" Association="ODM_1_1_1EFModel.FK_Groups_GroupDescriptions">
+      <End Role="GroupDescription" EntitySet="GroupDescriptions" />
+      <End Role="Group" EntitySet="Groups" />
+    </AssociationSet>
+    <AssociationSet Name="FK_ISOMetadata_TopicCategoryCV" Association="ODM_1_1_1EFModel.FK_ISOMetadata_TopicCategoryCV">
+      <End Role="TopicCategoryCV" EntitySet="TopicCategoryCVs" />
+      <End Role="ISOMetadata" EntitySet="ISOMetadatas" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Sources_ISOMetaData" Association="ODM_1_1_1EFModel.FK_Sources_ISOMetaData">
+      <End Role="ISOMetadata" EntitySet="ISOMetadatas" />
+      <End Role="Source" EntitySet="Sources" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Samples_LabMethods" Association="ODM_1_1_1EFModel.FK_Samples_LabMethods">
+      <End Role="LabMethod" EntitySet="LabMethods" />
+      <End Role="Sample" EntitySet="Samples" />
+    </AssociationSet>
+    <AssociationSet Name="FK_OffsetTypes_Units" Association="ODM_1_1_1EFModel.FK_OffsetTypes_Units">
+      <End Role="Unit" EntitySet="Units" />
+      <End Role="OffsetType" EntitySet="OffsetTypes" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Variables_SampleMediumCV" Association="ODM_1_1_1EFModel.FK_Variables_SampleMediumCV">
+      <End Role="SampleMediumCV" EntitySet="SampleMediumCVs" />
+      <End Role="Variable" EntitySet="Variables" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Samples_SampleTypeCV" Association="ODM_1_1_1EFModel.FK_Samples_SampleTypeCV">
+      <End Role="SampleTypeCV" EntitySet="SampleTypeCVs" />
+      <End Role="Sample" EntitySet="Samples" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Sites_SiteTypeCV" Association="ODM_1_1_1EFModel.FK_Sites_SiteTypeCV">
+      <End Role="SiteTypeCV" EntitySet="SiteTypeCVs" />
+      <End Role="Site" EntitySet="Sites" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Sites_SpatialReferences" Association="ODM_1_1_1EFModel.FK_Sites_SpatialReferences">
+      <End Role="SpatialReference" EntitySet="SpatialReferences" />
+      <End Role="Site" EntitySet="Sites" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Sites_SpatialReferences1" Association="ODM_1_1_1EFModel.FK_Sites_SpatialReferences1">
+      <End Role="SpatialReference" EntitySet="SpatialReferences" />
+      <End Role="Site" EntitySet="Sites" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Sites_VerticalDatumCV" Association="ODM_1_1_1EFModel.FK_Sites_VerticalDatumCV">
+      <End Role="VerticalDatumCV" EntitySet="VerticalDatumCVs" />
+      <End Role="Site" EntitySet="Sites" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Variables_SpeciationCV" Association="ODM_1_1_1EFModel.FK_Variables_SpeciationCV">
+      <End Role="SpeciationCV" EntitySet="SpeciationCVs" />
+      <End Role="Variable" EntitySet="Variables" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Variables_Units" Association="ODM_1_1_1EFModel.FK_Variables_Units">
+      <End Role="Unit" EntitySet="Units" />
+      <End Role="Variable" EntitySet="Variables" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Variables_Units1" Association="ODM_1_1_1EFModel.FK_Variables_Units1">
+      <End Role="Unit" EntitySet="Units" />
+      <End Role="Variable" EntitySet="Variables" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Variables_ValueTypeCV" Association="ODM_1_1_1EFModel.FK_Variables_ValueTypeCV">
+      <End Role="ValueTypeCV" EntitySet="ValueTypeCVs" />
+      <End Role="Variable" EntitySet="Variables" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Variables_VariableNameCV" Association="ODM_1_1_1EFModel.FK_Variables_VariableNameCV">
+      <End Role="VariableNameCV" EntitySet="VariableNameCVs" />
+      <End Role="Variable" EntitySet="Variables" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="Category">
+    <Key>
+      <PropertyRef Name="AutoCounter" />
+    </Key>
+    <Property Name="AutoCounter" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="VariableID" Type="Int32" Nullable="false" />
+    <Property Name="DataValue" Type="Double" Nullable="false" />
+    <Property Name="CategoryDescription" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Variable" Relationship="ODM_1_1_1EFModel.FK_Categories_Variables" FromRole="Category" ToRole="Variable" />
+  </EntityType>
+  <EntityType Name="CensorCodeCV">
+    <Key>
+      <PropertyRef Name="Term" />
+    </Key>
+    <Property Name="Term" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="Definition" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="DataValues" Relationship="ODM_1_1_1EFModel.FK_DataValues_CensorCodeCV" FromRole="CensorCodeCV" ToRole="DataValue" />
+  </EntityType>
+  <EntityType Name="DataTypeCV">
+    <Key>
+      <PropertyRef Name="Term" />
+    </Key>
+    <Property Name="Term" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="Definition" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Variables" Relationship="ODM_1_1_1EFModel.FK_Variables_DataTypeCV" FromRole="DataTypeCV" ToRole="Variable" />
+  </EntityType>
+  <EntityType Name="DataValue">
+    <Key>
+      <PropertyRef Name="ValueID" />
+    </Key>
+    <Property Name="ValueID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="DataValue1" Type="Double" Nullable="false" />
+    <Property Name="ValueAccuracy" Type="Double" />
+    <Property Name="LocalDateTime" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="UTCOffset" Type="Double" Nullable="false" />
+    <Property Name="DateTimeUTC" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="SiteID" Type="Int32" Nullable="false" />
+    <Property Name="VariableID" Type="Int32" Nullable="false" />
+    <Property Name="OffsetValue" Type="Double" />
+    <Property Name="OffsetTypeID" Type="Int32" />
+    <Property Name="CensorCode" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="QualifierID" Type="Int32" />
+    <Property Name="MethodID" Type="Int32" Nullable="false" />
+    <Property Name="SourceID" Type="Int32" Nullable="false" />
+    <Property Name="SampleID" Type="Int32" />
+    <Property Name="DerivedFromID" Type="Int32" />
+    <Property Name="QualityControlLevelID" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="CensorCodeCV" Relationship="ODM_1_1_1EFModel.FK_DataValues_CensorCodeCV" FromRole="DataValue" ToRole="CensorCodeCV" />
+    <NavigationProperty Name="Method" Relationship="ODM_1_1_1EFModel.FK_DataValues_Methods" FromRole="DataValue" ToRole="Method" />
+    <NavigationProperty Name="OffsetType" Relationship="ODM_1_1_1EFModel.FK_DataValues_OffsetTypes" FromRole="DataValue" ToRole="OffsetType" />
+    <NavigationProperty Name="Qualifier" Relationship="ODM_1_1_1EFModel.FK_DataValues_Qualifiers" FromRole="DataValue" ToRole="Qualifier" />
+    <NavigationProperty Name="QualityControlLevel" Relationship="ODM_1_1_1EFModel.FK_DataValues_QualityControlLevels" FromRole="DataValue" ToRole="QualityControlLevel" />
+    <NavigationProperty Name="Sample" Relationship="ODM_1_1_1EFModel.FK_DataValues_Samples" FromRole="DataValue" ToRole="Sample" />
+    <NavigationProperty Name="Site" Relationship="ODM_1_1_1EFModel.FK_DataValues_Sites" FromRole="DataValue" ToRole="Site" />
+    <NavigationProperty Name="Source" Relationship="ODM_1_1_1EFModel.FK_DataValues_Sources" FromRole="DataValue" ToRole="Source" />
+    <NavigationProperty Name="Variable" Relationship="ODM_1_1_1EFModel.FK_DataValues_Variables" FromRole="DataValue" ToRole="Variable" />
+    <NavigationProperty Name="DerivedFroms" Relationship="ODM_1_1_1EFModel.FK_DerivedFrom_DataValues" FromRole="DataValue" ToRole="DerivedFrom" />
+    <NavigationProperty Name="Groups" Relationship="ODM_1_1_1EFModel.FK_Groups_DataValues" FromRole="DataValue" ToRole="Group" />
+  </EntityType>
+  <EntityType Name="DerivedFrom">
+    <Key>
+      <PropertyRef Name="AutoCounter" />
+    </Key>
+    <Property Name="DerivedFromID" Type="Int32" Nullable="false" />
+    <Property Name="ValueID" Type="Int32" Nullable="false" />
+    <Property Name="AutoCounter" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <NavigationProperty Name="DataValue" Relationship="ODM_1_1_1EFModel.FK_DerivedFrom_DataValues" FromRole="DerivedFrom" ToRole="DataValue" />
+  </EntityType>
+  <EntityType Name="GeneralCategoryCV">
+    <Key>
+      <PropertyRef Name="Term" />
+    </Key>
+    <Property Name="Term" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="Definition" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Variables" Relationship="ODM_1_1_1EFModel.FK_Variables_GeneralCategoryCV" FromRole="GeneralCategoryCV" ToRole="Variable" />
+  </EntityType>
+  <EntityType Name="GroupDescription">
+    <Key>
+      <PropertyRef Name="GroupID" />
+    </Key>
+    <Property Name="GroupID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="GroupDescription1" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Groups" Relationship="ODM_1_1_1EFModel.FK_Groups_GroupDescriptions" FromRole="GroupDescription" ToRole="Group" />
+  </EntityType>
+  <EntityType Name="Group">
+    <Key>
+      <PropertyRef Name="AutoCounter" />
+    </Key>
+    <Property Name="GroupID" Type="Int32" Nullable="false" />
+    <Property Name="ValueID" Type="Int32" Nullable="false" />
+    <Property Name="AutoCounter" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <NavigationProperty Name="DataValue" Relationship="ODM_1_1_1EFModel.FK_Groups_DataValues" FromRole="Group" ToRole="DataValue" />
+    <NavigationProperty Name="GroupDescription" Relationship="ODM_1_1_1EFModel.FK_Groups_GroupDescriptions" FromRole="Group" ToRole="GroupDescription" />
+  </EntityType>
+  <EntityType Name="ISOMetadata">
+    <Key>
+      <PropertyRef Name="MetadataID" />
+    </Key>
+    <Property Name="MetadataID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="TopicCategory" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="Title" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="Abstract" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="ProfileVersion" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="MetadataLink" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="TopicCategoryCV" Relationship="ODM_1_1_1EFModel.FK_ISOMetadata_TopicCategoryCV" FromRole="ISOMetadata" ToRole="TopicCategoryCV" />
+    <NavigationProperty Name="Sources" Relationship="ODM_1_1_1EFModel.FK_Sources_ISOMetaData" FromRole="ISOMetadata" ToRole="Source" />
+  </EntityType>
+  <EntityType Name="LabMethod">
+    <Key>
+      <PropertyRef Name="LabMethodID" />
+    </Key>
+    <Property Name="LabMethodID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="LabName" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="LabOrganization" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="LabMethodName" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="LabMethodDescription" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="LabMethodLink" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Samples" Relationship="ODM_1_1_1EFModel.FK_Samples_LabMethods" FromRole="LabMethod" ToRole="Sample" />
+  </EntityType>
+  <EntityType Name="Method">
+    <Key>
+      <PropertyRef Name="MethodID" />
+    </Key>
+    <Property Name="MethodID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="MethodDescription" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="MethodLink" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="DataValues" Relationship="ODM_1_1_1EFModel.FK_DataValues_Methods" FromRole="Method" ToRole="DataValue" />
+  </EntityType>
+  <EntityType Name="ODMVersion">
+    <Key>
+      <PropertyRef Name="AutoCounter" />
+    </Key>
+    <Property Name="VersionNumber" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="AutoCounter" Type="Int32" Nullable="false" />
+  </EntityType>
+  <EntityType Name="OffsetType">
+    <Key>
+      <PropertyRef Name="OffsetTypeID" />
+    </Key>
+    <Property Name="OffsetTypeID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="OffsetUnitsID" Type="Int32" Nullable="false" />
+    <Property Name="OffsetDescription" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="DataValues" Relationship="ODM_1_1_1EFModel.FK_DataValues_OffsetTypes" FromRole="OffsetType" ToRole="DataValue" />
+    <NavigationProperty Name="Unit" Relationship="ODM_1_1_1EFModel.FK_OffsetTypes_Units" FromRole="OffsetType" ToRole="Unit" />
+  </EntityType>
+  <EntityType Name="Qualifier">
+    <Key>
+      <PropertyRef Name="QualifierID" />
+    </Key>
+    <Property Name="QualifierID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="QualifierCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="QualifierDescription" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="DataValues" Relationship="ODM_1_1_1EFModel.FK_DataValues_Qualifiers" FromRole="Qualifier" ToRole="DataValue" />
+  </EntityType>
+  <EntityType Name="QualityControlLevel">
+    <Key>
+      <PropertyRef Name="QualityControlLevelID" />
+    </Key>
+    <Property Name="QualityControlLevelID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="QualityControlLevelCode" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="Definition" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="Explanation" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="DataValues" Relationship="ODM_1_1_1EFModel.FK_DataValues_QualityControlLevels" FromRole="QualityControlLevel" ToRole="DataValue" />
+  </EntityType>
+  <EntityType Name="SampleMediumCV">
+    <Key>
+      <PropertyRef Name="Term" />
+    </Key>
+    <Property Name="Term" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="Definition" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Variables" Relationship="ODM_1_1_1EFModel.FK_Variables_SampleMediumCV" FromRole="SampleMediumCV" ToRole="Variable" />
+  </EntityType>
+  <EntityType Name="Sample">
+    <Key>
+      <PropertyRef Name="SampleID" />
+    </Key>
+    <Property Name="SampleID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="SampleType" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="LabSampleCode" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="LabMethodID" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="DataValues" Relationship="ODM_1_1_1EFModel.FK_DataValues_Samples" FromRole="Sample" ToRole="DataValue" />
+    <NavigationProperty Name="LabMethod" Relationship="ODM_1_1_1EFModel.FK_Samples_LabMethods" FromRole="Sample" ToRole="LabMethod" />
+    <NavigationProperty Name="SampleTypeCV" Relationship="ODM_1_1_1EFModel.FK_Samples_SampleTypeCV" FromRole="Sample" ToRole="SampleTypeCV" />
+  </EntityType>
+  <EntityType Name="SampleTypeCV">
+    <Key>
+      <PropertyRef Name="Term" />
+    </Key>
+    <Property Name="Term" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="Definition" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Samples" Relationship="ODM_1_1_1EFModel.FK_Samples_SampleTypeCV" FromRole="SampleTypeCV" ToRole="Sample" />
+  </EntityType>
+  <EntityType Name="SeriesCatalog">
+    <Key>
+      <PropertyRef Name="SeriesID" />
+    </Key>
+    <Property Name="SeriesID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="SiteID" Type="Int32" />
+    <Property Name="SiteCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="SiteName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="SiteType" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="VariableID" Type="Int32" />
+    <Property Name="VariableCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="VariableName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="Speciation" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="VariableUnitsID" Type="Int32" />
+    <Property Name="VariableUnitsName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="SampleMedium" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="ValueType" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="TimeSupport" Type="Double" />
+    <Property Name="TimeUnitsID" Type="Int32" />
+    <Property Name="TimeUnitsName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="DataType" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="GeneralCategory" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="MethodID" Type="Int32" />
+    <Property Name="MethodDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="SourceID" Type="Int32" />
+    <Property Name="Organization" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="SourceDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="Citation" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="QualityControlLevelID" Type="Int32" />
+    <Property Name="QualityControlLevelCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="BeginDateTime" Type="DateTime" Precision="3" />
+    <Property Name="EndDateTime" Type="DateTime" Precision="3" />
+    <Property Name="BeginDateTimeUTC" Type="DateTime" Precision="3" />
+    <Property Name="EndDateTimeUTC" Type="DateTime" Precision="3" />
+    <Property Name="ValueCount" Type="Int32" />
+  </EntityType>
+  <EntityType Name="Site">
+    <Key>
+      <PropertyRef Name="SiteID" />
+    </Key>
+    <Property Name="SiteID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="SiteCode" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" annotation:StoreGeneratedPattern="None" />
+    <Property Name="SiteName" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="Latitude" Type="Double" Nullable="false" />
+    <Property Name="Longitude" Type="Double" Nullable="false" />
+    <Property Name="LatLongDatumID" Type="Int32" Nullable="false" />
+    <Property Name="Elevation_m" Type="Double" />
+    <Property Name="VerticalDatum" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="LocalX" Type="Double" />
+    <Property Name="LocalY" Type="Double" />
+    <Property Name="LocalProjectionID" Type="Int32" />
+    <Property Name="PosAccuracy_m" Type="Double" />
+    <Property Name="State" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="County" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="Comments" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="SiteType" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="DataValues" Relationship="ODM_1_1_1EFModel.FK_DataValues_Sites" FromRole="Site" ToRole="DataValue" />
+    <NavigationProperty Name="SiteTypeCV" Relationship="ODM_1_1_1EFModel.FK_Sites_SiteTypeCV" FromRole="Site" ToRole="SiteTypeCV" />
+    <NavigationProperty Name="SpatialReference" Relationship="ODM_1_1_1EFModel.FK_Sites_SpatialReferences" FromRole="Site" ToRole="SpatialReference" />
+    <NavigationProperty Name="SpatialReference1" Relationship="ODM_1_1_1EFModel.FK_Sites_SpatialReferences1" FromRole="Site" ToRole="SpatialReference" />
+    <NavigationProperty Name="VerticalDatumCV" Relationship="ODM_1_1_1EFModel.FK_Sites_VerticalDatumCV" FromRole="Site" ToRole="VerticalDatumCV" />
+  </EntityType>
+  <EntityType Name="SiteTypeCV">
+    <Key>
+      <PropertyRef Name="Term" />
+    </Key>
+    <Property Name="Term" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="Definition" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Sites" Relationship="ODM_1_1_1EFModel.FK_Sites_SiteTypeCV" FromRole="SiteTypeCV" ToRole="Site" />
+  </EntityType>
+  <EntityType Name="Source">
+    <Key>
+      <PropertyRef Name="SourceID" />
+    </Key>
+    <Property Name="SourceID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Organization" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="SourceDescription" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="SourceLink" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+    <Property Name="ContactName" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="Phone" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="Email" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="Address" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="City" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="State" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="ZipCode" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="Citation" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="MetadataID" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="DataValues" Relationship="ODM_1_1_1EFModel.FK_DataValues_Sources" FromRole="Source" ToRole="DataValue" />
+    <NavigationProperty Name="ISOMetadata" Relationship="ODM_1_1_1EFModel.FK_Sources_ISOMetaData" FromRole="Source" ToRole="ISOMetadata" />
+  </EntityType>
+  <EntityType Name="SpatialReference">
+    <Key>
+      <PropertyRef Name="SpatialReferenceID" />
+    </Key>
+    <Property Name="SpatialReferenceID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="SRSID" Type="Int32" />
+    <Property Name="SRSName" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="IsGeographic" Type="Boolean" />
+    <Property Name="Notes" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Sites" Relationship="ODM_1_1_1EFModel.FK_Sites_SpatialReferences" FromRole="SpatialReference" ToRole="Site" />
+    <NavigationProperty Name="Sites1" Relationship="ODM_1_1_1EFModel.FK_Sites_SpatialReferences1" FromRole="SpatialReference" ToRole="Site" />
+  </EntityType>
+  <EntityType Name="SpeciationCV">
+    <Key>
+      <PropertyRef Name="Term" />
+    </Key>
+    <Property Name="Term" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="Definition" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Variables" Relationship="ODM_1_1_1EFModel.FK_Variables_SpeciationCV" FromRole="SpeciationCV" ToRole="Variable" />
+  </EntityType>
+  <EntityType Name="TopicCategoryCV">
+    <Key>
+      <PropertyRef Name="Term" />
+    </Key>
+    <Property Name="Term" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="Definition" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="ISOMetadatas" Relationship="ODM_1_1_1EFModel.FK_ISOMetadata_TopicCategoryCV" FromRole="TopicCategoryCV" ToRole="ISOMetadata" />
+  </EntityType>
+  <EntityType Name="Unit">
+    <Key>
+      <PropertyRef Name="UnitsID" />
+    </Key>
+    <Property Name="UnitsID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="UnitsName" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="UnitsType" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="UnitsAbbreviation" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="OffsetTypes" Relationship="ODM_1_1_1EFModel.FK_OffsetTypes_Units" FromRole="Unit" ToRole="OffsetType" />
+    <NavigationProperty Name="Variables" Relationship="ODM_1_1_1EFModel.FK_Variables_Units" FromRole="Unit" ToRole="Variable" />
+    <NavigationProperty Name="Variables1" Relationship="ODM_1_1_1EFModel.FK_Variables_Units1" FromRole="Unit" ToRole="Variable" />
+  </EntityType>
+  <EntityType Name="ValueTypeCV">
+    <Key>
+      <PropertyRef Name="Term" />
+    </Key>
+    <Property Name="Term" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="Definition" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Variables" Relationship="ODM_1_1_1EFModel.FK_Variables_ValueTypeCV" FromRole="ValueTypeCV" ToRole="Variable" />
+  </EntityType>
+  <EntityType Name="VariableNameCV">
+    <Key>
+      <PropertyRef Name="Term" />
+    </Key>
+    <Property Name="Term" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="Definition" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Variables" Relationship="ODM_1_1_1EFModel.FK_Variables_VariableNameCV" FromRole="VariableNameCV" ToRole="Variable" />
+  </EntityType>
+  <EntityType Name="Variable">
+    <Key>
+      <PropertyRef Name="VariableID" />
+    </Key>
+    <Property Name="VariableID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="VariableCode" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="VariableName" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="Speciation" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="VariableUnitsID" Type="Int32" Nullable="false" />
+    <Property Name="SampleMedium" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="ValueType" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="IsRegular" Type="Boolean" Nullable="false" />
+    <Property Name="TimeSupport" Type="Double" Nullable="false" />
+    <Property Name="TimeUnitsID" Type="Int32" Nullable="false" />
+    <Property Name="DataType" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="GeneralCategory" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="NoDataValue" Type="Double" Nullable="false" />
+    <NavigationProperty Name="Categories" Relationship="ODM_1_1_1EFModel.FK_Categories_Variables" FromRole="Variable" ToRole="Category" />
+    <NavigationProperty Name="DataTypeCV" Relationship="ODM_1_1_1EFModel.FK_Variables_DataTypeCV" FromRole="Variable" ToRole="DataTypeCV" />
+    <NavigationProperty Name="DataValues" Relationship="ODM_1_1_1EFModel.FK_DataValues_Variables" FromRole="Variable" ToRole="DataValue" />
+    <NavigationProperty Name="GeneralCategoryCV" Relationship="ODM_1_1_1EFModel.FK_Variables_GeneralCategoryCV" FromRole="Variable" ToRole="GeneralCategoryCV" />
+    <NavigationProperty Name="SampleMediumCV" Relationship="ODM_1_1_1EFModel.FK_Variables_SampleMediumCV" FromRole="Variable" ToRole="SampleMediumCV" />
+    <NavigationProperty Name="SpeciationCV" Relationship="ODM_1_1_1EFModel.FK_Variables_SpeciationCV" FromRole="Variable" ToRole="SpeciationCV" />
+    <NavigationProperty Name="Unit" Relationship="ODM_1_1_1EFModel.FK_Variables_Units" FromRole="Variable" ToRole="Unit" />
+    <NavigationProperty Name="Unit1" Relationship="ODM_1_1_1EFModel.FK_Variables_Units1" FromRole="Variable" ToRole="Unit" />
+    <NavigationProperty Name="ValueTypeCV" Relationship="ODM_1_1_1EFModel.FK_Variables_ValueTypeCV" FromRole="Variable" ToRole="ValueTypeCV" />
+    <NavigationProperty Name="VariableNameCV" Relationship="ODM_1_1_1EFModel.FK_Variables_VariableNameCV" FromRole="Variable" ToRole="VariableNameCV" />
+  </EntityType>
+  <EntityType Name="VerticalDatumCV">
+    <Key>
+      <PropertyRef Name="Term" />
+    </Key>
+    <Property Name="Term" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="Definition" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Sites" Relationship="ODM_1_1_1EFModel.FK_Sites_VerticalDatumCV" FromRole="VerticalDatumCV" ToRole="Site" />
+  </EntityType>
+  <Association Name="FK_Categories_Variables">
+    <End Type="ODM_1_1_1EFModel.Variable" Role="Variable" Multiplicity="1" />
+    <End Type="ODM_1_1_1EFModel.Category" Role="Category" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Variable">
+        <PropertyRef Name="VariableID" />
+      </Principal>
+      <Dependent Role="Category">
+        <PropertyRef Name="VariableID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_DataValues_CensorCodeCV">
+    <End Type="ODM_1_1_1EFModel.CensorCodeCV" Role="CensorCodeCV" Multiplicity="1" />
+    <End Type="ODM_1_1_1EFModel.DataValue" Role="DataValue" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="CensorCodeCV">
+        <PropertyRef Name="Term" />
+      </Principal>
+      <Dependent Role="DataValue">
+        <PropertyRef Name="CensorCode" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Variables_DataTypeCV">
+    <End Type="ODM_1_1_1EFModel.DataTypeCV" Role="DataTypeCV" Multiplicity="1" />
+    <End Type="ODM_1_1_1EFModel.Variable" Role="Variable" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="DataTypeCV">
+        <PropertyRef Name="Term" />
+      </Principal>
+      <Dependent Role="Variable">
+        <PropertyRef Name="DataType" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_DataValues_Methods">
+    <End Type="ODM_1_1_1EFModel.Method" Role="Method" Multiplicity="1" />
+    <End Type="ODM_1_1_1EFModel.DataValue" Role="DataValue" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Method">
+        <PropertyRef Name="MethodID" />
+      </Principal>
+      <Dependent Role="DataValue">
+        <PropertyRef Name="MethodID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_DataValues_OffsetTypes">
+    <End Type="ODM_1_1_1EFModel.OffsetType" Role="OffsetType" Multiplicity="0..1" />
+    <End Type="ODM_1_1_1EFModel.DataValue" Role="DataValue" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="OffsetType">
+        <PropertyRef Name="OffsetTypeID" />
+      </Principal>
+      <Dependent Role="DataValue">
+        <PropertyRef Name="OffsetTypeID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_DataValues_Qualifiers">
+    <End Type="ODM_1_1_1EFModel.Qualifier" Role="Qualifier" Multiplicity="0..1" />
+    <End Type="ODM_1_1_1EFModel.DataValue" Role="DataValue" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Qualifier">
+        <PropertyRef Name="QualifierID" />
+      </Principal>
+      <Dependent Role="DataValue">
+        <PropertyRef Name="QualifierID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_DataValues_QualityControlLevels">
+    <End Type="ODM_1_1_1EFModel.QualityControlLevel" Role="QualityControlLevel" Multiplicity="1" />
+    <End Type="ODM_1_1_1EFModel.DataValue" Role="DataValue" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="QualityControlLevel">
+        <PropertyRef Name="QualityControlLevelID" />
+      </Principal>
+      <Dependent Role="DataValue">
+        <PropertyRef Name="QualityControlLevelID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_DataValues_Samples">
+    <End Type="ODM_1_1_1EFModel.Sample" Role="Sample" Multiplicity="0..1" />
+    <End Type="ODM_1_1_1EFModel.DataValue" Role="DataValue" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Sample">
+        <PropertyRef Name="SampleID" />
+      </Principal>
+      <Dependent Role="DataValue">
+        <PropertyRef Name="SampleID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_DataValues_Sites">
+    <End Type="ODM_1_1_1EFModel.Site" Role="Site" Multiplicity="1" />
+    <End Type="ODM_1_1_1EFModel.DataValue" Role="DataValue" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Site">
+        <PropertyRef Name="SiteID" />
+      </Principal>
+      <Dependent Role="DataValue">
+        <PropertyRef Name="SiteID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_DataValues_Sources">
+    <End Type="ODM_1_1_1EFModel.Source" Role="Source" Multiplicity="1" />
+    <End Type="ODM_1_1_1EFModel.DataValue" Role="DataValue" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Source">
+        <PropertyRef Name="SourceID" />
+      </Principal>
+      <Dependent Role="DataValue">
+        <PropertyRef Name="SourceID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_DataValues_Variables">
+    <End Type="ODM_1_1_1EFModel.Variable" Role="Variable" Multiplicity="1" />
+    <End Type="ODM_1_1_1EFModel.DataValue" Role="DataValue" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Variable">
+        <PropertyRef Name="VariableID" />
+      </Principal>
+      <Dependent Role="DataValue">
+        <PropertyRef Name="VariableID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_DerivedFrom_DataValues">
+    <End Type="ODM_1_1_1EFModel.DataValue" Role="DataValue" Multiplicity="1" />
+    <End Type="ODM_1_1_1EFModel.DerivedFrom" Role="DerivedFrom" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="DataValue">
+        <PropertyRef Name="ValueID" />
+      </Principal>
+      <Dependent Role="DerivedFrom">
+        <PropertyRef Name="ValueID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Groups_DataValues">
+    <End Type="ODM_1_1_1EFModel.DataValue" Role="DataValue" Multiplicity="1" />
+    <End Type="ODM_1_1_1EFModel.Group" Role="Group" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="DataValue">
+        <PropertyRef Name="ValueID" />
+      </Principal>
+      <Dependent Role="Group">
+        <PropertyRef Name="ValueID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Variables_GeneralCategoryCV">
+    <End Type="ODM_1_1_1EFModel.GeneralCategoryCV" Role="GeneralCategoryCV" Multiplicity="1" />
+    <End Type="ODM_1_1_1EFModel.Variable" Role="Variable" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="GeneralCategoryCV">
+        <PropertyRef Name="Term" />
+      </Principal>
+      <Dependent Role="Variable">
+        <PropertyRef Name="GeneralCategory" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Groups_GroupDescriptions">
+    <End Type="ODM_1_1_1EFModel.GroupDescription" Role="GroupDescription" Multiplicity="1" />
+    <End Type="ODM_1_1_1EFModel.Group" Role="Group" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="GroupDescription">
+        <PropertyRef Name="GroupID" />
+      </Principal>
+      <Dependent Role="Group">
+        <PropertyRef Name="GroupID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_ISOMetadata_TopicCategoryCV">
+    <End Type="ODM_1_1_1EFModel.TopicCategoryCV" Role="TopicCategoryCV" Multiplicity="1" />
+    <End Type="ODM_1_1_1EFModel.ISOMetadata" Role="ISOMetadata" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="TopicCategoryCV">
+        <PropertyRef Name="Term" />
+      </Principal>
+      <Dependent Role="ISOMetadata">
+        <PropertyRef Name="TopicCategory" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Sources_ISOMetaData">
+    <End Type="ODM_1_1_1EFModel.ISOMetadata" Role="ISOMetadata" Multiplicity="1" />
+    <End Type="ODM_1_1_1EFModel.Source" Role="Source" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="ISOMetadata">
+        <PropertyRef Name="MetadataID" />
+      </Principal>
+      <Dependent Role="Source">
+        <PropertyRef Name="MetadataID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Samples_LabMethods">
+    <End Type="ODM_1_1_1EFModel.LabMethod" Role="LabMethod" Multiplicity="1" />
+    <End Type="ODM_1_1_1EFModel.Sample" Role="Sample" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="LabMethod">
+        <PropertyRef Name="LabMethodID" />
+      </Principal>
+      <Dependent Role="Sample">
+        <PropertyRef Name="LabMethodID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_OffsetTypes_Units">
+    <End Type="ODM_1_1_1EFModel.Unit" Role="Unit" Multiplicity="1" />
+    <End Type="ODM_1_1_1EFModel.OffsetType" Role="OffsetType" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Unit">
+        <PropertyRef Name="UnitsID" />
+      </Principal>
+      <Dependent Role="OffsetType">
+        <PropertyRef Name="OffsetUnitsID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Variables_SampleMediumCV">
+    <End Type="ODM_1_1_1EFModel.SampleMediumCV" Role="SampleMediumCV" Multiplicity="1" />
+    <End Type="ODM_1_1_1EFModel.Variable" Role="Variable" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="SampleMediumCV">
+        <PropertyRef Name="Term" />
+      </Principal>
+      <Dependent Role="Variable">
+        <PropertyRef Name="SampleMedium" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Samples_SampleTypeCV">
+    <End Type="ODM_1_1_1EFModel.SampleTypeCV" Role="SampleTypeCV" Multiplicity="1" />
+    <End Type="ODM_1_1_1EFModel.Sample" Role="Sample" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="SampleTypeCV">
+        <PropertyRef Name="Term" />
+      </Principal>
+      <Dependent Role="Sample">
+        <PropertyRef Name="SampleType" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Sites_SiteTypeCV">
+    <End Type="ODM_1_1_1EFModel.SiteTypeCV" Role="SiteTypeCV" Multiplicity="0..1" />
+    <End Type="ODM_1_1_1EFModel.Site" Role="Site" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="SiteTypeCV">
+        <PropertyRef Name="Term" />
+      </Principal>
+      <Dependent Role="Site">
+        <PropertyRef Name="SiteType" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Sites_SpatialReferences">
+    <End Type="ODM_1_1_1EFModel.SpatialReference" Role="SpatialReference" Multiplicity="1" />
+    <End Type="ODM_1_1_1EFModel.Site" Role="Site" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="SpatialReference">
+        <PropertyRef Name="SpatialReferenceID" />
+      </Principal>
+      <Dependent Role="Site">
+        <PropertyRef Name="LatLongDatumID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Sites_SpatialReferences1">
+    <End Type="ODM_1_1_1EFModel.SpatialReference" Role="SpatialReference" Multiplicity="0..1" />
+    <End Type="ODM_1_1_1EFModel.Site" Role="Site" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="SpatialReference">
+        <PropertyRef Name="SpatialReferenceID" />
+      </Principal>
+      <Dependent Role="Site">
+        <PropertyRef Name="LocalProjectionID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Sites_VerticalDatumCV">
+    <End Type="ODM_1_1_1EFModel.VerticalDatumCV" Role="VerticalDatumCV" Multiplicity="0..1" />
+    <End Type="ODM_1_1_1EFModel.Site" Role="Site" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="VerticalDatumCV">
+        <PropertyRef Name="Term" />
+      </Principal>
+      <Dependent Role="Site">
+        <PropertyRef Name="VerticalDatum" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Variables_SpeciationCV">
+    <End Type="ODM_1_1_1EFModel.SpeciationCV" Role="SpeciationCV" Multiplicity="1" />
+    <End Type="ODM_1_1_1EFModel.Variable" Role="Variable" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="SpeciationCV">
+        <PropertyRef Name="Term" />
+      </Principal>
+      <Dependent Role="Variable">
+        <PropertyRef Name="Speciation" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Variables_Units">
+    <End Type="ODM_1_1_1EFModel.Unit" Role="Unit" Multiplicity="1" />
+    <End Type="ODM_1_1_1EFModel.Variable" Role="Variable" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Unit">
+        <PropertyRef Name="UnitsID" />
+      </Principal>
+      <Dependent Role="Variable">
+        <PropertyRef Name="VariableUnitsID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Variables_Units1">
+    <End Type="ODM_1_1_1EFModel.Unit" Role="Unit" Multiplicity="1" />
+    <End Type="ODM_1_1_1EFModel.Variable" Role="Variable" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Unit">
+        <PropertyRef Name="UnitsID" />
+      </Principal>
+      <Dependent Role="Variable">
+        <PropertyRef Name="TimeUnitsID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Variables_ValueTypeCV">
+    <End Type="ODM_1_1_1EFModel.ValueTypeCV" Role="ValueTypeCV" Multiplicity="1" />
+    <End Type="ODM_1_1_1EFModel.Variable" Role="Variable" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="ValueTypeCV">
+        <PropertyRef Name="Term" />
+      </Principal>
+      <Dependent Role="Variable">
+        <PropertyRef Name="ValueType" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Variables_VariableNameCV">
+    <End Type="ODM_1_1_1EFModel.VariableNameCV" Role="VariableNameCV" Multiplicity="1" />
+    <End Type="ODM_1_1_1EFModel.Variable" Role="Variable" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="VariableNameCV">
+        <PropertyRef Name="Term" />
+      </Principal>
+      <Dependent Role="Variable">
+        <PropertyRef Name="VariableName" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema>

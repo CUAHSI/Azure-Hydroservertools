@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>MvcFileUploader</id>
+    <version>1.3.5</version>
+    <title>MvcFileUploader</title>
+    <authors>maruf,  Sebastian Tschan (JQuery Plugin)</authors>
+    <owners>maruf,  Sebastian Tschan (JQuery Plugin)</owners>
+    <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
+    <projectUrl>https://github.com/marufbd/MvcFileUploader</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Easy file upload integration in mvc application with JQuery File Upload javascript plugin and Html helpers</description>
+    <releaseNotes>MaxNumberOfFiles, DisableImagePreview by helper api, demo serverside error generation</releaseNotes>
+    <copyright />
+    <language />
+    <tags>FileUpload JQuery File Upload Mvc</tags>
+  </metadata>
+</package>
