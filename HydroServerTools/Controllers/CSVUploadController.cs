@@ -2098,8 +2098,8 @@ namespace HydroServerTools.Controllers
                         var searchString = jQueryDataTablesModel.sSearch.ToLower();
                         var filteredItems = listOfRecords.
                             Where(c =>
-                                      //c.QualifierID != null && c.QualifierID.ToString().ToLower().Contains(searchString.ToLower())
-                                       c.QualifierCode != null && c.QualifierCode.ToLower().Contains(searchString.ToLower())
+                                       c.QualifierID != null && c.QualifierID.ToString().ToLower().Contains(searchString.ToLower())
+                                    || c.QualifierCode != null && c.QualifierCode.ToLower().Contains(searchString.ToLower())
                                     || c.QualifierDescription != null && c.QualifierDescription.ToLower().Contains(searchString.ToLower())
                                 );
 
@@ -2119,7 +2119,12 @@ namespace HydroServerTools.Controllers
                         {
                             switch (sortedColumn.PropertyName.ToLower())
                             {
-                                
+                                case "0":
+                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
+                                    { items = listOfRecords.OrderBy(a => a.QualifierID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    else
+                                    { items = listOfRecords.OrderByDescending(a => a.QualifierID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    break;
                                 case "1":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.QualifierCode).Skip(startIndex).Take(pageSize).ToList(); }
@@ -2154,6 +2159,7 @@ namespace HydroServerTools.Controllers
 
             var rst = from c in items
                       select new[] { 
+                                        c.QualifierID,
                                         c.QualifierCode,
                                         c.QualifierDescription
                                      };
