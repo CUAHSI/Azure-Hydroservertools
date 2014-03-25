@@ -9,8 +9,8 @@
     <AzureEnableRemoteDesktop>True</AzureEnableRemoteDesktop>
     <AzureEnableWebDeploy>False</AzureEnableWebDeploy>
     <AzureFallbackToDeleteAndRecreateIfUpgradeFails>False</AzureFallbackToDeleteAndRecreateIfUpgradeFails>
-    <AzureHostedServiceLabel>HydroServerToolsAzure</AzureHostedServiceLabel>
-    <AzureHostedServiceName>hydroservertoolsazure</AzureHostedServiceName>
+    <AzureHostedServiceLabel>hydroservertools</AzureHostedServiceLabel>
+    <AzureHostedServiceName>hydroservertools</AzureHostedServiceName>
     <AzureEnableIntelliTrace>False</AzureEnableIntelliTrace>
     <AzureEnableProfiling>False</AzureEnableProfiling>
     <AzureServiceConfiguration>Cloud</AzureServiceConfiguration>
