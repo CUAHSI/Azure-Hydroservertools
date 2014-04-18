@@ -13,5 +13,6 @@ namespace HydroserverToolsBusinessObjects.Models
         public string QualifierCode { get; set; }
         [Required]
         public string QualifierDescription { get; set; }
+        public string Errors { get; set; }
     }
 }

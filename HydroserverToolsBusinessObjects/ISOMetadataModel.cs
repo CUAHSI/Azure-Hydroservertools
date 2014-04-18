@@ -14,5 +14,6 @@ namespace HydroserverToolsBusinessObjects.Models
         public string Abstract { get; set; }
         public string ProfileVersion { get; set; }
         public string MetadataLink { get; set; }
+        public string Errors { get; set; }
     }
 }

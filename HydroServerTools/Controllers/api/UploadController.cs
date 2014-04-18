@@ -1,6 +1,4 @@
-﻿
-using CsvHelper;
-using HydroServerTools.Helper;
+﻿using CsvHelper;
 using HydroServerTools.Models;
 using HydroserverToolsBusinessObjects;
 using HydroserverToolsBusinessObjects.Models;
@@ -19,11 +17,14 @@ using System.Net.Http.Formatting;
 using System.Text;
 using System.Web;
 using System.Web.Http;
+using System.Web.UI.WebControls;
 
 namespace HydroServerTools.Controllers.WebApi
 {
     public class UploadController : ApiController
     {
+        public const string CacheName = "default";
+        
         // Enable both Get and Post so that our jquery call can send data, and get a status
         [HttpGet]
         [HttpPost]
@@ -34,32 +35,35 @@ namespace HydroServerTools.Controllers.WebApi
             {
                 // Get a reference to the file that our jQuery sent.  Even with multiple files, they will all be their own request and be the 0 index
                 HttpPostedFile file = HttpContext.Current.Request.Files[0];
-
+               
                 //int count = 0;
-                 if (Utils.IsLocalHostServer())
+                if (HydroServerToolsUtils.IsLocalHostServer())
                 {
                      //clear Session 
                      var httpContext = (HttpContextWrapper)Request.Properties["MS_HttpContext"];
                       httpContext.Session.Clear();
+                     
                 }
                 else
                  { 
                      //clear cache 
                     var httpContext = new HttpContextWrapper(System.Web.HttpContext.Current);
                     //hack to provide unique id, work around the problem with the session and google ID
-                     var identifier = HttpContext.Current.User.Identity.Name;
-                     DataCache cache = new DataCache("default");
-                     cache.Remove(identifier + "listOfCorrectRecords");
-                     cache.Remove(identifier + "listOfIncorrectRecords");
-                     cache.Remove(identifier + "listOfEditedRecords");
-                     cache.Remove(identifier + "listOfDuplicateRecords");
+                   // HttpContext.Current.User.Identity.Name;
 
+                    BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, "listOfCorrectRecords");
+                    BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, "listOfIncorrectRecords");
+                    BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, "listOfEditedRecords");
+                    BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, "listOfDuplicateRecords");
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(MvcApplication.InstanceGuid, CacheName, Ressources.IMPORT_STATUS_UPLOAD);                   
+                    
                  }
                 //var viewName = httpContext.Request.Form["identifier"];
                 //var viewName = id;
                 // do something with the file in this space 
                 string message = string.Empty;
                 if (file != null) 
+                     
                     ProcessData(file, id, out message);
                 else 
                     return new HttpResponseMessage(HttpStatusCode.BadRequest);
@@ -93,7 +97,7 @@ namespace HydroServerTools.Controllers.WebApi
             }
 
         }
-
+       
 
         private void ProcessData(HttpPostedFile file, string viewName, out string message)
         {
@@ -109,11 +113,11 @@ namespace HydroServerTools.Controllers.WebApi
             //Get Connection string
             if (!string.IsNullOrEmpty(HttpContext.Current.User.Identity.Name))
             {
-                var connectionName = Utils.GetConnectionNameByUserEmail(HttpContext.Current.User.Identity.Name);
+                var connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.Current.User.Identity.Name);
 
                 if (!String.IsNullOrEmpty(connectionName))
                 {
-                    entityConnectionString = Utils.GetDBConnectionStringByName(connectionName);
+                    entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
                     if (string.IsNullOrEmpty(entityConnectionString))
                     {
                         message = Ressources.HYDROSERVER_USERLOOKUP_FAILED;
@@ -156,8 +160,8 @@ namespace HydroServerTools.Controllers.WebApi
                     var listOfCorrectRecords = new List<SiteModel>();
                     var listOfDuplicateRecords = new List<SiteModel>();
                     var listOfEditedRecords = new List<SiteModel>();
-                    var listOfErrors = new List<ErrorModel>();
-                    // Verify that the user selected a file
+
+                     // Verify that the user selected a file
                     if (file != null && file.ContentLength > 0)
                     {
 
@@ -169,7 +173,7 @@ namespace HydroServerTools.Controllers.WebApi
                     {
                         var repository = new SitesRepository();
 
-                        repository.AddSites(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords, out listOfErrors);
+                        repository.AddSites(values, entityConnectionString, MvcApplication.InstanceGuid, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
                     }
 
                     PutRecordsInCache<SiteModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords);
@@ -190,7 +194,7 @@ namespace HydroServerTools.Controllers.WebApi
                     var listOfCorrectRecords = new List<VariablesModel>();
                     var listOfDuplicateRecords = new List<VariablesModel>();
                     var listOfEditedRecords = new List<VariablesModel>();
-                    var listOfErrors = new List<ErrorModel>();
+                    
            
                     // Verify that the user selected a file
                     if (file != null && file.ContentLength > 0)
@@ -204,7 +208,7 @@ namespace HydroServerTools.Controllers.WebApi
                     {
                         var repository = new VariablesRepository();
 
-                        repository.AddVariables(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords, out listOfErrors);
+                        repository.AddVariables(values, entityConnectionString, MvcApplication.InstanceGuid,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
            
                     }
 
@@ -226,7 +230,7 @@ namespace HydroServerTools.Controllers.WebApi
                     var listOfCorrectRecords = new List<OffsetTypesModel>();
                     var listOfDuplicateRecords = new List<OffsetTypesModel>();
                     var listOfEditedRecords = new List<OffsetTypesModel>();
-                    var listOfErrors = new List<ErrorModel>();
+                    
 
                     // Verify that the user selected a file
                     if (file != null && file.ContentLength > 0)
@@ -240,7 +244,7 @@ namespace HydroServerTools.Controllers.WebApi
                     {
                         var repository = new OffsetTypesRepository();
 
-                        repository.AddOffsetTypes(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords, out listOfErrors);
+                        repository.AddOffsetTypes(values, entityConnectionString, MvcApplication.InstanceGuid,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
                     }
 
                     PutRecordsInCache<OffsetTypesModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords);
@@ -261,7 +265,7 @@ namespace HydroServerTools.Controllers.WebApi
                     var listOfCorrectRecords = new List<SourcesModel>();
                     var listOfDuplicateRecords = new List<SourcesModel>();
                     var listOfEditedRecords = new List<SourcesModel>();
-                    var listOfErrors = new List<ErrorModel>();
+                    
 
                     // Verify that the user selected a file
                     if (file != null && file.ContentLength > 0)
@@ -275,7 +279,7 @@ namespace HydroServerTools.Controllers.WebApi
                     {
                         var repository = new SourcesRepository();
 
-                        repository.AddSources(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords, out listOfErrors);
+                        repository.AddSources(values, entityConnectionString, MvcApplication.InstanceGuid,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
                     }
 
                     PutRecordsInCache<SourcesModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords);
@@ -296,7 +300,7 @@ namespace HydroServerTools.Controllers.WebApi
                     var listOfCorrectRecords = new List<MethodModel>();
                     var listOfDuplicateRecords = new List<MethodModel>();
                     var listOfEditedRecords = new List<MethodModel>();
-                    var listOfErrors = new List<ErrorModel>();
+                    
 
                     // Verify that the user selected a file
                     if (file != null && file.ContentLength > 0)
@@ -310,7 +314,7 @@ namespace HydroServerTools.Controllers.WebApi
                     {
                         var repository = new MethodsRepository();
 
-                        repository.AddMethods(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords, out listOfErrors);
+                        repository.AddMethods(values, entityConnectionString, MvcApplication.InstanceGuid,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
                     }
 
                     PutRecordsInCache<MethodModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords);
@@ -331,7 +335,7 @@ namespace HydroServerTools.Controllers.WebApi
                     var listOfCorrectRecords = new List<LabMethodModel>();
                     var listOfDuplicateRecords = new List<LabMethodModel>();
                     var listOfEditedRecords = new List<LabMethodModel>();
-                    var listOfErrors = new List<ErrorModel>();
+                    
 
                     // Verify that the user selected a file
                     if (file != null && file.ContentLength > 0)
@@ -345,7 +349,7 @@ namespace HydroServerTools.Controllers.WebApi
                     {
                         var repository = new LabMethodsRepository();
 
-                        repository.AddLabMethods(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords, out listOfErrors);
+                        repository.AddLabMethods(values, entityConnectionString, MvcApplication.InstanceGuid,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
                     }
 
                     PutRecordsInCache<LabMethodModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords);
@@ -366,7 +370,7 @@ namespace HydroServerTools.Controllers.WebApi
                     var listOfCorrectRecords = new List<SampleModel>();
                     var listOfDuplicateRecords = new List<SampleModel>();
                     var listOfEditedRecords = new List<SampleModel>();
-                    var listOfErrors = new List<ErrorModel>();
+                    
 
                     // Verify that the user selected a file
                     if (file != null && file.ContentLength > 0)
@@ -380,7 +384,7 @@ namespace HydroServerTools.Controllers.WebApi
                     {
                         var repository = new SamplesRepository();
 
-                        repository.AddSamples(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords, out listOfErrors);
+                        repository.AddSamples(values, entityConnectionString, MvcApplication.InstanceGuid,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
                     }
 
                     PutRecordsInCache<SampleModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords);
@@ -401,7 +405,7 @@ namespace HydroServerTools.Controllers.WebApi
                     var listOfCorrectRecords = new List<QualifiersModel>();
                     var listOfDuplicateRecords = new List<QualifiersModel>();
                     var listOfEditedRecords = new List<QualifiersModel>();
-                    var listOfErrors = new List<ErrorModel>();
+                    
 
                     // Verify that the user selected a file
                     if (file != null && file.ContentLength > 0)
@@ -415,7 +419,7 @@ namespace HydroServerTools.Controllers.WebApi
                     {
                         var repository = new QualifiersRepository();
 
-                        repository.AddQualifiers(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords, out listOfErrors);
+                        repository.AddQualifiers(values, entityConnectionString, MvcApplication.InstanceGuid,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
                     }
 
                     PutRecordsInCache<QualifiersModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords);
@@ -436,7 +440,7 @@ namespace HydroServerTools.Controllers.WebApi
                     var listOfCorrectRecords = new List<QualityControlLevelModel>();
                     var listOfDuplicateRecords = new List<QualityControlLevelModel>();
                     var listOfEditedRecords = new List<QualityControlLevelModel>();
-                    var listOfErrors = new List<ErrorModel>();
+                    
 
                     // Verify that the user selected a file
                     if (file != null && file.ContentLength > 0)
@@ -450,7 +454,7 @@ namespace HydroServerTools.Controllers.WebApi
                     {
                         var repository = new QualityControlLevelsRepository();
 
-                        repository.AddQualityControlLevel(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords, out listOfErrors);
+                        repository.AddQualityControlLevel(values, entityConnectionString, MvcApplication.InstanceGuid,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
                     }
 
                     PutRecordsInCache<QualityControlLevelModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords);
@@ -470,7 +474,7 @@ namespace HydroServerTools.Controllers.WebApi
                     var listOfCorrectRecords = new List<DataValuesModel>();
                     var listOfDuplicateRecords = new List<DataValuesModel>();
                     var listOfEditedRecords = new List<DataValuesModel>();
-                    var listOfErrors = new List<ErrorModel>();
+                    
 
                     // Verify that the user selected a file
                     if (file != null && file.ContentLength > 0)
@@ -484,14 +488,14 @@ namespace HydroServerTools.Controllers.WebApi
                     {
                         var repository = new DataValuesRepository();
 
-                        repository.AddDataValues(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords, out listOfErrors);
-                        //update Seriescatalog
-                        if (listOfCorrectRecords.Count() > 0)
-                        {
-                            var seriesCatalogRepository = new SeriesCatalogRepository();
-                            seriesCatalogRepository.deleteAll(entityConnectionString);
-                            seriesCatalogRepository.UpdateSeriesCatalog(entityConnectionString);
-                        }
+                        repository.AddDataValues(values, entityConnectionString, MvcApplication.InstanceGuid,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
+                        ////update Seriescatalog
+                        //if (listOfCorrectRecords.Count() > 0)
+                        //{
+                        //    var seriesCatalogRepository = new SeriesCatalogRepository();
+                        //    seriesCatalogRepository.deleteAll(entityConnectionString);
+                        //    seriesCatalogRepository.UpdateSeriesCatalog(MvcApplication.InstanceGuid, entityConnectionString);
+                        //}
                     }
 
                     PutRecordsInCache<DataValuesModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords);
@@ -511,7 +515,7 @@ namespace HydroServerTools.Controllers.WebApi
                     var listOfCorrectRecords = new List<GroupDescriptionModel>();
                     var listOfDuplicateRecords = new List<GroupDescriptionModel>();
                     var listOfEditedRecords = new List<GroupDescriptionModel>();
-                    var listOfErrors = new List<ErrorModel>();
+                    
 
                     // Verify that the user selected a file
                     if (file != null && file.ContentLength > 0)
@@ -525,7 +529,7 @@ namespace HydroServerTools.Controllers.WebApi
                     {
                         var repository = new GroupDescriptionsRepository();
 
-                        repository.AddGroupDescriptions(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords, out listOfErrors);
+                        repository.AddGroupDescriptions(values, entityConnectionString, MvcApplication.InstanceGuid,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
                     }
 
                     PutRecordsInCache<GroupDescriptionModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords);
@@ -546,7 +550,7 @@ namespace HydroServerTools.Controllers.WebApi
                     var listOfCorrectRecords = new List<GroupsModel>();
                     var listOfDuplicateRecords = new List<GroupsModel>();
                     var listOfEditedRecords = new List<GroupsModel>();
-                    var listOfErrors = new List<ErrorModel>();
+                    
                     // Verify that the user selected a file
                     if (file != null && file.ContentLength > 0)
                     {
@@ -559,7 +563,7 @@ namespace HydroServerTools.Controllers.WebApi
                     {
                         var repository = new GroupsRepository();
 
-                        repository.AddGroups(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords, out listOfErrors);
+                        repository.AddGroups(values, entityConnectionString, MvcApplication.InstanceGuid,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
                     }
 
                     PutRecordsInCache<GroupsModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords);
@@ -580,7 +584,7 @@ namespace HydroServerTools.Controllers.WebApi
                     var listOfCorrectRecords = new List<DerivedFromModel>();
                     var listOfDuplicateRecords = new List<DerivedFromModel>();
                     var listOfEditedRecords = new List<DerivedFromModel>();
-                    var listOfErrors = new List<ErrorModel>();
+                    
 
                     // Verify that the user selected a file
                     if (file != null && file.ContentLength > 0)
@@ -594,7 +598,7 @@ namespace HydroServerTools.Controllers.WebApi
                     {
                         var repository = new DerivedFromRepository();
 
-                        repository.AddDerivedFrom(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords, out listOfErrors);
+                        repository.AddDerivedFrom(values, entityConnectionString, MvcApplication.InstanceGuid,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
                     }
 
                     PutRecordsInCache<DerivedFromModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords);
@@ -615,7 +619,7 @@ namespace HydroServerTools.Controllers.WebApi
                     var listOfCorrectRecords = new List<CategoriesModel>();
                     var listOfDuplicateRecords = new List<CategoriesModel>();
                     var listOfEditedRecords = new List<CategoriesModel>();
-                    var listOfErrors = new List<ErrorModel>();
+                    
 
                     // Verify that the user selected a file
                     if (file != null && file.ContentLength > 0)
@@ -631,7 +635,7 @@ namespace HydroServerTools.Controllers.WebApi
 
                         var repository = new CategoriesRepository();
 
-                        repository.AddCategories(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords, out listOfErrors);
+                        repository.AddCategories(values, entityConnectionString, MvcApplication.InstanceGuid,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
                     }
 
                     PutRecordsInCache<CategoriesModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords);
@@ -649,7 +653,7 @@ namespace HydroServerTools.Controllers.WebApi
 
         private static void PutRecordsInCache<T>(List<T> listOfIncorrectRecords, List<T> listOfCorrectRecords, List<T> listOfDuplicateRecords, List<T> listOfEditedRecords)
         {
-            if (Utils.IsLocalHostServer())
+            if (HydroServerToolsUtils.IsLocalHostServer())
             {
                 //var httpContext = (HttpContextWrapper)Request.Properties["MS_HttpContext"];
 
@@ -665,7 +669,7 @@ namespace HydroServerTools.Controllers.WebApi
             else
             {
                 DataCache cache = new DataCache("default");
-                var identifier = HttpContext.Current.User.Identity.Name;
+                var identifier = MvcApplication.InstanceGuid;
                 if (cache.Get(identifier + "listOfCorrectRecords") == null) cache.Add(identifier + "listOfCorrectRecords", listOfCorrectRecords); else cache.Put(identifier + "listOfCorrectRecords", listOfCorrectRecords);
                 if (cache.Get(identifier + "listOfIncorrectRecords") == null) cache.Add(identifier + "listOfIncorrectRecords", listOfIncorrectRecords); else cache.Put(identifier + "listOfIncorrectRecords", listOfIncorrectRecords);
                 if (cache.Get(identifier + "listOfEditedRecords") == null) cache.Add(identifier + "listOfEditedRecords", listOfEditedRecords); else cache.Put(identifier + "listOfEditedRecords", listOfEditedRecords);
@@ -683,6 +687,8 @@ namespace HydroServerTools.Controllers.WebApi
 
             if (file.FileName.ToLower().EndsWith(".zip"))
             {
+               //Updating status
+                BusinessObjectsUtils.UpdateCachedprocessStatusMessage(MvcApplication.InstanceGuid, CacheName, Ressources.IMPORT_STATUS_EXTRACTNG);        
 
                 file.InputStream.Position = 0;
 
@@ -721,9 +727,20 @@ namespace HydroServerTools.Controllers.WebApi
             {
                 reader = new StreamReader(file.InputStream, Encoding.GetEncoding("iso-8859-1"));
             }
+            //remove illegal characters
+            //MemoryStream output = new MemoryStream();
+            //var writer = new StreamWriter(output, Encoding.GetEncoding("iso-8859-1"));
+            //while (!reader.EndOfStream)
+            //{
+            //    var currentLine = reader.ReadLine();
+            //    currentLine = HydroServerToolsUtils.stripNonValidXMLCharacters(currentLine);
+            //    writer.WriteLine(currentLine);
 
-            
-
+            //}
+            //writer.Flush();
+            //output.Position = 0;
+            //var reader2 = new StreamReader(output, Encoding.GetEncoding("iso-8859-1"));
+           
             var csvReader = new CsvHelper.CsvReader(reader);
 
 
@@ -744,7 +761,7 @@ namespace HydroServerTools.Controllers.WebApi
             {
                 s = csvReader.GetRecords<T>().ToList();
 
-                var missingMandatoryFields = Utils.ValidateFields<T>(csvReader.FieldHeaders.ToList());
+                var missingMandatoryFields = HydroServerToolsUtils.ValidateFields<T>(csvReader.FieldHeaders.ToList());
                 if (missingMandatoryFields.Count > 0)
                 {
                     StringBuilder sb = new StringBuilder();
@@ -769,8 +786,11 @@ namespace HydroServerTools.Controllers.WebApi
             finally
             {
                 //clean up ressources
+                //writer.Close();
                 ms.Close();
                 reader.Close();
+                //output.Close();
+                //reader2.Close();
             }
 
 

@@ -1,4 +1,4 @@
-﻿using HydroServerTools.Helper;
+﻿
 using HydroServerTools.Models;
 using HydroserverToolsBusinessObjects;
 using HydroserverToolsBusinessObjects.Models;
@@ -60,8 +60,8 @@ namespace HydroServerTools.Controllers
             int searchRecordCount;
 
             //Get Connection string
-            var connectionName = Utils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
-            var entityConnectionString = Utils.GetDBConnectionStringByName(connectionName);
+            var connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
+            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
             if (String.IsNullOrEmpty(connectionName))
             {
@@ -107,8 +107,8 @@ namespace HydroServerTools.Controllers
             int searchRecordCount;
 
             //Get Connection string
-            var connectionName = Utils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
-            var entityConnectionString = Utils.GetDBConnectionStringByName(connectionName);
+            var connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
+            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
             if (String.IsNullOrEmpty(connectionName))
             {
@@ -152,8 +152,8 @@ namespace HydroServerTools.Controllers
             int searchRecordCount;
 
             //Get Connection string
-            var connectionName = Utils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
-            var entityConnectionString = Utils.GetDBConnectionStringByName(connectionName);
+            var connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
+            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
             if (String.IsNullOrEmpty(connectionName))
             {
@@ -187,8 +187,8 @@ namespace HydroServerTools.Controllers
             int searchRecordCount;
 
             //Get Connection string
-            var connectionName = Utils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
-            var entityConnectionString = Utils.GetDBConnectionStringByName(connectionName);
+            var connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
+            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
             if (String.IsNullOrEmpty(connectionName))
             {
@@ -236,8 +236,8 @@ namespace HydroServerTools.Controllers
             int searchRecordCount;
 
             //Get Connection string
-            var connectionName = Utils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
-            var entityConnectionString = Utils.GetDBConnectionStringByName(connectionName);
+            var connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
+            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
             if (String.IsNullOrEmpty(connectionName))
             {
@@ -256,7 +256,8 @@ namespace HydroServerTools.Controllers
                             c.SampleID,
                             c.SampleType,
                             c.LabSampleCode,
-                            c.LabMethodName
+                            c.LabMethodName,
+                            c.LabMethodID
                 };
 
             return this.DataTablesJson(items: result,
@@ -272,8 +273,8 @@ namespace HydroServerTools.Controllers
             int searchRecordCount;
 
             //Get Connection string
-            var connectionName = Utils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
-            var entityConnectionString = Utils.GetDBConnectionStringByName(connectionName);
+            var connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
+            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
             if (String.IsNullOrEmpty(connectionName))
             {
@@ -307,8 +308,8 @@ namespace HydroServerTools.Controllers
             int searchRecordCount;
 
             //Get Connection string
-            var connectionName = Utils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
-            var entityConnectionString = Utils.GetDBConnectionStringByName(connectionName);
+            var connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
+            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
             if (String.IsNullOrEmpty(connectionName))
             {
@@ -345,8 +346,8 @@ namespace HydroServerTools.Controllers
             int searchRecordCount;
 
             //Get Connection string
-            var connectionName = Utils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
-            var entityConnectionString = Utils.GetDBConnectionStringByName(connectionName);
+            var connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
+            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
             if (String.IsNullOrEmpty(connectionName))
             {
@@ -380,8 +381,8 @@ namespace HydroServerTools.Controllers
             int searchRecordCount;
 
             //Get Connection string
-            var connectionName = Utils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
-            var entityConnectionString = Utils.GetDBConnectionStringByName(connectionName);
+            var connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
+            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
             if (String.IsNullOrEmpty(connectionName))
             {
@@ -415,8 +416,8 @@ namespace HydroServerTools.Controllers
             int searchRecordCount;
 
             //Get Connection string
-            var connectionName = Utils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
-            var entityConnectionString = Utils.GetDBConnectionStringByName(connectionName);
+            var connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
+            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
             if (String.IsNullOrEmpty(connectionName))
             {
@@ -449,8 +450,8 @@ namespace HydroServerTools.Controllers
             int searchRecordCount;
 
             //Get Connection string
-            var connectionName = Utils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
-            var entityConnectionString = Utils.GetDBConnectionStringByName(connectionName);
+            var connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
+            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
             if (String.IsNullOrEmpty(connectionName))
             {
@@ -482,8 +483,8 @@ namespace HydroServerTools.Controllers
             int searchRecordCount;
 
             //Get Connection string
-            var connectionName = Utils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
-            var entityConnectionString = Utils.GetDBConnectionStringByName(connectionName);
+            var connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
+            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
             if (String.IsNullOrEmpty(connectionName))
             {
@@ -515,8 +516,8 @@ namespace HydroServerTools.Controllers
             int searchRecordCount;
 
             //Get Connection string
-            var connectionName = Utils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
-            var entityConnectionString = Utils.GetDBConnectionStringByName(connectionName);
+            var connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
+            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
             if (String.IsNullOrEmpty(connectionName))
             {
@@ -551,8 +552,8 @@ namespace HydroServerTools.Controllers
             int searchRecordCount;
 
             //Get Connection string
-            var connectionName = Utils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
-            var entityConnectionString = Utils.GetDBConnectionStringByName(connectionName);
+            var connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
+            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
             if (String.IsNullOrEmpty(connectionName))
             {
@@ -600,8 +601,8 @@ namespace HydroServerTools.Controllers
             int searchRecordCount;
 
             //Get Connection string
-            var connectionName = Utils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
-            var entityConnectionString = Utils.GetDBConnectionStringByName(connectionName);
+            var connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
+            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
             if (String.IsNullOrEmpty(connectionName))
             {
@@ -660,9 +661,9 @@ namespace HydroServerTools.Controllers
         {
          
 
-            string connectionName = Utils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name.ToString());
+            string connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name.ToString());
 
-            var entityConnectionString = Utils.GetDBConnectionStringByName(connectionName);
+            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
             if (String.IsNullOrEmpty(entityConnectionString)) { ViewBag.Message = Ressources.HYDROSERVER_USERLOOKUP_FAILED; return View("Error"); }
 

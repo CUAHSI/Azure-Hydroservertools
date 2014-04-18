@@ -14,5 +14,6 @@ namespace HydroserverToolsBusinessObjects.Models
         public string DerivedFromId { get; set; }
         [Required]
         public string ValueID { get; set; }
+        public string Errors { get; set; }
     }
 }

@@ -6,10 +6,14 @@
         <tr>
             @{var props = Model.GetType().GetProperties();
             foreach (var prop in props)
-            {
-                <th>@prop.Name</th>
+                {
+                     if (!Attribute.IsDefined(prop, typeof(System.ComponentModel.DataAnnotations.DisplayAttribute))) 
+                     {   
+                            if (@prop.Name != "Errors"){ <th>@prop.Name</th>}
+                     }            
+                }
             }
-            }
+
         </tr>
     </thead>
     <tbody>

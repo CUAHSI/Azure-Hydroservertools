@@ -16,5 +16,6 @@ namespace HydroserverToolsBusinessObjects.Models
         public string Definition { get; set; }
         [Required]
         public string Explanation { get; set; }
+        public string Errors { get; set; }
     }
 }

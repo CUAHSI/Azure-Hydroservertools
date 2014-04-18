@@ -1,48 +1,86 @@
 ﻿@*<table cellpadding="2" cellspacing="0" border="1" class="display" style="width:100%">
-    <thead>
-        <tr>           
-            @{var props =   Model[0].GetType().GetProperties();
-                foreach (var prop in props)
-                { 
-                <th>@prop.Name</th>
-                }
-            }           
-        </tr>
-    </thead>
-    <tbody>
-        @if (Model != null)
-        {        
-            foreach (var item in Model)
-            {
-                 <tr>
-                    @{var itemProps = item.GetType().GetProperties();
-                        foreach (var itemProp in itemProps)
-                        {
-                            <th>@itemProp.GetValue(item, null) </th>
-                        }
-                    }                  
-                </tr>
-            }
-        }
-    </tbody>
-</table>*@
-
-
-<table id = "@ViewData["index"]" class="display">
-    <thead>
-        <tr>
-
-            @{var props = Model.GetType().GetProperties();
-            foreach (var prop in props)
-                {
+        <thead>
+            <tr>
+                @{var props =   Model[0].GetType().GetProperties();
+                    foreach (var prop in props)
+                    {
                     <th>@prop.Name</th>
+                    }
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null)
+            {
+                foreach (var item in Model)
+                {
+                     <tr>
+                        @{var itemProps = item.GetType().GetProperties();
+                            foreach (var itemProp in itemProps)
+                            {
+                                <th>@itemProp.GetValue(item, null) </th>
+                            }
+                        }
+                    </tr>
                 }
             }
-        </tr>
-    </thead>
-    <tbody></tbody>
-</table>
+        </tbody>
+    </table>*@
 
-<div class="row pull-left">
-    @Html.ActionLink("Download as CSV", "Download", "Export", new { identifier = @ViewData["index"], viewName = @ViewData["viewName"] }, new { target = "_blank" })
+<div>
+    <table id="@ViewData["index"]" class="display">
+        <thead>
+            <tr>
+                <th>&nbsp;</th>
+                @{var props = Model.GetType().GetProperties();
+                foreach (var prop in props)
+                {
+                    if (!Attribute.IsDefined(prop, typeof(System.ComponentModel.DataAnnotations.DisplayAttribute)))
+                    {
+                        <th>@prop.Name</th>}
+
+                }
+                }
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <br />
+    <br />
 </div>
+
+<div class="panel panel-default">
+    <div class="panel-body">
+
+        @if ((ViewData["index"].ToString() == "0"))
+        {
+            <button type="button" id="0commit" class="btn btn-success alert-message hide">
+                <i class="glyphicon glyphicon-save"></i>
+                Commit Changes
+            </button>
+    <button type="button" id="0cancel" class="btn btn-warning alert-message hide">
+        <i class="glyphicon glyphicon-remove"></i>
+        Cancel
+    </button>
+        }
+        @if (ViewData["index"].ToString() == "2")
+{
+    <button type="button" id="2commit" class="btn btn-success alert-message hide">
+        <i class="glyphicon glyphicon-save"></i>
+        Commit Changes
+    </button>
+    <button type="button" id="2cancel" class="btn btn-warning alert-message hide">
+        <i class="glyphicon glyphicon-remove"></i>
+        Cancel
+    </button>
+}
+        @*<button type="button" id="download" class="btn btn-link pull-right">
+                <i class="glyphicon glyphicon-download "></i>
+                <span>Download as CSV</span>
+            </button>*@
+            @* <span class="glyphicon glyphicon-download"></span>*@
+            @Html.ActionLink("Download as CSV", "Download", "Export", new { identifier = @ViewData["index"], viewName = @ViewData["viewName"] }, new { @class = "btn btn-info alert-warning pull-right", target = "_blank" })
+
+            @* <span class="glyphicon glyphicon-download"></span>@Html.ActionLink("Download as CSV", "Download", "Export", new { identifier = @ViewData["index"], viewName = @ViewData["viewName"] }, new { target = "_blank" })*@
+        </div>
+    </div>

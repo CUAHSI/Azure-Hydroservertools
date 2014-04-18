@@ -12,6 +12,8 @@ namespace HydroServerTools
 {
     public class MvcApplication : System.Web.HttpApplication
     {
+        public static Guid InstanceGuid { get; set;}
+        
         protected void Application_Start()
         {
             AreaRegistration.RegisterAllAreas();
@@ -23,6 +25,7 @@ namespace HydroServerTools
             // Lets MVC know that anytime there is a JQueryDataTablesModel as a parameter in an action to use the
             // JQueryDataTablesModelBinder when binding the model.
             ModelBinders.Binders.Add(typeof(JQueryDataTablesModel), new JQueryDataTablesModelBinder());
+            InstanceGuid = Guid.NewGuid();
         }
     }
 }

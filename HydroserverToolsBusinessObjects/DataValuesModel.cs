@@ -18,10 +18,12 @@ namespace HydroserverToolsBusinessObjects.Models
         [Required]
         public string UTCOffset { get; set; }
         public string DateTimeUTC { get; set; }
-        //public string SiteID { get; set; }
+        [Display(Name = "NotVisible")]//
+        public string SiteID { get; set; }
         [Required]
         public string SiteCode { get; set; }
-        //public string VariableID { get; set; }
+        [Display(Name = "NotVisible")]//
+        public string VariableID { get; set; }
         [Required]
         public string VariableCode { get; set; }
         public string OffsetValue { get; set; }
@@ -39,6 +41,8 @@ namespace HydroserverToolsBusinessObjects.Models
         public string DerivedFromID { get; set; }
         [Required]
         public string QualityControlLevelCode { get; set; }
-        //public string QualityControlLevelID { get; set; }
+        [Display(Name = "NotVisible")]//
+        public string QualityControlLevelID { get; set; }
+        public string Errors { get; set; }
     }
 }

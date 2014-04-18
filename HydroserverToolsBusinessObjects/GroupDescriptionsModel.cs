@@ -12,5 +12,6 @@ namespace HydroserverToolsBusinessObjects.Models
         public string GroupID { get; set; }
         [Required]
         public string GroupDescription { get; set; }//named to match EF model name
+        public string Errors { get; set; }
     }
 }

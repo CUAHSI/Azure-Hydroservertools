@@ -9,8 +9,8 @@ namespace HydroserverToolsBusinessObjects.Models
     public class ErrorModel
     {
         
-        string ErrorArea;
-        string ErrorMessage;
+        public string ErrorArea;
+        public string ErrorMessage;
 
         public ErrorModel(string errorArea, string errorMessage)
         {

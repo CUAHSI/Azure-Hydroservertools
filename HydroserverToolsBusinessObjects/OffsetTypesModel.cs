@@ -10,10 +10,12 @@ namespace HydroserverToolsBusinessObjects.Models
     public class OffsetTypesModel
     {
         public string OffsetTypeID { get; set; }
-        //public string OffsetUnitsID { get; set; }
+        [Display(Name = "NotVisible")]//
+        public string OffsetUnitsID { get; set; }
         [Required]
         public string OffsetUnitsName { get; set; }
         [Required]
         public string OffsetDescription { get; set; }
+        public string Errors { get; set; }
     }
 }

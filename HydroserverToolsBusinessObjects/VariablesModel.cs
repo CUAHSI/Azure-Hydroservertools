@@ -16,7 +16,8 @@ namespace HydroserverToolsBusinessObjects.Models
         public string VariableName { get; set; }
         [Required]
         public string Speciation { get; set; }
-        //public string VariableUnitsID { get; set; }
+        [Display(Name = "NotVisible")]
+        public string VariableUnitsID { get; set; }
         [Required]
         public string VariableUnitsName { get; set; }
         [Required]
@@ -27,7 +28,8 @@ namespace HydroserverToolsBusinessObjects.Models
         public string IsRegular { get; set; }
         [Required]
         public string TimeSupport { get; set; }
-        //public string TimeUnitsID { get; set; }
+        [Display(Name = "NotVisible")]
+        public string TimeUnitsID { get; set; }       
         [Required]
         public string TimeUnitsName { get; set; }
         [Required]
@@ -35,6 +37,7 @@ namespace HydroserverToolsBusinessObjects.Models
         [Required]
         public string GeneralCategory { get; set; }
         [Required]
-        public string NoDataValue { get; set; }       
+        public string NoDataValue { get; set; }
+        public string Errors { get; set; }
     }
 }

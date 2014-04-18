@@ -6,20 +6,20 @@
 }
 @section styles
 {
-    <link href="~/Content/DataTables-1.9.4/media/css/demo_page.css" rel="stylesheet" />
+   @* <link href="~/Content/DataTables-1.9.4/media/css/demo_page.css" rel="stylesheet" />*@
     <link href="~/Content/DataTables-1.9.4/media/css/demo_table.css" rel="stylesheet" />
-    <link href="~/Content/DataTables-1.9.4/media/css/demo_table_jui.css" rel="stylesheet" />
-    <link href="~/Content/DataTables-1.9.4/extras/TableTools/media/css/TableTools_JUI.css" rel="stylesheet" />
-    <link href="~/Content/themes/base/minified/jquery-ui.min.css" rel="stylesheet" />
+   @* <link href="~/Content/DataTables-1.9.4/media/css/demo_table_jui.css" rel="stylesheet" />*@
+   @* <link href="~/Content/DataTables-1.9.4/extras/TableTools/media/css/TableTools_JUI.css" rel="stylesheet" />*@
+ <link href="~/Content/themes/base/minified/jquery-ui.min.css" rel="stylesheet" />
     <link href="~/Content/ViewData.css" rel="stylesheet" />
 }
 @Html.Action("_Breadcrumb", "CSVUpload", new { id = ViewBag.Name })
 
 <div class="container" id="tabs">
     <ul>
-        <li><a href="#tabs-0">Added</a></li>
+        <li><a href="#tabs-0">New</a></li>
         <li><a href="#tabs-1">Rejected</a></li>
-        <li><a href="#tabs-2">Edited</a></li>
+        <li><a href="#tabs-2">Updated</a></li>
         <li><a href="#tabs-3">Duplicate</a></li>
     </ul>
     <div id="tabs-0">
@@ -37,7 +37,6 @@
     </div>
 </div>
 
-
 @Html.Action("_Pager", "CSVUpload", new { name = ViewBag.Name })
 
 
@@ -45,8 +44,9 @@
 {
     <script>
         $(document).ready(function () {
-            $('#0').dataTable(getDatatableOptions('@ViewBag.Name', 0));
-
+            initCommitAndCancelButton('@ViewBag.Name');
+            oTable = $('#0').dataTable(getDatatableOptions('@ViewBag.Name', 0));
+            toggleCommitButtons(oTable,0);
         });
     </script>
 

@@ -1,6 +1,5 @@
 ﻿body {
-    padding-top: 50px;
-    padding-bottom: 20px;
+    
 }
 
 /* Set padding to keep content from hitting the edges */
@@ -135,3 +134,35 @@ input[readonly] {
 }
 
 
+.innerDetails
+{
+     background-color:lightgray !important;
+     border-color:darkgrey;
+     border-width: 1px;
+     width:100%;
+}
+.innerDetails table
+{
+    padding:0;
+    border:0;
+    padding-left:50px;
+    text-align:left;
+   
+}
+.alert-message {
+  color: black;
+  background-color: black;
+  border-color: black;
+}
+
+.alert-message hr {
+  border-top-color: black;
+}
+
+.alert-message .alert-link {
+  color: black;
+}
+/*.btn-success:hover {
+   border-color:black;
+   border-width:medium;
+}*/

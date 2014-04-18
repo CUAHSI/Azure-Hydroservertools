@@ -1,5 +1,5 @@
 ﻿using CsvHelper;
-using HydroServerTools.Helper;
+
 using HydroServerTools.Models;
 using HydroserverToolsBusinessObjects;
 using HydroserverToolsBusinessObjects.Models;
@@ -23,10 +23,10 @@ using System.Web.Mvc;
 
 namespace HydroServerTools.Controllers
 {
-    //[Authorize]
+    [Authorize]
     public class CSVUploadController : Controller
     {
-
+        public const string CacheName = "default";
         //
         // GET: /CSVUpload/
         public ActionResult Index(ExternalLoginConfirmationViewModel model)
@@ -40,7 +40,7 @@ namespace HydroServerTools.Controllers
             if (ModelState.IsValid)
             {
 
-                var connectionString = Helper.Utils.BuildEFConnnectionString(model);
+                var connectionString = HydroServerToolsUtils.BuildEFConnnectionString(model);
 
                 //Get Connection
                 var conn = new EntityConnection(connectionString);
@@ -250,722 +250,7 @@ namespace HydroServerTools.Controllers
             html.Append("</div>");
             return Content(html.ToString());
         }
-
-        //[HttpPost]
-        //public ActionResult Import(HttpPostedFileBase file, FormCollection collection)//
-        //{
-        //    //string userName = HttpContext.User.Identity.Name;//  "martin.seul@yahoo.com";
-        //    //var Db = new ApplicationDbContext();
-        //    //var userEmail = Db.Users.First(u => u.UserName == userName).UserEmail
-
-        //    //file = Request.Files[0];
-        //    string viewName = collection["viewname"];
-
-        //    if (!file.FileName.ToLower().EndsWith(".csv"))
-        //    {
-        //        ModelState.AddModelError(String.Empty, Ressources.FILETYPE_NOT_CSV);
-        //        return View(viewName);              
-        //    }
-        //    //Get Connection string
-        //    var connectionName = Utils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
-        //    var entityConnectionString = Utils.GetDBConnectionStringByName(connectionName);
-
-        //    if (String.IsNullOrEmpty(connectionName))
-        //    { 
-        //        ModelState.AddModelError(String.Empty, Ressources.HYDROSERVER_USERLOOKUP_FAILED);
-        //        return View(viewName);
-        //    }
-        //    //Object T;
-        //    try
-        //    {
-        //        #region Sites
-        //        //  
-        //        if (viewName.ToLower() == "sites")
-        //        {
-        //            List<SiteModel> values = null;
-
-
-        //            var siteViewModel = new SitesViewModel();
-        //            var listOfIncorrectRecords = new List<SiteModel>();
-        //            var listOfCorrectRecords = new List<SiteModel>();
-        //            var listOfDuplicateRecords = new List<SiteModel>();
-        //            var listOfEditedRecords = new List<SiteModel>();
-
-        //            // Verify that the user selected a file
-        //            if (file != null && file.ContentLength > 0)
-        //            {
-
-        //                values = parseCSV<SiteModel>(file);
-        //            }
-
-
-        //            if (values != null)
-        //            {
-        //                var sitesRepository = new SitesRepository();
-
-        //                sitesRepository.AddSites(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
-        //            }
-
-        //            //var table = Utils.GetDatatableForModel<SiteModel>(sites[0]);
-
-        //            @ViewBag.numberOfCorrectRecords = listOfCorrectRecords.Count();
-        //            @ViewBag.numberOfDuplicateRecords = listOfDuplicateRecords.Count();
-        //            // redirect back to the index action to show the form once again
-
-        //            siteViewModel.listOfCorrectRecords = listOfCorrectRecords;
-        //            siteViewModel.listOfIncorrectRecords = listOfIncorrectRecords;
-        //            siteViewModel.listOfEditedRecords = listOfEditedRecords;
-        //            siteViewModel.listOfDuplicateRecords = listOfDuplicateRecords;
-        //            return RedirectToAction("Sites", siteViewModel);
-        //            //return View(viewName, siteViewModel);
-        //        } 
-        //        #endregion
-
-        //        #region Variables
-        //        if (viewName.ToLower() == "variables")
-        //        {
-        //            List<VariablesModel> values = null;
-
-        //            var variablesViewModel = new VariablesViewModel();
-        //            var listOfIncorrectRecords = new List<VariablesModel>();
-        //            var listOfCorrectRecords = new List<VariablesModel>();
-        //            var listOfDuplicateRecords = new List<VariablesModel>();
-        //            var listOfEditedRecords = new List<VariablesModel>();
-        //            // Verify that the user selected a file
-        //            if (file != null && file.ContentLength > 0)
-        //            {
-
-        //                values = parseCSV<VariablesModel>(file);
-        //            }
-
-
-        //            if (values != null)
-        //            {
-        //                var repository = new VariablesRepository();
-
-        //                repository.AddVariables(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
-        //            }
-
-        //            //var table = Utils.GetDatatableForModel<SiteModel>(sites[0]);
-
-        //            @ViewBag.numberOfCorrectRecords = listOfCorrectRecords.Count();
-        //            @ViewBag.numberOfDuplicateRecords = listOfDuplicateRecords.Count();
-
-        //            variablesViewModel.listOfCorrectRecords = listOfCorrectRecords;
-        //            variablesViewModel.listOfIncorrectRecords = listOfIncorrectRecords;
-        //            variablesViewModel.listOfEditedRecords = listOfEditedRecords;
-        //            variablesViewModel.listOfDuplicateRecords = listOfDuplicateRecords;
-
-        //            // redirect back to the index action to show the form once again
-        //            return View(viewName, variablesViewModel);
-        //        } 
-        //        #endregion
-
-        //        #region ISOMetadata
-
-        //        if (viewName.ToLower() == "isometadata")
-        //        {
-        //            List<ISOMetadataModel> values = null;
-        //            var listOfIncorrectRecords = new List<ISOMetadataModel>();
-        //            var listOfCorrectRecords = new List<ISOMetadataModel>();
-        //            var listOfDuplicateRecords = new List<ISOMetadataModel>();
-        //            var listOfEditedRecords = new List<ISOMetadataModel>();
-
-        //            // Verify that the user selected a file
-        //            if (file != null && file.ContentLength > 0)
-        //            {
-
-        //                values = parseCSV<ISOMetadataModel>(file);
-        //            }
-
-
-        //            if (values != null)
-        //            {
-        //                var repository = new ISOMetadataRepository();
-
-        //                repository.AddISOMetadata(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
-        //            }
-
-        //            //var table = Utils.GetDatatableForModel<SiteModel>(sites[0]);
-
-        //            @ViewBag.numberOfCorrectRecords = listOfCorrectRecords.Count();
-        //            @ViewBag.numberOfDuplicateRecords = listOfDuplicateRecords.Count();
-        //            // redirect back to the index action to show the form once again
-        //            return View(viewName, listOfIncorrectRecords);
-        //        } 
-        //        #endregion
-
-        //        #region OffsetTypes
-
-        //        if (viewName.ToLower() == "offsettypes")
-        //        {
-        //            List<OffsetTypesModel> values = null;
-        //            var offsetTypesViewModel = new OffsetTypesViewModel();
-        //            var listOfIncorrectRecords = new List<OffsetTypesModel>();
-        //            var listOfCorrectRecords = new List<OffsetTypesModel>();
-        //            var listOfDuplicateRecords = new List<OffsetTypesModel>();
-        //            var listOfEditedRecords = new List<OffsetTypesModel>();
-        //            // Verify that the user selected a file
-        //            if (file != null && file.ContentLength > 0)
-        //            {
-
-        //                values = parseCSV<OffsetTypesModel>(file);
-        //            }
-
-
-        //            if (values != null)
-        //            {
-        //                var repository = new OffsetTypesRepository();
-
-        //                repository.AddOffsetTypes(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords );
-        //            }
-
-        //            //var table = Utils.GetDatatableForModel<SiteModel>(sites[0]);
-
-        //            @ViewBag.numberOfCorrectRecords = listOfCorrectRecords.Count();
-        //            @ViewBag.numberOfDuplicateRecords = listOfDuplicateRecords.Count();
-        //            // redirect back to the index action to show the form once again
-
-        //            offsetTypesViewModel.listOfCorrectRecords = listOfCorrectRecords;
-        //            offsetTypesViewModel.listOfIncorrectRecords = listOfIncorrectRecords;
-        //            offsetTypesViewModel.listOfEditedRecords = listOfEditedRecords;
-        //            offsetTypesViewModel.listOfDuplicateRecords = listOfDuplicateRecords;
-
-        //            return View(viewName, offsetTypesViewModel);
-        //        }
-
-        //        #endregion   
-
-        //        #region Sources
-        //        if (viewName.ToLower() == "sources")
-        //        {
-        //            List<SourcesModel> values = null;
-        //            var sourcesModel = new SourcesViewModel();
-
-        //            var listOfIncorrectRecords = new List<SourcesModel>();
-        //            var listOfCorrectRecords = new List<SourcesModel>();
-        //            var listOfDuplicateRecords = new List<SourcesModel>();
-        //            var listOfEditedRecords = new List<SourcesModel>();
-        //            // Verify that the user selected a file
-        //            if (file != null && file.ContentLength > 0)
-        //            {
-
-        //                values = parseCSV<SourcesModel>(file);
-        //            }
-
-
-        //            if (values != null)
-        //            {
-        //                var repository = new SourcesRepository();
-
-        //                repository.AddSources(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
-        //            }
-
-        //            //var table = Utils.GetDatatableForModel<SiteModel>(sites[0]);
-
-        //            @ViewBag.numberOfCorrectRecords = listOfCorrectRecords.Count();
-        //            @ViewBag.numberOfDuplicateRecords = listOfDuplicateRecords.Count();
-
-
-
-        //            sourcesModel.listOfCorrectRecords = listOfCorrectRecords;
-        //            sourcesModel.listOfIncorrectRecords = listOfIncorrectRecords;
-        //            sourcesModel.listOfEditedRecords = listOfEditedRecords;
-        //            sourcesModel.listOfDuplicateRecords = listOfDuplicateRecords;
-
-
-        //            // redirect back to the index action to show the form once again
-        //            return View(viewName, sourcesModel);
-        //        }
-
-        //        #endregion
-
-        //        #region  Methods
-        //        if (viewName.ToLower() == "methods")
-        //        {
-        //            List<MethodModel> values = null;
-        //            var methodsViewModel = new MethodsViewModel();
-        //            var listOfIncorrectRecords = new List<MethodModel>();
-        //            var listOfCorrectRecords = new List<MethodModel>();
-        //            var listOfDuplicateRecords = new List<MethodModel>();
-        //            var listOfEditedRecords = new List<MethodModel>();
-        //            // Verify that the user selected a file
-        //            if (file != null && file.ContentLength > 0)
-        //            {
-
-        //                values = parseCSV<MethodModel>(file);
-        //            }
-
-
-        //            if (values != null)
-        //            {
-        //                var repository = new MethodsRepository();
-
-        //                repository.AddMethods(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
-        //            }
-
-        //            //var table = Utils.GetDatatableForModel<SiteModel>(sites[0]);
-
-        //            @ViewBag.numberOfCorrectRecords = listOfCorrectRecords.Count();
-        //            @ViewBag.numberOfDuplicateRecords = listOfDuplicateRecords.Count();
-
-        //            methodsViewModel.listOfCorrectRecords = listOfCorrectRecords;
-        //            methodsViewModel.listOfIncorrectRecords = listOfIncorrectRecords;
-        //            methodsViewModel.listOfEditedRecords = listOfEditedRecords;
-        //            methodsViewModel.listOfDuplicateRecords = listOfDuplicateRecords;
-
-        //            // redirect back to the index action to show the form once again
-        //            return View(viewName, methodsViewModel);
-        //        } 
-        //        #endregion
-
-        //        #region LabMethods
-        //        if (viewName.ToLower() == "labmethods")
-        //        {
-        //            List<LabMethodModel> values = null;
-        //            var labMethodsViewModel = new LabMethodsViewModel(); 
-        //            var listOfIncorrectRecords = new List<LabMethodModel>();
-        //            var listOfCorrectRecords = new List<LabMethodModel>();
-        //            var listOfDuplicateRecords = new List<LabMethodModel>();
-        //            var listOfEditedRecords = new List<LabMethodModel>();
-        //            // Verify that the user selected a file
-        //            if (file != null && file.ContentLength > 0)
-        //            {
-
-        //                values = parseCSV<LabMethodModel>(file);
-        //            }
-
-
-        //            if (values != null)
-        //            {
-        //                var repository = new LabMethodsRepository();
-
-        //                repository.AddLabMethods(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords );
-        //            }
-
-        //            //var table = Utils.GetDatatableForModel<SiteModel>(sites[0]);
-
-        //            @ViewBag.numberOfCorrectRecords = listOfCorrectRecords.Count();
-        //            @ViewBag.numberOfDuplicateRecords = listOfDuplicateRecords.Count();
-
-        //            labMethodsViewModel.listOfCorrectRecords = listOfCorrectRecords;
-        //            labMethodsViewModel.listOfIncorrectRecords = listOfIncorrectRecords;
-        //            labMethodsViewModel.listOfEditedRecords = listOfEditedRecords;
-        //            labMethodsViewModel.listOfDuplicateRecords = listOfDuplicateRecords;
-
-        //            return View(viewName, labMethodsViewModel);
-        //        } 
-        //        #endregion
-
-        //        #region Samples
-        //        if (viewName.ToLower() == "samples")
-        //        {
-        //            List<SampleModel> values = null;
-        //            var sampleViewModel = new SamplesViewModel();
-        //            var listOfIncorrectRecords = new List<SampleModel>();
-        //            var listOfCorrectRecords = new List<SampleModel>();
-        //            var listOfDuplicateRecords = new List<SampleModel>();
-        //            var listOfEditedRecords = new List<SampleModel>();
-
-        //            // Verify that the user selected a file
-        //            if (file != null && file.ContentLength > 0)
-        //            {
-        //                values = parseCSV<SampleModel>(file);
-        //            }
-
-
-        //            if (values != null)
-        //            {
-        //                var repository = new SamplesRepository();
-
-        //                repository.AddSamples(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords );
-        //            }
-
-        //            //var table = Utils.GetDatatableForModel<SiteModel>(sites[0]);
-
-        //            @ViewBag.numberOfCorrectRecords = listOfCorrectRecords.Count();
-        //            @ViewBag.numberOfDuplicateRecords = listOfDuplicateRecords.Count();
-        //            // redirect back to the index action to show the form once again
-
-        //            sampleViewModel.listOfCorrectRecords = listOfCorrectRecords;
-        //            sampleViewModel.listOfIncorrectRecords = listOfIncorrectRecords;
-        //            sampleViewModel.listOfEditedRecords = listOfEditedRecords;
-        //            sampleViewModel.listOfDuplicateRecords = listOfDuplicateRecords;
-
-        //            return View(viewName, sampleViewModel);
-        //        } 
-        //        #endregion
-
-        //        #region Qualifiers
-        //        if (viewName.ToLower() == "qualifiers")
-        //        {
-        //            List<QualifiersModel> values = null;
-        //            var qualifiersViewModel = new QualifiersViewModel();
-        //            var listOfIncorrectRecords = new List<QualifiersModel>();
-        //            var listOfCorrectRecords = new List<QualifiersModel>();
-        //            var listOfDuplicateRecords = new List<QualifiersModel>();
-        //            var listOfEditedRecords = new List<QualifiersModel>();
-
-        //            // Verify that the user selected a file
-        //            if (file != null && file.ContentLength > 0)
-        //            {
-
-        //                values = parseCSV<QualifiersModel>(file);
-        //            }
-
-
-        //            if (values != null)
-        //            {
-        //                var repository = new QualifiersRepository();
-
-        //                repository.AddQualifiers(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords );
-        //            }
-
-        //            //var table = Utils.GetDatatableForModel<SiteModel>(sites[0]);
-
-        //            @ViewBag.numberOfCorrectRecords = listOfCorrectRecords.Count();
-        //            @ViewBag.numberOfDuplicateRecords = listOfDuplicateRecords.Count();
-        //            // redirect back to the index action to show the form once again
-
-        //            qualifiersViewModel.listOfCorrectRecords = listOfCorrectRecords;
-        //            qualifiersViewModel.listOfIncorrectRecords = listOfIncorrectRecords;
-        //            qualifiersViewModel.listOfEditedRecords = listOfEditedRecords;
-        //            qualifiersViewModel.listOfDuplicateRecords = listOfDuplicateRecords;
-        //            return View(viewName, qualifiersViewModel);
-        //        } 
-        //        #endregion
-
-        //        #region QualityControlLevels
-        //        if (viewName.ToLower() == "qualitycontrollevels")
-        //        {
-        //            List<QualityControlLevelModel> values = null;
-        //            var qualityControlLevelViewModel = new QualityControlLevelsViewModel();
-        //            var listOfIncorrectRecords = new List<QualityControlLevelModel>();
-        //            var listOfCorrectRecords = new List<QualityControlLevelModel>();
-        //            var listOfDuplicateRecords = new List<QualityControlLevelModel>();
-        //            var listOfEditedRecords = new List<QualityControlLevelModel>();
-
-        //            // Verify that the user selected a file
-        //            if (file != null && file.ContentLength > 0)
-        //            {
-
-        //                values = parseCSV<QualityControlLevelModel>(file);
-        //            }
-
-
-        //            if (values != null)
-        //            {
-        //                var repository = new QualityControlLevelsRepository();
-
-        //                repository.AddQualityControlLevel(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords );
-        //            }
-
-        //            //var table = Utils.GetDatatableForModel<SiteModel>(sites[0]);
-
-        //            @ViewBag.numberOfCorrectRecords = listOfCorrectRecords.Count();
-        //            @ViewBag.numberOfDuplicateRecords = listOfDuplicateRecords.Count();
-        //            // redirect back to the index action to show the form once again
-
-        //            qualityControlLevelViewModel.listOfCorrectRecords = listOfCorrectRecords;
-        //            qualityControlLevelViewModel.listOfIncorrectRecords = listOfIncorrectRecords;
-        //            qualityControlLevelViewModel.listOfEditedRecords = listOfEditedRecords;
-        //            qualityControlLevelViewModel.listOfDuplicateRecords = listOfDuplicateRecords;
-
-        //            return View(viewName, qualityControlLevelViewModel);
-        //        } 
-        //        #endregion
-
-        //        #region DataValues
-        //        if (viewName.ToLower() == "datavalues")
-        //        {
-        //            List<DataValuesModel> values = null;
-
-        //            var dataValuesViewModel = new DataValuesViewModel();
-        //            var listOfIncorrectRecords = new List<DataValuesModel>();
-        //            var listOfCorrectRecords = new List<DataValuesModel>();
-        //            var listOfDuplicateRecords = new List<DataValuesModel>();
-        //            var listOfEditedRecords = new List<DataValuesModel>();
-        //            // Verify that the user selected a file
-        //            if (file != null && file.ContentLength > 0)
-        //            {
-
-        //                values = parseCSV<DataValuesModel>(file);
-        //            }
-
-
-        //            if (values != null)
-        //            {
-        //                var repository = new DataValuesRepository();
-
-        //                repository.AddDataValues(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
-        //            }
-
-        //            //var table = Utils.GetDatatableForModel<SiteModel>(sites[0]);
-
-        //            @ViewBag.numberOfCorrectRecords = listOfCorrectRecords.Count();
-        //            @ViewBag.numberOfDuplicateRecords = listOfDuplicateRecords.Count();
-
-        //            dataValuesViewModel.listOfCorrectRecords = listOfCorrectRecords;
-        //            dataValuesViewModel.listOfIncorrectRecords = listOfIncorrectRecords;
-        //            dataValuesViewModel.listOfEditedRecords = listOfEditedRecords;
-        //            dataValuesViewModel.listOfDuplicateRecords = listOfDuplicateRecords;
-
-        //            // redirect back to the index action to show the form once again
-        //            return View(viewName, dataValuesViewModel);
-        //        } 
-        //        #endregion
-
-        //        #region GroupDescriptions
-        //        if (viewName.ToLower() == "groupdescriptions")
-        //        {
-        //            List<GroupDescriptionModel> values = null;
-        //            var groupDescriptionsViewModel = new GroupDescriptionsViewModel();
-        //            var listOfIncorrectRecords = new List<GroupDescriptionModel>();
-        //            var listOfCorrectRecords = new List<GroupDescriptionModel>();
-        //            var listOfDuplicateRecords = new List<GroupDescriptionModel>();
-        //            var listOfEditedRecords = new List<GroupDescriptionModel>();
-
-        //            // Verify that the user selected a file
-        //            if (file != null && file.ContentLength > 0)
-        //            {
-
-        //                values = parseCSV<GroupDescriptionModel>(file);
-        //            }
-
-
-        //            if (values != null)
-        //            {
-        //                var repository = new GroupDescriptionsRepository();
-
-        //                repository.AddGroupDescriptions(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords );
-        //            }
-
-        //            //var table = Utils.GetDatatableForModel<SiteModel>(sites[0]);
-
-        //            @ViewBag.numberOfCorrectRecords = listOfCorrectRecords.Count();
-        //            @ViewBag.numberOfDuplicateRecords = listOfDuplicateRecords.Count();
-
-
-        //            // redirect back to the index action to show the form once again
-
-        //            groupDescriptionsViewModel.listOfCorrectRecords = listOfCorrectRecords;
-        //            groupDescriptionsViewModel.listOfIncorrectRecords = listOfIncorrectRecords;
-        //            groupDescriptionsViewModel.listOfEditedRecords = listOfEditedRecords;
-        //            groupDescriptionsViewModel.listOfDuplicateRecords = listOfDuplicateRecords;
-        //            return View(viewName, groupDescriptionsViewModel);
-        //        }
-
-        //        #endregion 
-
-        //        #region Groups
-        //        if (viewName.ToLower() == "groups")
-        //        {
-        //            List<GroupsModel> values = null;
-        //            var groupsViewModel = new GroupsViewModel();
-        //            var listOfIncorrectRecords = new List<GroupsModel>();
-        //            var listOfCorrectRecords = new List<GroupsModel>();
-        //            var listOfDuplicateRecords = new List<GroupsModel>();
-        //            var listOfEditedRecords = new List<GroupsModel>();
-
-        //            // Verify that the user selected a file
-        //            if (file != null && file.ContentLength > 0)
-        //            {
-
-        //                values = parseCSV<GroupsModel>(file);
-        //            }
-
-
-        //            if (values != null)
-        //            {
-        //                var repository = new GroupsRepository();
-
-        //                repository.AddGroups(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords );
-        //            }
-
-        //            //var table = Utils.GetDatatableForModel<SiteModel>(sites[0]);
-
-        //            @ViewBag.numberOfCorrectRecords = listOfCorrectRecords.Count();
-        //            @ViewBag.numberOfDuplicateRecords = listOfDuplicateRecords.Count();
-        //            // redirect back to the index action to show the form once again
-
-        //            groupsViewModel.listOfCorrectRecords = listOfCorrectRecords;
-        //            groupsViewModel.listOfIncorrectRecords = listOfIncorrectRecords;
-        //            groupsViewModel.listOfEditedRecords = listOfEditedRecords;
-        //            groupsViewModel.listOfDuplicateRecords = listOfDuplicateRecords;
-        //            return View(viewName, groupsViewModel);
-        //        } 
-        //        #endregion
-
-        //        #region DerivedFrom
-        //        if (viewName.ToLower() == "derivedfrom")
-        //        {
-        //            List<DerivedFromModel> values = null;
-        //            var derivedFromViewModel = new DerivedFromViewModel();
-        //            var listOfIncorrectRecords = new List<DerivedFromModel>();
-        //            var listOfCorrectRecords = new List<DerivedFromModel>();
-        //            var listOfDuplicateRecords = new List<DerivedFromModel>();
-        //            var listOfEditedRecords = new List<DerivedFromModel>();
-
-        //            // Verify that the user selected a file
-        //            if (file != null && file.ContentLength > 0)
-        //            {
-
-        //                values = parseCSV<DerivedFromModel>(file);
-        //            }
-
-
-        //            if (values != null)
-        //            {
-        //                var repository = new DerivedFromRepository();
-
-        //                repository.AddDerivedFrom(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords );
-        //            }
-
-        //            //var table = Utils.GetDatatableForModel<SiteModel>(sites[0]);
-
-        //            @ViewBag.numberOfCorrectRecords = listOfCorrectRecords.Count();
-        //            @ViewBag.numberOfDuplicateRecords = listOfDuplicateRecords.Count();
-        //            // redirect back to the index action to show the form once again
-
-        //            derivedFromViewModel.listOfCorrectRecords = listOfCorrectRecords;
-        //            derivedFromViewModel.listOfIncorrectRecords = listOfIncorrectRecords;
-        //            derivedFromViewModel.listOfEditedRecords = listOfEditedRecords;
-        //            derivedFromViewModel.listOfDuplicateRecords = listOfDuplicateRecords;
-
-        //            return View(viewName, derivedFromViewModel);
-        //        } 
-        //        #endregion
-
-        //        #region Categories
-        //        if (viewName.ToLower() == "categories")
-        //        {
-        //            List<CategoriesModel> values = null;
-        //            var categoriesViewModel = new CategoriesViewModel();
-        //            var listOfIncorrectRecords = new List<CategoriesModel>();
-        //            var listOfCorrectRecords = new List<CategoriesModel>();
-        //            var listOfDuplicateRecords = new List<CategoriesModel>();
-        //            var listOfEditedRecords = new List<CategoriesModel>();
-
-        //            // Verify that the user selected a file
-        //            if (file != null && file.ContentLength > 0)
-        //            {
-
-        //                values = parseCSV<CategoriesModel>(file);
-        //            }
-
-
-        //            if (values != null)
-        //            {
-        //                var repository = new CategoriesRepository();
-
-        //                repository.AddCategories(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords );
-        //            }
-
-        //            //var table = Utils.GetDatatableForModel<SiteModel>(sites[0]);
-
-        //            @ViewBag.numberOfCorrectRecords = listOfCorrectRecords.Count();
-        //            @ViewBag.numberOfDuplicateRecords = listOfDuplicateRecords.Count();
-        //            // redirect back to the index action to show the form once again
-
-        //            categoriesViewModel.listOfCorrectRecords = listOfCorrectRecords;
-        //            categoriesViewModel.listOfIncorrectRecords = listOfIncorrectRecords;
-        //            categoriesViewModel.listOfEditedRecords = listOfEditedRecords;
-        //            categoriesViewModel.listOfDuplicateRecords = listOfDuplicateRecords;
-
-        //            return View(viewName, categoriesViewModel);
-        //        } 
-        //        #endregion
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ModelState.AddModelError(String.Empty, Ressources.IMPORT_FAILED );//+ ": " + ex.Message
-        //    }
-        //    return View(viewName);
-        //}
-
-        //[HttpPost]
-        //public virtual ActionResult Import2(HttpPostedFileBase file, FormCollection collection)//
-        //{
-        //    //string userName = HttpContext.User.Identity.Name;//  "martin.seul@yahoo.com";
-        //    //var Db = new ApplicationDbContext();
-        //    //var userEmail = Db.Users.First(u => u.UserName == userName).UserEmail
-
-        //    //file = Request.Files[0];
-        //    string viewName = collection["viewname"];
-
-        //    if (!file.FileName.ToLower().EndsWith(".csv"))
-        //    {
-        //        ModelState.AddModelError(String.Empty, Ressources.FILETYPE_NOT_CSV);
-        //        return View(viewName);
-        //    }
-        //    //Get Connection string
-        //    var connectionName = Utils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
-        //    var entityConnectionString = Utils.GetDBConnectionStringByName(connectionName);
-
-        //    if (String.IsNullOrEmpty(connectionName))
-        //    {
-        //        ModelState.AddModelError(String.Empty, Ressources.HYDROSERVER_USERLOOKUP_FAILED);
-        //        return View(viewName);
-        //    }
-        //    //Object T;
-        //    try
-        //    {
-        //        #region Sites
-        //        //  
-        //        if (viewName.ToLower() == "sites")
-        //        {
-        //            List<SiteModel> values = null;
-
-
-        //            //var siteViewModel = new SitesViewModel();
-        //            var listOfIncorrectRecords = new List<SiteModel>();
-        //            var listOfCorrectRecords = new List<SiteModel>();
-        //            var listOfDuplicateRecords = new List<SiteModel>();
-        //            var listOfEditedRecords = new List<SiteModel>();
-
-        //            // Verify that the user selected a file
-        //            if (file != null && file.ContentLength > 0)
-        //            {
-
-        //                values = parseCSV<SiteModel>(file);
-        //            }
-
-
-        //            if (values != null)
-        //            {
-        //                var sitesRepository = new SitesRepository();
-
-        //                sitesRepository.AddSites(values, entityConnectionString, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
-        //            }
-
-        //            //var table = Utils.GetDatatableForModel<SiteModel>(sites[0]);
-
-        //            @ViewBag.numberOfCorrectRecords = listOfCorrectRecords.Count();
-        //            @ViewBag.numberOfDuplicateRecords = listOfDuplicateRecords.Count();
-        //            // redirect back to the index action to show the form once again
-
-        //            //siteViewModel.listOfCorrectRecords = listOfCorrectRecords;
-        //            //siteViewModel.listOfIncorrectRecords = listOfIncorrectRecords;
-        //            //siteViewModel.listOfEditedRecords = listOfEditedRecords;
-        //            //siteViewModel.listOfDuplicateRecords = listOfDuplicateRecords;
-        //            //return RedirectToAction("Sites", siteViewModel);
-        //            //return View(viewName, siteViewModel);
-        //            bool isUploaded = false;
-        //            string message = "File upload succeeded";
-
-        //            return Json(new { isUploaded = isUploaded, message = message }, "text/html");
-        //        }
-        //        #endregion
-
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ModelState.AddModelError(String.Empty, Ressources.IMPORT_FAILED);//+ ": " + ex.Message
-        //    }
-        //    return View(viewName);
-        //}
-
+   
         private static List<T> parseCSV<T>(HttpPostedFileBase file)
         {
             var s = new List<T>();
@@ -1053,6 +338,385 @@ namespace HydroServerTools.Controllers
         }
 
         [HttpPost]
+        public ActionResult Commit(string id, int index)
+        {
+
+            
+            //"Sites", "Variables", "OffsetTypes", "ISOMetadata", "Sources", "Methods", "LabMethods", "Samples", "Qualifiers", "QualityControlLevels", "DataValues", "GroupDescriptions", "Groups", "DerivedFrom", "Categories"};
+
+            //Sites
+
+            try
+            {
+                if (id != null)
+                {
+
+                    string connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name.ToString());
+
+                    var connectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
+
+                    var recordListname = (index == 0) ? "listOfCorrectRecords" : "listOfEditedRecords";
+
+                    
+                    if (id == "sites")
+                    {
+                        
+                        //get new record to be added
+                        var listOfRecords = (List<SiteModel>)BusinessObjectsUtils.GetRecordsFromCache<SiteModel>(MvcApplication.InstanceGuid, index, CacheName);
+
+                        if (listOfRecords != null)
+                        {
+                            if (listOfRecords.Count > 0)
+                            {
+                                if (index == 0)
+                                {
+                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<SiteModel>(connectionString, id, listOfRecords);
+                                }
+                                else
+                                {
+                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitUpdateRecords<SiteModel>(connectionString, id, listOfRecords);
+                                }
+                                
+                                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                            }
+                        }
+                    }
+                    if (id == "variables")
+                    {
+                        //get new record to be added
+                        var listOfRecords = (List<VariablesModel>)BusinessObjectsUtils.GetRecordsFromCache<VariablesModel>(MvcApplication.InstanceGuid, index, CacheName);
+                        if (listOfRecords != null)
+                        {
+                            if (listOfRecords.Count > 0)
+                            {
+                                if (index == 0)
+                                {
+                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<VariablesModel>(connectionString, id, listOfRecords);
+                                }
+                                else
+                                {
+                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitUpdateRecords<VariablesModel>(connectionString, id, listOfRecords);
+                                }
+
+                                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                            }
+                        }
+                    }
+                    if (id == "offsettypes")
+                    {
+                        //get new record to be added
+                        var listOfRecords = (List<OffsetTypesModel>)BusinessObjectsUtils.GetRecordsFromCache<OffsetTypesModel>(MvcApplication.InstanceGuid, index, CacheName);
+                        if (listOfRecords != null)
+                        {
+                            if (listOfRecords.Count > 0)
+                            {
+                                if (index == 0)
+                                {
+                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<OffsetTypesModel>(connectionString, id, listOfRecords);
+                                }
+                                else
+                                {
+                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitUpdateRecords<OffsetTypesModel>(connectionString, id, listOfRecords);
+                                }
+
+                                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                            }
+                        }
+                    }
+                    if (id == "isometadata")
+                    {
+                        //get new record to be added
+                        var listOfRecords = (List<ISOMetadataModel>)BusinessObjectsUtils.GetRecordsFromCache<ISOMetadataModel>(MvcApplication.InstanceGuid, index, CacheName);
+                        if (listOfRecords != null)
+                        {
+                            if (listOfRecords.Count > 0)
+                            {
+                                if (index == 0)
+                                {
+                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<ISOMetadataModel>(connectionString, id, listOfRecords);
+                                }
+                                else
+                                {
+                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitUpdateRecords<ISOMetadataModel>(connectionString, id, listOfRecords);
+                                }
+
+                                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                            }
+                        }
+                    }
+                    if (id == "sources")
+                    {
+                        //get new record to be added
+                        var listOfRecords = (List<SourcesModel>)BusinessObjectsUtils.GetRecordsFromCache<SourcesModel>(MvcApplication.InstanceGuid, index, CacheName);
+                        if (listOfRecords != null)
+                        {
+                            if (listOfRecords.Count > 0)
+                            {
+                                if (index == 0)
+                                {
+                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<SourcesModel>(connectionString, id, listOfRecords);
+                                }
+                                else
+                                {
+                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitUpdateRecords<SourcesModel>(connectionString, id, listOfRecords);
+                                }
+
+                                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                            }
+                        }
+                    }
+                    if (id == "methods")
+                    {
+                        //get new record to be added
+                        var listOfRecords = (List<MethodModel>)BusinessObjectsUtils.GetRecordsFromCache<MethodModel>(MvcApplication.InstanceGuid, index, CacheName);
+                        if (listOfRecords != null)
+                        {
+                            if (listOfRecords.Count > 0)
+                            {
+                                if (index == 0)
+                                {
+                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<MethodModel>(connectionString, id, listOfRecords);
+                                }
+                                else
+                                {
+                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitUpdateRecords<MethodModel>(connectionString, id, listOfRecords);
+                                }
+
+                                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                            }
+                        }
+                    }
+                    if (id == "labmethods")
+                    {
+                        //get new record to be added
+                        var listOfRecords = (List<LabMethodModel>)BusinessObjectsUtils.GetRecordsFromCache<LabMethodModel>(MvcApplication.InstanceGuid, index, CacheName);
+                        if (listOfRecords != null)
+                        {
+                            if (listOfRecords.Count > 0)
+                            {
+                                if (index == 0)
+                                {
+                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<LabMethodModel>(connectionString, id, listOfRecords);
+                                }
+                                else
+                                {
+                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitUpdateRecords<LabMethodModel>(connectionString, id, listOfRecords);
+                                }
+
+                                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                            }
+                        }
+                    }
+                    if (id == "samples")
+                    {
+                        //get new record to be added
+                        var listOfRecords = (List<SampleModel>)BusinessObjectsUtils.GetRecordsFromCache<SampleModel>(MvcApplication.InstanceGuid, index, CacheName);
+                        if (listOfRecords != null)
+                        {
+                            if (listOfRecords.Count > 0)
+                            {
+                                if (index == 0)
+                                {
+                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<SampleModel>(connectionString, id, listOfRecords);
+                                }
+                                else
+                                {
+                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitUpdateRecords<SampleModel>(connectionString, id, listOfRecords);
+                                }
+
+                                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                            }
+                        }
+                    }
+                    if (id == "qualifiers")
+                    {
+                        //get new record to be added
+                        var listOfRecords = (List<QualifiersModel>)BusinessObjectsUtils.GetRecordsFromCache<QualifiersModel>(MvcApplication.InstanceGuid, index, CacheName);
+                        if (listOfRecords != null)
+                        {
+                            if (listOfRecords.Count > 0)
+                            {
+                                if (index == 0)
+                                {
+                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<QualifiersModel>(connectionString, id, listOfRecords);
+                                }
+                                else
+                                {
+                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitUpdateRecords<QualifiersModel>(connectionString, id, listOfRecords);
+                                }
+
+                                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                            }
+                        }
+                    }
+                    if (id == "qualitycontrollevels")
+                    {
+                        //get new record to be added
+                        var listOfRecords = (List<QualityControlLevelModel>)BusinessObjectsUtils.GetRecordsFromCache<QualityControlLevelModel>(MvcApplication.InstanceGuid, index, CacheName);
+                        if (listOfRecords != null)
+                        {
+                            if (listOfRecords.Count > 0)
+                            {
+                                if (index == 0)
+                                {
+                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<QualityControlLevelModel>(connectionString, id, listOfRecords);
+                                }
+                                else
+                                {
+                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitUpdateRecords<QualityControlLevelModel>(connectionString, id, listOfRecords);
+                                }
+
+                                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                            }
+                        }
+                    }
+                    if (id == "datavalues")
+                    {
+                        //get new record to be added
+                        var listOfRecords = (List<DataValuesModel>)BusinessObjectsUtils.GetRecordsFromCache<DataValuesModel>(MvcApplication.InstanceGuid, index, CacheName);
+                        if (listOfRecords != null)
+                        {
+                            if (listOfRecords.Count > 0)
+                            {
+                                if (index == 0)
+                                {
+                                     HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<DataValuesModel>(connectionString, id, listOfRecords);
+                                //update Seriescatalog
+                                
+                                    var seriesCatalogRepository = new SeriesCatalogRepository();
+                                    seriesCatalogRepository.deleteAll(connectionString);
+                                    seriesCatalogRepository.UpdateSeriesCatalog(MvcApplication.InstanceGuid, connectionString);
+                                }
+                                else
+                                {
+                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitUpdateRecords<DataValuesModel>(connectionString, id, listOfRecords);
+                                }
+                                
+                               
+                                
+                                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+
+
+
+                            }
+                        }
+                    }
+                    if (id == "groupdescriptions")
+                    {
+                        //get new record to be added
+                        var listOfRecords = (List<GroupDescriptionModel>)BusinessObjectsUtils.GetRecordsFromCache<GroupDescriptionModel>(MvcApplication.InstanceGuid, index, CacheName);
+                        if (listOfRecords != null)
+                        {
+                            if (listOfRecords.Count > 0)
+                            {
+                               if (index == 0)
+                                {
+                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<GroupDescriptionModel>(connectionString, id, listOfRecords);
+                                }
+                                else
+                                {
+                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitUpdateRecords<GroupDescriptionModel>(connectionString, id, listOfRecords);
+                                }
+                                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                            }
+                        }
+                    }
+                    if (id == "groups")
+                    {
+                        //get new record to be added
+                        var listOfRecords = (List<GroupsModel>)BusinessObjectsUtils.GetRecordsFromCache<GroupsModel>(MvcApplication.InstanceGuid, index, CacheName);
+                        if (listOfRecords != null)
+                        {
+                            if (listOfRecords.Count > 0)
+                            {
+                                if (index == 0)
+                                {
+                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<GroupsModel>(connectionString, id, listOfRecords);
+                                }
+                                else
+                                {
+                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitUpdateRecords<GroupsModel>(connectionString, id, listOfRecords);
+                                }
+                                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                            }
+                        }
+                    }
+                    if (id == "derivedfrom")
+                    {
+                        //get new record to be added
+                        var listOfRecords = (List<DerivedFromModel>)BusinessObjectsUtils.GetRecordsFromCache<DerivedFromModel>(MvcApplication.InstanceGuid, index, CacheName);
+                        if (listOfRecords != null)
+                        {
+                            if (listOfRecords.Count > 0)
+                            {
+                               if (index == 0)
+                                {
+                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<DerivedFromModel>(connectionString, id, listOfRecords);
+                                }
+                                else
+                                {
+                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitUpdateRecords<DerivedFromModel>(connectionString, id, listOfRecords);
+                                }
+                                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                            }
+                        }
+                    }
+                    if (id == "categories")
+                    {
+                        //get new record to be added
+                        var listOfRecords = (List<CategoriesModel>)BusinessObjectsUtils.GetRecordsFromCache<CategoriesModel>(MvcApplication.InstanceGuid, index, CacheName);
+                        if (listOfRecords != null)
+                        {
+                            if (listOfRecords.Count > 0)
+                            {
+                               if (index == 0)
+                                {
+                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<CategoriesModel>(connectionString, id, listOfRecords);
+                                }
+                                else
+                                {
+                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitUpdateRecords<CategoriesModel>(connectionString, id, listOfRecords);
+                                }
+                                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                            }
+                        }
+                    }
+                   
+                
+                }
+
+                return Json(new { success = true });
+            }           
+            
+            
+            catch (Exception ex)
+            {
+                // Now we need to wire up a response so that the calling script understands what happened
+                
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "An error ocuured inserting the data.");
+            }
+        }
+
+       
+
+        [HttpPost]
+        public HttpStatusCodeResult Cancel(string id)
+        {
+            try
+            {
+                // For compatibility with IE's "done" event we need to return a result as well as setting the context.response
+                return new HttpStatusCodeResult(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                // Now we need to wire up a response so that the calling script understands what happened
+
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "An error ocuured inserting the data.");
+            }
+        }
+
+
+        [HttpPost]
         public JsonResult Sites(JQueryDataTablesModel jQueryDataTablesModel, int id)
         {
             int totalRecordCount = 0;
@@ -1064,7 +728,7 @@ namespace HydroServerTools.Controllers
             var listOfRecords = new List<SiteModel>();
             List<SiteModel> items = new List<SiteModel>();
 
-            listOfRecords = (List<SiteModel>)Utils.GetRecordsFromCache<SiteModel>(id, "default");
+            listOfRecords = (List<SiteModel>)BusinessObjectsUtils.GetRecordsFromCache<SiteModel>(MvcApplication.InstanceGuid, id, CacheName);
 
             var sortedColumns = jQueryDataTablesModel.GetSortedColumns();
 
@@ -1113,102 +777,108 @@ namespace HydroServerTools.Controllers
                         foreach (var sortedColumn in sortedColumns)
                         {
                             switch (sortedColumn.PropertyName.ToLower())
-                            {
-                                case "0":
+                            {                               
+                                //user selected
+                                case "1":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.SiteCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.SiteCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "1":
+                                case "2":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.SiteName).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.SiteName).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "2":
+                                case "3":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.Latitude).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.Latitude).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "3":
+                                case "4":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.Longitude).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.Longitude).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "4":
+                                case "5":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.LatLongDatumSRSName).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.LatLongDatumSRSName).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "5":
+                                case "6":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.Elevation_m).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.Elevation_m).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "6":
+                                case "7":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.VerticalDatum).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.VerticalDatum).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "7":
+                                case "8":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.LocalX).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.LocalX).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "8":
+                                case "9":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.LocalY).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.LocalY).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "9":
+                                case "10":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.LocalProjectionSRSName).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.LocalProjectionSRSName).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "10":
+                                case "11":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.PosAccuracy_m).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.PosAccuracy_m).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "11":
+                                case "12":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.State).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.State).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "12":
+                                case "13":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.County).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.County).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "13":
+                                case "14":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.Comments).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.Comments).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "14":
+                                case "15":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.SiteType).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.SiteType).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
+                                default :
+                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
+                                    { items = listOfRecords.OrderBy(a => a.SiteCode).Skip(startIndex).Take(pageSize).ToList(); }
+                                    else
+                                    { items = listOfRecords.OrderByDescending(a => a.SiteCode).Skip(startIndex).Take(pageSize).ToList(); }
+                                    break;
                             }
                         }
 
-                        if (items == null) items = listOfRecords.OrderByDescending(a => a.SiteCode).Skip(startIndex).Take(pageSize).ToList();
-
+                     
 
                     }
                 }
@@ -1223,7 +893,8 @@ namespace HydroServerTools.Controllers
             //    totalRecordCount: out totalRecordCount, searchRecordCount: out searchRecordCount, searchString: jQueryDataTablesModel.sSearch);
 
             var rst = from c in items
-                      select new[] { 
+                      select new[] {
+                    string.Empty,
                     c.SiteCode,
                     c.SiteName,  
                     c.Latitude,  
@@ -1238,7 +909,8 @@ namespace HydroServerTools.Controllers
                     c.State,  
                     c.County,  
                     c.Comments,  
-                    c.SiteType
+                    c.SiteType,
+                    c.Errors
                 };
 
             return this.DataTablesJson(items: rst,
@@ -1259,7 +931,7 @@ namespace HydroServerTools.Controllers
             var listOfRecords = new List<VariablesModel>();
             List<VariablesModel> items = new List<VariablesModel>();
 
-            listOfRecords = (List<VariablesModel>)Utils.GetRecordsFromCache<VariablesModel>(id, "default");
+            listOfRecords = (List<VariablesModel>)BusinessObjectsUtils.GetRecordsFromCache<VariablesModel>(MvcApplication.InstanceGuid, id, "default");
 
             var sortedColumns = jQueryDataTablesModel.GetSortedColumns();
 
@@ -1308,12 +980,6 @@ namespace HydroServerTools.Controllers
                         {
                             switch (sortedColumn.PropertyName.ToLower())
                             {
-                                case "0":
-                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
-                                    { items = listOfRecords.OrderBy(a => a.VariableCode).Skip(startIndex).Take(pageSize).ToList(); }
-                                    else
-                                    { items = listOfRecords.OrderByDescending(a => a.VariableCode).Skip(startIndex).Take(pageSize).ToList(); }
-                                    break;
                                 case "1":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.VariableName).Skip(startIndex).Take(pageSize).ToList(); }
@@ -1380,12 +1046,16 @@ namespace HydroServerTools.Controllers
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.NoDataValue).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-
+                                default :
+                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
+                                    { items = listOfRecords.OrderBy(a => a.VariableCode).Skip(startIndex).Take(pageSize).ToList(); }
+                                    else
+                                    { items = listOfRecords.OrderByDescending(a => a.VariableCode).Skip(startIndex).Take(pageSize).ToList(); }
+                                    break;
                             }
                         }
 
-                        if (items == null) items = listOfRecords.OrderByDescending(a => a.VariableCode).Skip(startIndex).Take(pageSize).ToList();
-
+                      
 
                     }
                 }
@@ -1402,6 +1072,7 @@ namespace HydroServerTools.Controllers
             var rst = from c in items
                       select new[] { 
                             //c.VariableID,
+                            string.Empty,
                             c.VariableCode,
                             c.VariableName,
                             c.Speciation,
@@ -1413,7 +1084,8 @@ namespace HydroServerTools.Controllers
                             c.TimeUnitsName,
                             c.DataType,
                             c.GeneralCategory,
-                            c.NoDataValue
+                            c.NoDataValue,
+                            c.Errors
                 };
 
             return this.DataTablesJson(items: rst,
@@ -1434,7 +1106,7 @@ namespace HydroServerTools.Controllers
             var listOfRecords = new List<OffsetTypesModel>();
             List<OffsetTypesModel> items = new List<OffsetTypesModel>();
 
-            listOfRecords = (List<OffsetTypesModel>)Utils.GetRecordsFromCache<OffsetTypesModel>(id, "default");
+            listOfRecords = (List<OffsetTypesModel>)BusinessObjectsUtils.GetRecordsFromCache<OffsetTypesModel>(MvcApplication.InstanceGuid, id, "default");
 
             var sortedColumns = jQueryDataTablesModel.GetSortedColumns();
 
@@ -1473,30 +1145,35 @@ namespace HydroServerTools.Controllers
                         {
                             switch (sortedColumn.PropertyName.ToLower())
                             {
-                                case "0":
+                                case "1":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.OffsetTypeID).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.OffsetTypeID).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "1":
+                                case "2":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.OffsetUnitsName).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.OffsetUnitsName).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "2":
+                                case "3":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.OffsetDescription).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.OffsetDescription).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
+                                default:
+                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
+                                    { items = listOfRecords.OrderBy(a => a.OffsetTypeID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    else
+                                    { items = listOfRecords.OrderByDescending(a => a.OffsetTypeID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    break;
 
                             }
                         }
 
-                        if (items == null) items = listOfRecords.OrderByDescending(a => a.OffsetTypeID).Skip(startIndex).Take(pageSize).ToList();
-
+                  
 
                     }
                 }
@@ -1512,9 +1189,11 @@ namespace HydroServerTools.Controllers
 
             var rst = from c in items
                       select new[] { 
+                                        string.Empty,
                                         c.OffsetTypeID,
                                         c.OffsetUnitsName,
-                                        c.OffsetDescription
+                                        c.OffsetDescription,
+                                        c.Errors
                                     };
 
             return this.DataTablesJson(items: rst,
@@ -1535,7 +1214,7 @@ namespace HydroServerTools.Controllers
             var listOfRecords = new List<SourcesModel>();
             List<SourcesModel> items = new List<SourcesModel>();
 
-            listOfRecords = (List<SourcesModel>)Utils.GetRecordsFromCache<SourcesModel>(id, "default");
+            listOfRecords = (List<SourcesModel>)BusinessObjectsUtils.GetRecordsFromCache<SourcesModel>(MvcApplication.InstanceGuid, id, "default");
 
             var sortedColumns = jQueryDataTablesModel.GetSortedColumns();
 
@@ -1588,107 +1267,113 @@ namespace HydroServerTools.Controllers
                         {
                             switch (sortedColumn.PropertyName.ToLower())
                             {
-                                case "0":
+                                case "1":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.SourceID).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.SourceID).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "1":
+                                case "2":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.Organization).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.Organization).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "2":
+                                case "3":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.SourceDescription).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.SourceDescription).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "3":
+                                case "4":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.SourceLink).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.SourceLink).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "4":
+                                case "5":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.ContactName).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.ContactName).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "5":
+                                case "6":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.Phone).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.Phone).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "6":
+                                case "7":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.Email).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.Email).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "7":
+                                case "8":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.Address).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.Address).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "8":
+                                case "9":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.City).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.City).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "9":
+                                case "10":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.State).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.State).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "10":
+                                case "11":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.ZipCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.ZipCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "11":
+                                case "12":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.State).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.State).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "12":
+                                case "13":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.Citation).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.Citation).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "13":
+                                case "14":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.Title).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.Title).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "14":
+                                case "15":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.Abstract).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.Abstract).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "15":
+                                case "16":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.ProfileVersion).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.ProfileVersion).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "16":
+                                case "17":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.MetadataLink).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.MetadataLink).Skip(startIndex).Take(pageSize).ToList(); }
+                                    break;
+                                default:
+                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
+                                    { items = listOfRecords.OrderBy(a => a.SourceID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    else
+                                    { items = listOfRecords.OrderByDescending(a => a.SourceID).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
                             }
                         }
@@ -1708,6 +1393,7 @@ namespace HydroServerTools.Controllers
 
             var rst = from c in items
                       select new[] { 
+                                        string.Empty,
                                         c.SourceID,
                                         c.Organization,
                                         c.SourceDescription,
@@ -1724,7 +1410,8 @@ namespace HydroServerTools.Controllers
                                         c.Title,
                                         c.Abstract,
                                         c.ProfileVersion,
-                                        c.MetadataLink
+                                        c.MetadataLink,
+                                        c.Errors
                                     };
 
             return this.DataTablesJson(items: rst,
@@ -1745,7 +1432,7 @@ namespace HydroServerTools.Controllers
             var listOfRecords = new List<MethodModel>();
             List<MethodModel> items = new List<MethodModel>();
 
-            listOfRecords = (List<MethodModel>)Utils.GetRecordsFromCache<MethodModel>(id, "default");
+            listOfRecords = (List<MethodModel>)BusinessObjectsUtils.GetRecordsFromCache<MethodModel>(MvcApplication.InstanceGuid, id, "default");
 
             var sortedColumns = jQueryDataTablesModel.GetSortedColumns();
 
@@ -1784,30 +1471,35 @@ namespace HydroServerTools.Controllers
                         {
                             switch (sortedColumn.PropertyName.ToLower())
                             {
-                                case "0":
+                                case "1":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.MethodID).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.MethodID).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "1":
+                                case "2":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.MethodDescription).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.MethodDescription).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "2":
+                                case "3":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.MethodLink).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.MethodLink).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
+                                default:
+                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
+                                    { items = listOfRecords.OrderBy(a => a.MethodID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    else
+                                    { items = listOfRecords.OrderByDescending(a => a.MethodID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    break;
 
                             }
                         }
 
-                        if (items == null) items = listOfRecords.OrderByDescending(a => a.MethodID).Skip(startIndex).Take(pageSize).ToList();
-
+                     
 
                     }
                 }
@@ -1823,9 +1515,11 @@ namespace HydroServerTools.Controllers
 
             var rst = from c in items
                       select new[] { 
+                            string.Empty,
                             c.MethodID,
                             c.MethodDescription,
-                            c.MethodLink
+                            c.MethodLink,
+                            c.Errors
                 };
 
             return this.DataTablesJson(items: rst,
@@ -1846,7 +1540,7 @@ namespace HydroServerTools.Controllers
             var listOfRecords = new List<LabMethodModel>();
             List<LabMethodModel> items = new List<LabMethodModel>();
 
-            listOfRecords = (List<LabMethodModel>)Utils.GetRecordsFromCache<LabMethodModel>(id, "default");
+            listOfRecords = (List<LabMethodModel>)BusinessObjectsUtils.GetRecordsFromCache<LabMethodModel>(MvcApplication.InstanceGuid, id, "default");
 
             var sortedColumns = jQueryDataTablesModel.GetSortedColumns();
 
@@ -1888,48 +1582,53 @@ namespace HydroServerTools.Controllers
                         {
                             switch (sortedColumn.PropertyName.ToLower())
                             {
-                                case "0":
+                                case "1":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.LabMethodID).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.LabMethodID).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "1":
+                                case "2":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.LabName).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.LabName).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "2":
+                                case "3":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.LabOrganization).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.LabOrganization).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "3":
+                                case "4":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.LabMethodName).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.LabMethodName).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "4":
+                                case "5":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.LabMethodDescription).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.LabMethodDescription).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "5":
+                                case "6":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.LabMethodLink).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.LabMethodLink).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
+                                default:
+                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
+                                    { items = listOfRecords.OrderBy(a => a.LabMethodID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    else
+                                    { items = listOfRecords.OrderByDescending(a => a.LabMethodID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    break;
 
                             }
                         }
 
-                        if (items == null) items = listOfRecords.OrderByDescending(a => a.LabMethodID).Skip(startIndex).Take(pageSize).ToList();
-
+                 
 
                     }
                 }
@@ -1945,12 +1644,14 @@ namespace HydroServerTools.Controllers
 
             var rst = from c in items
                       select new[] { 
+                                        string.Empty,
                                         c.LabMethodID,
                                         c.LabName,
                                         c.LabOrganization,
                                         c.LabMethodName,
                                         c.LabMethodDescription,
-                                        c.LabMethodLink
+                                        c.LabMethodLink,
+                                        c.Errors
                                      };
 
             return this.DataTablesJson(items: rst,
@@ -1971,7 +1672,7 @@ namespace HydroServerTools.Controllers
             var listOfRecords = new List<SampleModel>();
             List<SampleModel> items = new List<SampleModel>();
 
-            listOfRecords = (List<SampleModel>)Utils.GetRecordsFromCache<SampleModel>(id, "default");
+            listOfRecords = (List<SampleModel>)BusinessObjectsUtils.GetRecordsFromCache<SampleModel>(MvcApplication.InstanceGuid, id, "default");
 
             var sortedColumns = jQueryDataTablesModel.GetSortedColumns();
 
@@ -1993,6 +1694,7 @@ namespace HydroServerTools.Controllers
                                         || c.SampleType != null && c.SampleType.ToLower().Contains(searchString.ToLower())
                                         || c.LabSampleCode != null && c.LabSampleCode.ToLower().Contains(searchString.ToLower())
                                         || c.LabMethodName != null && c.LabMethodName.Contains(searchString.ToLower())
+                                        || c.LabMethodID != null && c.LabMethodID.ToString().Contains(searchString.ToLower())
                                 );
 
                         if (filteredItems != null)
@@ -2011,36 +1713,47 @@ namespace HydroServerTools.Controllers
                         {
                             switch (sortedColumn.PropertyName.ToLower())
                             {
-                                case "0":
+                                case "1":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.SampleID).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.SampleID).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "1":
+                                case "2":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.SampleType).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.SampleType).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "2":
+                                case "3":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.LabSampleCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.LabSampleCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "3":
+                                case "4":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.LabMethodName).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.LabMethodName).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
+                                case "5":
+                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
+                                    { items = listOfRecords.OrderBy(a => a.LabMethodID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    else
+                                    { items = listOfRecords.OrderByDescending(a => a.LabMethodID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    break;
+                                default:
+                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
+                                    { items = listOfRecords.OrderBy(a => a.SampleID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    else
+                                    { items = listOfRecords.OrderByDescending(a => a.SampleID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    break;
 
                             }
                         }
 
-                        if (items == null) items = listOfRecords.OrderByDescending(a => a.SampleID).Skip(startIndex).Take(pageSize).ToList();
-
+                    
 
                     }
                 }
@@ -2056,10 +1769,13 @@ namespace HydroServerTools.Controllers
 
             var rst = from c in items
                       select new[] { 
+                                        string.Empty,
                                         c.SampleID,
                                         c.SampleType,
                                         c.LabSampleCode,
-                                        c.LabMethodName
+                                        c.LabMethodName,
+                                        c.LabMethodID,
+                                        c.Errors
                                     };
 
             return this.DataTablesJson(items: rst,
@@ -2080,7 +1796,7 @@ namespace HydroServerTools.Controllers
             var listOfRecords = new List<QualifiersModel>();
             List<QualifiersModel> items = new List<QualifiersModel>();
 
-            listOfRecords = (List<QualifiersModel>)Utils.GetRecordsFromCache<QualifiersModel>(id, "default");
+            listOfRecords = (List<QualifiersModel>)BusinessObjectsUtils.GetRecordsFromCache<QualifiersModel>(MvcApplication.InstanceGuid, id, "default");
 
             var sortedColumns = jQueryDataTablesModel.GetSortedColumns();
 
@@ -2137,13 +1853,17 @@ namespace HydroServerTools.Controllers
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.QualifierDescription).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
+                                default:
+                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
+                                    { items = listOfRecords.OrderBy(a => a.QualifierID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    else
+                                    { items = listOfRecords.OrderByDescending(a => a.QualifierID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    break;
 
 
                             }
                         }
-
-                        if (items == null) items = listOfRecords.OrderByDescending(a => a.QualifierCode).Skip(startIndex).Take(pageSize).ToList();
-
+                     
 
                     }
                 }
@@ -2158,11 +1878,13 @@ namespace HydroServerTools.Controllers
             //    totalRecordCount: out totalRecordCount, searchRecordCount: out searchRecordCount, searchString: jQueryDataTablesModel.sSearch);
 
             var rst = from c in items
-                      select new[] { 
+                        select new[] { 
+                                        string.Empty,
                                         c.QualifierID,
                                         c.QualifierCode,
-                                        c.QualifierDescription
-                                     };
+                                        c.QualifierDescription,
+                                        c.Errors
+                                      };
 
             return this.DataTablesJson(items: rst,
                 totalRecords: totalRecordCount,
@@ -2182,7 +1904,7 @@ namespace HydroServerTools.Controllers
             var listOfRecords = new List<QualityControlLevelModel>();
             List<QualityControlLevelModel> items = new List<QualityControlLevelModel>();
 
-            listOfRecords = (List<QualityControlLevelModel>)Utils.GetRecordsFromCache<QualityControlLevelModel>(id, "default");
+            listOfRecords = (List<QualityControlLevelModel>)BusinessObjectsUtils.GetRecordsFromCache<QualityControlLevelModel>(MvcApplication.InstanceGuid, id, "default");
 
             var sortedColumns = jQueryDataTablesModel.GetSortedColumns();
 
@@ -2239,12 +1961,17 @@ namespace HydroServerTools.Controllers
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.Explanation).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
+                                default:
+                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
+                                    { items = listOfRecords.OrderBy(a => a.QualityControlLevelCode).Skip(startIndex).Take(pageSize).ToList(); }
+                                    else
+                                    { items = listOfRecords.OrderByDescending(a => a.QualityControlLevelCode).Skip(startIndex).Take(pageSize).ToList(); }
+                                    break;
 
                             }
                         }
 
-                        if (items == null) items = listOfRecords.OrderByDescending(a => a.QualityControlLevelCode).Skip(startIndex).Take(pageSize).ToList();
-
+                   
 
                     }
                 }
@@ -2260,9 +1987,11 @@ namespace HydroServerTools.Controllers
 
             var rst = from c in items
                       select new[] { 
+                            string.Empty,
                             c.QualityControlLevelCode,
                             c.Definition,
-                            c.Explanation
+                            c.Explanation,
+                            c.Errors
                 };
 
             return this.DataTablesJson(items: rst,
@@ -2280,7 +2009,12 @@ namespace HydroServerTools.Controllers
             var listOfRecords = new List<DataValuesModel>();
             var items = new List<DataValuesModel>();
 
-            listOfRecords = Utils.GetRecordsFromCache<DataValuesModel>(id, "default");
+            var startIndex = jQueryDataTablesModel.iDisplayStart;
+            var pageSize = jQueryDataTablesModel.iDisplayLength;
+
+            var sortedColumns = jQueryDataTablesModel.GetSortedColumns();
+
+            listOfRecords = BusinessObjectsUtils.GetRecordsFromCache<DataValuesModel>(MvcApplication.InstanceGuid, id, "default");
             //initial value
             if (listOfRecords != null)
             {
@@ -2319,8 +2053,121 @@ namespace HydroServerTools.Controllers
                         }
                     }
                     else
-                        items = (List<DataValuesModel>)listOfRecords.OrderBy(a => a.SiteCode).Skip(jQueryDataTablesModel.iDisplayStart).Take(jQueryDataTablesModel.iDisplayLength).ToList();
-
+                        foreach (var sortedColumn in sortedColumns)
+                        {
+                            switch (sortedColumn.PropertyName.ToLower())
+                            {
+                                //user selected
+                                case "2":
+                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
+                                    { items = listOfRecords.OrderBy(a => a.DataValue).Skip(startIndex).Take(pageSize).ToList(); }
+                                    else
+                                    { items = listOfRecords.OrderByDescending(a => a.DataValue).Skip(startIndex).Take(pageSize).ToList(); }
+                                    break;
+                                case "3":
+                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
+                                    { items = listOfRecords.OrderBy(a => a.ValueAccuracy).Skip(startIndex).Take(pageSize).ToList(); }
+                                    else
+                                    { items = listOfRecords.OrderByDescending(a => a.ValueAccuracy).Skip(startIndex).Take(pageSize).ToList(); }
+                                    break;
+                                case "4":
+                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
+                                    { items = listOfRecords.OrderBy(a => a.LocalDateTime).Skip(startIndex).Take(pageSize).ToList(); }
+                                    else
+                                    { items = listOfRecords.OrderByDescending(a => a.LocalDateTime).Skip(startIndex).Take(pageSize).ToList(); }
+                                    break;
+                                case "5":
+                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
+                                    { items = listOfRecords.OrderBy(a => a.UTCOffset).Skip(startIndex).Take(pageSize).ToList(); }
+                                    else
+                                    { items = listOfRecords.OrderByDescending(a => a.UTCOffset).Skip(startIndex).Take(pageSize).ToList(); }
+                                    break;
+                                case "6":
+                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
+                                    { items = listOfRecords.OrderBy(a => a.DateTimeUTC).Skip(startIndex).Take(pageSize).ToList(); }
+                                    else
+                                    { items = listOfRecords.OrderByDescending(a => a.DateTimeUTC).Skip(startIndex).Take(pageSize).ToList(); }
+                                    break;
+                                case "7":
+                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
+                                    { items = listOfRecords.OrderBy(a => a.SiteCode).Skip(startIndex).Take(pageSize).ToList(); }
+                                    else
+                                    { items = listOfRecords.OrderByDescending(a => a.SiteCode).Skip(startIndex).Take(pageSize).ToList(); }
+                                    break;
+                                case "8":
+                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
+                                    { items = listOfRecords.OrderBy(a => a.VariableCode).Skip(startIndex).Take(pageSize).ToList(); }
+                                    else
+                                    { items = listOfRecords.OrderByDescending(a => a.VariableCode).Skip(startIndex).Take(pageSize).ToList(); }
+                                    break;
+                                case "9":
+                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
+                                    { items = listOfRecords.OrderBy(a => a.OffsetValue).Skip(startIndex).Take(pageSize).ToList(); }
+                                    else
+                                    { items = listOfRecords.OrderByDescending(a => a.OffsetValue).Skip(startIndex).Take(pageSize).ToList(); }
+                                    break;
+                                case "10":
+                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
+                                    { items = listOfRecords.OrderBy(a => a.OffsetTypeID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    else
+                                    { items = listOfRecords.OrderByDescending(a => a.OffsetTypeID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    break;
+                                case "11":
+                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
+                                    { items = listOfRecords.OrderBy(a => a.CensorCode).Skip(startIndex).Take(pageSize).ToList(); }
+                                    else
+                                    { items = listOfRecords.OrderByDescending(a => a.CensorCode).Skip(startIndex).Take(pageSize).ToList(); }
+                                    break;
+                                case "12":
+                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
+                                    { items = listOfRecords.OrderBy(a => a.QualifierID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    else
+                                    { items = listOfRecords.OrderByDescending(a => a.QualifierID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    break;
+                                case "13":
+                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
+                                    { items = listOfRecords.OrderBy(a => a.MethodID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    else
+                                    { items = listOfRecords.OrderByDescending(a => a.MethodID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    break;
+                                case "14":
+                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
+                                    { items = listOfRecords.OrderBy(a => a.MethodDescription).Skip(startIndex).Take(pageSize).ToList(); }
+                                    else
+                                    { items = listOfRecords.OrderByDescending(a => a.MethodDescription).Skip(startIndex).Take(pageSize).ToList(); }
+                                    break;
+                                case "15":
+                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
+                                    { items = listOfRecords.OrderBy(a => a.SourceID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    else
+                                    { items = listOfRecords.OrderByDescending(a => a.SourceID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    break;
+                                case "16":
+                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
+                                    { items = listOfRecords.OrderBy(a => a.SampleID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    else
+                                    { items = listOfRecords.OrderByDescending(a => a.SampleID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    break;
+                                case "17":
+                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
+                                    { items = listOfRecords.OrderBy(a => a.DerivedFromID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    else
+                                    { items = listOfRecords.OrderByDescending(a => a.DerivedFromID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    break;
+                                case "18":
+                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
+                                    { items = listOfRecords.OrderBy(a => a.QualityControlLevelCode).Skip(startIndex).Take(pageSize).ToList(); }
+                                    else
+                                    { items = listOfRecords.OrderByDescending(a => a.QualityControlLevelCode).Skip(startIndex).Take(pageSize).ToList(); }
+                                    break;
+                                default:
+                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
+                                    { items = listOfRecords.OrderBy(a => a.SiteCode).Skip(startIndex).Take(pageSize).ToList(); }
+                                    else
+                                    { items = listOfRecords.OrderByDescending(a => a.SiteCode).Skip(startIndex).Take(pageSize).ToList(); }
+                                    break;
+                            }
+                        }
                 }
 
             }
@@ -2334,6 +2181,7 @@ namespace HydroServerTools.Controllers
 
             var rst = from c in items
                       select new[] { 
+                        string.Empty,
                         c.ValueID,
                         c.DataValue,
                         c.ValueAccuracy,
@@ -2352,7 +2200,8 @@ namespace HydroServerTools.Controllers
                         c.SourceID,
                         c.SampleID,
                         c.DerivedFromID,
-                        c.QualityControlLevelCode
+                        c.QualityControlLevelCode,
+                        c.Errors
                 };
 
             return this.DataTablesJson(items: rst,
@@ -2373,7 +2222,7 @@ namespace HydroServerTools.Controllers
             var listOfRecords = new List<GroupDescriptionModel>();
             List<GroupDescriptionModel> items = new List<GroupDescriptionModel>();
 
-            listOfRecords = (List<GroupDescriptionModel>)Utils.GetRecordsFromCache<GroupDescriptionModel>(id, "default");
+            listOfRecords = (List<GroupDescriptionModel>)BusinessObjectsUtils.GetRecordsFromCache<GroupDescriptionModel>(MvcApplication.InstanceGuid, id, "default");
 
             var sortedColumns = jQueryDataTablesModel.GetSortedColumns();
 
@@ -2411,17 +2260,23 @@ namespace HydroServerTools.Controllers
                         {
                             switch (sortedColumn.PropertyName.ToLower())
                             {
-                                case "0":
+                                case "1":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.GroupID).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.GroupID).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "1":
+                                case "2":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.GroupDescription).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.GroupDescription).Skip(startIndex).Take(pageSize).ToList(); }
+                                    break;
+                                default:
+                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
+                                    { items = listOfRecords.OrderBy(a => a.GroupID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    else
+                                    { items = listOfRecords.OrderByDescending(a => a.GroupID).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
 
                             }
@@ -2435,18 +2290,18 @@ namespace HydroServerTools.Controllers
 
             }
 
-
-
-
             //var items = sitesRepository.GetSites(entityConnectionString, startIndex: jQueryDataTablesModel.iDisplayStart,
             //    pageSize: jQueryDataTablesModel.iDisplayLength, sortedColumns: jQueryDataTablesModel.GetSortedColumns(),
             //    totalRecordCount: out totalRecordCount, searchRecordCount: out searchRecordCount, searchString: jQueryDataTablesModel.sSearch);
 
             var rst = from c in items
-                      select new[] { 
+                      select new[] 
+                                { 
+                                    string.Empty,
                                     c.GroupID,
-                                    c.GroupDescription
-                                    };
+                                    c.GroupDescription,
+                                    c.Errors
+                                };
 
             return this.DataTablesJson(items: rst,
                 totalRecords: totalRecordCount,
@@ -2466,7 +2321,7 @@ namespace HydroServerTools.Controllers
             var listOfRecords = new List<GroupsModel>();
             List<GroupsModel> items = new List<GroupsModel>();
 
-            listOfRecords = (List<GroupsModel>)Utils.GetRecordsFromCache<GroupsModel>(id, "default");
+            listOfRecords = (List<GroupsModel>)BusinessObjectsUtils.GetRecordsFromCache<GroupsModel>(MvcApplication.InstanceGuid, id, "default");
 
             var sortedColumns = jQueryDataTablesModel.GetSortedColumns();
 
@@ -2504,17 +2359,23 @@ namespace HydroServerTools.Controllers
                         {
                             switch (sortedColumn.PropertyName.ToLower())
                             {
-                                case "0":
+                                case "1":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.GroupID).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.GroupID).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "1":
+                                case "2":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.ValueID).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.ValueID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    break;
+                                default:
+                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
+                                    { items = listOfRecords.OrderBy(a => a.GroupID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    else
+                                    { items = listOfRecords.OrderByDescending(a => a.GroupID).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
 
                             }
@@ -2537,8 +2398,10 @@ namespace HydroServerTools.Controllers
 
             var rst = from c in items
                       select new[] { 
+                                        string.Empty,
                                         c.GroupID,
-                                        c.ValueID
+                                        c.ValueID,
+                                        c.Errors
                                     };
 
             return this.DataTablesJson(items: rst,
@@ -2559,7 +2422,7 @@ namespace HydroServerTools.Controllers
             var listOfRecords = new List<DerivedFromModel>();
             List<DerivedFromModel> items = new List<DerivedFromModel>();
 
-            listOfRecords = (List<DerivedFromModel>)Utils.GetRecordsFromCache<DerivedFromModel>(id, "default");
+            listOfRecords = (List<DerivedFromModel>)BusinessObjectsUtils.GetRecordsFromCache<DerivedFromModel>(MvcApplication.InstanceGuid, id, "default");
 
             var sortedColumns = jQueryDataTablesModel.GetSortedColumns();
 
@@ -2597,17 +2460,23 @@ namespace HydroServerTools.Controllers
                         {
                             switch (sortedColumn.PropertyName.ToLower())
                             {
-                                case "0":
+                                case "1":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.DerivedFromId).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.DerivedFromId).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "1":
+                                case "2":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.ValueID).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.ValueID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    break;
+                                default:
+                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
+                                    { items = listOfRecords.OrderBy(a => a.DerivedFromId).Skip(startIndex).Take(pageSize).ToList(); }
+                                    else
+                                    { items = listOfRecords.OrderByDescending(a => a.DerivedFromId).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
 
                             }
@@ -2630,8 +2499,10 @@ namespace HydroServerTools.Controllers
 
             var rst = from c in items
                       select new[] { 
+                                        string.Empty,
                                         c.DerivedFromId,
-                                        c.ValueID
+                                        c.ValueID,
+                                        c.Errors
                                     };
 
             return this.DataTablesJson(items: rst,
@@ -2652,7 +2523,7 @@ namespace HydroServerTools.Controllers
             var listOfRecords = new List<CategoriesModel>();
             List<CategoriesModel> items = new List<CategoriesModel>();
 
-            listOfRecords = (List<CategoriesModel>)Utils.GetRecordsFromCache<CategoriesModel>(id, "default");
+            listOfRecords = (List<CategoriesModel>)BusinessObjectsUtils.GetRecordsFromCache<CategoriesModel>(MvcApplication.InstanceGuid, id, "default");
 
             var sortedColumns = jQueryDataTablesModel.GetSortedColumns();
 
@@ -2691,23 +2562,29 @@ namespace HydroServerTools.Controllers
                         {
                             switch (sortedColumn.PropertyName.ToLower())
                             {
-                                case "0":
+                                case "1":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.VariableCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.VariableCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "1":
+                                case "2":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.DataValue).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.DataValue).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "2":
+                                case "3":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.CategoryDescription).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.CategoryDescription).Skip(startIndex).Take(pageSize).ToList(); }
+                                    break;
+                                default:
+                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
+                                    { items = listOfRecords.OrderBy(a => a.VariableCode).Skip(startIndex).Take(pageSize).ToList(); }
+                                    else
+                                    { items = listOfRecords.OrderByDescending(a => a.VariableCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
 
                             }
@@ -2730,9 +2607,11 @@ namespace HydroServerTools.Controllers
 
             var rst = from c in items
                       select new[] { 
+                                        string.Empty,
                                         c.VariableCode,
                                         c.DataValue,
-                                        c.CategoryDescription
+                                        c.CategoryDescription,
+                                        c.Errors
                                     };
 
             return this.DataTablesJson(items: rst,

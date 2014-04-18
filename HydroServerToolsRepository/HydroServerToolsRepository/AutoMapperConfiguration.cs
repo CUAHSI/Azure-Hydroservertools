@@ -66,7 +66,7 @@ namespace HydroServerToolsRepository
             Mapper.CreateMap<Source, SourcesModel>();
             Mapper.CreateMap<SourcesModel, Source>()
                  .ForMember(c => c.SourceID, opt => opt.Ignore()); ;
-
+            Mapper.CreateMap<SourcesModel, ISOMetadata>();
             //  Methods
             Mapper.CreateMap<Method, MethodModel>();
             Mapper.CreateMap<MethodModel, Method>()
@@ -97,7 +97,7 @@ namespace HydroServerToolsRepository
                 .ForMember(c => c.DataValue, m=>m.MapFrom(s=>s.DataValue1));
             Mapper.CreateMap<DataValuesModel, DataValue>()
                 .ForMember(c => c.ValueID, opt => opt.Ignore())
-                .ForMember(c => c.VariableID, opt => opt.Ignore())
+                //.ForMember(c => c.VariableID, opt => opt.Ignore())
                 .ForMember(c => c.DataValue1, m => m.MapFrom(s => s.DataValue)); 
 
             //  GroupDescriptions

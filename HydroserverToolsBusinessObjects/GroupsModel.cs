@@ -10,5 +10,6 @@ namespace HydroserverToolsBusinessObjects.Models
     {
         public string GroupID { get; set; }      
         public string ValueID { get; set; }
+        public string Errors { get; set; }
     }
 }

@@ -43,7 +43,7 @@ namespace HydroserverToolsBusinessObjects.Models
         public string ProfileVersion { get; set; }
 
         public string MetadataLink { get; set; }
-
+        public string Errors { get; set; }
 
     }
 }

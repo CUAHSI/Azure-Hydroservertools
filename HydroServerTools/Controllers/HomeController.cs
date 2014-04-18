@@ -1,8 +1,9 @@
-﻿using HydroServerTools.Helper;
+﻿
 using HydroServerTools.Models;
 using HydroserverToolsBusinessObjects;
 using HydroserverToolsBusinessObjects.Models;
 using HydroServerToolsRepository.Repository;
+using Microsoft.ApplicationServer.Caching;
 using MvcFileUploader;
 using MvcFileUploader.Models;
 using Newtonsoft.Json;
@@ -27,6 +28,8 @@ namespace HydroServerTools.Controllers
     [Authorize]
     public class HomeController : Controller
     {
+       
+
 
         public ActionResult Index()
         {
@@ -61,7 +64,7 @@ namespace HydroServerTools.Controllers
             model.Username = "martin";
             model.Password = "ms";
             
-            var connectionString = Helper.Utils.BuildEFConnnectionString(model);
+            var connectionString = HydroServerToolsUtils.BuildEFConnnectionString(model);
 
 
             var sitesRepository = new SitesRepository();
@@ -140,14 +143,18 @@ namespace HydroServerTools.Controllers
         {
             return View();
         }
+        public ActionResult Templates()
+        {
+            return View();
+        }
         public ActionResult AjaxHandler(jQueryDataTableParamModel param, string identifier)
         {
 
             var repo = new SitesRepository(); 
             
-            string connectionName = Utils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name.ToString());
+            string connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name.ToString());
 
-            var entityConnectionString = Utils.GetDBConnectionStringByName(connectionName);
+            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
             if (String.IsNullOrEmpty(entityConnectionString)) { ViewBag.Message = Ressources.HYDROSERVER_USERLOOKUP_FAILED; return View("Error"); }
 
@@ -221,9 +228,9 @@ namespace HydroServerTools.Controllers
         [Authorize]
         public ActionResult ClearTablesHandler(FormCollection collection)
         {
-             string connectionName = Utils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name.ToString());
+             string connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name.ToString());
 
-            var entityConnectionString = Utils.GetDBConnectionStringByName(connectionName);
+            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
             //"Sites", "Variables", "OffsetTypes", "ISOMetadata", "Sources", "Methods", "LabMethods", "Samples", "Qualifiers", "QualityControlLevels", "DataValues", "GroupDescriptions", "Groups", "DerivedFrom", "Categories"};
 
             //Sites
@@ -267,6 +274,18 @@ namespace HydroServerTools.Controllers
             return Json(new { success = true });
 
         }
+        [HttpPost]
+        public ActionResult Progress()
+        {
+            DataCache cache = new DataCache("default");
+            var identifier = MvcApplication.InstanceGuid;
+            string StatusMessage = "Uploading...";
+            if (cache.Get(identifier + "processStatus") != null)
+            {
+                if (cache.Get(identifier + "processStatus") != null)   StatusMessage = (string)cache.Get(identifier + "processStatus");
+            }
 
+            return Json(StatusMessage);
+        }
     }
 }

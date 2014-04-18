@@ -9,7 +9,7 @@ namespace HydroserverToolsBusinessObjects.Models
 {
     public class CategoriesModel
     {
-        //[Required]
+        [Display(Name = "NotVisible")]//
         public string VariableID { get; set; }
         [Required]
         public string VariableCode { get; set; }
@@ -17,5 +17,6 @@ namespace HydroserverToolsBusinessObjects.Models
         public string DataValue { get; set; }
         [Required]
         public string CategoryDescription { get; set; }
+        public string Errors { get; set; }
     }
 }

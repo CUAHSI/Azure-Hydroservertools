@@ -20,19 +20,21 @@ namespace HydroserverToolsBusinessObjects.Models
         public string Longitude { get; set; }
         [Required]
         public string LatLongDatumSRSName { get; set; }
-        //public string LatLongDatumID { get; set; }
+        [Display(Name="NotVisible")]//used to udicate that the fiels is not vosible ib the datatables but required to automap the fiels. bit of a hack
+        public string LatLongDatumID { get; set; }
         public string Elevation_m { get; set; }
         public string VerticalDatum { get; set; }
         public string LocalX { get; set; }
-        public string LocalY { get; set; }       
-        //public string LocalProjectionID { get; set; }
+        public string LocalY { get; set; }
+        [Display(Name = "NotVisible")]
+        public string LocalProjectionID { get; set; }
         public string LocalProjectionSRSName { get; set; }
         public string PosAccuracy_m { get; set; }
         public string State { get; set; }
         public string County { get; set; }
         public string Comments { get; set; }
         public string SiteType { get; set; }
-
+        public string Errors { get; set; }
 
 
     }

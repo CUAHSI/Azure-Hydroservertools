@@ -20,11 +20,11 @@
             <div class="panel-heading">
                 <h3 class="panel-title">Currently importing: @ViewBag.Name</h3>
             </div>
-            <div class="panel-body">
+            <div class="panel-body h4">
                 <i class="icon-plus"></i><p>Please select or drag-in your file</p>
                 @*<input type="file" id="fileupload" name="fileupload" accept=".csv,.zip" >*@
                 <p>
-                    <span class="btn btn-success fileinput-button">
+                    <span class="btn btn-success fileinput-button alert-message">
                         <i class="glyphicon glyphicon-plus"></i>
                         <span>Add files...</span>
                         <input type="file" id="fileupload" class="required" name=" fileupload" accept=".csv,.zip">
@@ -32,35 +32,38 @@
                     @*<button id="btnUploadAll" class="btn btn-success pull-right"  type="button">
                          Upload All
                         </button>*@
-                    <button type="button" id="startupload" class="btn btn-primary start disabled">
+                    <button type="button" id="startupload" class="btn btn-primary start alert-message disabled">
                         <i class="glyphicon glyphicon-upload"></i>
                         <span>Start upload</span>
                     </button>
-                    <button type="reset" id="reset" class="btn btn-warning cancel disabled">
+                    <button type="reset" id="reset" class="btn btn-warning cancel alert-message disabled">
                         <i class="glyphicon glyphicon-ban-circle"></i>
-                        <span>Reset</span>
+                        <span>Cancel</span>
                     </button>
                     <div class="clearfix">
                     </div>
                     <p>
-                        <div class="well-sm hide h5" id="filelistholder">
+                        <div class="well-sm hide h4" id="filelistholder">
 
                             @*<div id="progressbar"></div>*@
                         </div>
                     </p>
                     <div class="well-sm alert-info hide" id="loading">
-                        Processing...
-                        <img src="~/Images/ajax-loader.gif" />
+                        <div id="monitor">Uploading...
+                            @*<img src="~/Images/ajax-loader.gif" />*@
+                        </div>
                     </div>
                     @*<div class="progress">
                          <div class="bar" id="overallbar" style="width: 0%">
                          </div>
                         </div>*@
+               
                 </p>
             </div>
 
         </div>
     </form>
+   
 </div>
 
   

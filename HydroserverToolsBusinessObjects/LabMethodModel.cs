@@ -20,5 +20,6 @@ namespace HydroserverToolsBusinessObjects.Models
         public string LabMethodDescription { get; set; }
         
         public string LabMethodLink { get; set; }
+        public string Errors { get; set; }
     }
 }

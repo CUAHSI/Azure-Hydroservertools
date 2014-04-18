@@ -45,7 +45,9 @@
 {
     <script>
         $(document).ready(function () {
-            $('#0').dataTable(getDatatableOptions('@ViewBag.Name', 0));
+           initCommitAndCancelButton('@ViewBag.Name');
+            oTable = $('#0').dataTable(getDatatableOptions('@ViewBag.Name', 0));
+            toggleCommitButtons(oTable,0);
 
         });
     </script>

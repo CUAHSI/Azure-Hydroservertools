@@ -39,7 +39,7 @@
 
 //});
 
-
+var oTable;
 
 $(document).ready(function () {
 
@@ -57,122 +57,52 @@ $(document).ready(function () {
         },
 
         "activate": function (event, ui) {
-            var oTable;
+
             var index = $("#tabs").tabs('option', 'active');
-
-
 
             if ($("#tabs").tabs('option', 'active') === 0) {
                 oTable = $('#0').dataTable(getDatatableOptions(viewName, 0));
+               
                 //oTable.fnReloadAjax("SitesSearch");
             } else if ($("#tabs").tabs('option', 'active') === 1) {
                 // $('#1').dataTable().fnDestroy();
                 oTable = $('#1').dataTable(getDatatableOptions(viewName, 1));
+               
                 //oTable.fnReloadAjax("SitesSearch");
             } else if ($("#tabs").tabs('option', 'active') === 2) {
                 oTable = $('#2').dataTable(getDatatableOptions(viewName, 2));
+                //toggleCommitButtons(oTable, 2);
                 //oTable.fnReloadAjax("SitesSearch");
             } else {
                 oTable = $('#3').dataTable(getDatatableOptions(viewName, 3));
+               
                 //oTable.fnReloadAjax("SitesSearch");
             }
             // var index = $("#tabs").tabs('option', 'active');
 
             //oTable.fnReloadAjax();
 
-
-
-
-            //oTable = $('div.dataTables_scrollBody>table.display', ui.panel).dataTable();
-            if (oTable.length > 0) {
-                //      var oTableTools = TableTools.fnGetInstance(oTable[0]);
-                //      oTable.dataTable().fnAdjustColumnSizing();
-                //      oTableTools.fnResizeButtons();
-                //      // alert("buttons should work");
-            }
         }
     });
 
-    $.fn.dataTableExt.oApi.fnReloadAjax = function (oSettings, sNewSource, fnCallback, bStandingRedraw) {
-        // DataTables 1.10 compatibility - if 1.10 then versionCheck exists.
-        // 1.10s API has ajax reloading built in, so we use those abilities
-        // directly.
-        if ($.fn.dataTable.versionCheck) {
-            var api = new $.fn.dataTable.Api(oSettings);
-
-            if (sNewSource) {
-                api.ajax.url(sNewSource).load(fnCallback, !bStandingRedraw);
-            }
-            else {
-                api.ajax.reload(fnCallback, !bStandingRedraw);
-            }
-            return;
-        }
-
-        if (sNewSource !== undefined && sNewSource !== null) {
-            oSettings.sAjaxSource = sNewSource;
-        }
-
-        // Server-side processing should just call fnDraw
-        if (oSettings.oFeatures.bServerSide) {
-            this.fnDraw();
-            return;
-        }
-
-        this.oApi._fnProcessingDisplay(oSettings, true);
-        var that = this;
-        var iStart = oSettings._iDisplayStart;
-        var aData = [];
-
-        this.oApi._fnServerParams(oSettings, aData);
-
-        oSettings.fnServerData.call(oSettings.oInstance, oSettings.sAjaxSource, aData, function (json) {
-            /* Clear the old information from the table */
-            that.oApi._fnClearTable(oSettings);
-
-            /* Got the data - add it to the table */
-            var aData = (oSettings.sAjaxDataProp !== "") ?
-                that.oApi._fnGetObjectDataFn(oSettings.sAjaxDataProp)(json) : json;
-
-            for (var i = 0 ; i < aData.length ; i++) {
-                that.oApi._fnAddData(oSettings, aData[i]);
-            }
-
-            oSettings.aiDisplay = oSettings.aiDisplayMaster.slice();
-
-            that.fnDraw();
-
-            if (bStandingRedraw === true) {
-                oSettings._iDisplayStart = iStart;
-                that.oApi._fnCalculateEnd(oSettings);
-                that.fnDraw(false);
-            }
-
-            that.oApi._fnProcessingDisplay(oSettings, false);
-
-            /* Callback user function - for event handlers etc */
-            if (typeof fnCallback == 'function' && fnCallback !== null) {
-                fnCallback(oSettings);
-            }
-        }, oSettings);
-    };
-
+    
 
 });
 function getDatatableOptions(name, index) {
 
-
+    var path;
     if ((typeof index != "undefined"))
-        index = "/" + index;
+        path = "/" + index;
     else
-        index = "";
+        path = "";
 
     var optDataTables;
+    var sImageUrl = '/images/'
     switch (name.toLowerCase()) {
         case "sites":
             optDataTables = {
                 "bServerSide": true,
-                "sAjaxSource": "Sites" + index,
+                "sAjaxSource": "Sites" + path,
                 "bProcessing": true,
                 "sServerMethod": "POST",
                 "sPaginationType": "full_numbers",
@@ -180,31 +110,54 @@ function getDatatableOptions(name, index) {
                 "sScrollXInner": "150%",
                 "bScrollCollapse": true,
                 "bDestroy": true,
+                //"fnInitComplete": function (oSettings, json) {
+                //    initMessageColumn(index)
+                //    toggleCommitButtons(oTable, index);
+                //},
+                "fnDrawCallback": function( oSettings ) {
+                    initMessageColumn(index)
+                    toggleCommitButtons(oTable, index);
+                },
+
+                //"bJQueryUI": "true",
+                //"fnRender": function (oObj) {
+                //    return "<a href='#'>Edit</a>";
+                //},
+
                 //"bRetrieve": true,
                 "aoColumnDefs":
                  [
-                    { "aTargets": [0], "sName": "SiteCode" },
-                    { "aTargets": [1], "sName": "SiteName" },
-                    { "aTargets": [2], "sName": "Latitude" },
-                    { "aTargets": [3], "sName": "Longitude" },
-                    { "aTargets": [4], "sName": "LatLongDatumSRSName" },
-                    { "aTargets": [5], "sName": "Elevation_m" },
-                    { "aTargets": [6], "sName": "VerticalDatum" },
-                    { "aTargets": [7], "sName": "LocalX" },
-                    { "aTargets": [8], "sName": "LocalY" },
-                    { "aTargets": [9], "sName": "LocalProjectionID", "bVisible": false },
-                    { "aTargets": [10], "sName": "PosAccuracy_m" },
-                    { "aTargets": [11], "sName": "State" },
-                    { "aTargets": [12], "sName": "County" },
-                    { "aTargets": [13], "sName": "Comments" },
-                    { "aTargets": [14], "sName": "SiteType" }
+                    {
+                        "aTargets": [0], "sWidth": "50px",                        
+                        "bSearchable": false,
+                        "bSortable": false,
+                        "fnRender": function (oObj) {
+                            return addImageToColumn(index);
+                        }
+                    },
+                    { "aTargets": [1], "sName": "SiteCode" },
+                    { "aTargets": [2], "sName": "SiteName" },
+                    { "aTargets": [3], "sName": "Latitude" },
+                    { "aTargets": [4], "sName": "Longitude" },
+                    { "aTargets": [5], "sName": "LatLongDatumSRSName" },
+                    { "aTargets": [6], "sName": "Elevation_m" },
+                    { "aTargets": [7], "sName": "VerticalDatum" },
+                    { "aTargets": [8], "sName": "LocalX" },
+                    { "aTargets": [9], "sName": "LocalY" },
+                    { "aTargets": [10], "sName": "LocalProjectionID", "bVisible": false },
+                    { "aTargets": [11], "sName": "PosAccuracy_m" },
+                    { "aTargets": [12], "sName": "State" },
+                    { "aTargets": [13], "sName": "County" },
+                    { "aTargets": [14], "sName": "Comments" },
+                    { "aTargets": [15], "sName": "SiteType" },
+                    { "aTargets": [16], "sName": "Errors", "bSortable": false, "bVisible": false }
                  ]
             }
             break;
         case "variables":
             optDataTables = {
                 "bServerSide": true,
-                "sAjaxSource": "Variables" + index,
+                "sAjaxSource": "Variables" + path,
                 "bProcessing": true,
                 "sServerMethod": "POST",
                 "sPaginationType": "full_numbers",
@@ -212,29 +165,41 @@ function getDatatableOptions(name, index) {
                 "sScrollXInner": "150%",
                 "bScrollCollapse": true,
                 "bDestroy": true,
+                "fnDrawCallback": function (oSettings) {
+                    initMessageColumn(index)
+                    toggleCommitButtons(oTable, index);
+                },
                 //"bRetrieve": true,
                 "aoColumnDefs":
                  [
-                    //{ "aTargets": [0], "sName": "VariableID", "bVisible": false },
-                    { "aTargets": [0], "sName": "VariableCode" },
-                    { "aTargets": [1], "sName": "VariableName" },
-                    { "aTargets": [2], "sName": "Speciation" },
-                    { "aTargets": [3], "sName": "VariableUnitsName" },
-                    { "aTargets": [4], "sName": "SampleMedium" },
-                    { "aTargets": [5], "sName": "ValueType" },
-                    { "aTargets": [6], "sName": "IsRegular" },
-                    { "aTargets": [7], "sName": "TimeSupport" },
-                    { "aTargets": [8], "sName": "TimeUnitsName" },
-                    { "aTargets": [9], "sName": "DataType" },
-                    { "aTargets": [10], "sName": "GeneralCategory" },
-                    { "aTargets": [11], "sName": "NoDataValue" }
+                    {
+                        "aTargets": [0], "sWidth": "50px",
+                        "bSearchable": false,
+                        "bSortable": false,
+                        "fnRender": function (oObj) {
+                            return addImageToColumn(index);
+                        }
+                    },
+                    { "aTargets": [1], "sName": "VariableCode" },
+                    { "aTargets": [2], "sName": "VariableName" },
+                    { "aTargets": [3], "sName": "Speciation" },
+                    { "aTargets": [4], "sName": "VariableUnitsName" },
+                    { "aTargets": [5], "sName": "SampleMedium" },
+                    { "aTargets": [6], "sName": "ValueType" },
+                    { "aTargets": [7], "sName": "IsRegular" },
+                    { "aTargets": [8], "sName": "TimeSupport" },
+                    { "aTargets": [9], "sName": "TimeUnitsName" },
+                    { "aTargets": [10], "sName": "DataType" },
+                    { "aTargets": [11], "sName": "GeneralCategory" },
+                    { "aTargets": [12], "sName": "NoDataValue" },
+                    { "aTargets": [13], "sName": "Errors", "bSortable": false, "bVisible": false }
                  ]
             }
             break;
         case "offsettypes":
             optDataTables = {
                 "bServerSide": true,
-                "sAjaxSource": "OffsetTypes" + index,
+                "sAjaxSource": "OffsetTypes" + path,
                 "bProcessing": true,
                 "sServerMethod": "POST",
                 "sPaginationType": "full_numbers",
@@ -242,19 +207,32 @@ function getDatatableOptions(name, index) {
                 "sScrollXInner": "100%",
                 "bScrollCollapse": true,
                 "bDestroy": true,
+                "fnDrawCallback": function (oSettings) {
+                    initMessageColumn(index)
+                    toggleCommitButtons(oTable, index);
+                },
                 //"bRetrieve": true,
                 "aoColumnDefs":
                  [
-                    { "aTargets": [0], "sName": "OffsetTypeID", "bVisible": false },
-                    { "aTargets": [1], "sName": "OffsetUnitsName" },
-                    { "aTargets": [2], "sName": "OffsetDescription" }
+                    {
+                        "aTargets": [0], "sWidth": "50px",
+                        "bSearchable": false,
+                        "bSortable": false,
+                        "fnRender": function (oObj) {
+                            return addImageToColumn(index);
+                        }
+                    },
+                    { "aTargets": [1], "sName": "OffsetTypeID", "bVisible": false },
+                    { "aTargets": [2], "sName": "OffsetUnitsName" },
+                    { "aTargets": [3], "sName": "OffsetDescription" },
+                    { "aTargets": [4], "sName": "Errors", "bSortable": false, "bVisible": false }
                  ]
             }
             break;
         case "sources":
             optDataTables = {
                 "bServerSide": true,
-                "sAjaxSource": "Sources" + index,
+                "sAjaxSource": "Sources" + path,
                 "bProcessing": true,
                 "sServerMethod": "POST",
                 "sPaginationType": "full_numbers",
@@ -262,33 +240,46 @@ function getDatatableOptions(name, index) {
                 "sScrollXInner": "300%",
                 "bScrollCollapse": true,
                 "bDestroy": true,
+                "fnDrawCallback": function (oSettings) {
+                    initMessageColumn(index)
+                    toggleCommitButtons(oTable, index);
+                },
                 //"bRetrieve": true,
                 "aoColumnDefs":
                  [
-                    { "aTargets": [0], "sName": "SourceID", "sWidth": "110px", "bVisible": false  },
-                    { "aTargets": [1], "sName": "Organization", "sWidth": "200px" },
-                    { "aTargets": [2], "sName": "SourceDescription", "sWidth": "300px" },
-                    { "aTargets": [3], "sName": "SourceLink", "sWidth": "250px" },
-                    { "aTargets": [4], "sName": "ContactName" },
-                    { "aTargets": [5], "sName": "Phone" },
-                    { "aTargets": [6], "sName": "Email" },
-                    { "aTargets": [7], "sName": "Address", "sWidth": "200px" },
-                    { "aTargets": [8], "sName": "City" },
-                    { "aTargets": [9], "sName": "State" },
-                    { "aTargets": [10], "sName": "ZipCode" },
-                    { "aTargets": [11], "sName": "Citation", "sWidth": "200px" },
-                    { "aTargets": [12], "sName": "TopicCategory" },
-                    { "aTargets": [13], "sName": "Title", "sWidth": "100px" },
-                    { "aTargets": [14], "sName": "Abstract", "sWidth": "300px" },
-                    { "aTargets": [15], "sName": "ProfileVersion" },
-                    { "aTargets": [16], "sName": "MetadataLink", "sWidth": "200px" }
+                    {
+                        "aTargets": [0], "sWidth": "50px",
+                        "bSearchable": false,
+                        "bSortable": false,
+                        "fnRender": function (oObj) {
+                            return addImageToColumn(index);
+                        }
+                    },
+                    { "aTargets": [1], "sName": "SourceID", "sWidth": "110px", "bVisible": false },
+                    { "aTargets": [2], "sName": "Organization", "sWidth": "200px" },
+                    { "aTargets": [3], "sName": "SourceDescription", "sWidth": "300px" },
+                    { "aTargets": [4], "sName": "SourceLink", "sWidth": "250px" },
+                    { "aTargets": [5], "sName": "ContactName" },
+                    { "aTargets": [6], "sName": "Phone" },
+                    { "aTargets": [7], "sName": "Email" },
+                    { "aTargets": [8], "sName": "Address", "sWidth": "200px" },
+                    { "aTargets": [9], "sName": "City" },
+                    { "aTargets": [10], "sName": "State" },
+                    { "aTargets": [11], "sName": "ZipCode" },
+                    { "aTargets": [12], "sName": "Citation", "sWidth": "200px" },
+                    { "aTargets": [13], "sName": "TopicCategory" },
+                    { "aTargets": [14], "sName": "Title", "sWidth": "100px" },
+                    { "aTargets": [15], "sName": "Abstract", "sWidth": "300px" },
+                    { "aTargets": [16], "sName": "ProfileVersion" },
+                    { "aTargets": [17], "sName": "MetadataLink", "sWidth": "200px" },
+                    { "aTargets": [18], "sName": "Errors", "bSortable": false, "bVisible": false }
                  ]
             }
             break;
         case "methods":
             optDataTables = {
                 "bServerSide": true,
-                "sAjaxSource": "Methods" + index,
+                "sAjaxSource": "Methods" + path,
                 "bProcessing": true,
                 "sServerMethod": "POST",
                 "sPaginationType": "full_numbers",
@@ -296,19 +287,32 @@ function getDatatableOptions(name, index) {
                 "sScrollXInner": "100%",
                 "bScrollCollapse": true,
                 "bDestroy": true,
+                "fnDrawCallback": function (oSettings) {
+                    initMessageColumn(index)
+                    toggleCommitButtons(oTable, index);
+                },
                 //"bRetrieve": true,
                 "aoColumnDefs":
                  [
-                    { "aTargets": [0], "sName": "MethodId", "bVisible": false },
-                    { "aTargets": [1], "sName": "MethodDescription" },
-                    { "aTargets": [2], "sName": "MethodLink" }
+                    {
+                        "aTargets": [0], "sWidth": "50px",
+                        "bSearchable": false,
+                        "bSortable": false,
+                        "fnRender": function (oObj) {
+                            return addImageToColumn(index);
+                        }
+                    },
+                    { "aTargets": [1], "sName": "MethodId", "bVisible": false },
+                    { "aTargets": [2], "sName": "MethodDescription" },
+                    { "aTargets": [3], "sName": "MethodLink" },
+                    { "aTargets": [4], "sName": "Errors", "bSortable": false, "bVisible": false }
                  ]
             }
             break;
         case "labmethods":
             optDataTables = {
                 "bServerSide": true,
-                "sAjaxSource": "LabMethods" + index,
+                "sAjaxSource": "LabMethods" + path,
                 "bProcessing": true,
                 "sServerMethod": "POST",
                 "sPaginationType": "full_numbers",
@@ -316,22 +320,35 @@ function getDatatableOptions(name, index) {
                 "sScrollXInner": "100%",
                 "bScrollCollapse": true,
                 "bDestroy": true,
+                "fnDrawCallback": function (oSettings) {
+                    initMessageColumn(index)
+                    toggleCommitButtons(oTable, index);
+                },
                 //"bRetrieve": true,
                 "aoColumnDefs":
                  [
-                    { "aTargets": [0], "sName": "LabMethodID", "bVisible": false },
-                    { "aTargets": [1], "sName": "LabName" },
-                    { "aTargets": [2], "sName": "LabOrganization" },
-                    { "aTargets": [3], "sName": "LabMethodName" },
-                    { "aTargets": [4], "sName": "LabMethodDescription" },
-                    { "aTargets": [5], "sName": "LabMethodLink" }
+                    {
+                        "aTargets": [0], "sWidth": "50px",
+                        "bSearchable": false,
+                        "bSortable": false,
+                        "fnRender": function (oObj) {
+                            return addImageToColumn(index);
+                        }
+                    },
+                    { "aTargets": [1], "sName": "LabMethodID", "bVisible": false },
+                    { "aTargets": [2], "sName": "LabName" },
+                    { "aTargets": [3], "sName": "LabOrganization" },
+                    { "aTargets": [4], "sName": "LabMethodName" },
+                    { "aTargets": [5], "sName": "LabMethodDescription" },
+                    { "aTargets": [6], "sName": "LabMethodLink" },
+                    { "aTargets": [7], "sName": "Errors", "bSortable": false, "bVisible": false }
                  ]
             }
             break;
         case "samples":
             optDataTables = {
                 "bServerSide": true,
-                "sAjaxSource": "Samples" + index,
+                "sAjaxSource": "Samples" + path,
                 "bProcessing": true,
                 "sServerMethod": "POST",
                 "sPaginationType": "full_numbers",
@@ -339,20 +356,34 @@ function getDatatableOptions(name, index) {
                 "sScrollXInner": "100%",
                 "bScrollCollapse": true,
                 "bDestroy": true,
+                "fnDrawCallback": function (oSettings) {
+                    initMessageColumn(index)
+                    toggleCommitButtons(oTable, index);
+                },
                 //"bRetrieve": true,
                 "aoColumnDefs":
                  [
-                    { "aTargets": [0], "sName": "SampleID", "bVisible": false },
-                    { "aTargets": [1], "sName": "SampleType" },
-                    { "aTargets": [2], "sName": "LabSampleCode" },
-                    { "aTargets": [3], "sName": "LabMethodName" }
+                    {
+                        "aTargets": [0], "sWidth": "50px",
+                        "bSearchable": false,
+                        "bSortable": false,
+                        "fnRender": function (oObj) {
+                            return addImageToColumn(index);
+                        }
+                    },
+                    { "aTargets": [1], "sName": "SampleID", "bVisible": false },
+                    { "aTargets": [2], "sName": "SampleType" },
+                    { "aTargets": [3], "sName": "LabSampleCode" },
+                    { "aTargets": [4], "sName": "LabMethodName", "bVisible": false },
+                    { "aTargets": [5], "sName": "LabMethodID" },
+                    { "aTargets": [6], "sName": "Errors", "bSortable": false, "bVisible": false }
                  ]
             }
             break;
         case "qualifiers":
             optDataTables = {
                 "bServerSide": true,
-                "sAjaxSource": "Qualifiers" + index,
+                "sAjaxSource": "Qualifiers" + path,
                 "bProcessing": true,
                 "sServerMethod": "POST",
                 "sPaginationType": "full_numbers",
@@ -360,19 +391,32 @@ function getDatatableOptions(name, index) {
                 "sScrollXInner": "100%",
                 "bScrollCollapse": true,
                 "bDestroy": true,
+                "fnDrawCallback": function (oSettings) {
+                    initMessageColumn(index)
+                    toggleCommitButtons(oTable, index);
+                },
                 //"bRetrieve": true,
                 "aoColumnDefs":
                  [
-                    { "aTargets": [0], "sName": "QualifierID", "bVisible": false },
-                    { "aTargets": [1], "sName": "QualifierCode" },
-                    { "aTargets": [2], "sName": "QualifierDescription" }
+                    {
+                        "aTargets": [0], "sWidth": "50px",
+                        "bSearchable": false,
+                        "bSortable": false,
+                        "fnRender": function (oObj) {
+                            return addImageToColumn(index);
+                        }
+                    },
+                    { "aTargets": [1], "sName": "QualifierID", "bVisible": false },
+                    { "aTargets": [2], "sName": "QualifierCode" },
+                    { "aTargets": [3], "sName": "QualifierDescription" },
+                    { "aTargets": [4], "sName": "Errors", "bSortable": false, "bVisible": false }
                  ]
             }
             break;
         case "qualitycontrollevels":
             optDataTables = {
                 "bServerSide": true,
-                "sAjaxSource": "QualityControlLevels" + index,
+                "sAjaxSource": "QualityControlLevels" + path,
                 "bProcessing": true,
                 "sServerMethod": "POST",
                 "sPaginationType": "full_numbers",
@@ -380,19 +424,32 @@ function getDatatableOptions(name, index) {
                 "sScrollXInner": "100%",
                 "bScrollCollapse": true,
                 "bDestroy": true,
+                "fnDrawCallback": function (oSettings) {
+                    initMessageColumn(index)
+                    toggleCommitButtons(oTable, index);
+                },
                 //"bRetrieve": true,
                 "aoColumnDefs":
                  [
-                    { "aTargets": [0], "sName": "QualityControlLevelCode", "sWidth": "110px" },
-                    { "aTargets": [1], "sName": "Definition" },
-                    { "aTargets": [2], "sName": "Explanation" }
+                    {
+                        "aTargets": [0], "sWidth": "50px",
+                        "bSearchable": false,
+                        "bSortable": false,
+                        "fnRender": function (oObj) {
+                            return addImageToColumn(index);
+                        }
+                    },
+                    { "aTargets": [1], "sName": "QualityControlLevelCode", "sWidth": "110px" },
+                    { "aTargets": [2], "sName": "Definition" },
+                    { "aTargets": [3], "sName": "Explanation" },
+                    { "aTargets": [4], "sName": "Errors", "bSortable": false, "bVisible": false }
                  ]
             }
             break;
         case "datavalues":
             optDataTables = {
                 "bServerSide": true,
-                "sAjaxSource": "Datavalues" + index,
+                "sAjaxSource": "Datavalues" + path,
                 "bProcessing": true,
                 "sServerMethod": "POST",
                 "sPaginationType": "full_numbers",
@@ -400,34 +457,47 @@ function getDatatableOptions(name, index) {
                 "sScrollXInner": "250%",
                 "bScrollCollapse": true,
                 "bDestroy": true,
+                "fnDrawCallback": function (oSettings) {
+                    initMessageColumn(index)
+                    toggleCommitButtons(oTable, index);
+                },
                 "aoColumnDefs":
                  [
-                    { "aTargets": [0], "sName": "ValueID", "bVisible": false },
-                    { "aTargets": [1], "sName": "DataValue" },
-                    { "aTargets": [2], "sName": "ValueAccuracy" },
-                    { "aTargets": [3], "sName": "LocalDateTime" },
-                    { "aTargets": [4], "sName": "UTCOffset" },
-                    { "aTargets": [5], "sName": "DateTimeUTC" },
-                    { "aTargets": [6], "sName": "SiteCode" },
+                    {
+                        "aTargets": [0], "sWidth": "50px",
+                        "bSearchable": false,
+                        "bSortable": false,
+                        "fnRender": function (oObj) {
+                            return addImageToColumn(index);
+                        }
+                    },
+                    { "aTargets": [1], "sName": "ValueID", "bVisible": false },
+                    { "aTargets": [2], "sName": "DataValue" },
+                    { "aTargets": [3], "sName": "ValueAccuracy" },
+                    { "aTargets": [4], "sName": "LocalDateTime" },
+                    { "aTargets": [5], "sName": "UTCOffset" },
+                    { "aTargets": [6], "sName": "DateTimeUTC" },
+                    { "aTargets": [7], "sName": "SiteCode" },
                     //{ "aTargets": [7], "sName": "VariableID", "bVisible": false },
-                    { "aTargets": [7], "sName": "VariableCode" },
-                    { "aTargets": [8], "sName": "OffsetValue" },
-                    { "aTargets": [9], "sName": "OffsetTypeID" },
-                    { "aTargets": [10], "sName": "CensorCode" },
-                    { "aTargets": [11], "sName": "QualifierID" },
-                    { "aTargets": [12], "sName": "MethodID" },
-                    { "aTargets": [13], "sName": "MethodDescription", "bVisible": false },
-                    { "aTargets": [14], "sName": "SourceID" },
-                    { "aTargets": [15], "sName": "SampleID" },
-                    { "aTargets": [16], "sName": "DerivedFromID" },
-                    { "aTargets": [17], "sName": "QualityControlLevelCode" }
+                    { "aTargets": [8], "sName": "VariableCode" },
+                    { "aTargets": [9], "sName": "OffsetValue" },
+                    { "aTargets": [10], "sName": "OffsetTypeID" },
+                    { "aTargets": [11], "sName": "CensorCode" },
+                    { "aTargets": [12], "sName": "QualifierID" },
+                    { "aTargets": [13], "sName": "MethodID" },
+                    { "aTargets": [14], "sName": "MethodDescription", "bVisible": false },
+                    { "aTargets": [15], "sName": "SourceID" },
+                    { "aTargets": [16], "sName": "SampleID" },
+                    { "aTargets": [17], "sName": "DerivedFromID" },
+                    { "aTargets": [18], "sName": "QualityControlLevelCode" },
+                    { "aTargets": [19], "sName": "Errors", "bSortable": false, "bVisible": false }
                  ]
             };
             break;
         case "groupdescriptions":
             optDataTables = {
                 "bServerSide": true,
-                "sAjaxSource": "GroupDescriptions" + index,
+                "sAjaxSource": "GroupDescriptions" + path,
                 "bProcessing": true,
                 "sServerMethod": "POST",
                 "sPaginationType": "full_numbers",
@@ -435,18 +505,31 @@ function getDatatableOptions(name, index) {
                 "sScrollXInner": "100%",
                 "bScrollCollapse": true,
                 "bDestroy": true,
+                "fnDrawCallback": function (oSettings) {
+                    initMessageColumn(index)
+                    toggleCommitButtons(oTable, index);
+                },
                 //"bRetrieve": true,
                 "aoColumnDefs":
                  [
-                    { "aTargets": [0], "sName": "GroupID", "bVisible": false  },
-                    { "aTargets": [1], "sName": "GroupDescription" }
+                    {
+                        "aTargets": [0], "sWidth": "50px",
+                        "bSearchable": false,
+                        "bSortable": false,
+                        "fnRender": function (oObj) {
+                            return addImageToColumn(index);
+                        }
+                    },
+                    { "aTargets": [1], "sName": "GroupID", "bVisible": false },
+                    { "aTargets": [2], "sName": "GroupDescription" },
+                    { "aTargets": [3], "sName": "Errors", "bSortable": false, "bVisible": false }
                  ]
             }
             break;
         case "groups":
             optDataTables = {
                 "bServerSide": true,
-                "sAjaxSource": "Groups" + index,
+                "sAjaxSource": "Groups" + path,
                 "bProcessing": true,
                 "sServerMethod": "POST",
                 "sPaginationType": "full_numbers",
@@ -454,18 +537,31 @@ function getDatatableOptions(name, index) {
                 "sScrollXInner": "100%",
                 "bScrollCollapse": true,
                 "bDestroy": true,
+                "fnDrawCallback": function (oSettings) {
+                    initMessageColumn(index)
+                    toggleCommitButtons(oTable, index);
+                },
                 //"bRetrieve": true,
                 "aoColumnDefs":
                  [
-                    { "aTargets": [0], "sName": "GroupID" },
-                    { "aTargets": [1], "sName": "ValueID", "sWidth": "300px" }
+                     {
+                         "aTargets": [0], "sWidth": "50px",
+                         "bSearchable": false,
+                         "bSortable": false,
+                         "fnRender": function (oObj) {
+                             return addImageToColumn(index);
+                         }
+                     },
+                     { "aTargets": [1], "sName": "GroupID" },
+                     { "aTargets": [2], "sName": "ValueID", "sWidth": "300px" },
+                     { "aTargets": [3], "sName": "Errors", "bSortable": false, "bVisible": false }
                  ]
             }
             break;
         case "derivedfrom":
             optDataTables = {
                 "bServerSide": true,
-                "sAjaxSource": "DerivedFrom" + index,
+                "sAjaxSource": "DerivedFrom" + path,
                 "bProcessing": true,
                 "sServerMethod": "POST",
                 "sPaginationType": "full_numbers",
@@ -473,38 +569,237 @@ function getDatatableOptions(name, index) {
                 "sScrollXInner": "100%",
                 "bScrollCollapse": true,
                 "bDestroy": true,
-                //"bRetrieve": true,
+                "fnDrawCallback": function (oSettings) {
+                    initMessageColumn(index)
+                    toggleCommitButtons(oTable, index);
+                },
                 "aoColumnDefs":
                  [
-                    { "aTargets": [0], "sName": "DerivedFrom" },
-                    { "aTargets": [1], "sName": "ValueID" }
+                    {
+                        "aTargets": [0], "sWidth": "50px",
+                        "bSearchable": false,
+                        "bSortable": false,
+                        "fnRender": function (oObj) {
+                            return addImageToColumn(index);
+                        }
+                    },
+                    { "aTargets": [1], "sName": "DerivedFrom" },
+                    { "aTargets": [2], "sName": "ValueID" },
+                    { "aTargets": [3], "sName": "Errors", "bSortable": false, "bVisible": false }
                  ]
             }
             break;
         case "categories":
             optDataTables = {
                 "bServerSide": true,
-                "sAjaxSource": "Categories" + index,
+                "sAjaxSource": "Categories" + path,
                 "bProcessing": true,
                 "sServerMethod": "POST",
                 "sPaginationType": "full_numbers",
                 "sScrollX": "100%",
                 "sScrollXInner": "100%",
                 "bScrollCollapse": true,
-                "bDestroy": true,
+                "bDestroy": true,                
+                "fnDrawCallback": function (oSettings) {
+                    initMessageColumn(index)
+                    toggleCommitButtons(oTable, index);
+                },
                 //"bRetrieve": true,
                 "aoColumnDefs":
                  [
-                    { "aTargets": [0], "sName": "VariableCode" },
-                    { "aTargets": [1], "sName": "Datavalue" },
-                    { "aTargets": [2], "sName": "CategoryDescription" }
+                    {
+                        "aTargets": [0], "sWidth": "50px",
+                        "bSearchable": false,
+                        "bSortable": false,
+                        "fnRender": function (oObj) {
+                            return addImageToColumn(index);
+                        }
+                    },
+                    { "aTargets": [1], "sName": "VariableCode" },
+                    { "aTargets": [2], "sName": "Datavalue" },
+                    { "aTargets": [3], "sName": "CategoryDescription" },
+                    { "aTargets": [4], "sName": "Errors", "bSortable": false, "bVisible": false }
                  ]
             }
             break;
-       
+
     }
     return optDataTables;
 }
 
+function fnFormatDetails(rawMessage) {
+    var s = "";
+    if ((typeof (rawMessage) != 'undefined') && (rawMessage != null)) {
+        var formattedMessage = rawMessage.split(";")
+
+        for (var i = 0; i < formattedMessage.length - 1; i++) {
+            s = s + "<tr><td>" + formattedMessage[i] + "</td></tr>";
+        }
+
+        sOut = '<div class="innerDetails" >' +
+          '<table>' +
+                      s
+        '</table>' +
+      '</div>';
+    }
+    else {
+        sOut = "No additional Information available."
+    }
+
+    return sOut;
+}
+
+function initMessageColumn(index)
+{
+    if ((index != 1) && (index != 2)) {
+        $("tbody td img.expand").addClass("hide")
+    }
+    else {
+
+        $("tbody td img.expand").removeClass("hide");
+        $("tbody td img.expand").on("click", function () {
+            var nTr = this.parentNode.parentNode;
+            oTable = $('#' + index).dataTable();
+            if (this.src.match('close')) {
+                this.src = "/Images/open.png";
+                oTable.fnClose(nTr);
+            } else {
+                this.src = "/Images/close.png";
+                var orderId = $(this).attr("rel");
+                //var url = "/Home/ResultDetailView";
+                oTable = $('#' + index).dataTable();
+                var aData = oTable.fnGetData(nTr);
+                var errorColumnId = aData.length-1;
+                oTable.fnOpen(nTr, fnFormatDetails(aData[errorColumnId]), 'table-error-details');
+                // $.get(url, { id: 1 }, function (details) {
 
 
+                //});
+            }
+        });
+    }
+}
+
+function addImageToColumn(index)
+{
+    sOut = ""
+    if ((index == 1) ||  (index == 2))  {
+        sOut = "<img class='expand' src='/Images/open.png' alt='Expand/Collapse' rel='' />";
+    }
+    return sOut;
+}
+
+function initCommitAndCancelButton(id) {
+
+    $('#0commit').click(function () {
+        //$.post("/CSVUpload/Commit", { id: "sites" } {
+        $.ajax({
+            url: '/CSVUpload/Commit/' + id,
+            data: "{ 'index': '0' }",
+            dataType: 'json',
+            type: 'POST',
+            contentType: 'application/json; charset=utf-8',
+            success: function () {
+               
+                alert("Records successfully added.")
+                oTable = $('#0').dataTable(getDatatableOptions(id, 0));
+                $('#0commit').addClass("disabled");
+            },
+            error: function () {
+                var returnedMessage = "An Error occured. Please resubmit the file. If the problem persists please validate the content or contact user suport";
+               // if (typeof data.jqXHR.responseJSON.Message != "undefined") returnedMessage = data.jqXHR.responseJSON.Message;
+
+                alert(returnedMessage);
+              
+            }
+        });
+
+    });
+    $('#2commit').click(function () {
+        //$.post("/CSVUpload/Commit", { id: "sites" } {
+        $.ajax({
+            url: '/CSVUpload/Commit/' + id,
+            data: "{ 'index': '2' }",
+            dataType: 'json',
+            type: 'POST',
+            contentType: 'application/json; charset=utf-8',
+            success: function () {
+                alert("Records successfully added.")
+                oTable = $('#2').dataTable(getDatatableOptions(id, 0));
+                $('#2commit').addClass("disabled");
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+
+    });
+    $('#0cancel').click(function () {
+        $.ajax({
+            url: '/CSVUpload/Cancel/' + id,
+            data: "{ 'index': '0' }",
+            dataType: 'json',
+            type: 'POST',
+            contentType: 'application/json; charset=utf-8',
+            success: function () {
+                alert();
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+    $('#2cancel').click(function () {
+        $.ajax({
+            url: '/CSVUpload/Cancel/' + id,
+            data: "{ 'index': '2' }",
+            dataType: 'json',
+            type: 'POST',
+            contentType: 'application/json; charset=utf-8',
+            success: function () {
+                alert();
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+   // var r = $('<input type="button" value="new button"/>');
+
+    //$('#0_filter').append(r)
+    //$('#download').click(function () {
+    //    //$.post("/CSVUpload/Commit", { id: "sites" } {
+    //    $.ajax({
+    //        url: '/Download/Export/' + id,
+    //        data: {identifier:"0",viewName: "sites"},
+    //        type: 'POST',
+    //        contentType: 'application/json; charset=utf-8',
+    //        success: function () {
+    //            alert();
+    //        },
+    //        error: function () {
+    //            alert("error");
+    //        }
+    //    });
+
+    //});
+}
+
+function toggleCommitButtons(table, id)
+{
+    if (table.fnGetData().length > 0 )
+    {
+        $('#' + id + 'commit').removeClass("hide")
+        $('#' + id + 'cancel').removeClass("hide")
+    }
+    else
+    {
+        if(!$('#'+id+'commit').hasClass("hide"))
+        {
+            $('#'+id+'commit').addClass("hide")
+        }
+        if (!$('#'+ id + 'cancel').hasClass("hide")) {
+             $('#'+ id + 'cancel').addClass("hide")
+        }
+    }
+}

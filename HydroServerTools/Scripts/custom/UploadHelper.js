@@ -10,6 +10,7 @@ $(function () {
 
     var sPath = window.location.pathname;
     var viewName = sPath.substring(sPath.lastIndexOf('/') + 1);
+    var intervalId;
     //var acceptFiletypes= ["zip","csv"];
 
     $('#fileupload').fileupload({
@@ -44,10 +45,25 @@ $(function () {
                 $('#startupload').addClass("disabled");
                 $('#loading').removeClass('hide');
                 data.submit();
+
+                intervalId = setInterval(function () {
+
+                    $.post("/Home/Progress", function (progress) {
+                        //if (progress >= 1000) {
+                        //    updateMonitor(taskId, "Completed");
+                        //    clearInterval(intervalId);
+                        //} else {
+                            updateMonitor(status, progress);
+                        //}
+                    });
+
+                }, 1000);
             });
         },
         done: function (e, data) {
             //data.context.text(data.files[0].SiteID + '... Completed');
+            clearInterval(intervalId);
+            updateMonitor( "Done", "Processing completed");
             window.location.href = '/CSVUpload/' + viewName
             //alert(result);
             //$('</div><div class="progress"><div class="bar" style="width:60%"></div></div>').appendTo(data.context);
@@ -114,5 +130,10 @@ $(function () {
             isValid = true
         return isValid;
 
+    }
+
+
+    function updateMonitor(status, progress) {
+        $('#monitor').html(progress);
     }
 });

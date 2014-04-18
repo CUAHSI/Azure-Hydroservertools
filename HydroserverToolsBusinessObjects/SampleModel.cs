@@ -14,8 +14,10 @@ namespace HydroserverToolsBusinessObjects.Models
         public string SampleType { get; set; }
         [Required]
         public string LabSampleCode { get; set; }
-        //public string LabMethodID { get; set; }
-        [Required]
         public string LabMethodName { get; set; }
+        [Required]
+        public string LabMethodID { get; set; }        
+        
+        public string Errors { get; set; }
     }
 }
