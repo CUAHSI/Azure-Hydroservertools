@@ -695,23 +695,29 @@ namespace HydroServerTools.Controllers
                 
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "An error ocuured inserting the data.");
             }
-        }
-
-       
+        }       
 
         [HttpPost]
-        public HttpStatusCodeResult Cancel(string id)
+        public ActionResult  Cancel(string id)
         {
             try
             {
-                // For compatibility with IE's "done" event we need to return a result as well as setting the context.response
-                return new HttpStatusCodeResult(HttpStatusCode.OK);
+                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, "listOfCorrectRecords");
+                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, "listOfIncorrectRecords");
+                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, "listOfEditedRecords");
+                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, "listOfDuplicateRecords");
+
+                //return new RedirectResult("http://www.google.com");
+
+                return Json(new { success = true });
             }
             catch (Exception ex)
             {
                 // Now we need to wire up a response so that the calling script understands what happened
 
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "An error ocuured inserting the data.");
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "An error ocuured");
+                //return new RedirectResult("http://www.google.com");
+
             }
         }
 

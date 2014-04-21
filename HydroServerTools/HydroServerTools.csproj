@@ -650,6 +650,7 @@
     <Content Include="Templates\ODMTemplate_Groups.csv" />
     <Content Include="Views\CSVUpload\Sites - Copy 1.cshtml" />
     <Content Include="Views\Home\Templates.cshtml" />
+    <Content Include="Views\Home\ChangeHistory.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

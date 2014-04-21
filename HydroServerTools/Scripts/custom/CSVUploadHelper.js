@@ -734,7 +734,7 @@ function initCommitAndCancelButton(id) {
         });
 
     });
-    $('#0cancel').click(function () {
+    $('#cancel').click(function () {
         $.ajax({
             url: '/CSVUpload/Cancel/' + id,
             data: "{ 'index': '0' }",
@@ -742,28 +742,28 @@ function initCommitAndCancelButton(id) {
             type: 'POST',
             contentType: 'application/json; charset=utf-8',
             success: function () {
-                alert();
+                window.location.href = '/CSVUpload/UploadData/' + id
             },
             error: function () {
                 alert("error");
             }
         });
     });
-    $('#2cancel').click(function () {
-        $.ajax({
-            url: '/CSVUpload/Cancel/' + id,
-            data: "{ 'index': '2' }",
-            dataType: 'json',
-            type: 'POST',
-            contentType: 'application/json; charset=utf-8',
-            success: function () {
-                alert();
-            },
-            error: function () {
-                alert("error");
-            }
-        });
-    });
+    //$('#2cancel').click(function () {
+    //    $.ajax({
+    //        url: '/CSVUpload/Cancel/' + id,
+    //        data: "{ 'index': '2' }",
+    //        dataType: 'json',
+    //        type: 'POST',
+    //        contentType: 'application/json; charset=utf-8',
+    //        success: function () {
+    //            window.location.href = '/CSVUpload/' + id
+    //        },
+    //        error: function () {
+    //            alert("error");
+    //        }
+    //    });
+    //});
    // var r = $('<input type="button" value="new button"/>');
 
     //$('#0_filter').append(r)
@@ -790,7 +790,7 @@ function toggleCommitButtons(table, id)
     if (table.fnGetData().length > 0 )
     {
         $('#' + id + 'commit').removeClass("hide")
-        $('#' + id + 'cancel').removeClass("hide")
+        //$('#' + id + 'cancel').removeClass("hide")
     }
     else
     {
@@ -798,8 +798,8 @@ function toggleCommitButtons(table, id)
         {
             $('#'+id+'commit').addClass("hide")
         }
-        if (!$('#'+ id + 'cancel').hasClass("hide")) {
-             $('#'+ id + 'cancel').addClass("hide")
-        }
+        //if (!$('#'+ id + 'cancel').hasClass("hide")) {
+            // $('#'+ id + 'cancel').addClass("hide")
+        //}
     }
 }

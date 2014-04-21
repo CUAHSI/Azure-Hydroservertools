@@ -147,84 +147,10 @@ namespace HydroServerTools.Controllers
         {
             return View();
         }
-        public ActionResult AjaxHandler(jQueryDataTableParamModel param, string identifier)
+        public ActionResult ChangeHistory()
         {
-
-            var repo = new SitesRepository(); 
-            
-            string connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name.ToString());
-
-            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
-
-            if (String.IsNullOrEmpty(entityConnectionString)) { ViewBag.Message = Ressources.HYDROSERVER_USERLOOKUP_FAILED; return View("Error"); }
-
-
-            var items = repo.GetAll(entityConnectionString);
-
-
-            var itemsToDisplay = items.Take(1);
-            var list = new List<string>();
-            StringBuilder sb = new StringBuilder();
-            foreach(var item in itemsToDisplay)
-            {
-                var itemProps = item.GetType().GetProperties();
-               
-                foreach (var itemProp in itemProps)
-                {                           
-                    if(itemProp.GetValue(item, null) != null) 
-                    {
-                        sb.Append("\"");
-                        sb.Append(itemProp.GetValue(item, null).ToString());
-                        sb.Append("\"");
-                    }
-                    sb.Append(",");
-                }
-
-                list.Add(sb.ToString().TrimEnd(','));                
-            }
-
-            var result = from c in itemsToDisplay
-                         select
-                                    new[] { 
-                                        c.SiteCode,
-                                        c.SiteName,  
-                                        c.Latitude,  
-                                        c.Longitude,  
-                                        c.LatLongDatumSRSName,  
-                                        c.Elevation_m,  
-                                        c.VerticalDatum,  
-                                        c.LocalX,  
-                                        c.LocalY,  
-                                        c.LocalProjectionSRSName,  
-                                        c.PosAccuracy_m,  
-                                        c.State,  
-                                        c.County,  
-                                        c.Comments,  
-                                        c.SiteType
-                                    };
-           //var s = "[{\"SiteCode\": \"wq1\",\"SiteName\": \"Fyrisån Flottsund\",\"Latitude\": \"59.786938\",\"Longitude\": \"17.659863\",\"LatLongDatumSRSName\": \"1\",\"Elevation_m\": \"1\",\"VerticalDatum\": \"1\",\"LocalX\": \"1\",\"LocalY\": \"1\",\"LocalProjectionID\": \"1\",\"PosAccuracy_m\": \"1\",\"State\": \"Rock\",\"County\": \"\",\"Comments\": \"1\",\"SiteType\": \"1\"}]";
-
-           var jsonReturn = JsonConvert.SerializeObject(result);
-
-           var json = new JavaScriptSerializer().Serialize(list);
-
-           var test = "\"sEcho\": \"1\", \"iTotalRecords\": \"1\", \"iTotalDisplayRecords\": \"10\",  \"aaData\": \"[[\"wq1\",\"Fyrisån Flottsund\",\"59.786938\",\"17.659863\",null,null,null,null,null,null,null,\"Rock\",\"\",null,null],[\"wq2\",\"Fyrisån Klastorp\",\"59.886636\",\"17.578593\",null,null,null,null,null,null,null,\"\",\"\",null,null],[\"wq3\",\"Sävjaån Kuggebro\",\"59.831468\",\"17.691587\",null,null,null,null,null,null,null,\"\",\"\",null,null],[\"wq7\",\"Sävjaån Lejsta\",\"59.954735\",\"17.900163\",null,null,null,null,null,null,null,\"\",\"\",null,null],[\"wq127\",\"Kolbäcksån Strömsholm\",\"59.525675\",\"16.270192\",null,null,null,null,null,null,null,\"\",\"\",null,null],[\"wq129\",\"Sagån Målhammar\",\"59.600104\",\"16.890664\",null,null,null,null,null,null,null,\"\",\"\",null,null],[\"wq131\",\"Örsundaån Örsundsbro\",\"59.736638\",\"17.310296\",null,null,null,null,null,null,null,\"\",\"\",null,null],[\"wq133\",\"Botorpström Brunnsö\",\"57.663568\",\"16.495821\",null,null,null,null,null,null,null,\"\",\"\",null,null],[\"wq134\",\"Ljungbyån Ljungbyholm\",\"56.631532\",\"16.172673\",null,null,null,null,null,null,null,\"\",\"\",null,null],[\"wq135\",\"Mörrumsån Mörrum\",\"56.189214\",\"14.750275\",null,null,null,null,null,null,null,\"\",\"\",null,null]]";
-
-            return Json(new
-            {
-                sEcho = param.sEcho,
-                iTotalRecords = "1",// itemsToDisplay.Count(), 
-                iTotalDisplayRecords = "1",//param.iDisplayLength,
-                //aaData = new List<string[]>() {
-                //    new string[] {"USU-LBR-Mendon","'Little Bear River at Mendon Road near Mendon',' Utah'","41.718473","-111.946402","2","1345","WGS84","421276.323","4618952.04","105","NULL","Utah","Cache","Located below county road bridge at Mendon Road crossing","Stream"}
-                   
-                //    }
-                aaData = result
-
-            },
-            JsonRequestBehavior.AllowGet);
+            return View();
         }
-        [HttpPost]
         [Authorize]
         public ActionResult ClearTablesHandler(FormCollection collection)
         {
