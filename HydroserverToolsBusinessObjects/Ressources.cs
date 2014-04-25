@@ -38,6 +38,7 @@ namespace HydroserverToolsBusinessObjects
         public const string IMPORT_STATUS_EXTRACTNG = "Extracting file";
         public const string IMPORT_STATUS_TIMESERIES = "Updating Timeseries";
 
-
+        public static string IMPORT_UNSPECIFIED_ERROR = "An error occured inserting the data.";
+        public static string IMPORT_CREATE_SERIESCATALOG = "Error Updating Series Catalog Table. Missing {0} Information.";
     }
 }
