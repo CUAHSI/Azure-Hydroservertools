@@ -1108,7 +1108,7 @@ namespace HydroServerToolsRepository.Repository
 
                         if (!speciation)
                         {
-                            var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_NOT_IN_CV, item.VariableName, "Speciation"));
+                            var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_NOT_IN_CV, item.Speciation, "Speciation"));
                             listOfErrors.Add(err);
                             isRejected = true;
                         }
@@ -1398,8 +1398,7 @@ namespace HydroServerToolsRepository.Repository
                         }
                     }
                     else
-                    {
-                        
+                    {                        
                           
                         if (existingItem.VariableCode != model.VariableCode) { listOfUpdates.Add(new UpdateFieldsModel("Variables", "VariableCode", existingItem.VariableCode.ToString(), item.VariableCode.ToString())); }
                         if (existingItem.VariableName != model.VariableName) { listOfUpdates.Add(new UpdateFieldsModel("Variables", "VariableName", existingItem.VariableName.ToString(), item.VariableName.ToString())); }
@@ -6044,6 +6043,147 @@ namespace HydroServerToolsRepository.Repository
                     bulkCopy.WriteToServer(dataTable);
                 }
             }
+
+        }
+
+        public void UpdateSeriesCatalog2(Guid instanceGuid, List<DataValuesModel> listOfRecords, string entityConnectionstring)
+        {
+            //var s = Ressources.EFMODELDEF_IN_CONNECTIONSTRING;
+            //var constring = "metadata=res://*/ODM_1_1_1EFModel.csdl|res://*/ODM_1_1_1EFModel.ssdl|res://*/ODM_1_1_1EFModel.msl;provider=System.Data.SqlClient;provider connection string=&quot; Data Source=tcp:bhi5g2ajst.database.windows.net,1433;Initial Catalog=HydroServertest2;User ID=HisCentralAdmin@bhi5g2ajst; Password=f3deratedResearch; Persist Security Info=true; MultipleActiveResultSets=True;App=EntityFramework";
+            //var constring = "metadata=res://*/ODM_1_1_1EFModel.csdl|res://*/ODM_1_1_1EFModel.ssdl|res://*/ODM_1_1_1EFModel.msl;provider=System.Data.SqlClient;provider connection string=&quot;data source=mseul-cuahsi;initial catalog=HydroSample2;integrated security=true; MultipleActiveResultSets=True;App=EntityFramework";
+            //var cleanedConnectionString = entityConnectionstring.Replace(s, string.Empty);
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceGuid, CacheName, Ressources.IMPORT_STATUS_TIMESERIES);
+            var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionstring);
+
+            var rows = context.SeriesCatalogs.ToList();
+                       //listOfRecords.GroupBy(p => p.SiteID, p=>p.VariableID, p=>p.MethodID, p=>p.SourceID);
+            // get unique occurences
+            var list = (from p in listOfRecords select new {p.SiteID, p.VariableID, p.SourceID, p.MethodID, p.QualityControlLevelID}).
+                                                            GroupBy(y => new  { y.SiteID, y.VariableID, y.SourceID, y.MethodID, y.QualityControlLevelID }).ToList();
+            
+            //var list = (from p in listOfRecords
+            //            select new[] { p.SiteID, p.VariableID, p.SourceID, p.MethodID, p.QualityControlLevelID }).Distinct().ToList();
+
+            //loop and compare
+            foreach (var item in list)
+            {
+
+                var siteID = Convert.ToInt32(item.ElementAt(0).SiteID);
+                var variableID = Convert.ToInt32(item.ElementAt(0).VariableID);
+                var sourceID = Convert.ToInt32(item.ElementAt(0).SourceID);
+                var methodID = Convert.ToInt32(item.ElementAt(0).MethodID);
+                var qualityControlLevelID = Convert.ToInt32(item.ElementAt(0).QualityControlLevelID);
+
+                //var uniqueTimeseriesCombination = new UniqueTimeseriesCombination();
+                // var siteid = Convert.ToInt32(item.SiteID);
+                //var variableID = Convert.ToInt32(item.VariableID);
+                //var sourceID = Convert.ToInt32(item.SourceID);
+                //var methodID = Convert.ToInt32(item.MethodID);
+                //var qualityControlLevelID = Convert.ToInt32(item.QualityControlLevelID);
+
+
+                var timeseriesExists = context.SeriesCatalogs.Where(p => p.SiteID == siteID &&
+                                                  p.VariableID == variableID &&
+                                                  p.SourceID == sourceID &&
+                                                  p.MethodID == methodID &&
+                                                  p.QualityControlLevelID == qualityControlLevelID
+                ).FirstOrDefault();
+                
+                //get timeseries data
+                var tsd = RepositoryUtils.getTimeseriesData(siteID, variableID, sourceID, methodID, qualityControlLevelID, entityConnectionstring);
+                
+                if (timeseriesExists == null)//new
+                {
+                    var timeseries = new SeriesCatalog();
+                    //Siteinformation
+                    var site = context.Sites.Where(p => p.SiteID == siteID).FirstOrDefault();
+                    if (site != null)
+                    {
+                        timeseries.SiteID = siteID;                        
+                        timeseries.SiteCode = site.SiteCode;
+                        timeseries.SiteName = site.SiteName;
+                    }
+                    else
+                    {
+                        throw new Exception(String.Format(Ressources.IMPORT_CREATE_SERIESCATALOG,"Site"));
+                    }
+                    //Variable information
+                    var variable = context.Variables.Where(p=> p.VariableID == variableID).FirstOrDefault();
+                    if (variable != null)
+                    {
+                        timeseries.VariableID = variableID;
+                        timeseries.VariableCode = variable.VariableCode;
+                        timeseries.VariableName = variable.VariableName;
+                        timeseries.Speciation = variable.Speciation;
+                        timeseries.VariableUnitsID = variable.VariableUnitsID;
+                        timeseries.VariableUnitsName = variable.Unit.UnitsName;
+                        timeseries.SampleMedium = variable.SampleMedium;
+                        timeseries.ValueType = variable.ValueType;
+                        timeseries.TimeSupport = variable.TimeSupport;
+                        timeseries.TimeUnitsID = variable.TimeUnitsID;
+                        timeseries.TimeUnitsName = variable.Unit1.UnitsName;
+                        timeseries.DataType = variable.DataType;
+                        timeseries.GeneralCategory = variable.GeneralCategory;
+                    }
+                    else
+                    {                        
+                        throw new Exception(String.Format(Ressources.IMPORT_CREATE_SERIESCATALOG,"Variable"));                        
+                    }
+                    //Method information
+                    var method = context.Methods.Where(p=> p.MethodID == methodID).FirstOrDefault();
+                    if (method != null)
+                    {
+                        timeseries.MethodID = methodID;
+                        timeseries.MethodDescription = method.MethodDescription;                       
+                    }
+                    else
+                    {                        
+                         throw new Exception(String.Format(Ressources.IMPORT_CREATE_SERIESCATALOG,"Method"));                        
+                    }
+                    //Sources information
+                    var source = context.Sources.Where(p=> p.SourceID == sourceID).FirstOrDefault();
+                    if (source != null)
+                    {
+                        timeseries.SourceID = sourceID;
+                        timeseries.Organization = source.Organization; 
+                        timeseries.SourceDescription = source.SourceDescription;
+                        timeseries.Citation = source.Citation;
+                    }
+                    else
+                    {                        
+                         throw new Exception(String.Format(Ressources.IMPORT_CREATE_SERIESCATALOG,"Source"));                        
+                    }
+                    //Qualitycontrollevel information
+                    var qualitycontrollevel = context.QualityControlLevels.Where(p=> p.QualityControlLevelID == qualityControlLevelID).FirstOrDefault();
+                    if (qualitycontrollevel != null)
+                    {
+                        timeseries.QualityControlLevelID = qualityControlLevelID;
+                        timeseries.QualityControlLevelCode = qualitycontrollevel.QualityControlLevelCode;                         
+                    }
+                    else
+                    {                        
+                         throw new Exception(String.Format(Ressources.IMPORT_CREATE_SERIESCATALOG,"Qualitycontrollevel"));                        
+                    }
+                    //cummulative information
+                    timeseries.BeginDateTime = tsd.BeginDateTime;
+                    timeseries.EndDateTime = tsd.EndDateTime;
+                    timeseries.BeginDateTimeUTC = tsd.BeginDateTimeUTC;
+                    timeseries.EndDateTimeUTC = tsd.EndDateTimeUTC;
+                    timeseries.ValueCount = tsd.ValueCount;
+                    context.SeriesCatalogs.Add(timeseries);
+                }
+                else//update
+                {
+                    timeseriesExists.BeginDateTime = tsd.BeginDateTime;
+                    timeseriesExists.EndDateTime = tsd.EndDateTime;
+                    timeseriesExists.BeginDateTimeUTC = tsd.BeginDateTimeUTC;
+                    timeseriesExists.EndDateTimeUTC = tsd.EndDateTimeUTC;
+                    timeseriesExists.ValueCount = tsd.ValueCount;
+                    context.SeriesCatalogs.Add(timeseriesExists);
+                }
+                context.SaveChanges();
+            }
+            
 
         }
     }
