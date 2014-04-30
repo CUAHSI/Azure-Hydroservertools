@@ -221,12 +221,12 @@ namespace HydroServerTools.Controllers
         [HttpGet]
         public ContentResult _Pager(string name)
         {
-            string[] vars = new string[14] { "Sites", "Variables", "OffsetTypes", "Sources", "Methods", "LabMethods", "Samples", "Qualifiers", "QualityControlLevels", "DataValues", "GroupDescriptions", "Groups", "DerivedFrom", "Categories" };//"ISOMetadata",
+            string[] vars = new string[14] { "sites", "variables", "offsettypes", "sources", "methods", "labmethods", "samples", "qualifiers", "qualitycontrollevels", "datavalues", "groupdescriptions", "groups", "derivedfrom", "categories" };//"ISOMetadata",
 
             StringBuilder html = new StringBuilder();
             //<li>@Html.ActionLink("Import Sites", "UploadData", "CSVUpload", new { id = "Sites" }, null)</li>
             //var index = Array.FindIndex(vars, r => r.Contains(name));
-            int index = Array.IndexOf(vars, vars.Where(x => x.Contains(name)).FirstOrDefault());
+            int index = Array.IndexOf(vars, vars.Where(x => x.Contains(name.ToLower())).FirstOrDefault());
             //int index = vars.Select((v, i) => new { Index = i, Value = v })
             //        .Where(p => p.Value == name)
             //        .Select(p => p.Index).FirstOrDefault();
@@ -585,7 +585,7 @@ namespace HydroServerTools.Controllers
                                 
                                     var seriesCatalogRepository = new SeriesCatalogRepository();
                                     seriesCatalogRepository.deleteAll(connectionString);
-                                    seriesCatalogRepository.UpdateSeriesCatalog(MvcApplication.InstanceGuid, connectionString);
+                                    seriesCatalogRepository.UpdateSeriesCatalog2(MvcApplication.InstanceGuid, listOfRecords, connectionString);
                                 }
                                 else
                                 {
@@ -692,8 +692,8 @@ namespace HydroServerTools.Controllers
             catch (Exception ex)
             {
                 // Now we need to wire up a response so that the calling script understands what happened
-                
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "An error ocuured inserting the data.");
+
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, Ressources.IMPORT_UNSPECIFIED_ERROR);
             }
         }       
 
