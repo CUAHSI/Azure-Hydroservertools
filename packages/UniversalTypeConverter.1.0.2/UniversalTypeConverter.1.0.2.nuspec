@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>UniversalTypeConverter</id>
+    <version>1.0.2</version>
+    <title>UniversalTypeConverter</title>
+    <authors>Thorsten Bruning</authors>
+    <owners>Thorsten Bruning</owners>
+    <licenseUrl>http://www.opensource.org/licenses/ms-pl.html</licenseUrl>
+    <projectUrl>http://www.codeproject.com/KB/cs/Universal_Type_Converter.aspx</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Converting nearly every type to another type by using extension methods.</description>
+    <summary>Converting nearly every type to another type by using extension methods.</summary>
+    <releaseNotes>Support for IEnumerable was added.</releaseNotes>
+    <copyright>Copyright 2011-2012 by Thorsten Bruning</copyright>
+    <language />
+    <tags>typeconverter typeconversion typeconverting conversion converting converter convert convertible type types UniversalTypeConverter universal</tags>
+  </metadata>
+</package>
