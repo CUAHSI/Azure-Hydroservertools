@@ -62,12 +62,12 @@ $(document).ready(function () {
 
             if ($("#tabs").tabs('option', 'active') === 0) {
                 oTable = $('#0').dataTable(getDatatableOptions(viewName, 0));
-               
+
                 //oTable.fnReloadAjax("SitesSearch");
             } else if ($("#tabs").tabs('option', 'active') === 1) {
                 // $('#1').dataTable().fnDestroy();
                 oTable = $('#1').dataTable(getDatatableOptions(viewName, 1));
-               
+
                 //oTable.fnReloadAjax("SitesSearch");
             } else if ($("#tabs").tabs('option', 'active') === 2) {
                 oTable = $('#2').dataTable(getDatatableOptions(viewName, 2));
@@ -75,7 +75,7 @@ $(document).ready(function () {
                 //oTable.fnReloadAjax("SitesSearch");
             } else {
                 oTable = $('#3').dataTable(getDatatableOptions(viewName, 3));
-               
+
                 //oTable.fnReloadAjax("SitesSearch");
             }
             // var index = $("#tabs").tabs('option', 'active');
@@ -85,7 +85,7 @@ $(document).ready(function () {
         }
     });
 
-    
+
 
 });
 function getDatatableOptions(name, index) {
@@ -114,7 +114,7 @@ function getDatatableOptions(name, index) {
                 //    initMessageColumn(index)
                 //    toggleCommitButtons(oTable, index);
                 //},
-                "fnDrawCallback": function( oSettings ) {
+                "fnDrawCallback": function (oSettings) {
                     initMessageColumn(index)
                     toggleCommitButtons(oTable, index);
                 },
@@ -128,7 +128,7 @@ function getDatatableOptions(name, index) {
                 "aoColumnDefs":
                  [
                     {
-                        "aTargets": [0], "sWidth": "50px",                        
+                        "aTargets": [0], "sWidth": "50px",
                         "bSearchable": false,
                         "bSortable": false,
                         "fnRender": function (oObj) {
@@ -144,7 +144,7 @@ function getDatatableOptions(name, index) {
                     { "aTargets": [7], "sName": "VerticalDatum" },
                     { "aTargets": [8], "sName": "LocalX" },
                     { "aTargets": [9], "sName": "LocalY" },
-                    { "aTargets": [10], "sName": "LocalProjectionID", "bVisible": false },
+                    { "aTargets": [10], "sName": "LocalProjectionSRSName" },
                     { "aTargets": [11], "sName": "PosAccuracy_m" },
                     { "aTargets": [12], "sName": "State" },
                     { "aTargets": [13], "sName": "County" },
@@ -244,6 +244,9 @@ function getDatatableOptions(name, index) {
                     initMessageColumn(index)
                     toggleCommitButtons(oTable, index);
                 },
+                //"fnRowCallback": function (nRow, aData, iDisplayIndex) {
+                //    $('td:eq(17)', nRow).html('<b>A</b>');
+                //},
                 //"bRetrieve": true,
                 "aoColumnDefs":
                  [
@@ -258,7 +261,11 @@ function getDatatableOptions(name, index) {
                     { "aTargets": [1], "sName": "SourceID", "sWidth": "110px", "bVisible": false },
                     { "aTargets": [2], "sName": "Organization", "sWidth": "200px" },
                     { "aTargets": [3], "sName": "SourceDescription", "sWidth": "300px" },
-                    { "aTargets": [4], "sName": "SourceLink", "sWidth": "250px" },
+                    {
+                        "aTargets": [4], "sName": "SourceLink", "sWidth": "250px", "fnRender": function (aData, val) {
+                            return '<a href="/' + val + '" target=_Blank>' + val + '</a>';
+                        }
+                    },
                     { "aTargets": [5], "sName": "ContactName" },
                     { "aTargets": [6], "sName": "Phone" },
                     { "aTargets": [7], "sName": "Email" },
@@ -271,7 +278,12 @@ function getDatatableOptions(name, index) {
                     { "aTargets": [14], "sName": "Title", "sWidth": "100px" },
                     { "aTargets": [15], "sName": "Abstract", "sWidth": "300px" },
                     { "aTargets": [16], "sName": "ProfileVersion" },
-                    { "aTargets": [17], "sName": "MetadataLink", "sWidth": "200px" },
+                    {
+                        "aTargets": [17], "sName": "MetadataLink", "sWidth": "200px", "fnRender": function (aData, val) {
+                            return '<a href="/' + val + '" target=_Blank>' + val + '</a>';
+                        }
+
+                    },
                     { "aTargets": [18], "sName": "Errors", "bSortable": false, "bVisible": false }
                  ]
             }
@@ -304,7 +316,11 @@ function getDatatableOptions(name, index) {
                     },
                     { "aTargets": [1], "sName": "MethodId", "bVisible": false },
                     { "aTargets": [2], "sName": "MethodDescription" },
-                    { "aTargets": [3], "sName": "MethodLink" },
+                    {
+                        "aTargets": [3], "sName": "MethodLink", "fnRender": function (aData, val) {
+                            return '<a href="/' + val + '" target=_Blank>' + val + '</a>';
+                        }
+                    },
                     { "aTargets": [4], "sName": "Errors", "bSortable": false, "bVisible": false }
                  ]
             }
@@ -340,7 +356,11 @@ function getDatatableOptions(name, index) {
                     { "aTargets": [3], "sName": "LabOrganization" },
                     { "aTargets": [4], "sName": "LabMethodName" },
                     { "aTargets": [5], "sName": "LabMethodDescription" },
-                    { "aTargets": [6], "sName": "LabMethodLink" },
+                    {
+                        "aTargets": [6], "sName": "LabMethodLink", "fnRender": function (aData, val) {
+                            return '<a href="/' + val + '" target=_Blank>' + val + '</a>';
+                        }
+                    },
                     { "aTargets": [7], "sName": "Errors", "bSortable": false, "bVisible": false }
                  ]
             }
@@ -599,7 +619,7 @@ function getDatatableOptions(name, index) {
                 "sScrollX": "100%",
                 "sScrollXInner": "100%",
                 "bScrollCollapse": true,
-                "bDestroy": true,                
+                "bDestroy": true,
                 "fnDrawCallback": function (oSettings) {
                     initMessageColumn(index)
                     toggleCommitButtons(oTable, index);
@@ -649,8 +669,7 @@ function fnFormatDetails(rawMessage) {
     return sOut;
 }
 
-function initMessageColumn(index)
-{
+function initMessageColumn(index) {
     if ((index != 1) && (index != 2)) {
         $("tbody td img.expand").addClass("hide")
     }
@@ -669,7 +688,7 @@ function initMessageColumn(index)
                 //var url = "/Home/ResultDetailView";
                 oTable = $('#' + index).dataTable();
                 var aData = oTable.fnGetData(nTr);
-                var errorColumnId = aData.length-1;
+                var errorColumnId = aData.length - 1;
                 oTable.fnOpen(nTr, fnFormatDetails(aData[errorColumnId]), 'table-error-details');
                 // $.get(url, { id: 1 }, function (details) {
 
@@ -680,10 +699,9 @@ function initMessageColumn(index)
     }
 }
 
-function addImageToColumn(index)
-{
+function addImageToColumn(index) {
     sOut = ""
-    if ((index == 1) ||  (index == 2))  {
+    if ((index == 1) || (index == 2)) {
         sOut = "<img class='expand' src='/Images/open.png' alt='Expand/Collapse' rel='' />";
     }
     return sOut;
@@ -700,17 +718,17 @@ function initCommitAndCancelButton(id) {
             type: 'POST',
             contentType: 'application/json; charset=utf-8',
             success: function () {
-               
+
                 alert("Records successfully added.")
                 oTable = $('#0').dataTable(getDatatableOptions(id, 0));
                 $('#0commit').addClass("disabled");
             },
             error: function () {
                 var returnedMessage = "An Error occured. Please resubmit the file. If the problem persists please validate the content or contact user suport";
-               // if (typeof data.jqXHR.responseJSON.Message != "undefined") returnedMessage = data.jqXHR.responseJSON.Message;
+                // if (typeof data.jqXHR.responseJSON.Message != "undefined") returnedMessage = data.jqXHR.responseJSON.Message;
 
                 alert(returnedMessage);
-              
+
             }
         });
 
@@ -764,7 +782,7 @@ function initCommitAndCancelButton(id) {
     //        }
     //    });
     //});
-   // var r = $('<input type="button" value="new button"/>');
+    // var r = $('<input type="button" value="new button"/>');
 
     //$('#0_filter').append(r)
     //$('#download').click(function () {
@@ -785,21 +803,17 @@ function initCommitAndCancelButton(id) {
     //});
 }
 
-function toggleCommitButtons(table, id)
-{
-    if (table.fnGetData().length > 0 )
-    {
+function toggleCommitButtons(table, id) {
+    if (table.fnGetData().length > 0) {
         $('#' + id + 'commit').removeClass("hide")
         //$('#' + id + 'cancel').removeClass("hide")
     }
-    else
-    {
-        if(!$('#'+id+'commit').hasClass("hide"))
-        {
-            $('#'+id+'commit').addClass("hide")
+    else {
+        if (!$('#' + id + 'commit').hasClass("hide")) {
+            $('#' + id + 'commit').addClass("hide")
         }
         //if (!$('#'+ id + 'cancel').hasClass("hide")) {
-            // $('#'+ id + 'cancel').addClass("hide")
+        // $('#'+ id + 'cancel').addClass("hide")
         //}
     }
 }
