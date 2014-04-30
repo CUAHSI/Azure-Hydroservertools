@@ -651,6 +651,7 @@
     <Content Include="Views\CSVUpload\Sites - Copy 1.cshtml" />
     <Content Include="Views\Home\Templates.cshtml" />
     <Content Include="Views\Home\ChangeHistory.cshtml" />
+    <Content Include="Views\Home\ControlledVocabulalaries.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

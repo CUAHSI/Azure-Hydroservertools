@@ -16,9 +16,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
+using HydroServerToolsRepository;
 
 namespace HydroServerToolsRepository.Repository
 {
+    
     public class RepositoryUtils
     {
         public static EntityKey GetEntityKey(EntitySet entitySet, dynamic d)
@@ -579,6 +581,55 @@ namespace HydroServerToolsRepository.Repository
             {
                 return null;
             }           
+        }
+
+        public static HydroServerToolsRepository.Models.TimeseriesData getTimeseriesData(int siteID, int variableID, int sourceID, int methodID, int qualityControlLevelID, string entityConnectionstring)
+        {
+            var sb = new StringBuilder();
+
+            sb.Append("SELECT SiteID, VariableID, MethodID, SourceID, QualityControlLevelID, MIN(LocalDateTime) AS BeginDateTime, MAX(LocalDateTime) AS EndDateTime, MIN(DateTimeUTC) AS BeginDateTimeUTC, MAX(DateTimeUTC) as EndDateTimeUTC, COUNT(ValueID) AS ValueCount FROM DataValues ");
+            sb.Append( " where ");
+            sb.Append(" SiteID = " + siteID);
+            sb.Append(" AND ");
+            sb.Append(" VariableID = " + variableID);
+            sb.Append(" AND ");
+            sb.Append(" MethodID = " + methodID);
+            sb.Append(" AND ");
+            sb.Append(" SourceID = " + sourceID);
+            sb.Append(" AND ");
+            sb.Append(" QualityControlLevelID = " + qualityControlLevelID);
+            sb.Append(" GROUP BY SiteID, VariableID, MethodID, SourceID, QualityControlLevelID ");
+
+
+            var ec = new EntityConnectionStringBuilder(entityConnectionstring);
+            SqlConnection sqlConnection1 = new SqlConnection(ec.ProviderConnectionString);
+
+            var adp = new SqlDataAdapter();
+            var cmd = new SqlCommand();
+            var dataTable = new DataTable();
+            cmd.CommandText = sb.ToString();
+
+            cmd.CommandType = CommandType.Text;
+            cmd.Connection = sqlConnection1;
+            adp.SelectCommand = cmd;
+            adp.Fill(dataTable);
+            var timeseriesData = new HydroServerToolsRepository.Models.TimeseriesData();
+            if (dataTable.Rows.Count == 1)
+            {
+                timeseriesData.BeginDateTime = Convert.ToDateTime(dataTable.Rows[0]["BeginDateTime"]);
+                timeseriesData.EndDateTime = Convert.ToDateTime(dataTable.Rows[0]["EndDateTime"]);
+                timeseriesData.BeginDateTimeUTC = Convert.ToDateTime(dataTable.Rows[0]["BeginDateTimeUTC"]);
+                timeseriesData.EndDateTimeUTC = Convert.ToDateTime(dataTable.Rows[0]["BeginDateTimeUTC"]);
+                timeseriesData.ValueCount = (int)dataTable.Rows[0]["ValueCount"];
+            }
+            
+            return timeseriesData;
+        }
+
+
+        internal static object getTimeseriesData(object item, string entityConnectionstring)
+        {
+            throw new NotImplementedException();
         }
     }
 }
