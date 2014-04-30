@@ -151,6 +151,10 @@ namespace HydroServerTools.Controllers
         {
             return View();
         }
+        public ActionResult ControlledVocabulalaries()
+        {
+            return View();
+        }
         [Authorize]
         public ActionResult ClearTablesHandler(FormCollection collection)
         {
