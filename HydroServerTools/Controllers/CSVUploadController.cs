@@ -378,6 +378,7 @@ namespace HydroServerTools.Controllers
                                 }
                                 
                                 BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                                return Json(new { success = true });
                             }
                         }
                     }
@@ -399,6 +400,7 @@ namespace HydroServerTools.Controllers
                                 }
 
                                 BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                                return Json(new { success = true });
                             }
                         }
                     }
@@ -420,6 +422,7 @@ namespace HydroServerTools.Controllers
                                 }
 
                                 BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                                return Json(new { success = true });
                             }
                         }
                     }
@@ -441,6 +444,7 @@ namespace HydroServerTools.Controllers
                                 }
 
                                 BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                                return Json(new { success = true });
                             }
                         }
                     }
@@ -462,6 +466,7 @@ namespace HydroServerTools.Controllers
                                 }
 
                                 BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                                return Json(new { success = true });
                             }
                         }
                     }
@@ -483,6 +488,7 @@ namespace HydroServerTools.Controllers
                                 }
 
                                 BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                                return Json(new { success = true });
                             }
                         }
                     }
@@ -504,6 +510,7 @@ namespace HydroServerTools.Controllers
                                 }
 
                                 BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                                return Json(new { success = true });
                             }
                         }
                     }
@@ -525,6 +532,7 @@ namespace HydroServerTools.Controllers
                                 }
 
                                 BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                                return Json(new { success = true });
                             }
                         }
                     }
@@ -546,6 +554,7 @@ namespace HydroServerTools.Controllers
                                 }
 
                                 BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                                return Json(new { success = true });
                             }
                         }
                     }
@@ -567,6 +576,7 @@ namespace HydroServerTools.Controllers
                                 }
 
                                 BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                                return Json(new { success = true });
                             }
                         }
                     }
@@ -595,6 +605,7 @@ namespace HydroServerTools.Controllers
                                
                                 
                                 BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                                return Json(new { success = true });
 
 
 
@@ -618,6 +629,7 @@ namespace HydroServerTools.Controllers
                                     HydroServerToolsRepository.Repository.RepositoryUtils.CommitUpdateRecords<GroupDescriptionModel>(connectionString, id, listOfRecords);
                                 }
                                 BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                                return Json(new { success = true });
                             }
                         }
                     }
@@ -638,6 +650,7 @@ namespace HydroServerTools.Controllers
                                     HydroServerToolsRepository.Repository.RepositoryUtils.CommitUpdateRecords<GroupsModel>(connectionString, id, listOfRecords);
                                 }
                                 BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                                return Json(new { success = true });
                             }
                         }
                     }
@@ -658,6 +671,7 @@ namespace HydroServerTools.Controllers
                                     HydroServerToolsRepository.Repository.RepositoryUtils.CommitUpdateRecords<DerivedFromModel>(connectionString, id, listOfRecords);
                                 }
                                 BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                                return Json(new { success = true });
                             }
                         }
                     }
@@ -678,6 +692,7 @@ namespace HydroServerTools.Controllers
                                     HydroServerToolsRepository.Repository.RepositoryUtils.CommitUpdateRecords<CategoriesModel>(connectionString, id, listOfRecords);
                                 }
                                 BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                                return Json(new { success = true });
                             }
                         }
                     }
@@ -685,7 +700,9 @@ namespace HydroServerTools.Controllers
                 
                 }
 
-                return Json(new { success = true });
+                //return Json(new { Success = false, Message = "Error timeout" });
+                return new HttpStatusCodeResult(HttpStatusCode.Gone, "The data has been removed due to inactivity. Please re-upload the file ");
+                //return Content("Error");
             }           
             
             
@@ -715,7 +732,7 @@ namespace HydroServerTools.Controllers
             {
                 // Now we need to wire up a response so that the calling script understands what happened
 
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "An error ocuured");
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "An error occured");
                 //return new RedirectResult("http://www.google.com");
 
             }
@@ -735,6 +752,10 @@ namespace HydroServerTools.Controllers
             List<SiteModel> items = new List<SiteModel>();
 
             listOfRecords = (List<SiteModel>)BusinessObjectsUtils.GetRecordsFromCache<SiteModel>(MvcApplication.InstanceGuid, id, CacheName);
+              if (listOfRecords == null) 
+              {
+                  return Json( new { error = "true" });
+              };
 
             var sortedColumns = jQueryDataTablesModel.GetSortedColumns();
 

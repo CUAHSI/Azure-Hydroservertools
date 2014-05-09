@@ -19,7 +19,10 @@ namespace HydroserverToolsBusinessObjects
         public const string IMPORT_FAILED = "The Import failed please validate your input. Please make sure the file contains all necessary fields.";
         public const string FILETYPE_NOT_CSV = "The uploaded file is not a CSV file. Please upload a correct file.";
         public const string UPLOAD_SITES_HELP = "Sites Help";
-        public const string IMPORT_FAILED_MISSINGMANDATORYFIELDS = "The import failed.Missing mandatory field(s): {0} ";
+
+        public const string IMPORT_FAILED_NOVALIDDATA = "The import failed. The file {0} does not contain valid data.";
+        public const string IMPORT_FAILED_MISSINGMANDATORYFIELDS = "The import failed. Missing mandatory field(s): {0} ";
+        public const string IMPORT_FAILED_NOMATCHINGFIELDS = "The import failed. Please validate that your file is correct.";
         public const string IMPORT_VALUE_NOT_IN_CV = "The value {0} is not in {1} CV. Please validate you input.";
         public const string IMPORT_VALUE_NOT_IN_DATABASE = "The value {0} is not in {1} Table. Please validate you input.";
         public const string IMPORT_VALUE_INVALIDCHARACTERS = "The value in column {0} contains invalid characters";
@@ -28,9 +31,9 @@ namespace HydroserverToolsBusinessObjects
         public const string IMPORT_VALUE_INVALIDRANGE = "The value in column {0} is invalid. Valid range:{1}";
         public const string IMPORT_VALUE_INVALIDVALUE = "The value in column {0} is invalid.";
         public const string IMPORT_VALUE_ISDUPLICATE = "The data conflicts with a record in the upload. Possible duplicate value in field: {0}.";
-        public const string IMPORT_VALUE_UPDATED = "The value {1} in column {0} will be changed to {2}.";      
-
-
+        public const string IMPORT_VALUE_UPDATED = "The value {1} in column {0} will be changed to {2}.";
+        public const string IMPORT_VALUE_LOCALVALUE_NOT_COMPLETE = "Please make sure that record contains all required values ( LocalX, LocalY, LocalSRSName)";
+        public const string IMPORT_VALUE_ELEVATION_VERTICALDATUM = "When specifying a value for Elevation_m a vertical datum from the controlled vocubulary is required. ";
         public const string IMPORT_STATUS_UPLOAD = "Uploading..";
         public const string IMPORT_STATUS_PROCESSING = "The Upload is being processed. Processing record {0} of {1}";
         public const string IMPORT_STATUS_INSERTING = "The data is inserted";

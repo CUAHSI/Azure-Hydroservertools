@@ -723,16 +723,23 @@ function initCommitAndCancelButton(id) {
                 oTable = $('#0').dataTable(getDatatableOptions(id, 0));
                 $('#0commit').addClass("disabled");
             },
-            error: function () {
-                var returnedMessage = "An Error occured. Please resubmit the file. If the problem persists please validate the content or contact user suport";
-                // if (typeof data.jqXHR.responseJSON.Message != "undefined") returnedMessage = data.jqXHR.responseJSON.Message;
+            error: function (xhr) {
+                if (typeof xhr.statusText != "undefined")
+                {
+                    returnedMessage = xhr.statusText;
+                }
+                else
+                {
+                    var returnedMessage = "An Error occured. Please resubmit the file. If the problem persists please validate the content or contact user suport";
+                }
 
                 alert(returnedMessage);
-
+                window.location.href = '/CSVUpload/UploadData/' + id
             }
         });
 
     });
+
     $('#2commit').click(function () {
         //$.post("/CSVUpload/Commit", { id: "sites" } {
         $.ajax({
@@ -746,8 +753,16 @@ function initCommitAndCancelButton(id) {
                 oTable = $('#2').dataTable(getDatatableOptions(id, 0));
                 $('#2commit').addClass("disabled");
             },
-            error: function () {
-                alert("error");
+            error: function (xhr) {
+                if (typeof xhr.statusText != "undefined") {
+                    returnedMessage = xhr.statusText;
+                }
+                else {
+                    var returnedMessage = "An Error occured. Please resubmit the file. If the problem persists please validate the content or contact user suport";
+                }
+
+                alert(returnedMessage);
+                window.location.href = '/CSVUpload/UploadData/' + id
             }
         });
 

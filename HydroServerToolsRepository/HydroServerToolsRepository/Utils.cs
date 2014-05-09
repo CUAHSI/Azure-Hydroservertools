@@ -273,7 +273,7 @@ namespace HydroServerToolsRepository.Repository
                             existingItem.Comments = model.Comments;
                             existingItem.SiteType = model.SiteType;
 
-                            //context.Sites.Add(existingItem);
+                            context.Sites.Add(existingItem);
                         }
                         
                     }
@@ -293,7 +293,6 @@ namespace HydroServerToolsRepository.Repository
 
                         if (existingItem != null)
                         {
-
                             existingItem.VariableCode = model.VariableCode;
                             existingItem.VariableName = model.VariableName;
                             existingItem.Speciation = model.Speciation;
@@ -306,11 +305,9 @@ namespace HydroServerToolsRepository.Repository
                             existingItem.DataType = model.DataType;
                             existingItem.GeneralCategory = model.GeneralCategory;
                             existingItem.NoDataValue = model.NoDataValue;
-                           
 
-                            //context.Sites.Add(existingItem);
+                            context.Variables.Add(existingItem);
                         }
-
                     }
                     context.SaveChanges();
                 }
@@ -320,33 +317,33 @@ namespace HydroServerToolsRepository.Repository
                 }
                 if (id == "sources")
                 {
-                    var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
-                    var objContext = ((IObjectContextAdapter)context).ObjectContext;
-                    var sourcerecordsToInsert = new List<Source>();
-                    var isometadatarecordsToInsert = new List<ISOMetadata>();
-                    //wrap in transaction in case something goes wrong
-                    using (TransactionScope scope = new TransactionScope())
-                    {
-                        foreach (T item in list)
-                        {
-                            var isometadatamodel = Mapper.Map<T, ISOMetadata>(item);
-                            //isometadatarecordsToInsert.Add(isometadatamodel);
-                            context.ISOMetadatas.Add(isometadatamodel);
-                            objContext.SaveChanges(false);
-                            //var newItem = Convert.ChangeType(item, typeof(SourcesModel));
-                            var source = Mapper.Map<T, Source>(item);
-                            source.MetadataID = isometadatamodel.MetadataID;
-                            context.Sources.Add(source);
-                        }
-                        //BulkInsert<ISOMetadata>(providerConnectionString, id, isometadatarecordsToInsert);
+                    //var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
+                    //var objContext = ((IObjectContextAdapter)context).ObjectContext;
+                    //var sourcerecordsToInsert = new List<Source>();
+                    //var isometadatarecordsToInsert = new List<ISOMetadata>();
+                    ////wrap in transaction in case something goes wrong
+                    //using (TransactionScope scope = new TransactionScope())
+                    //{
+                    //    foreach (T item in list)
+                    //    {
+                    //        var isometadatamodel = Mapper.Map<T, ISOMetadata>(item);
+                    //        //isometadatarecordsToInsert.Add(isometadatamodel);
+                    //        context.ISOMetadatas.Add(isometadatamodel);
+                    //        objContext.SaveChanges(false);
+                    //        //var newItem = Convert.ChangeType(item, typeof(SourcesModel));
+                    //        var source = Mapper.Map<T, Source>(item);
+                    //        source.MetadataID = isometadatamodel.MetadataID;
+                    //        context.Sources.Add(source);
+                    //    }
+                    //    //BulkInsert<ISOMetadata>(providerConnectionString, id, isometadatarecordsToInsert);
 
 
-                        //BulkInsert<Source>(providerConnectionString, id, sourcerecordsToInsert);
-                        objContext.SaveChanges(false);
-                        //if we get here things are looking good.
-                        scope.Complete();
-                        objContext.AcceptAllChanges();
-                    }
+                    //    //BulkInsert<Source>(providerConnectionString, id, sourcerecordsToInsert);
+                    //    objContext.SaveChanges(false);
+                    //    //if we get here things are looking good.
+                    //    scope.Complete();
+                    //    objContext.AcceptAllChanges();
+                    //}
                 }
 
                 if (id == "methods")
@@ -363,12 +360,21 @@ namespace HydroServerToolsRepository.Repository
                 if (id == "samples")
                 {
                     var recordsToInsert = new List<Sample>();
+                    var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
                     foreach (T item in list)
                     {
                         var model = Mapper.Map<T, Sample>(item);
-                        recordsToInsert.Add(model);
+                        var existingItem = context.Samples.Where(a => a.LabSampleCode == model.LabSampleCode).FirstOrDefault();
+
+                        if (existingItem != null)
+                        {
+
+                            existingItem.SampleType = model.SampleType;
+                            existingItem.LabMethodID = model.LabMethodID;
+                        }
+                        context.Samples.Add(existingItem);
                     }
-                    BulkInsert<Sample>(providerConnectionString, id, recordsToInsert);
+                    context.SaveChanges();                   
 
                 }
 
@@ -391,11 +397,9 @@ namespace HydroServerToolsRepository.Repository
                         {
 
                             existingItem.Definition = model.Definition;
-                            existingItem.Explanation = model.Explanation;                           
-
-                           
+                            existingItem.Explanation = model.Explanation;  
                         }
-
+                        context.QualityControlLevels.Add(existingItem);
                     }
                     context.SaveChanges();
 
@@ -403,59 +407,29 @@ namespace HydroServerToolsRepository.Repository
 
                 if (id == "datavalues")
                 {
-                    var recordsToInsert = new List<DataValue>();
-                    foreach (T item in list)
-                    {
-                        var model = Mapper.Map<T, DataValue>(item);
-                        recordsToInsert.Add(model);
-                    }
-                    BulkInsert<DataValue>(providerConnectionString, id, recordsToInsert);
+                    
 
                 }
 
                 if (id == "groupdescriptions")
                 {
-                    var recordsToInsert = new List<GroupDescription>();
-                    foreach (T item in list)
-                    {
-                        var model = Mapper.Map<T, GroupDescription>(item);
-                        recordsToInsert.Add(model);
-                    }
-                    BulkInsert<GroupDescription>(providerConnectionString, id, recordsToInsert);
+                    
 
                 }
 
                 if (id == "groups")
                 {
-                    var recordsToInsert = new List<Group>();
-                    foreach (T item in list)
-                    {
-                        var model = Mapper.Map<T, Group>(item);
-                        recordsToInsert.Add(model);
-                    }
-                    BulkInsert<Group>(providerConnectionString, id, recordsToInsert);
+                    
                 }
 
                 if (id == "derivedfrom")
                 {
-                    var recordsToInsert = new List<DerivedFrom>();
-                    foreach (T item in list)
-                    {
-                        var model = Mapper.Map<T, DerivedFrom>(item);
-                        recordsToInsert.Add(model);
-                    }
-                    BulkInsert<DerivedFrom>(providerConnectionString, id, recordsToInsert);
+                    
                 }
 
                 if (id == "categories")
                 {
-                    var recordsToInsert = new List<Category>();
-                    foreach (T item in list)
-                    {
-                        var model = Mapper.Map<T, Category>(item);
-                        recordsToInsert.Add(model);
-                    }
-                    BulkInsert<Category>(providerConnectionString, id, recordsToInsert);
+                    
                 }
             }
             catch (Exception ex)
@@ -542,10 +516,10 @@ namespace HydroServerToolsRepository.Repository
         public static bool containsInvalidCharacters(string value)
         {
 
-            var a = (System.Text.RegularExpressions.Regex.Matches(value, @"[\040]").Count != 0);
-            var b = (System.Text.RegularExpressions.Regex.Matches(value, @"[\,\+]").Count != 0);
-            var c = (System.Text.RegularExpressions.Regex.Matches(value, @"[\:\\/\=]").Count != 0);
-            var d = (System.Text.RegularExpressions.Regex.Matches(value, @"[\t\r\v\f\n]").Count != 0);
+            //var a = (System.Text.RegularExpressions.Regex.Matches(value, @"[\040]").Count != 0);
+            //var b = (System.Text.RegularExpressions.Regex.Matches(value, @"[\,\+]").Count != 0);
+            //var c = (System.Text.RegularExpressions.Regex.Matches(value, @"[\:\\/\=]").Count != 0);
+            //var d = (System.Text.RegularExpressions.Regex.Matches(value, @"[\t\r\v\f\n]").Count != 0);
 
             bool hasInvalidCharacters;
             hasInvalidCharacters = ((System.Text.RegularExpressions.Regex.Matches(value, @"[\040]").Count != 0) ||

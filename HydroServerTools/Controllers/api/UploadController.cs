@@ -171,13 +171,23 @@ namespace HydroServerTools.Controllers.WebApi
 
                     if (values != null)
                     {
-                        var repository = new SitesRepository();
+                        if (values.Count > 0)
+                        {
+                            var repository = new SitesRepository();
 
-                        repository.AddSites(values, entityConnectionString, MvcApplication.InstanceGuid, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
+                            repository.AddSites(values, entityConnectionString, MvcApplication.InstanceGuid, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
+
+                            PutRecordsInCache<SiteModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords);                   
+                        }
+                        else
+                        {
+
+                            throw new ArgumentException(String.Format(Ressources.IMPORT_FAILED_NOVALIDDATA, file.FileName));
+
+                        }
                     }
 
-                    PutRecordsInCache<SiteModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords);
-                    
+                     
                 
                 } 
                 #endregion
@@ -778,6 +788,10 @@ namespace HydroServerTools.Controllers.WebApi
             catch (CsvMissingFieldException ex)
             {
                 throw;
+            }
+            catch (CsvReaderException ex)
+            {
+                throw new System.ArgumentException(String.Format(Ressources.IMPORT_FAILED_NOMATCHINGFIELDS));
             }
             catch (Exception ex)
             {

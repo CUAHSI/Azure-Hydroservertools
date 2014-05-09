@@ -2,52 +2,27 @@
 
 @{
     ViewBag.Title = "Log in";
+    
 }
 
-<h2>@ViewBag.Title.</h2>
+@*<h2>@ViewBag.Title.</h2>*@
 <div class="row">
-    @*<div class="col-md-8">
-        <section id="loginForm">
-            @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-            {
-                @Html.AntiForgeryToken()
-                <h4>Use a local account to log in.</h4>
-                <hr />
-                @Html.ValidationSummary(true)
-                <div class="form-group">
-                    @Html.LabelFor(m => m.UserName, new { @class = "col-md-2 control-label" })
-                    <div class="col-md-10">
-                        @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.UserName)
-                    </div>
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
-                    <div class="col-md-10">
-                        @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.Password)
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
-                        <div class="checkbox">
-                            @Html.CheckBoxFor(m => m.RememberMe)
-                            @Html.LabelFor(m => m.RememberMe)
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
-                        <input type="submit" value="Log in" class="btn btn-default" />
-                    </div>
-                </div>
-                <p>
-                    @Html.ActionLink("Register", "Register") if you don't have a local account.
-                </p>
-            }
-        </section>
-    </div>*@
-    <div class="col-md-4">
+    <div class="jumbotron">
+
+        HydroServer is an application for sharing time series water data. It has three components:
+        <ul>
+            <li>An instance of the Observations Data Model (ODM) SQL Database in the Azure Cloud</li>
+            <li>An application for uploading data to the ODM Database using CSV templates</li>
+            <li>A WaterOneFlow Web Service for exposing the database</li>
+        </ul>
+
+        To begin, login using your Google account, download the ODM Templates and populate them with your data and metadata. Next, upload your data and metadata using this portal. Finally, register your web service and database with CUAHSI’s central catalog,  <a href="http://hiscentral.cuahsi.org" target="_blank">HIS Central</a>.
+   need help? contact the
+    <a href="http://wdc.cuahsi.org/WDC/Contact.html" target="_blank">WDC staff</a>.
+    @*<button class="btn btn-primary btn-lg btn-block" data-toggle="modal" data-target="#setConnection">Set Database Connection</button>*@
+    @*<p><a href="/CSVUpload/Sites" class="btn btn-primary btn-lg active" role="button">Import Data into Hydroserver</a></p>*@
+    @*   @Html.ActionLink("Import Data into Hydroserver", "UploadData", "CSVUpload", new { id = "Sites" }, new { @class = "btn btn-primary btn-lg active" })*@
+</div><div class="col-md-4">
         <section id="socialLoginForm">
             @Html.Partial("_ExternalLoginsListPartial", new { Action = "ExternalLogin", ReturnUrl = ViewBag.ReturnUrl })
         </section>

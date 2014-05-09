@@ -166,3 +166,7 @@ input[readonly] {
    border-color:black;
    border-width:medium;
 }*/
+table
+{
+    border-width:thin;
+}

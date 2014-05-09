@@ -144,6 +144,7 @@ namespace HydroServerTools
             return connectionString;
 
         }
+
         public static string GetProviderConnectionStringByName(string name)
         {
             string connectionString = string.Empty;
@@ -163,6 +164,7 @@ namespace HydroServerTools
             return providerConnectionString;
 
         }
+
         public static string GetUserEmailForCurrentUser(string userName)
         {
             string userEmail = string.Empty;

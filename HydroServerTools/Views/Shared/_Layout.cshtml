@@ -30,6 +30,8 @@
                 
         </div>
             <div class="navbar-collapse collapse ">
+                @if (User.Identity.IsAuthenticated)
+                { 
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
                     @*<li>@Html.ActionLink("About", "About", "Home")</li>*@
@@ -114,6 +116,7 @@
                     </li>*@
 
                 </ul>
+                }
                 @Html.Partial("_LoginPartial")
             </div>
         </div>
@@ -128,7 +131,7 @@
         <footer>
             <hr />
 
-            <p>&copy; @DateTime.Now.Year - &copy; CUAHSI Version 0.2</p>
+            <p>&copy; @DateTime.Now.Year - &copy; CUAHSI Version 0.3</p>
         </footer>
     </div>
    @* @Scripts.Render("~/bundles/jquery")*@

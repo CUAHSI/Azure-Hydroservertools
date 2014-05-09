@@ -1,7 +1,6 @@
 ﻿@using Microsoft.Owin.Security
 
-<h4>Use another service to log in.</h4>
-<hr />
+
 @{
     var loginProviders = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes();
     if (loginProviders.Count() == 0)
@@ -19,12 +18,15 @@
         {
             @Html.AntiForgeryToken()
             <div id="socialLoginList">
-                <p>
+               
                 @foreach (AuthenticationDescription p in loginProviders)
-                {
-                    <button type="submit" class="btn btn-primary alert-message" id="@p.AuthenticationType" name="provider" value="@p.AuthenticationType" title="Log in using your @p.Caption account">@p.AuthenticationType</button>
-                }
-                </p>
+{
+
+    <h4> Use your Google account to log in. </h4>
+           <button type="submit" class="btn btn-block btn-primary alert-message center" id="@p.AuthenticationType" name="provider" value="@p.AuthenticationType" title="Log in using your @p.Caption account">@p.AuthenticationType</button>
+   
+}
+              
             </div>
         }
     }

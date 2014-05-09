@@ -18,8 +18,7 @@ namespace HydroserverToolsBusinessObjects
     public class BusinessObjectsUtils
     {
         
-        const string EFMODEL = @"res://*/ODM_1_1_1EFModel.csdl|res://*/ODM_1_1_1EFModel.ssdl|res://*/ODM_1_1_1EFModel.msl";
-      
+        const string EFMODEL = @"res://*/ODM_1_1_1EFModel.csdl|res://*/ODM_1_1_1EFModel.ssdl|res://*/ODM_1_1_1EFModel.msl";      
 
         public static List<T> GetRecordsFromCache<T>(Guid instanceGuid, int id, string dataCacheName)
         {
@@ -31,15 +30,19 @@ namespace HydroserverToolsBusinessObjects
                 {
                     case 0:
                         if (cache.Get(instanceGuid + "listOfCorrectRecords") != null) listOfRecords = (List<T>)cache.Get(instanceGuid + "listOfCorrectRecords");
+                        else listOfRecords = null;
                         break;
                     case 1:
                         if (cache.Get(instanceGuid + "listOfIncorrectRecords") != null) listOfRecords = (List<T>)cache.Get(instanceGuid + "listOfIncorrectRecords");
+                        else listOfRecords = null;
                         break;
                     case 2:
                         if (cache.Get(instanceGuid + "listOfEditedRecords") != null) listOfRecords = (List<T>)cache.Get(instanceGuid + "listOfEditedRecords");
+                        else listOfRecords = null;
                         break;
                     case 3:
                         if (cache.Get(instanceGuid + "listOfDuplicateRecords") != null) listOfRecords = (List<T>)cache.Get(instanceGuid + "listOfDuplicateRecords");
+                        else listOfRecords = null;
                         break;
                 }
             
@@ -55,6 +58,7 @@ namespace HydroserverToolsBusinessObjects
             if (cache.Get(InstanceGuid + "processStatus") == null) cache.Add(InstanceGuid + "processStatus", message); else cache.Put(InstanceGuid + "processStatus", message);
              
         }
+
         public static void RemoveItemFromCache(Guid InstanceGuid, string dataCacheName, string itemName)
         {
             DataCache cache = new DataCache(dataCacheName);

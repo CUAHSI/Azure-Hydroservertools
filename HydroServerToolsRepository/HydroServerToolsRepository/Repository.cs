@@ -51,7 +51,7 @@ namespace HydroServerToolsRepository.Repository
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(connectionString);
             var result = new List<SiteModel>();
 
-            if (context.Sites.Count() != null)
+            if (context.Sites.Count() != 0)
             {
                 totalRecordCount = context.Sites.Count();
                 searchRecordCount = totalRecordCount;
@@ -70,8 +70,8 @@ namespace HydroServerToolsRepository.Repository
                           Where(c =>
                                c.SiteCode != null && c.SiteCode.ToLower().Contains(searchString.ToLower())
                             || c.SiteName != null && c.SiteName.ToLower().Contains(searchString.ToLower())
-                            || c.Latitude != null && c.Latitude.ToString().ToLower().Contains(searchString.ToLower())
-                            || c.Longitude != null && c.Longitude.ToString().ToLower().Contains(searchString.ToLower())
+                            || c.Latitude.ToString().ToLower().Contains(searchString.ToLower())
+                            || c.Longitude.ToString().ToLower().Contains(searchString.ToLower())
                             || c.SpatialReference.SRSName != null && c.SpatialReference.SRSName.ToLower().Contains(searchString.ToLower())
                             || c.Elevation_m != null && c.Elevation_m.ToString().ToLower().Contains(searchString.ToLower())
                             || c.LocalX != null && c.LocalX.ToString().ToLower().Contains(searchString.ToLower())
@@ -371,6 +371,7 @@ namespace HydroServerToolsRepository.Repository
                                 bool canConvert = UniversalTypeConverter.TryConvertTo<int>(item.LatLongDatumSRSName, out result);
                                 if (canConvert)//user used SSRID
                                 {
+                                    
                                     var LatLongDatumID = LatLongDatumSRSID
                                      .Where(a => a.Key == result)
                                      .Select(a => a.Value)
@@ -378,7 +379,8 @@ namespace HydroServerToolsRepository.Repository
                                     if (LatLongDatumID != 0)
                                     {
                                         model.LatLongDatumID = LatLongDatumID;
-                                        item.LatLongDatumID = LatLongDatumID.ToString();// write back to viewmodel to not have to convert again when values are comitted to DB
+                                        item.LatLongDatumID = LatLongDatumID.ToString();// write back to viewmodel to not have to convert again when values are committed to DB
+                                        item.LatLongDatumSRSName = LatLongDatum.Where(a => a.Value == LatLongDatumID).Select(a => a.Key).FirstOrDefault();
                                     }
                                     else
                                     {
@@ -388,13 +390,14 @@ namespace HydroServerToolsRepository.Repository
                                 else
                                 {
                                     var LatLongDatumID = LatLongDatum
-                                     .Where(a => a.Key == item.LatLongDatumSRSName)
+                                     .Where(a => a.Key.ToLower() == item.LatLongDatumSRSName.ToLower())
                                      .Select(a => a.Value)
                                      .SingleOrDefault();
                                     if (LatLongDatumID != 0)
                                     {
                                         model.LatLongDatumID = LatLongDatumID;
                                         item.LatLongDatumID = LatLongDatumID.ToString();// write back to viewmodel to not have to convert again when values are comitted to DB
+                                        item.LatLongDatumSRSName = LatLongDatum.Where(a => a.Value == LatLongDatumID).Select(a => a.Key).FirstOrDefault();
                                     }
                                     else
                                     {
@@ -444,17 +447,18 @@ namespace HydroServerToolsRepository.Repository
                         }
                         else
                         {
-                            var VerticalDatum = VerticalDatumCV
-                                           .Exists(a => a.Term.ToString() == item.VerticalDatum);
+                            var verticalDatum = VerticalDatumCV
+                                           .Where(a => a.Term.ToString().ToLower() == item.VerticalDatum.ToLower()).FirstOrDefault();
 
-                            if (!VerticalDatum)
+                            if (verticalDatum == null)
                             {
                                 var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_NOT_IN_CV, item.VerticalDatum, "VerticalDatum"));
                                 listOfErrors.Add(err); isRejected = true;
                             }
                             else
                             {
-                                model.VerticalDatum = item.VerticalDatum;
+                                model.VerticalDatum = verticalDatum.Term;
+                                item.VerticalDatum = verticalDatum.Term; 
                             }
 
                         }
@@ -529,6 +533,7 @@ namespace HydroServerToolsRepository.Repository
                                     {
                                         model.LocalProjectionID = localDatumID;
                                         item.LocalProjectionID = localDatumID.ToString();// write back to viewmodel to not have to convert again when values are comitted to DB
+                                        item.LocalProjectionSRSName = LatLongDatum.Where(a => a.Value == localDatumID).Select(a => a.Key).FirstOrDefault();
                                     }
                                     else
                                     {
@@ -538,13 +543,14 @@ namespace HydroServerToolsRepository.Repository
                                 else
                                 {
                                     var localDatumID = LatLongDatum
-                                     .Where(a => a.Key == item.LatLongDatumSRSName)
+                                     .Where(a => a.Key.ToLower() == item.LocalProjectionSRSName.ToLower())
                                      .Select(a => a.Value)
                                      .SingleOrDefault();
                                     if (localDatumID != 0)
                                     {
                                         model.LocalProjectionID = localDatumID;
                                         item.LocalProjectionID = localDatumID.ToString();// write back to viewmodel to not have to convert again when values are comitted to DB
+                                        item.LocalProjectionSRSName = LatLongDatum.Where(a => a.Value == localDatumID).Select(a => a.Key).FirstOrDefault();
                                     }
                                     else
                                     {
@@ -637,10 +643,13 @@ namespace HydroServerToolsRepository.Repository
                     //SiteType
                     if (!string.IsNullOrWhiteSpace(item.SiteType))
                     {
-                        var siteType = SiteTypeCV
-                                       .Exists(a => a.Term.ToString() == item.SiteType);
+                        //var siteType = SiteTypeCV
+                        //               .Exists(a => a.Term.ToString().ToLower() == item.SiteType.ToLower());
 
-                        if (!siteType)
+                        var siteType = SiteTypeCV
+                                      .Where(a => a.Term.ToString().ToLower() == item.SiteType.ToLower()).FirstOrDefault();
+
+                        if (siteType == null)
                         {
                             var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_NOT_IN_CV, item.SiteType, "SiteType"));
                             listOfErrors.Add(err);
@@ -648,7 +657,9 @@ namespace HydroServerToolsRepository.Repository
                         }
                         else
                         {
-                            model.SiteType = item.SiteType;
+                            //using this insures correct spelling 
+                            model.SiteType = siteType.Term;
+                            item.SiteType = siteType.Term;
                         }
 
                     }
@@ -657,6 +668,22 @@ namespace HydroServerToolsRepository.Repository
                         var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "SiteType")); listOfErrors.Add(err); isRejected = true;
                     }
 
+                    //general rules check If one of these fields are included, then so should the rest: LocalX, LocalY, LocalSRSName 
+
+                    if (model.LocalX != null || model.LocalY != null || model.LocalProjectionID != null)
+                    {
+                        if (!(model.LocalX != null && model.LocalY != null && model.LocalProjectionID != null))
+                        {
+                            var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_LOCALVALUE_NOT_COMPLETE)); listOfErrors.Add(err); isRejected = true;
+                        }
+                    }
+                    if (model.Elevation_m != null )
+                    {
+                        if (model.VerticalDatum == null)
+                        {
+                            var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_ELEVATION_VERTICALDATUM)); listOfErrors.Add(err); isRejected = true;                 
+                        }
+                    }
                     if (isRejected)
                     {
                         var sb = new StringBuilder();
@@ -1082,9 +1109,9 @@ namespace HydroServerToolsRepository.Repository
                     if (!string.IsNullOrWhiteSpace(item.VariableName))
                     {
                         var variableName = variableCV
-                                          .Exists(a => a.Term.ToString() == item.VariableName);
+                                          .Where(a => a.Term.ToString().ToLower() == item.VariableName.ToLower()).SingleOrDefault();
 
-                        if (!variableName)
+                        if (variableName == null)
                         {
                             var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_NOT_IN_CV, item.VariableName, "variableName"));
                             listOfErrors.Add(err);
@@ -1092,9 +1119,9 @@ namespace HydroServerToolsRepository.Repository
                         }
                         else
                         {
-                            model.VariableName = item.VariableName;
+                            model.VariableName = variableName.Term;
                         }
-
+                        
                     }
                     else
                     {
@@ -1104,9 +1131,9 @@ namespace HydroServerToolsRepository.Repository
                     if (!string.IsNullOrWhiteSpace(item.Speciation))
                     {
                         var speciation = speciationCV
-                                          .Exists(a => a.Term.ToString() == item.Speciation);
+                                          .Where(a => a.Term.ToString().ToLower() == item.Speciation.ToLower()).SingleOrDefault();
 
-                        if (!speciation)
+                        if (speciation == null)
                         {
                             var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_NOT_IN_CV, item.Speciation, "Speciation"));
                             listOfErrors.Add(err);
@@ -1150,7 +1177,7 @@ namespace HydroServerToolsRepository.Repository
                             else
                             {
                                     var variableUnitsID = units
-                                        .Where(a => a.Key == item.VariableUnitsName)
+                                        .Where(a => a.Key.ToLower() == item.VariableUnitsName.ToLower())
                                         .Select(a => a.Value)
                                         .SingleOrDefault();
                                     if (variableUnitsID != 0)
@@ -1173,8 +1200,8 @@ namespace HydroServerToolsRepository.Repository
                     if (!string.IsNullOrWhiteSpace(item.SampleMedium))
                     {
                         var sampleMedium = sampleMediumCV
-                                            .Exists(a => a.Term.ToString() == item.SampleMedium);
-                        if (!sampleMedium)
+                                            .Where(a => a.Term.ToString().ToLower() == item.SampleMedium.ToLower()).FirstOrDefault();
+                        if (sampleMedium == null)
                         {
                             var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_NOT_IN_CV, item.SampleMedium, "SampleMedium"));
                             listOfErrors.Add(err);
@@ -1182,7 +1209,7 @@ namespace HydroServerToolsRepository.Repository
                         }
                         else
                         {
-                            model.SampleMedium = item.SampleMedium;
+                            model.SampleMedium = sampleMedium.Term;
                         }
 
                     }
@@ -1194,8 +1221,8 @@ namespace HydroServerToolsRepository.Repository
                     if (!string.IsNullOrWhiteSpace(item.ValueType))
                     {
                         var valueType = valueTypeCV
-                                          .Exists(a => a.Term.ToString() == item.ValueType);
-                        if (!valueType)
+                                           .Where(a => a.Term.ToString().ToLower() == item.ValueType.ToLower()).FirstOrDefault();
+                        if (valueType == null)
                         {
                             var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_NOT_IN_CV, item.SampleMedium, "ValueType"));
                             listOfErrors.Add(err);
@@ -1203,7 +1230,7 @@ namespace HydroServerToolsRepository.Repository
                         }
                         else
                         {
-                            model.ValueType = item.ValueType;
+                            model.ValueType = valueType.Term;
                         }
 
                     }
@@ -1283,7 +1310,7 @@ namespace HydroServerToolsRepository.Repository
                             else
                             {
                                 var timeUnitsID = units
-                                   .Where(a => a.Key == item.TimeUnitsName)
+                                   .Where(a => a.Key.ToLower() == item.TimeUnitsName.ToLower())
                                    .Select(a => a.Value)
                                    .SingleOrDefault();
                                 if (timeUnitsID != 0)
@@ -1306,8 +1333,8 @@ namespace HydroServerToolsRepository.Repository
                     if (!string.IsNullOrWhiteSpace(item.DataType))
                     {
                         var dataType = dataTypeCV
-                                           .Exists(a => a.Term.ToString() == item.DataType);
-                        if (!dataType)
+                                           .Where(a => a.Term.ToString().ToLower() == item.DataType.ToLower()).FirstOrDefault();
+                        if (dataType == null)
                         {
                             var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_NOT_IN_CV, item.DataType, "DataType"));
                             listOfErrors.Add(err);
@@ -1315,7 +1342,7 @@ namespace HydroServerToolsRepository.Repository
                         }
                         else
                         {
-                            model.DataType = item.DataType;
+                            model.DataType = dataType.Term;
                         }
 
                     }
@@ -1327,8 +1354,8 @@ namespace HydroServerToolsRepository.Repository
                     if (!string.IsNullOrWhiteSpace(item.GeneralCategory))
                     {
                         var generalCategory = generalCategoryCV
-                                            .Exists(a => a.Term.ToString() == item.GeneralCategory);
-                        if (!generalCategory)
+                                            .Where(a => a.Term.ToString().ToLower() == item.GeneralCategory.ToLower()).FirstOrDefault();
+                        if (generalCategory == null)
                         {
                             var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_NOT_IN_CV, item.GeneralCategory, "GeneralCategory"));
                             listOfErrors.Add(err);
@@ -1336,7 +1363,7 @@ namespace HydroServerToolsRepository.Repository
                         }
                         else
                         {
-                            model.GeneralCategory = item.GeneralCategory;
+                            model.GeneralCategory = generalCategory.Term;
                         }
 
                     }
@@ -1351,13 +1378,13 @@ namespace HydroServerToolsRepository.Repository
                         bool canConvert = UniversalTypeConverter.TryConvertTo<double>(item.NoDataValue, out result);
                         if (!canConvert)
                         {
-                            var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_NOT_IN_CV, item.NoDataValue, "DataType"));
+                            var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_NOT_IN_CV, item.NoDataValue, "NoDataValue"));
                             listOfErrors.Add(err);
                             isRejected = true;
                         }
                         else
                         {
-                            model.DataType = item.DataType;
+                            model.NoDataValue = result;
                         }
 
                     }
@@ -4366,10 +4393,11 @@ namespace HydroServerToolsRepository.Repository
                         else
                         {
                             var censorCode = censorCodeCV
-                                                .Exists(a => a.Term == item.CensorCode);
-                            if (censorCode)
+                                                .Where(a => a.Term.ToLower() == item.CensorCode.ToLower()).FirstOrDefault();
+                            if (censorCode != null)
                             {
                                 model.CensorCode = item.CensorCode;
+                                item.CensorCode = censorCode.Term;
                             }
                             else
                             {
@@ -5219,7 +5247,7 @@ namespace HydroServerToolsRepository.Repository
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(connectionString);
             var result = new List<DerivedFromModel>();
 
-            if (context.DerivedFroms.Count() != null)
+            if (context.DerivedFroms.Count() != 0)
             {
                 totalRecordCount = context.DerivedFroms.Count();
                 searchRecordCount = totalRecordCount;
@@ -5233,8 +5261,8 @@ namespace HydroServerToolsRepository.Repository
                 var allItems = context.DerivedFroms.ToList();
                 var rst = allItems.
                     Where(c =>
-                                    c.DerivedFromID != null && c.DerivedFromID.ToString().ToLower().Contains(searchString.ToLower())
-                                 || c.ValueID != null && c.ValueID.ToString().ToLower().Contains(searchString.ToLower())
+                                     c.DerivedFromID.ToString().ToLower().Contains(searchString.ToLower())
+                                 ||  c.ValueID.ToString().ToLower().Contains(searchString.ToLower())
                          );
 
                 if (rst == null) return result;
