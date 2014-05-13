@@ -151,7 +151,7 @@ namespace HydroServerTools.Controllers
         {
             return View();
         }
-        public ActionResult ControlledVocabulalaries()
+        public ActionResult ControlledVocabularies()
         {
             return View();
         }

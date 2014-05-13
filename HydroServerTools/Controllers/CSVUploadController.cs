@@ -20,6 +20,7 @@ using System.Net;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Script.Serialization;
 
 namespace HydroServerTools.Controllers
 {
@@ -738,6 +739,86 @@ namespace HydroServerTools.Controllers
             }
         }
 
+        [HttpPost]
+        public JsonResult GetUploadStatistics(string viewName)
+        {
+            var uploadStatisticsModel = new UploadStatisticsModel();
+             
+            if (viewName == "sites")
+            {
+                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<SiteModel>(MvcApplication.InstanceGuid, "default");
+            }
+
+            if (viewName == "variables")
+            {
+                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<VariablesModel>(MvcApplication.InstanceGuid, "default");
+            }
+
+            if (viewName == "offsettypes")
+            {
+                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<OffsetTypesModel>(MvcApplication.InstanceGuid, "default");
+            }
+
+            if (viewName == "sources")
+            {
+                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<SourcesModel>(MvcApplication.InstanceGuid, "default");
+            }
+
+            if (viewName == "methods")
+            {
+                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<MethodModel>(MvcApplication.InstanceGuid, "default");
+            }
+
+            if (viewName == "labmethods")
+            {
+                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<LabMethodModel>(MvcApplication.InstanceGuid, "default");
+            }
+
+            if (viewName == "samples")
+            {
+                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<SampleModel>(MvcApplication.InstanceGuid, "default");
+            }
+
+            if (viewName == "qualifiers")
+            {
+                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<QualifiersModel>(MvcApplication.InstanceGuid, "default");
+            }
+
+            if (viewName == "qualitycontrollevels")
+            {
+                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<QualityControlLevelModel>(MvcApplication.InstanceGuid, "default");
+            }
+
+            if (viewName == "datavalues")
+            {
+                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<DataValuesModel>(MvcApplication.InstanceGuid, "default");
+            }
+
+            if (viewName == "groupdescriptions")
+            {
+                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<GroupDescriptionModel>(MvcApplication.InstanceGuid, "default");
+            }
+
+            if (viewName == "groups")
+            {
+                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<GroupsModel>(MvcApplication.InstanceGuid, "default");
+            }
+
+            if (viewName == "derivedfrom")
+            {
+                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<DerivedFromModel>(MvcApplication.InstanceGuid, "default");
+            }
+
+            if (viewName == "categories")
+            {
+                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<CategoriesModel>(MvcApplication.InstanceGuid, "default");
+            }
+            var serializer = new JavaScriptSerializer();
+
+            return Json(uploadStatisticsModel);
+            //return Json(new { success = true });
+
+        }
 
         [HttpPost]
         public JsonResult Sites(JQueryDataTablesModel jQueryDataTablesModel, int id)
@@ -754,7 +835,7 @@ namespace HydroServerTools.Controllers
             listOfRecords = (List<SiteModel>)BusinessObjectsUtils.GetRecordsFromCache<SiteModel>(MvcApplication.InstanceGuid, id, CacheName);
               if (listOfRecords == null) 
               {
-                  return Json( new { error = "true" });
+                  //return Json( new { error = "true" });
               };
 
             var sortedColumns = jQueryDataTablesModel.GetSortedColumns();

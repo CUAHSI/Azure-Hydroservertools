@@ -252,6 +252,7 @@
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\jqueryDataTableParamModel.cs" />
     <Compile Include="Models\MyModel.cs" />
+    <Compile Include="Models\Statistics.cs" />
     <Compile Include="Models\User.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -651,7 +652,7 @@
     <Content Include="Views\CSVUpload\Sites - Copy 1.cshtml" />
     <Content Include="Views\Home\Templates.cshtml" />
     <Content Include="Views\Home\ChangeHistory.cshtml" />
-    <Content Include="Views\Home\ControlledVocabulalaries.cshtml" />
+    <Content Include="Views\Home\ControlledVocabularies.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

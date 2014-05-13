@@ -43,17 +43,20 @@ var oTable;
 
 $(document).ready(function () {
 
+
+
     var sPath = window.location.pathname;
-    var viewName = sPath.substring(sPath.lastIndexOf('/') + 1);
+    var viewName = (sPath.substring(sPath.lastIndexOf('/') + 1)).toLowerCase();
+
+    //get upload stats for current upload
+    GetUploadStats(viewName);
+
+
 
     $("#tabs").tabs({
 
         "beforeActivate": function (event, ui) {
-            //oTable = $('#0').dataTable(getDatatableOptions("sites",0));
-            //$('#1').dataTable().fnDestroy();
-            //$('#2').dataTable().fnDestroy();
-            //$('#3').dataTable().fnDestroy();
-
+           
         },
 
         "activate": function (event, ui) {
@@ -88,6 +91,7 @@ $(document).ready(function () {
 
 
 });
+
 function getDatatableOptions(name, index) {
 
     var path;
@@ -719,8 +723,9 @@ function initCommitAndCancelButton(id) {
             contentType: 'application/json; charset=utf-8',
             success: function () {
 
-                alert("Records successfully added.")
+                bootbox.alert("Records successfully added.")
                 oTable = $('#0').dataTable(getDatatableOptions(id, 0));
+                GetUploadStats(id);
                 $('#0commit').addClass("disabled");
             },
             error: function (xhr) {
@@ -733,7 +738,7 @@ function initCommitAndCancelButton(id) {
                     var returnedMessage = "An Error occured. Please resubmit the file. If the problem persists please validate the content or contact user suport";
                 }
 
-                alert(returnedMessage);
+                bootbox.alert(returnedMessage);
                 window.location.href = '/CSVUpload/UploadData/' + id
             }
         });
@@ -749,8 +754,9 @@ function initCommitAndCancelButton(id) {
             type: 'POST',
             contentType: 'application/json; charset=utf-8',
             success: function () {
-                alert("Records successfully added.")
-                oTable = $('#2').dataTable(getDatatableOptions(id, 0));
+                bootbox.alert("Records successfully added.")
+                oTable = $('#2').dataTable(getDatatableOptions(id, 2));
+                GetUploadStats(id);
                 $('#2commit').addClass("disabled");
             },
             error: function (xhr) {
@@ -761,7 +767,7 @@ function initCommitAndCancelButton(id) {
                     var returnedMessage = "An Error occured. Please resubmit the file. If the problem persists please validate the content or contact user suport";
                 }
 
-                alert(returnedMessage);
+                bootbox.alert(returnedMessage);
                 window.location.href = '/CSVUpload/UploadData/' + id
             }
         });
@@ -778,7 +784,7 @@ function initCommitAndCancelButton(id) {
                 window.location.href = '/CSVUpload/UploadData/' + id
             },
             error: function () {
-                alert("error");
+                bootbox.alert("error");
             }
         });
     });
@@ -832,3 +838,43 @@ function toggleCommitButtons(table, id) {
         //}
     }
 }
+
+function GetUploadStats(viewName)
+{
+    $.ajax({
+        url: '/CSVUpload/GetUploadStatistics',
+        data: { viewName: viewName },
+        dataType: 'json',
+        type: 'Post',
+        success: function (data) {
+            $('#NewBadge').html(data.NewRecordCount)
+            $('#RejectedBadge').html(data.RejectedRecordCount)
+            $('#UpdatedBadge').html(data.UpdatedRecordCount)
+            $('#DuplicateBadge').html(data.DuplicateRecordCount)
+            
+              //
+              // 
+             //          
+        },
+        error: function (xhr) {
+            if (typeof xhr.statusText != "undefined") {
+                returnedMessage = xhr.statusText;
+            }
+            else {
+                var returnedMessage = "An Error occured. Please resubmit the file. If the problem persists please validate the content or contact user suport";
+            }
+
+            bootbox.alert(returnedMessage);
+
+
+        }
+    });
+}
+
+function CacheTimeoutNotifier()
+{
+    
+
+}
+
+

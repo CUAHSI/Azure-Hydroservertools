@@ -54,7 +54,7 @@
 
         @if ((ViewData["index"].ToString() == "0"))
         {
-            <button type="button" id="0commit" class="btn btn-success alert-message hide">
+            <button type="button" id="0commit" class="btn btn-success active hide">
                 <i class="glyphicon glyphicon-save"></i>
                 Commit Changes
             </button>
@@ -65,7 +65,7 @@
         }
         @if (ViewData["index"].ToString() == "2")
 {
-    <button type="button" id="2commit" class="btn btn-success alert-message hide">
+    <button type="button" id="2commit" class="btn btn-success active hide">
         <i class="glyphicon glyphicon-save"></i>
         Commit Changes
     </button>
@@ -77,7 +77,7 @@
         Cancel
     </button>
             @* <span class="glyphicon glyphicon-download"></span>*@
-            @Html.ActionLink("Download as CSV", "Download", "Export", new { identifier = @ViewData["index"], viewName = @ViewData["viewName"] }, new { @class = "btn btn-info alert-warning pull-right", target = "_blank" })
+            @Html.ActionLink("Download as CSV", "Download", "Export", new { identifier = @ViewData["index"], viewName = @ViewData["viewName"] }, new { @class = "btn btn-info active pull-right", target = "_blank" })
 
             @* <span class="glyphicon glyphicon-download"></span>@Html.ActionLink("Download as CSV", "Download", "Export", new { identifier = @ViewData["index"], viewName = @ViewData["viewName"] }, new { target = "_blank" })*@
         </div>

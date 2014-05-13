@@ -88,6 +88,7 @@
     <Compile Include="SourcesModel.cs" />
     <Compile Include="SeriesCatalogModel.cs" />
     <Compile Include="UpdateFieldsModel.cs" />
+    <Compile Include="UploadStatisticsModel.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="VariablesModel.cs" />
   </ItemGroup>

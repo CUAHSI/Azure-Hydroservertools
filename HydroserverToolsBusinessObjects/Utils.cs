@@ -67,6 +67,34 @@ namespace HydroserverToolsBusinessObjects
 
             cache.Remove(InstanceGuid + itemName);
         }
+
+        public static UploadStatisticsModel GetUploadStatsFromCache<T>(Guid instanceGuid, string dataCacheName)
+        {
+            DataCache cache = new DataCache(dataCacheName);
+            var uploadStatisticsModel = new UploadStatisticsModel();
+            if (cache.Get(instanceGuid + "listOfCorrectRecords") != null) 
+            {
+               var l  = (List<T>)cache.Get(instanceGuid + "listOfCorrectRecords");
+                uploadStatisticsModel.NewRecordCount = l.Count();
+            }
+            if (cache.Get(instanceGuid + "listOfIncorrectRecords") != null)
+            {
+                var l = (List<T>)cache.Get(instanceGuid + "listOfIncorrectRecords");
+                uploadStatisticsModel.RejectedRecordCount = l.Count();
+            }
+            if (cache.Get(instanceGuid + "listOfEditedRecords") != null)
+            {
+                var l = (List<T>)cache.Get(instanceGuid + "listOfEditedRecords");
+                uploadStatisticsModel.UpdatedRecordCount = l.Count();
+            }
+            if (cache.Get(instanceGuid + "listOfDuplicateRecords") != null)
+            {
+                var l = (List<T>)cache.Get(instanceGuid + "listOfDuplicateRecords");
+                uploadStatisticsModel.DuplicateRecordCount = l.Count();
+            }            
+
+            return uploadStatisticsModel;
+        }
     
 
     }
