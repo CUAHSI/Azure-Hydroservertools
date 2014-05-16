@@ -684,17 +684,7 @@ namespace HydroServerToolsRepository.Repository
                             var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_ELEVATION_VERTICALDATUM)); listOfErrors.Add(err); isRejected = true;                 
                         }
                     }
-                    if (isRejected)
-                    {
-                        var sb = new StringBuilder();
-                        foreach (var er in listOfErrors)
-                        {
-                            sb.Append(er.ErrorMessage + ";");
-                        }
-                        item.Errors = sb.ToString();
-                        listOfIncorrectRecords.Add(item);
-                        continue;
-                    }
+                    
                     
                     //check for duplicates first in database then in upload if a duplicate site is found the record will be rejected.
 
@@ -787,7 +777,17 @@ namespace HydroServerToolsRepository.Repository
                     //context.MyEntities.Attach(myEntity);
                     //    listOfDuplicateRecords.Add(s);
                     //}
-
+                    if (isRejected)
+                    {
+                        var sb = new StringBuilder();
+                        foreach (var er in listOfErrors)
+                        {
+                            sb.Append(er.ErrorMessage + ";");
+                        }
+                        item.Errors = sb.ToString();
+                        listOfIncorrectRecords.Add(item);
+                        continue;
+                    }
 
 
                 }
@@ -2413,23 +2413,8 @@ namespace HydroServerToolsRepository.Repository
                     else
                     {
                         //set source metatdata id to id of existing item
-                        source.MetadataID = existingIsometadataItem.MetadataID;
-
-                        var editedFields = new List<string>();
-                        // TopicCategory	Title	Abstract	ProfileVersion	MetadataLink
-
-                        if (existingIsometadataItem.TopicCategory != item.TopicCategory) { existingIsometadataItem.TopicCategory = item.TopicCategory; editedFields.Add("TopicCategory"); }
-                        if (existingIsometadataItem.Title != item.Title) { existingIsometadataItem.Title = item.Title; editedFields.Add("Title"); }
-                        if (existingIsometadataItem.Abstract != item.Abstract) { existingIsometadataItem.Abstract = item.Abstract; editedFields.Add("Abstract"); }
-                        if (existingIsometadataItem.ProfileVersion != item.ProfileVersion) { existingIsometadataItem.ProfileVersion = item.ProfileVersion; editedFields.Add("ProfileVersion"); }
-                        if (existingIsometadataItem.MetadataLink != item.MetadataLink) { existingIsometadataItem.MetadataLink = item.MetadataLink; editedFields.Add("MetadataLink"); }
-
-                        if (editedFields.Count() > 0)
-                        {
-                            context.ISOMetadatas.Add(isometadata);
-                            //context.SaveChanges();
-                            //    listOfEditedRecords.Add(item);
-                        }
+                        source.MetadataID = existingIsometadataItem.MetadataID;                     
+                  
                     }
                     //var metadataId = context.ISOMetadatas
                     //    .Where(a => a.MetadataLink == item.MetadataLink)
@@ -2484,25 +2469,27 @@ namespace HydroServerToolsRepository.Repository
         public void deleteAll(string entityConnectionString)
         {
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
-            var rows = from o in context.Sources
+            var ISOMetadataRows = from o in context.ISOMetadatas
+                                  where o.MetadataID != 0
                        select o;
-            if (rows.Count() == 0) return;
 
+            var sourcesRows = from o in context.Sources                              
+                       select o;
+
+            if (ISOMetadataRows.Count() == 0 && sourcesRows.Count() == 0) return;
            
-
-            //foreach (var row in rows)
-            //{
-            //    context.Sources.Remove(row);
-            //}
             try
             {
-                context.Sources.RemoveRange(rows);
+                context.ISOMetadatas.RemoveRange(ISOMetadataRows);
+                context.Sources.RemoveRange(sourcesRows);
                 context.SaveChanges();
             }
             catch (DbUpdateException ex)
             {
                 throw;
             }
+           
+            
 
         }
     }
@@ -6213,6 +6200,34 @@ namespace HydroServerToolsRepository.Repository
             }
             
 
+        }
+    }
+
+    public class DatabaseRepository : IDatabaseRepository
+    {
+        public DatabaseTableValueCountModel GetDatabaseTableValueCount(string connectionString)
+        {
+            var databaseTableValueCountModel = new DatabaseTableValueCountModel();
+
+            var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(connectionString);
+
+            databaseTableValueCountModel.SiteCount = context.Sites.Count();
+            databaseTableValueCountModel.VariablesCount = context.Variables.Count();
+            databaseTableValueCountModel.OffsetTypesCount = context.OffsetTypes.Count();
+            databaseTableValueCountModel.SourcesCount = context.Sources.Count();
+            databaseTableValueCountModel.MethodsCount = context.Methods.Count();
+            databaseTableValueCountModel.LabMethodsCount = context.LabMethods.Count();
+            databaseTableValueCountModel.SamplesCount = context.Samples.Count();
+            databaseTableValueCountModel.QualifiersCount = context.Qualifiers.Count();
+            databaseTableValueCountModel.QualityControlLevelsCount = context.QualityControlLevels.Count();
+            databaseTableValueCountModel.DataValuesCount = context.DataValues.Count();
+            databaseTableValueCountModel.GroupDescriptionsCount = context.GroupDescriptions.Count();
+            databaseTableValueCountModel.GroupsCount = context.Groups.Count();
+            databaseTableValueCountModel.DerivedFromCount = context.DerivedFroms.Count();
+            databaseTableValueCountModel.CategoriesCount = context.Categories.Count();
+            databaseTableValueCountModel.SeriesCatalog = context.SeriesCatalogs.Count();
+
+            return databaseTableValueCountModel;
         }
     }
 

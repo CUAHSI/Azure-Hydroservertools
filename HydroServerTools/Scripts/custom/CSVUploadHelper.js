@@ -111,7 +111,8 @@ function getDatatableOptions(name, index) {
                 "sServerMethod": "POST",
                 "sPaginationType": "full_numbers",
                 "sScrollX": "100%",
-                "sScrollXInner": "150%",
+                "sScrollXInner": "200%",
+                "sScrollYInner" : 600,
                 "bScrollCollapse": true,
                 "bDestroy": true,
                 //"fnInitComplete": function (oSettings, json) {
@@ -729,17 +730,20 @@ function initCommitAndCancelButton(id) {
                 $('#0commit').addClass("disabled");
             },
             error: function (xhr) {
-                if (typeof xhr.statusText != "undefined")
-                {
+                if (typeof xhr.statusText != "undefined") {
                     returnedMessage = xhr.statusText;
                 }
-                else
-                {
+                else {
                     var returnedMessage = "An Error occured. Please resubmit the file. If the problem persists please validate the content or contact user suport";
                 }
 
-                bootbox.alert(returnedMessage);
-                window.location.href = '/CSVUpload/UploadData/' + id
+
+                bootbox.alert(returnedMessage, function (reslt) {
+                    
+                        window.location.href = '/CSVUpload/UploadData/' + id
+                    
+
+                })
             }
         });
 

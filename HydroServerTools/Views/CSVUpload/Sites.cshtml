@@ -18,12 +18,9 @@
 @Html.Action("_Breadcrumb", "CSVUpload", new { id = ViewBag.Name })
 
 <div class="container" id="tabs">
-    <ul>
-        <li><a href="#tabs-0">New</a><span id="NewBadge" class="badge alert-success"></span></li>
-        <li><a href="#tabs-1">Rejected<span id="RejectedBadge" class="badge alert-info"></a></span></li>
-        <li><a href="#tabs-2">Updated</a><span id="UpdatedBadge" class="badge alert-danger"></span></li>
-        <li><a href="#tabs-3">Duplicate</a><span id="DuplicateBadge" class="badge"></span></li>
-    </ul>
+   
+    @{Html.RenderPartial("_UploadTabs");}
+
     <div id="tabs-0">
         @{ Html.RenderPartial("_UploadDataBaseTable", Model, new ViewDataDictionary { { "index", 0 }, { "viewName", ViewBag.Name } });}
     </div>

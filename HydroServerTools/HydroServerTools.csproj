@@ -653,6 +653,7 @@
     <Content Include="Views\Home\Templates.cshtml" />
     <Content Include="Views\Home\ChangeHistory.cshtml" />
     <Content Include="Views\Home\ControlledVocabularies.cshtml" />
+    <Content Include="Views\CSVUpload\_UploadTabs.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

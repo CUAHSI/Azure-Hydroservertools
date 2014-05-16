@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CategoriesModel.cs" />
+    <Compile Include="DatabaseStatistics.cs" />
     <Compile Include="DataValuesModel.cs" />
     <Compile Include="DerivedFromModel.cs" />
     <Compile Include="ErrorModel.cs" />

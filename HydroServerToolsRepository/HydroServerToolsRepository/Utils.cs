@@ -17,6 +17,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 using HydroServerToolsRepository;
+using System.Data.Entity.Core.Objects;
 
 namespace HydroServerToolsRepository.Repository
 {
@@ -90,25 +91,66 @@ namespace HydroServerToolsRepository.Repository
                     var objContext = ((IObjectContextAdapter)context).ObjectContext;
                     var sourcerecordsToInsert = new List<Source>();
                     var isometadatarecordsToInsert = new List<ISOMetadata>();
+                    var recordsToAdd = new List<ISOMetadata>();
                     //wrap in transaction in case something goes wrong
                     using (TransactionScope scope = new TransactionScope())
                     {
                         foreach (T item in list)
                         {
                             var isometadatamodel = Mapper.Map<T, ISOMetadata>(item);
+                            var itemInCurrentUpload = new ISOMetadata();
+                            
+                            //check if item already exists 
+                            var existingIsometadataItem = context.ISOMetadatas
+                            .Where(a => 
+                            a.TopicCategory == isometadatamodel.TopicCategory &&
+                            a.Title == isometadatamodel.Title &&
+                            a.Abstract == isometadatamodel.Abstract &&
+                            a.ProfileVersion == isometadatamodel.ProfileVersion &&
+                            a.MetadataLink == isometadatamodel.MetadataLink)
+                            .FirstOrDefault();
+
+                            if (existingIsometadataItem == null)
+                            {
+                                //check if item is already in upload
+                                itemInCurrentUpload = recordsToAdd
+                                    .Where(a =>
+                                        a.TopicCategory == isometadatamodel.TopicCategory &&
+                                        a.Title == isometadatamodel.Title &&
+                                        a.Abstract == isometadatamodel.Abstract &&
+                                        a.ProfileVersion == isometadatamodel.ProfileVersion &&
+                                        a.MetadataLink == isometadatamodel.MetadataLink)
+                                    .FirstOrDefault();
+                                if (itemInCurrentUpload != null)
+                                {
+                                    context.ISOMetadatas.Add(isometadatamodel);
+                                    recordsToAdd.Add(isometadatamodel);
+                                }
+                            }
+                            
                             //isometadatarecordsToInsert.Add(isometadatamodel);
                             context.ISOMetadatas.Add(isometadatamodel);
-                            objContext.SaveChanges(false);
-                            //var newItem = Convert.ChangeType(item, typeof(SourcesModel));
+                            objContext.SaveChanges(SaveOptions.AcceptAllChangesAfterSave);
+                            //var newItem = Convert.CaveOptions.hangeType(item, typeof(SourcesModel));
                             var source = Mapper.Map<T, Source>(item);
-                            source.MetadataID = isometadatamodel.MetadataID;
+                            if (existingIsometadataItem == null && existingIsometadataItem  == null)// not in DB or already in upload
+                            {
+                                source.MetadataID = isometadatamodel.MetadataID;
+                            }
+                            else if (existingIsometadataItem != null)// already in DB
+                            {
+                                source.MetadataID = existingIsometadataItem.MetadataID;
+                            }
+                            
+                            
                             context.Sources.Add(source);
+                            objContext.SaveChanges(SaveOptions.AcceptAllChangesAfterSave);
                         }
                         //BulkInsert<ISOMetadata>(providerConnectionString, id, isometadatarecordsToInsert);
 
                    
                         //BulkInsert<Source>(providerConnectionString, id, sourcerecordsToInsert);
-                        objContext.SaveChanges(false);
+                        
                         //if we get here things are looking good.
                         scope.Complete();
                         objContext.AcceptAllChanges();                        
@@ -599,11 +641,6 @@ namespace HydroServerToolsRepository.Repository
             
             return timeseriesData;
         }
-
-
-        internal static object getTimeseriesData(object item, string entityConnectionstring)
-        {
-            throw new NotImplementedException();
-        }
+               
     }
 }

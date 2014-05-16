@@ -64,21 +64,23 @@
     </button>*@
         }
         @if (ViewData["index"].ToString() == "2")
-{
-    <button type="button" id="2commit" class="btn btn-success active hide">
-        <i class="glyphicon glyphicon-save"></i>
-        Commit Changes
-    </button>
+        {
+            <button type="button" id="2commit" class="btn btn-success active hide">
+                <i class="glyphicon glyphicon-save"></i>
+                Commit Changes
+            </button>
     
-}
+        }
        
-<button type="button" id="cancel" class="btn btn-warning alert-message pull-right">
-        <i class="glyphicon glyphicon-remove"></i>
-        Cancel
-    </button>
-            @* <span class="glyphicon glyphicon-download"></span>*@
-            @Html.ActionLink("Download as CSV", "Download", "Export", new { identifier = @ViewData["index"], viewName = @ViewData["viewName"] }, new { @class = "btn btn-info active pull-right", target = "_blank" })
-
+        <button type="button" id="cancel" class="btn btn-warning active ">
+                <i class="glyphicon glyphicon-remove"></i>
+                Cancel
+        </button>
+        
+            <span>
+                @Html.ActionLink("Download as CSV", "Download", "Export", new { identifier = @ViewData["index"], viewName = @ViewData["viewName"] }, new { @class = "btn btn-info active pull-right", target = "_blank" })
+            </span>
+       
             @* <span class="glyphicon glyphicon-download"></span>@Html.ActionLink("Download as CSV", "Download", "Export", new { identifier = @ViewData["index"], viewName = @ViewData["viewName"] }, new { target = "_blank" })*@
         </div>
     </div>

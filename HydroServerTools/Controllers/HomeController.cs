@@ -28,12 +28,22 @@ namespace HydroServerTools.Controllers
     [Authorize]
     public class HomeController : Controller
     {
-       
+
 
 
         public ActionResult Index()
         {
-            return View();
+            var tableValueCounts = new DatabaseTableValueCountModel();
+
+            string connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name.ToString());
+
+            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
+
+            var databaseRepository =  new DatabaseRepository();
+
+            tableValueCounts = databaseRepository.GetDatabaseTableValueCount(entityConnectionString);
+
+            return View(tableValueCounts);
         }
 
         public ActionResult About()
@@ -158,7 +168,7 @@ namespace HydroServerTools.Controllers
         [Authorize]
         public ActionResult ClearTablesHandler(FormCollection collection)
         {
-             string connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name.ToString());
+            string connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name.ToString());
 
             var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
             //"Sites", "Variables", "OffsetTypes", "ISOMetadata", "Sources", "Methods", "LabMethods", "Samples", "Qualifiers", "QualityControlLevels", "DataValues", "GroupDescriptions", "Groups", "DerivedFrom", "Categories"};

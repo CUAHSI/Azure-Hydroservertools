@@ -268,4 +268,9 @@ namespace HydroServerToolsRepository.Repository
                             out int searchRecordCount,
                             string searchString);
     }
+
+    interface IDatabaseRepository
+    {
+        DatabaseTableValueCountModel GetDatabaseTableValueCount(string connectionString);
+    }
 }

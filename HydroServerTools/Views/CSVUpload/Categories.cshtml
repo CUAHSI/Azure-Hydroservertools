@@ -16,12 +16,9 @@
 @Html.Action("_Breadcrumb", "CSVUpload", new { id = ViewBag.Name })
 
 <div class="container" id="tabs">
-    <ul>
-        <li><a href="#tabs-0">New</a></li>
-        <li><a href="#tabs-1">Rejected</a></li>
-        <li><a href="#tabs-2">Edited</a></li>
-        <li><a href="#tabs-3">Duplicate</a></li>
-    </ul>
+
+    @{Html.RenderPartial("_UploadTabs");}
+
     <div id="tabs-0">
         @{ Html.RenderPartial("_UploadDataBaseTable", Model, new ViewDataDictionary { { "index", 0 }, { "viewName", ViewBag.Name } });}
     </div>

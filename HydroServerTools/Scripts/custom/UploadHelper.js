@@ -34,15 +34,17 @@ $(function () {
                 $('#startupload').unbind('click')
             }
 
-            $('#startupload').removeClass("disabled");
-            $('#reset').removeClass("disabled");
+            $('#startupload').removeClass('disabled');
+            $('#reset').removeClass('disabled');
 
             $('#filelistholder').removeClass('hide');
             data.context = $('<div />').text('Selected file: ' + data.files[0].name).appendTo('#filelistholder');
             //$('</div><div class="progress"><div class="bar" style="width:0%"></div></div>').appendTo(data.context);
             $('#startupload').click(function () {
-                $('#startupload').unbind('click')
-                $('#startupload').addClass("disabled");
+                $('input').unbind('click');
+                $('input').addClass('disabled');               
+                $('#startupload').addClass('disabled');
+                $('#reset').addClass('disabled');
                 $('#loading').removeClass('hide');
                 data.submit();
 
