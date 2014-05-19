@@ -118,7 +118,10 @@
 
                 </ul>
                 }
-                @Html.Partial("_LoginPartial")
+                @if (User.Identity.IsAuthenticated)
+                {
+                     @Html.Partial("_LoginPartial")
+                }
             </div>
         </div>
     </div>

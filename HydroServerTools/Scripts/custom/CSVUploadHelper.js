@@ -777,7 +777,7 @@ function initCommitAndCancelButton(id) {
         });
 
     });
-    $('#cancel').click(function () {
+    $('.cancel').click(function () {
         $.ajax({
             url: '/CSVUpload/Cancel/' + id,
             data: "{ 'index': '0' }",

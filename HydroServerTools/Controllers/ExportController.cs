@@ -22,6 +22,26 @@ namespace HydroServerTools.Controllers
         // GET: /Export/
         public FileStreamResult Download(int identifier, string viewName)
         {
+            //add suffix for download depending on tab
+            string downloadSuffix = string.Empty;
+            switch (identifier)
+            {
+                case 0:
+                    downloadSuffix = "new";
+                    break;
+                case 1:
+                    downloadSuffix = "rejected";
+                    break;
+                case 2:
+                    downloadSuffix = "update";
+                    break;
+                case 3:
+                    downloadSuffix = "duplicate";
+                    break;
+            }
+
+            var filename = viewName + "_" + downloadSuffix + ".csv";
+
             if (viewName == "sites")
             {
 
@@ -29,7 +49,8 @@ namespace HydroServerTools.Controllers
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
-                return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = "Sites.csv" };
+                
+                return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = filename };
             }
             if (viewName == "variables")
             {
@@ -37,7 +58,7 @@ namespace HydroServerTools.Controllers
                 var result = WriteCsvToMemory(listOfRecords);
 
                 var memoryStream = new MemoryStream(result);
-                return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = "variables.csv" };
+                return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = filename };
             }
             if (viewName == "offsettypes")
             {
@@ -46,7 +67,7 @@ namespace HydroServerTools.Controllers
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
-                return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = "offsettypes.csv" };
+                return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = filename };
             }
             if (viewName == "sources")
             {
@@ -55,7 +76,7 @@ namespace HydroServerTools.Controllers
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
-                return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = "sources.csv" };
+                return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = filename };
             }
             if (viewName == "methods")
             {
@@ -63,7 +84,7 @@ namespace HydroServerTools.Controllers
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
-                return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = "methods.csv" };
+                return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = filename };
             }
             if (viewName == "labmethods")
             {
@@ -71,7 +92,7 @@ namespace HydroServerTools.Controllers
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
-                return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = "labmethods.csv" };
+                return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = filename };
             }
             if (viewName == "samples")
             {
@@ -79,7 +100,7 @@ namespace HydroServerTools.Controllers
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
-                return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = "samples.csv" };
+                return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = filename };
             }
             if (viewName == "qualifiers")
             {
@@ -87,7 +108,7 @@ namespace HydroServerTools.Controllers
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
-                return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = "qualifiers.csv" };
+                return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = filename };
             }
             if (viewName == "qualitycontrollevels")
             {
@@ -95,7 +116,7 @@ namespace HydroServerTools.Controllers
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
-                return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = "qualitycontrollevels.csv" };
+                return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = filename };
             }
             if (viewName == "datavalues")
             {
@@ -103,7 +124,7 @@ namespace HydroServerTools.Controllers
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
-                return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = "datavalues.csv" };
+                return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = filename };
             }
             if (viewName == "groupdescriptions")
             {
@@ -111,7 +132,7 @@ namespace HydroServerTools.Controllers
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
-                return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = "groupdescriptions.csv" };
+                return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = filename };
             }
             if (viewName == "groups")
             {
@@ -119,7 +140,7 @@ namespace HydroServerTools.Controllers
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
-                return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = "groups.csv" };
+                return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = filename };
             }
             if (viewName == "derivedfrom")
             {
@@ -127,7 +148,7 @@ namespace HydroServerTools.Controllers
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
-                return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = "derivedfrom.csv" };
+                return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = filename };
             }
             if (viewName == "categories")
             {
@@ -135,7 +156,7 @@ namespace HydroServerTools.Controllers
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
-                return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = "categories.csv" };
+                return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = filename };
             }
 
             return null;

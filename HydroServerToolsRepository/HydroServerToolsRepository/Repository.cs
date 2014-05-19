@@ -684,8 +684,18 @@ namespace HydroServerToolsRepository.Repository
                             var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_ELEVATION_VERTICALDATUM)); listOfErrors.Add(err); isRejected = true;                 
                         }
                     }
-                    
-                    
+
+                    if (isRejected)
+                    {
+                        var sb = new StringBuilder();
+                        foreach (var er in listOfErrors)
+                        {
+                            sb.Append(er.ErrorMessage + ";");
+                        }
+                        item.Errors = sb.ToString();
+                        listOfIncorrectRecords.Add(item);
+                        continue;
+                    }
                     //check for duplicates first in database then in upload if a duplicate site is found the record will be rejected.
 
                     var existingItem = context.Sites.Where(a => a.SiteCode == item.SiteCode).FirstOrDefault();
@@ -704,7 +714,7 @@ namespace HydroServerToolsRepository.Repository
                         {
                             var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_ISDUPLICATE,"SiteCode")); listOfErrors.Add(err); isRejected = true;
                             listOfIncorrectRecords.Add(item);
-                            item.Errors += err.ErrorMessage;
+                            item.Errors += err.ErrorMessage + ";";
 
                         }
                     }
@@ -777,17 +787,7 @@ namespace HydroServerToolsRepository.Repository
                     //context.MyEntities.Attach(myEntity);
                     //    listOfDuplicateRecords.Add(s);
                     //}
-                    if (isRejected)
-                    {
-                        var sb = new StringBuilder();
-                        foreach (var er in listOfErrors)
-                        {
-                            sb.Append(er.ErrorMessage + ";");
-                        }
-                        item.Errors = sb.ToString();
-                        listOfIncorrectRecords.Add(item);
-                        continue;
-                    }
+                   
 
 
                 }
