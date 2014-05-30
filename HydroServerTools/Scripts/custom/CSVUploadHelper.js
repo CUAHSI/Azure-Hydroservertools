@@ -280,7 +280,7 @@ function getDatatableOptions(name, index) {
                     { "aTargets": [11], "sName": "ZipCode" },
                     { "aTargets": [12], "sName": "Citation", "sWidth": "200px" },
                     { "aTargets": [13], "sName": "TopicCategory" },
-                    { "aTargets": [14], "sName": "Title", "sWidth": "100px" },
+                    { "aTargets": [14], "sName": "Title", "sWidth": "150px" },
                     { "aTargets": [15], "sName": "Abstract", "sWidth": "300px" },
                     { "aTargets": [16], "sName": "ProfileVersion" },
                     {

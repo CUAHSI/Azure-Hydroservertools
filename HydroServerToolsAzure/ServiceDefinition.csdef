@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<ServiceDefinition name="HydroServerToolsAzure" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition" schemaVersion="2013-10.2.2">
+<ServiceDefinition name="HydroServerToolsAzure" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition" schemaVersion="2014-01.2.3">
     <WebRole name="HydroServerTools" vmsize="Small">
         <Sites>
             <Site name="Web">
@@ -18,6 +18,7 @@
             <Import moduleName="RemoteForwarder" />
         </Imports>
         <Startup priority="-2">
+            <Task commandLine="Microsoft.WindowsAzure.Caching\ClientPerfCountersInstaller.exe install" executionContext="elevated" taskType="simple" />
             <Task commandLine="Microsoft.WindowsAzure.Caching\ClientPerfCountersInstaller.exe install" executionContext="elevated" taskType="simple" />
             <Task commandLine="Microsoft.WindowsAzure.Caching\ClientPerfCountersInstaller.exe install" executionContext="elevated" taskType="simple" />
         </Startup>

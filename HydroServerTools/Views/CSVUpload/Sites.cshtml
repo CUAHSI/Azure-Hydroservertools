@@ -35,10 +35,9 @@
         @{ Html.RenderPartial("_UploadDataBaseTable", Model, new ViewDataDictionary { { "index", 3 }, { "viewName", ViewBag.Name } });}
     </div>
 </div>
-
-@Html.Action("_Pager", "CSVUpload", new { name = ViewBag.Name })
-
-
+<div id="pager">
+   @* @Html.Action("_Pager", "CSVUpload", new { name = ViewBag.Name })*@
+</div>
 @section scripts
 {
     <script>

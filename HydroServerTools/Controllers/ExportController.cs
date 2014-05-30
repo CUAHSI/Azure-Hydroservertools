@@ -182,7 +182,26 @@ namespace HydroServerTools.Controllers
                 }        
                
         }
+        public ActionResult DownloadFile(string id)
+        {
 
+            try
+            {
+                //var fs = System.IO.File.Open(Server.MapPath("~/Templates/ODMTemplates_" + id));
+                var dir = "~/Templates/";
+                var filename = id + ".xlsx";
+                var filePath = Server.MapPath(dir + filename);
+                if (System.IO.File.Exists(filePath))
+                    return base.File(filePath, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+                else
+                    return Content("Couldn't find file");
+            }
+            catch
+            {
+                return Content("Couldn't find file");
+            }
+
+        }
         public byte[] WriteCsvToMemory<T>(List<T> records)
         {
             using (var memoryStream = new MemoryStream())

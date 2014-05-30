@@ -112,5 +112,11 @@
     <connectionname>HIS_QA_jpollak</connectionname>
     <role>admin</role>
   </user>
- 
+  <user>
+    <id>16</id>
+    <username>his.qa.user10</username>
+    <useremail>dickers@uw.edu</useremail>
+    <connectionname>HIS_QA_user10</connectionname>
+    <role>admin</role>
+  </user>
 </users>

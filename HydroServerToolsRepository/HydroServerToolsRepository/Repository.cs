@@ -869,11 +869,10 @@ namespace HydroServerToolsRepository.Repository
             }
             if (!string.IsNullOrWhiteSpace(searchString))
             {
-                var allItems = context.Variables.ToList();
+               var allItems = context.Variables.ToList();
                 var rst = allItems.
                             Where(c =>
-                                   c.VariableID != null && c.VariableID.ToString().Contains(searchString.ToLower())
-                                || c.VariableCode != null && c.VariableCode.Contains(searchString.ToLower())
+                                   c.VariableCode != null && c.VariableCode.ToLower().Contains(searchString.ToLower())
                                 || c.VariableName != null && c.VariableName.ToLower().Contains(searchString.ToLower())
                                 || c.Speciation != null && c.Speciation.Contains(searchString.ToLower())
                                 || c.Unit != null && c.VariableUnitsID.ToString().Contains(searchString.ToLower())
@@ -1378,7 +1377,7 @@ namespace HydroServerToolsRepository.Repository
                         bool canConvert = UniversalTypeConverter.TryConvertTo<double>(item.NoDataValue, out result);
                         if (!canConvert)
                         {
-                            var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_NOT_IN_CV, item.NoDataValue, "NoDataValue"));
+                            var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_FAILED_NOVALIDDATA, "NoDataValue"));
                             listOfErrors.Add(err);
                             isRejected = true;
                         }
@@ -1421,7 +1420,7 @@ namespace HydroServerToolsRepository.Repository
                         {
                             var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_ISDUPLICATE, "VariableCode")); listOfErrors.Add(err); isRejected = true;
                             listOfIncorrectRecords.Add(item);
-                            item.Errors += err.ErrorMessage;
+                            item.Errors += err.ErrorMessage + ";";
                         }
                     }
                     else
@@ -3589,6 +3588,7 @@ namespace HydroServerToolsRepository.Repository
                         {
                             var err = new ErrorModel("AddQualifiers", string.Format(Ressources.IMPORT_VALUE_ISDUPLICATE, "QualifierCode")); listOfErrors.Add(err); isRejected = true;
                             listOfIncorrectRecords.Add(item);
+                            item.Errors += err.ErrorMessage + ";";
                         }     
                         
                         
@@ -3853,7 +3853,7 @@ namespace HydroServerToolsRepository.Repository
                         {
                             var err = new ErrorModel("AddQualityControlLevel", string.Format(Ressources.IMPORT_VALUE_ISDUPLICATE, "QualityControlLevelCode")); listOfErrors.Add(err); isRejected = true;
                             listOfIncorrectRecords.Add(item);
-                            item.Errors += err.ErrorMessage;
+                            item.Errors += err.ErrorMessage + ";";
                         }       
                     }
                     else
@@ -4699,7 +4699,7 @@ namespace HydroServerToolsRepository.Repository
                         {
                             var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_ISDUPLICATE, "all values")); listOfErrors.Add(err); isRejected = true;
                             listOfIncorrectRecords.Add(item);
-                            item.Errors += err.ErrorMessage;
+                            item.Errors += err.ErrorMessage + ";";
 
                         }
                     }
