@@ -2,19 +2,24 @@
 @{
     ViewBag.Title = "Home Page";
 }
+
 <div class="container">
     <div class="row">
         <div class="col-lg-6 ">
+            
+            <div class="well">
+
             <h2>Please select:</h2>
 
             @*<button class="btn btn-primary btn-lg btn-block" data-toggle="modal" data-target="#setConnection">Set Database Connection</button>*@
             @*<p><a href="/CSVUpload/Sites" class="btn btn-primary btn-lg active" role="button">Import Data into Hydroserver</a></p>*@
             @Html.ActionLink("Import CSV Data into Hydroserver", "UploadData", "CSVUpload", new { id = "Sites" }, new { @class = "btn btn-primary btn-lg active" })
+            </div>
         </div>
 
         <div class="panel panel-default  col-lg-4 col-lg-offset-2">
             <div class="panel-heading">
-                <h3 class="panel-title">Number of values in table</h3>
+                <h3 class="panel-title">Number of values by table</h3>
             </div>
             <div class="panel-body">
                 <div class="">

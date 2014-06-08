@@ -42,6 +42,7 @@ else
     <script>
     $(document).ready(function () {
         $('#myDataTable').dataTable({
+            "lengthMenu": [[10, 50, 100, 500], [10, 50, 100, 500]],
             "bServerSide": true,
             "sAjaxSource": "Search",
             "bProcessing": true,
@@ -49,12 +50,13 @@ else
             "sPaginationType": "full_numbers",
             "sScrollX": "100%",
             "sScrollY": "800",
-            "sScrollXInner": "150%",
+            "sScrollXInner": "180%",
+            "sScrollY": "800",
             "bScrollCollapse": true,
             "aoColumnDefs":
              [
-                { "aTargets": [0], "sName": "SiteCode" },
-                { "aTargets": [1], "sName": "SiteName" },
+                { "aTargets": [0], "sName": "SiteCode", "sTitle":"" },
+                { "aTargets": [1], "sName": "SiteName", "sTitle": "Site Name" },
                 { "aTargets": [2], "sName": "Latitude" },
                 { "aTargets": [3], "sName": "Longitude" },
                 { "aTargets": [4], "sName": "LatLongDatumSRSName" },

@@ -9,6 +9,7 @@ namespace HydroserverToolsBusinessObjects.Models
 {
     public class DataValuesModel
     {
+        [Display(Name = "NotVisible")]
         public string ValueID { get; set; }
         [Required]
         public string DataValue { get; set; }

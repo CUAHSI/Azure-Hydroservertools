@@ -269,6 +269,10 @@ namespace HydroServerTools.Controllers
 
                                 csvWriter.WriteField(value);
                             }
+                            else
+                            {
+                                csvWriter.WriteField(string.Empty);
+                            }
                         }
                     }
                     csvWriter.NextRecord();

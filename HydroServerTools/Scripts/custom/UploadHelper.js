@@ -41,8 +41,8 @@ $(function () {
             data.context = $('<div />').text('Selected file: ' + data.files[0].name).appendTo('#filelistholder');
             //$('</div><div class="progress"><div class="bar" style="width:0%"></div></div>').appendTo(data.context);
             $('#startupload').click(function () {
-                $('input').unbind("click");
-                $('input').addClass('disabled');               
+                
+                $('.fileinput-button').addClass('disabled');
                 $('#startupload').addClass('disabled');
                 $('#reset').addClass('disabled');
                 $('#loading').removeClass('hide');
