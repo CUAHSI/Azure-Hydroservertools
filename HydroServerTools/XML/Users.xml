@@ -7,6 +7,7 @@
     <connectionname>default</connectionname>
     <role>user</role>
   </user>
+  
   <user>
     <id>1</id>
     <username>admin</username>
@@ -117,6 +118,13 @@
     <username>his.qa.user10</username>
     <useremail>dickers@uw.edu</useremail>
     <connectionname>HIS_QA_user10</connectionname>
+    <role>admin</role>
+  </user>
+  <user>
+    <id>17</id>
+    <username>urban_water_api</username>
+    <useremail>urban_water_api@gmail.com</useremail>
+    <connectionname>urban_water_api</connectionname>
     <role>admin</role>
   </user>
 </users>
