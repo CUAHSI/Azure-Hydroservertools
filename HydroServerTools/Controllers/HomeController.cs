@@ -40,10 +40,16 @@ namespace HydroServerTools.Controllers
             var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
             var databaseRepository =  new DatabaseRepository();
-
-            tableValueCounts = databaseRepository.GetDatabaseTableValueCount(entityConnectionString);
-
-            return View(tableValueCounts);
+            if (!String.IsNullOrEmpty(entityConnectionString))
+            {
+                tableValueCounts = databaseRepository.GetDatabaseTableValueCount(entityConnectionString);
+                 return View(tableValueCounts);
+            }
+            else
+            {
+                return View();
+            }
+            
         }
 
         public ActionResult About()
