@@ -106,9 +106,9 @@ namespace HydroServerTools
                 IEnumerable<XElement> users = doc.Elements();
 
                 var e = from u in doc.Elements("user")
-                        where (string)u.Element("useremail") == userEmail
+                        where (String)u.Element("useremail") == userEmail
                         select u;
-                result = e.FirstOrDefault().Element("connectionname").Value.ToString();
+                result = e.FirstOrDefault().Element("connectionname").Value.ToString().ToLower();
             }
             catch (DirectoryNotFoundException ex)
             {

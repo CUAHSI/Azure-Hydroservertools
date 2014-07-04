@@ -115,16 +115,137 @@
   </user>
   <user>
     <id>16</id>
-    <username>his.qa.user10</username>
+    <username>dickers</username>
     <useremail>dickers@uw.edu</useremail>
-    <connectionname>HIS_QA_user10</connectionname>
+    <connectionname>Demo_shalenetwork</connectionname>
+    <role>admin</role>
+  </user>
+   <user>
+    <id>21</id>
+    <username>susanbitterroot</username>
+    <useremail>susanbitterroot@gmail.com</useremail>
+    <connectionname>Demo_shalenetwork</connectionname>
     <role>admin</role>
   </user>
   <user>
     <id>17</id>
-    <username>urban_water_api</username>
-    <useremail>urban_water_api@gmail.com</useremail>
-    <connectionname>urban_water_api</connectionname>
+    <username>blackstoneodm</username>
+    <useremail>blackstoneodm@gmail.com</useremail>
+    <connectionname>ODM_Blackstone</connectionname>
     <role>admin</role>
   </user>
+  <user>
+    <id>18</id>
+    <username>hassbergeodm</username>
+    <useremail>hassbergeodm@gmail.com</useremail>
+    <connectionname>ODM_Hassberge</connectionname>
+    <role>admin</role>
+  </user>
+  <user>
+    <id>19</id>
+    <username>ipswichriverodm</username>
+    <useremail>ipswichriverodm@gmail.com</useremail>
+    <connectionname>ODM_IpswichRiver</connectionname>
+    <role>admin</role>
+  </user>
+  <user>
+    <id>20</id>
+    <username>kstateweatherodm</username>
+    <useremail>kstateweatherodm@gmail.com</useremail>
+    <connectionname>ODM_KStateWeather</connectionname>
+    <role>admin</role>
+  </user>
+
+  <user>
+    <id>22</id>
+    <username>laselvastreamdischargeodm</username>
+    <useremail>laselvastreamdischargeodm@gmail.com</useremail>
+    <connectionname>ODM_LaSelvaStreamDischarge</connectionname>
+    <role>admin</role>
+  </user>
+  <user>
+    <id>23</id>
+    <username>muddyriverodm</username>
+    <useremail>muddyriverodm@gmail.com</useremail>
+    <connectionname>ODM_MuddyRiver</connectionname>
+    <role>admin</role>
+  </user>
+  <user>
+    <id>24</id>
+    <username>panolaemmaodm</username>
+    <useremail>panolaemmaodm@gmail.com</useremail>
+    <connectionname>ODM_Panolaemma</connectionname>
+    <role>admin</role>
+  </user>
+  <user>
+    <id>25</id>
+    <username>shalenetworkodm</username>
+    <useremail>shalenetworkodm@gmail.com</useremail>
+    <connectionname>ODM_Shalenetwork</connectionname>
+    <role>admin</role>
+  </user>
+  <user>
+    <id>26</id>
+    <username>swedishmonitoringodm</username>
+    <useremail>swedishmonitoringodm@gmail.com</useremail>
+    <connectionname>ODM_SwedishMonitoring</connectionname>
+    <role>admin</role>
+  </user>
+  <user>
+    <id>27</id>
+    <username>tuolumnemdwodm</username>
+    <useremail>tuolumnemdwodm@gmail.com</useremail>
+    <connectionname>ODM_TuolumneMdw</connectionname>
+    <role>admin</role>
+  </user>
+  <user>
+    <id>28</id>
+    <username>unorthdakotaodm</username>
+    <useremail>unorthdakotaodm@gmail.com</useremail>
+    <connectionname>ODM_UNorthDakota</connectionname>
+    <role>admin</role>
+  </user>
+  <user>
+    <id>29</id>
+    <username>weiherbachodm</username>
+    <useremail>weiherbachodm@gmail.com</useremail>
+    <connectionname>ODM_Weiherbach</connectionname>
+    <role>admin</role>
+  </user>
+  <user>
+    <id>30</id>
+    <username>wilkesodm</username>
+    <useremail>wilkesodm@gmail.com</useremail>
+    <connectionname>ODM_Wilkes</connectionname>
+    <role>admin</role>
+  </user>
+  <user>
+    <id>31</id>
+    <username>wrrcodm</username>
+    <useremail>wrrcodm@gmail.com</useremail>
+    <connectionname>ODM_WRRC</connectionname>
+    <role>admin</role>
+  </user>
+  <user>
+    <id>32</id>
+    <username>urbanwaterapi</username>
+    <useremail>urban_water_api@gmail.com</useremail>
+    <connectionname>UrbanWaterApi</connectionname>
+    <role>admin</role>
+  </user>
+  <user>
+    <id>33</id>
+    <username>vtstreamlab</username>
+    <useremail>vtstreamlab@gmail.com</useremail>
+    <connectionname>VTStreamlab</connectionname>
+    <role>admin</role>
+  </user>
+ <user>
+    <id>34</id>
+    <username>iowamaomao</username>
+    <useremail>iowamaomao@gmail.com</useremail>
+    <connectionname>UIowa</connectionname>
+    <role>admin</role>
+  </user>
+  
 </users>
