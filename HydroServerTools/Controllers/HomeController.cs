@@ -72,6 +72,14 @@ namespace HydroServerTools.Controllers
 
             return View();
         }
+        public ContentResult _GoogleFormIframe()
+        {
+            var sb = new StringBuilder();
+            sb.Append("<iframe src='https://docs.google.com/forms/d/10c-ZpmxZQX9kXIixDZMV5sNJblyhebn13-CnD1xdwjg/viewform?embedded=true&entry.1429452739=");
+            sb.Append(User.Identity.Name);
+            sb.Append("' width='100%' height='100%' frameborder='0' marginheight='0' marginwidth='0'>Loading...</iframe>");
+            return Content(sb.ToString());
+        }
         public ActionResult Datatable1()
         {
             var model = new ConnectionModel();

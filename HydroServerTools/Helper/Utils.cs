@@ -98,7 +98,7 @@ namespace HydroServerTools
             //string path = "http://" + this.Request.RequestUri.Authority + "XML/users.xml";
             try
             {
-                var userEmail = Db.Users.First(u => u.UserName == userName).UserEmail; 
+                var userEmail = Db.Users.FirstOrDefault(u => u.UserName == userName).UserEmail; 
             
                 
                 string path = HttpContext.Current.Server.MapPath("~/XML/users.xml");
