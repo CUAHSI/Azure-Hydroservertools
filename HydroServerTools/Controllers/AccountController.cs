@@ -23,6 +23,7 @@ namespace HydroServerTools.Controllers
         public AccountController(UserManager<User> userManager)
         {
             UserManager = userManager;
+            UserManager.UserValidator = new UserValidator<User>(UserManager) { AllowOnlyAlphanumericUserNames = false };
         }
 
         public UserManager<User> UserManager { get; private set; }
