@@ -35,61 +35,7 @@ namespace HydroServerTools.Controllers
 
             return View();
         }
-        public ActionResult TestConnection(ConnectionModel model)
-        {
-
-            if (ModelState.IsValid)
-            {
-
-                var connectionString = HydroServerToolsUtils.BuildEFConnnectionString(model);
-
-                //Get Connection
-                var conn = new EntityConnection(connectionString);
-
-                //Initialize vars
-                string message = string.Empty;
-                string status = "failed";
-                //test connectionstring
-                try
-                {
-                    conn.Open();
-                    message = HISRessources.CONNECTION_SUCCESS;
-                    status = "success";
-                    // conn.Close();
-                }
-
-                catch (EntityException ex)
-                {
-                    if (ex.InnerException.Message.StartsWith("A network-related"))
-                        message = HISRessources.CONNECTION_FAILED_SERVERNAME;
-                    else if (ex.InnerException.Message.StartsWith("Cannot open database"))
-                        message = HISRessources.CONNECTION_FAILED_DATASOURCENAME;
-                    else
-                    {
-                        message = HISRessources.CONNECTION_FAILED_LOGIN;
-                    }
-
-                }
-                catch (Exception ex)
-                {
-                    model.Message = "An error occured. Please notify the technical team.";
-                }
-                finally
-                {
-                    model.Message = message;
-                    model.Status = status;
-                    conn.Close();
-
-                }
-
-
-
-            }
-            //ViewBag.Message = "tes";
-
-            return View("Index", model);
-        }
-
+    
         //public ActionResult UploadData()
         //{
         //    return View("UploadData");

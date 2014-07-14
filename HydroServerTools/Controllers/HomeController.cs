@@ -35,7 +35,10 @@ namespace HydroServerTools.Controllers
         {
             var tableValueCounts = new DatabaseTableValueCountModel();
 
-            string entityConnectionString = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name.ToString());
+            //string entityConnectionString = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name.ToString());
+
+            string entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name.ToString());
+
 
             if (!String.IsNullOrEmpty(entityConnectionString))
             {
@@ -83,32 +86,7 @@ namespace HydroServerTools.Controllers
             sb.Append("' width='100%' height='100%' frameborder='0' marginheight='0' marginwidth='0'>Loading...</iframe>");
             return Content(sb.ToString());
         }
-        public ActionResult Datatable1()
-        {
-            var model = new ConnectionModel();
-            model.ServerName = "mseul-cuahsi";
-            model.DataSourceName = "LittleBear_1_1_1";
-            model.Username = "martin";
-            model.Password = "ms";
-            
-            var connectionString = HydroServerToolsUtils.BuildEFConnnectionString(model);
-
-
-            var sitesRepository = new SitesRepository();
-            
-            ViewBag.Message = "Your Datatable page.";
-            return View(sitesRepository.GetAll(connectionString));
-        }
-        public ActionResult Datatable2(string identifier)
-        {
-            ViewBag.Message = "Your Datatable2 page.";
-
-            if (identifier.ToLower() == "sites") { var model = new SiteModel(); return View("DataTable2", model); };
-      
-
-            return View();
-        }
-
+     
         public ActionResult JqueryUpload()
         {
             ViewBag.Message = "JqueryUpload";

@@ -24,45 +24,47 @@ namespace HydroServerTools
         
         const string EFMODEL = @"res://*/ODM_1_1_1EFModel.csdl|res://*/ODM_1_1_1EFModel.ssdl|res://*/ODM_1_1_1EFModel.msl";
 
-        public static string BuildEFConnnectionString (ConnectionModel model)
+        public static string BuildEFConnnectionString(ConnectionParameters model)
         {
             // Specify the provider name, server and database.
-                string providerName = "System.Data.SqlClient";
-                string serverName = model.ServerName;
-                string databaseName = model.DataSourceName;
-                string userName = model.Username;
-                string password = model.Password;
+            string providerName = "System.Data.SqlClient";
+            string serverName = model.DataSource;
+            string databaseName = model.InitialCatalog;
+            string userName = model.UserId;
+            string password = model.Password;
 
-                // Initialize the connection string builder for the
-                // underlying provider.
-                SqlConnectionStringBuilder sqlBuilder =
-                new SqlConnectionStringBuilder();
-                // Set the properties for the data source.
-                sqlBuilder.DataSource = serverName;
-                sqlBuilder.InitialCatalog = databaseName;
-                sqlBuilder.UserID = userName;
-                sqlBuilder.Password = password;
-                sqlBuilder.IntegratedSecurity = false;
+            // Initialize the connection string builder for the
+            // underlying provider.
+            SqlConnectionStringBuilder sqlBuilder =
+            new SqlConnectionStringBuilder();
+            // Set the properties for the data source.
+            sqlBuilder.DataSource = serverName;
+            sqlBuilder.InitialCatalog = databaseName;
+            sqlBuilder.UserID = userName;
+            sqlBuilder.Password = password;
+            sqlBuilder.IntegratedSecurity = false;
+            sqlBuilder.PersistSecurityInfo = true;
 
-                // Build the SqlConnection connection string.
-                string providerString = sqlBuilder.ToString();
+            // Build the SqlConnection connection string.
+            string providerString = sqlBuilder.ToString();
 
-                // Initialize the EntityConnectionStringBuilder.
-                EntityConnectionStringBuilder entityBuilder =
-                new EntityConnectionStringBuilder();
+            // Initialize the EntityConnectionStringBuilder.
+            EntityConnectionStringBuilder entityBuilder =
+            new EntityConnectionStringBuilder();
 
-                //Set the provider name.
-                entityBuilder.Provider = providerName;
+            //Set the provider name.
+            entityBuilder.Provider = providerName;
 
-                // Set the provider-specific connection string.
-                entityBuilder.ProviderConnectionString = providerString;
+            // Set the provider-specific connection string.
+            entityBuilder.ProviderConnectionString = providerString;
 
-                // Set the Metadata location.
-                entityBuilder.Metadata = EFMODEL;
+            // Set the Metadata location.
+            entityBuilder.Metadata = EFMODEL;
 
-              
-                return entityBuilder.ToString();
+
+            return entityBuilder.ToString();
         }
+
 
         public static string GetConnectionNameByUserName(string userName)
         {
@@ -171,6 +173,22 @@ namespace HydroServerTools
             var Db = new ApplicationDbContext();
             userEmail = Db.Users.First(u => u.UserName == userName).UserEmail;
             return userEmail;
+        }
+
+        public static string BuildConnectionStringForUserName(string userName)
+        {
+            string connectionString = string.Empty;
+
+            ApplicationDbContext context = new ApplicationDbContext();
+
+            var entityConnectionstringParameters = context.ConnectionParameters.Where(r => r.Name.Equals(userName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+
+            if (entityConnectionstringParameters != null)
+            {
+                connectionString = BuildEFConnnectionString(entityConnectionstringParameters);
+            }
+
+            return connectionString;
         }
 
         public static List<string> ValidateFields<T>(List<string> columnHeaders)

@@ -104,7 +104,7 @@ namespace HydroServerTools.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult RoleAddToUser(string UserName, string RoleName)
         {
-            ApplicationUser user = context.Users.Where(u => u.UserName.Equals(UserName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+            User user = context.Users.Where(u => u.UserName.Equals(UserName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
             var account = new AccountController();
             account.UserManager.AddToRole(user.Id, RoleName);
             
@@ -123,7 +123,7 @@ namespace HydroServerTools.Areas.Admin.Controllers
         {            
             if (!string.IsNullOrWhiteSpace(UserName))
             {
-                ApplicationUser user = context.Users.Where(u => u.UserName.Equals(UserName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+                User user = context.Users.Where(u => u.UserName.Equals(UserName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
                 var account = new AccountController();
 
                 ViewBag.RolesForThisUser = account.UserManager.GetRoles(user.Id);
@@ -141,7 +141,7 @@ namespace HydroServerTools.Areas.Admin.Controllers
         public ActionResult DeleteRoleForUser(string UserName, string RoleName)
         {
             var account = new AccountController();
-            ApplicationUser user = context.Users.Where(u => u.UserName.Equals(UserName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+            User user = context.Users.Where(u => u.UserName.Equals(UserName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
 
             if (account.UserManager.IsInRole(user.Id, RoleName))  
             {

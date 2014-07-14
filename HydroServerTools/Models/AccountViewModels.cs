@@ -52,7 +52,7 @@ namespace HydroServerTools.Models
         [Display(Name = "User name")]
         public string UserName { get; set; }
 
-        [Required]
+        
         [Display(Name = "Email")]
         public string Email { get; set; }
 

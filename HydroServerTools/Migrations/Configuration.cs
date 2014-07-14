@@ -1,5 +1,6 @@
 namespace HydroServerTools.Migrations
 {
+    using HydroServerTools.Models;
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Migrations;
@@ -9,7 +10,7 @@ namespace HydroServerTools.Migrations
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = false;
+            AutomaticMigrationsEnabled = true;
         }
 
         protected override void Seed(HydroServerTools.Models.ApplicationDbContext context)
@@ -26,6 +27,53 @@ namespace HydroServerTools.Migrations
             //      new Person { FullName = "Rowan Miller" }
             //    );
             //
+            context.ConnectionParameters.AddOrUpdate(
+                p => p.Id,
+                new ConnectionParameters
+                {
+                    Name = "HydroServertest2",
+                    DataSource = "tcp:bhi5g2ajst.database.windows.net,1433",
+                    InitialCatalog = "HydroServertest2",
+                    UserId = "HisCentralAdmin@bhi5g2ajst",
+                    Password = "f@deratedResearch"
+                },
+                    new ConnectionParameters
+                    {
+                        //Id=2,                        
+                        Name = "HydroServertest1",
+                        DataSource = "tcp:bhi5g2ajst.database.windows.net,1433",
+                        InitialCatalog = "HydroServertest1",
+                        UserId = "HisCentralAdmin@bhi5g2ajst",
+                        Password = "f@deratedResearch"
+                    },
+                   new ConnectionParameters
+                   {
+                       //Id=3,
+                       Name = "HydroServertest3",
+                       DataSource = "tcp:bhi5g2ajst.database.windows.net,1433",
+                       InitialCatalog = "HydroServertest3",
+                       UserId = "HisCentralAdmin@bhi5g2ajst",
+                       Password = "f@deratedResearch"
+                   }
+                );
+            context.Users.AddOrUpdate(
+                p => p.Id,
+                new User
+                {
+                    //Email = "HydroServertest1@gmail.com",
+                    UserName = "HydroServertest1@gmail.com",
+                    PasswordHash = "AIc46WDIg9A9mp7/EVpd8h7WRZHthyeNQ5AHY8K87522TL0IScBq1Tx/4G0pyuqBMA==",
+                    
+                },
+                new User
+                {
+                    //Email = "HydroServertest2@gmail.com",
+                    UserName = "HydroServertest2@gmail.com",
+                    PasswordHash = "AIc46WDIg9A9mp7/EVpd8h7WRZHthyeNQ5AHY8K87522TL0IScBq1Tx/4G0pyuqBMA==",
+                    
+                }
+                );
+            context.SaveChanges();
         }
     }
 }
