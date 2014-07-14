@@ -35,19 +35,22 @@ namespace HydroServerTools.Controllers
         {
             var tableValueCounts = new DatabaseTableValueCountModel();
 
-            string connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name.ToString());
+            string entityConnectionString = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name.ToString());
 
-            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
-
-            var databaseRepository =  new DatabaseRepository();
             if (!String.IsNullOrEmpty(entityConnectionString))
             {
+                //var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
+
+                var databaseRepository = new DatabaseRepository();
+                
                 tableValueCounts = databaseRepository.GetDatabaseTableValueCount(entityConnectionString);
-                 return View(tableValueCounts);
+                
+                return View(tableValueCounts);
+                
             }
             else
             {
-                return View();
+                return RedirectToAction("GoogleForm");
             }
             
         }

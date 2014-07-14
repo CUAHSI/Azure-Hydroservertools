@@ -1,6 +1,7 @@
 ﻿
 @{
     ViewBag.Title = "ManageUserRoles";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h2>Manage User Roles</h2>
@@ -15,8 +16,8 @@
     @Html.ValidationSummary(true)
 
     <p>
-        Username : @Html.TextBox("UserName")
-        @Html.DropDownList("UserName", (SelectList)ViewBag.Users)
+        @*Username : @Html.TextBox("UserName")*@
+        UserName: @Html.DropDownList("UserName", (SelectList)ViewBag.Users)
         Role Name: @Html.DropDownList("RoleName", (IEnumerable <SelectListItem>) ViewBag.Roles, "Select ...")
         @*Username Name: @Html.DropDownList("UsernameList", (IEnumerable<SelectListItem>)ViewBag.Users, "Select ...")*@
 
@@ -30,7 +31,7 @@
 {
     @Html.AntiForgeryToken()
     <p>
-        Username : @Html.TextBox("UserName")
+        UserName: @Html.DropDownList("UserName", (SelectList)ViewBag.Users)
         <input type="submit" value="Get Roles for this User" />
     </p>
 }
@@ -57,7 +58,7 @@
     @Html.ValidationSummary(true)
 
     <p>
-        Username : @Html.TextBox("UserName")
+        UserName: @Html.DropDownList("UserName", (SelectList)ViewBag.Users)
         Role Name: @Html.DropDownList("RoleName", (IEnumerable<SelectListItem>)ViewBag.Roles, "Select ...")
 
     </p>
