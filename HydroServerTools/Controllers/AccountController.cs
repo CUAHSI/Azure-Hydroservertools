@@ -218,13 +218,30 @@ namespace HydroServerTools.Controllers
             else
             {
                 // If the user does not have an account, then prompt the user to create an account
-                ViewBag.ReturnUrl = returnUrl;
-                ViewBag.LoginProvider = loginInfo.Login.LoginProvider;
-                return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { UserName = loginInfo.DefaultUserName, UserEmail = email });
+                //ViewBag.ReturnUrl = returnUrl;
+                //ViewBag.LoginProvider = loginInfo.Login.LoginProvider;
+                //return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { UserName = email });
+
+                // Get the information about the user from the external login provider
+                var info = await AuthenticationManager.GetExternalLoginInfoAsync();
+                if (info == null)
+                {
+                    return View("ExternalLoginFailure");
+                }
+                var newUser = new ApplicationUser() { UserName = email };
+                var result = await UserManager.CreateAsync(newUser);
+                if (result.Succeeded)
+                {
+                    result = await UserManager.AddLoginAsync(newUser.Id, info.Login);
+                    if (result.Succeeded)
+                    {
+                        await SignInAsync(newUser, isPersistent: false);
+                        return RedirectToLocal(returnUrl);
+                    }
+                }
+                AddErrors(result);
+                return View("ExternalLoginFailure");
             }
-
-          
-
         }
 
         //
