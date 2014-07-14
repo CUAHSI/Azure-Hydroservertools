@@ -235,6 +235,7 @@
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\RolesController.cs" />
     <Compile Include="Areas\Admin\Models\RolesViewModel.cs" />
+    <Compile Include="Areas\Admin\Controllers\ConnectionParametersController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\api\UploadController.cs" />
     <Compile Include="Controllers\CSVUploadController.cs" />
@@ -438,6 +439,11 @@
     <Content Include="Areas\Admin\Views\Roles\Index.cshtml" />
     <Content Include="Areas\Admin\Views\Roles\ManageUserRoles.cshtml" />
     <Content Include="Areas\Admin\Views\Shared\Error.cshtml" />
+    <Content Include="Areas\Admin\Views\ConnectionParameters\Create.cshtml" />
+    <Content Include="Areas\Admin\Views\ConnectionParameters\Delete.cshtml" />
+    <Content Include="Areas\Admin\Views\ConnectionParameters\Details.cshtml" />
+    <Content Include="Areas\Admin\Views\ConnectionParameters\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\ConnectionParameters\Index.cshtml" />
     <None Include="Microsoft.WindowsAzure.Caching\ClientPerfCountersInstaller.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

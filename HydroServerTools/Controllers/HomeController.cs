@@ -40,7 +40,7 @@ namespace HydroServerTools.Controllers
             string entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name.ToString());
 
 
-            if (!String.IsNullOrEmpty(entityConnectionString))
+            if (String.IsNullOrEmpty(entityConnectionString))
             {
                 //var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
@@ -76,6 +76,12 @@ namespace HydroServerTools.Controllers
         {
             ViewBag.Message = "";
 
+            return View();
+        }
+        public ActionResult GoogleForm()
+        {
+            ViewBag.Message = "";
+            //var user = User.Identity.Name;
             return View();
         }
         public ContentResult _GoogleFormIframe()
