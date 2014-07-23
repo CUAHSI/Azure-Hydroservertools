@@ -3952,14 +3952,14 @@ namespace HydroServerToolsRepository.Repository
                 var allItems = context.DataValues.ToList();
                 var rst = allItems.
                     Where(c =>
-                        c.ValueID != null && c.ValueID.ToString().ToLower().Contains(searchString.ToLower())
+                                c.ValueID.ToString().ToLower().Contains(searchString.ToLower())
                              || c.DataValue1 != null && c.DataValue1.ToString().ToLower().Contains(searchString.ToLower())
                              || c.ValueAccuracy != null && c.ValueAccuracy.ToString().ToLower().Contains(searchString.ToLower())
                              || c.LocalDateTime != null && c.LocalDateTime.ToString().Contains(searchString.ToLower())
                              || c.UTCOffset != null && c.UTCOffset.ToString().ToLower().Contains(searchString.ToLower())
                              || c.DateTimeUTC != null && c.DateTimeUTC.ToString().ToLower().Contains(searchString.ToLower())
-                             || c.Site != null && c.Site.SiteCode.ToLower().Contains(searchString.ToLower())
-                             || c.Variable != null && c.Variable.VariableCode.ToLower().Contains(searchString.ToLower())
+                             || c.Site.SiteCode != null && c.Site.SiteCode.ToLower().Contains(searchString.ToLower())
+                             || c.Variable.VariableName != null && c.Variable.VariableName.ToString().ToLower().Contains(searchString.ToLower())
                              || c.OffsetValue != null && c.OffsetValue.ToString().ToLower().Contains(searchString.ToLower())
                              || c.OffsetTypeID != null && c.OffsetTypeID.ToString().ToLower().Contains(searchString.ToLower())
                              || c.CensorCode != null && c.CensorCode.ToLower().Contains(searchString.ToLower())
@@ -3980,6 +3980,16 @@ namespace HydroServerToolsRepository.Repository
                 {
 
                     var model = Mapper.Map<DataValue, DataValuesModel>(item);
+
+                    model.VariableCode = context.Variables
+                                         .Where(a => a.VariableID == item.VariableID)
+                                         .Select(a => a.VariableName)
+                                         .FirstOrDefault();
+
+                    model.SiteCode = context.Sites
+                                        .Where(a => a.SiteID == item.SiteID)
+                                        .Select(a => a.SiteCode)
+                                        .FirstOrDefault();
 
                     result.Add(model);
                 }

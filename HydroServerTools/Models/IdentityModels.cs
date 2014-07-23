@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNet.Identity.EntityFramework;
+using System.ComponentModel.DataAnnotations;
 using System.Data.Entity;
 
 namespace HydroServerTools.Models
@@ -16,7 +17,26 @@ namespace HydroServerTools.Models
         {
         }
 
+
+
         public DbSet<ConnectionParameters> ConnectionParameters { get; set; }
+        public DbSet<ConnectionParametersUser> ConnectionParametersUser { get; set; }
+
+       
+
+        //protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        //{
+           
+
+        //    base.OnModelCreating(modelBuilder);
+        //    modelBuilder.Entity<IdentityUserLogin>().HasKey<string>(l => l.UserId);
+        //    modelBuilder.Entity<IdentityRole>().HasKey<string>(r => r.Id);
+        //    modelBuilder.Entity<IdentityUserRole>().HasKey(r => new { r.RoleId, r.UserId });
+
+        //    modelBuilder.Entity<User>().Property(c => c.UserName).IsRequired();
+        //    modelBuilder.Entity<User>().Property(c => c.UserName).HasMaxLength(100);
+        //}
+
 
     }
     public class ConnectionParameters
@@ -30,5 +50,16 @@ namespace HydroServerTools.Models
 
         //public virtual ICollection<User> User { get; set; }
         //public virtual newtable2 nt2 {get; set;}
+    }
+
+    public class ConnectionParametersUser
+    {
+        public int Id { get; set; }
+        [Display(Name = "Connection Name")]
+        public int ConnectionParametersId { get; set; }
+        [Display(Name = "User Name")]      
+        public string UserId { get; set; }
+        public virtual ConnectionParameters ConnectionParameters { get; set; }
+        public virtual User User { get; set; }
     }
 }

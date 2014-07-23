@@ -298,9 +298,9 @@ namespace HydroServerTools.Controllers
                 if (id != null)
                 {
 
-                    string connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name.ToString());
+                    string connectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name.ToString());
 
-                    var connectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
+                    //var connectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
                     var recordListname = (index == 0) ? "listOfCorrectRecords" : "listOfEditedRecords";
 

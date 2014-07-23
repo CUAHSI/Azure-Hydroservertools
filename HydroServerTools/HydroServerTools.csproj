@@ -236,6 +236,7 @@
     <Compile Include="Areas\Admin\Controllers\RolesController.cs" />
     <Compile Include="Areas\Admin\Models\RolesViewModel.cs" />
     <Compile Include="Areas\Admin\Controllers\ConnectionParametersController.cs" />
+    <Compile Include="Areas\Admin\Controllers\ConnectionParametersUsersController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\api\UploadController.cs" />
     <Compile Include="Controllers\CSVUploadController.cs" />
@@ -245,11 +246,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Helper\Utils.cs" />
-    <Compile Include="Migrations\201401152059313_init.cs" />
-    <Compile Include="Migrations\201401152059313_init.Designer.cs">
-      <DependentUpon>201401152059313_init.cs</DependentUpon>
-    </Compile>
+    <Compile Include="Models\Helper\Utils.cs" />
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ConnectionModel.cs" />
@@ -444,6 +441,11 @@
     <Content Include="Areas\Admin\Views\ConnectionParameters\Details.cshtml" />
     <Content Include="Areas\Admin\Views\ConnectionParameters\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\ConnectionParameters\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\ConnectionParametersUsers\Create.cshtml" />
+    <Content Include="Areas\Admin\Views\ConnectionParametersUsers\Delete.cshtml" />
+    <Content Include="Areas\Admin\Views\ConnectionParametersUsers\Details.cshtml" />
+    <Content Include="Areas\Admin\Views\ConnectionParametersUsers\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\ConnectionParametersUsers\Index.cshtml" />
     <None Include="Microsoft.WindowsAzure.Caching\ClientPerfCountersInstaller.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -671,6 +673,7 @@
     <Content Include="Views\CSVUpload\_UploadTabs.cshtml" />
     <Content Include="Templates\ODMGuide.xlsx" />
     <Content Include="Views\Home\GoogleForm.cshtml" />
+    <Content Include="Views\Account\LocalLogin.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -698,11 +701,6 @@
       <Project>{3383d0e2-c499-4f02-9d29-f744741aa999}</Project>
       <Name>jQuery.DataTables.Mvc</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201401152059313_init.resx">
-      <DependentUpon>201401152059313_init.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

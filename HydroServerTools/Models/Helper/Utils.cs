@@ -181,13 +181,35 @@ namespace HydroServerTools
 
             ApplicationDbContext context = new ApplicationDbContext();
 
-            var entityConnectionstringParameters = context.ConnectionParameters.Where(r => r.Name.Equals(userName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+           // var entityConnectionstringParameters = context.ConnectionParameters.Where(r => r.Name.Equals(userName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
 
-            if (entityConnectionstringParameters != null)
+            //var entityConnectionstringParameters = context.ConnectionParametersUser.Where(r => r.Name.Equals(userName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+
+            var p = (from c in context.ConnectionParametersUser
+                     where c.User.UserName == userName
+                     select new 
+                     {
+                         c.ConnectionParameters.Name,
+                         c.ConnectionParameters.DataSource,
+                         c.ConnectionParameters.InitialCatalog,
+                         c.ConnectionParameters.UserId,
+                         c.ConnectionParameters.Password
+                     }).FirstOrDefault();
+            
+            
+            var entityConnectionstringParameters = new ConnectionParameters();
+
+            if (p != null)
             {
-                connectionString = BuildEFConnnectionString(entityConnectionstringParameters);
+                entityConnectionstringParameters.DataSource = p.DataSource;
+                entityConnectionstringParameters.InitialCatalog = p.InitialCatalog;
+                entityConnectionstringParameters.UserId = p.UserId;
+                entityConnectionstringParameters.Password = p.Password;
+                if (entityConnectionstringParameters != null)
+                {
+                    connectionString = BuildEFConnnectionString(entityConnectionstringParameters);
+                }
             }
-
             return connectionString;
         }
 

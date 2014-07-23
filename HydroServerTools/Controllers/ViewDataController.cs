@@ -60,10 +60,10 @@ namespace HydroServerTools.Controllers
             int searchRecordCount;
 
             //Get Connection string
-            var connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
-            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
+            var entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name);
+            //var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
-            if (String.IsNullOrEmpty(connectionName))
+            if (String.IsNullOrEmpty(entityConnectionString))
             {
                 ModelState.AddModelError(String.Empty, Ressources.HYDROSERVER_USERLOOKUP_FAILED);
 
@@ -107,10 +107,10 @@ namespace HydroServerTools.Controllers
             int searchRecordCount;
 
             //Get Connection string
-            var connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
-            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
+            var entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name);
+            //var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
-            if (String.IsNullOrEmpty(connectionName))
+            if (String.IsNullOrEmpty(entityConnectionString))
             {
                 ModelState.AddModelError(String.Empty, Ressources.HYDROSERVER_USERLOOKUP_FAILED);
 
@@ -152,10 +152,10 @@ namespace HydroServerTools.Controllers
             int searchRecordCount;
 
             //Get Connection string
-            var connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
-            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
+            var entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name);
+           // var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
-            if (String.IsNullOrEmpty(connectionName))
+            if (String.IsNullOrEmpty(entityConnectionString))
             {
                 ModelState.AddModelError(String.Empty, Ressources.HYDROSERVER_USERLOOKUP_FAILED);
 
@@ -187,10 +187,10 @@ namespace HydroServerTools.Controllers
             int searchRecordCount;
 
             //Get Connection string
-            var connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
-            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
+            var entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name);
+            //var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
-            if (String.IsNullOrEmpty(connectionName))
+            if (String.IsNullOrEmpty(entityConnectionString))
             {
                 ModelState.AddModelError(String.Empty, Ressources.HYDROSERVER_USERLOOKUP_FAILED);
 
@@ -236,10 +236,10 @@ namespace HydroServerTools.Controllers
             int searchRecordCount;
 
             //Get Connection string
-            var connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
-            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
+            var entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name);
+            //var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
-            if (String.IsNullOrEmpty(connectionName))
+            if (String.IsNullOrEmpty(entityConnectionString))
             {
                 ModelState.AddModelError(String.Empty, Ressources.HYDROSERVER_USERLOOKUP_FAILED);
 
@@ -273,10 +273,10 @@ namespace HydroServerTools.Controllers
             int searchRecordCount;
 
             //Get Connection string
-            var connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
-            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
+            var entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name);
+            //var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
-            if (String.IsNullOrEmpty(connectionName))
+            if (String.IsNullOrEmpty(entityConnectionString))
             {
                 ModelState.AddModelError(String.Empty, Ressources.HYDROSERVER_USERLOOKUP_FAILED);
 
@@ -308,10 +308,10 @@ namespace HydroServerTools.Controllers
             int searchRecordCount;
 
             //Get Connection string
-            var connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
-            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
+            var entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name);
+            //var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
-            if (String.IsNullOrEmpty(connectionName))
+            if (String.IsNullOrEmpty(entityConnectionString))
             {
                 ModelState.AddModelError(String.Empty, Ressources.HYDROSERVER_USERLOOKUP_FAILED);
 
@@ -346,10 +346,10 @@ namespace HydroServerTools.Controllers
             int searchRecordCount;
 
             //Get Connection string
-            var connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
-            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
+            var entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name);
+            //var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
-            if (String.IsNullOrEmpty(connectionName))
+            if (String.IsNullOrEmpty(entityConnectionString))
             {
                 ModelState.AddModelError(String.Empty, Ressources.HYDROSERVER_USERLOOKUP_FAILED);
 
@@ -381,10 +381,10 @@ namespace HydroServerTools.Controllers
             int searchRecordCount;
 
             //Get Connection string
-            var connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
-            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
+            var entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name);
+            //var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
-            if (String.IsNullOrEmpty(connectionName))
+            if (String.IsNullOrEmpty(entityConnectionString))
             {
                 ModelState.AddModelError(String.Empty, Ressources.HYDROSERVER_USERLOOKUP_FAILED);
 
@@ -416,10 +416,10 @@ namespace HydroServerTools.Controllers
             int searchRecordCount;
 
             //Get Connection string
-            var connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
-            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
+            var entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name);
+            //var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
-            if (String.IsNullOrEmpty(connectionName))
+            if (String.IsNullOrEmpty(entityConnectionString))
             {
                 ModelState.AddModelError(String.Empty, Ressources.HYDROSERVER_USERLOOKUP_FAILED);
 
@@ -450,10 +450,10 @@ namespace HydroServerTools.Controllers
             int searchRecordCount;
 
             //Get Connection string
-            var connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
-            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
+            var entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name);
+            //var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
-            if (String.IsNullOrEmpty(connectionName))
+            if (String.IsNullOrEmpty(entityConnectionString))
             {
                 ModelState.AddModelError(String.Empty, Ressources.HYDROSERVER_USERLOOKUP_FAILED);
 
@@ -483,10 +483,10 @@ namespace HydroServerTools.Controllers
             int searchRecordCount;
 
             //Get Connection string
-            var connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
-            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
+            var entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name);
+            //var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
-            if (String.IsNullOrEmpty(connectionName))
+            if (String.IsNullOrEmpty(entityConnectionString))
             {
                 ModelState.AddModelError(String.Empty, Ressources.HYDROSERVER_USERLOOKUP_FAILED);
 
@@ -516,10 +516,10 @@ namespace HydroServerTools.Controllers
             int searchRecordCount;
 
             //Get Connection string
-            var connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
-            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
+            var entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name);
+            //var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
-            if (String.IsNullOrEmpty(connectionName))
+            if (String.IsNullOrEmpty(entityConnectionString))
             {
                 ModelState.AddModelError(String.Empty, Ressources.HYDROSERVER_USERLOOKUP_FAILED);
 
@@ -552,10 +552,10 @@ namespace HydroServerTools.Controllers
             int searchRecordCount;
 
             //Get Connection string
-            var connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
-            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
+           var entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name);
+            //var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
-            if (String.IsNullOrEmpty(connectionName))
+            if (String.IsNullOrEmpty(entityConnectionString))
             {
                 ModelState.AddModelError(String.Empty, Ressources.HYDROSERVER_USERLOOKUP_FAILED);
 
@@ -601,10 +601,10 @@ namespace HydroServerTools.Controllers
             int searchRecordCount;
 
             //Get Connection string
-            var connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name);
-            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
+            var entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name);
+            //var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
-            if (String.IsNullOrEmpty(connectionName))
+            if (String.IsNullOrEmpty(entityConnectionString))
             {
                 ModelState.AddModelError(String.Empty, Ressources.HYDROSERVER_USERLOOKUP_FAILED);
 
@@ -659,11 +659,11 @@ namespace HydroServerTools.Controllers
 
         public ActionResult ViewTableData(string identifier)
         {
-         
 
-            string connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name.ToString());
 
-            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
+            string entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name.ToString());
+
+            //var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
             if (String.IsNullOrEmpty(entityConnectionString)) { ViewBag.Message = Ressources.HYDROSERVER_USERLOOKUP_FAILED; return View("Error"); }
 

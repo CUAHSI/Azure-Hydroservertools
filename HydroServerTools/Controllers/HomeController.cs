@@ -30,7 +30,6 @@ namespace HydroServerTools.Controllers
     {
 
 
-
         public ActionResult Index()
         {
             var tableValueCounts = new DatabaseTableValueCountModel();
@@ -40,7 +39,7 @@ namespace HydroServerTools.Controllers
             string entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name.ToString());
 
 
-            if (String.IsNullOrEmpty(entityConnectionString))
+            if (!String.IsNullOrEmpty(entityConnectionString))
             {
                 //var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
@@ -169,7 +168,7 @@ namespace HydroServerTools.Controllers
         [Authorize]
         public ActionResult ClearTablesHandler(FormCollection collection)
         {
-            string connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name.ToString());
+            string connectionName = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name.ToString());
 
             var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
             //"Sites", "Variables", "OffsetTypes", "ISOMetadata", "Sources", "Methods", "LabMethods", "Samples", "Qualifiers", "QualityControlLevels", "DataValues", "GroupDescriptions", "Groups", "DerivedFrom", "Categories"};

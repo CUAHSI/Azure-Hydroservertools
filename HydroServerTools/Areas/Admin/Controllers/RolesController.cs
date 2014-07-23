@@ -104,7 +104,7 @@ namespace HydroServerTools.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult RoleAddToUser(string UserName, string RoleName)
         {
-            User user = context.Users.Where(u => u.UserName.Equals(UserName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+            User user = context.Users.Where(u => u.Id.Equals(UserName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
             var account = new AccountController();
             account.UserManager.AddToRole(user.Id, RoleName);
             
@@ -112,8 +112,10 @@ namespace HydroServerTools.Areas.Admin.Controllers
             
             // prepopulat roles for the view dropdown
             var list = context.Roles.OrderBy(r => r.Name).ToList().Select(rr => new SelectListItem { Value = rr.Name.ToString(), Text = rr.Name }).ToList();
-            ViewBag.Roles = list;   
+            ViewBag.Roles = list;
 
+            var users = new SelectList(context.Users, "Id", "UserName");
+            ViewBag.Users = users;
             return View("ManageUserRoles");
         }
 
@@ -123,14 +125,16 @@ namespace HydroServerTools.Areas.Admin.Controllers
         {            
             if (!string.IsNullOrWhiteSpace(UserName))
             {
-                User user = context.Users.Where(u => u.UserName.Equals(UserName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+                User user = context.Users.Where(u => u.Id.Equals(UserName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
                 var account = new AccountController();
 
                 ViewBag.RolesForThisUser = account.UserManager.GetRoles(user.Id);
 
                 // prepopulat roles for the view dropdown
                 var list = context.Roles.OrderBy(r => r.Name).ToList().Select(rr => new SelectListItem { Value = rr.Name.ToString(), Text = rr.Name }).ToList();
-                ViewBag.Roles = list;            
+                ViewBag.Roles = list;
+                var users = new SelectList(context.Users, "Id", "UserName");
+                ViewBag.Users = users;
             }
 
             return View("ManageUserRoles");
@@ -141,7 +145,7 @@ namespace HydroServerTools.Areas.Admin.Controllers
         public ActionResult DeleteRoleForUser(string UserName, string RoleName)
         {
             var account = new AccountController();
-            User user = context.Users.Where(u => u.UserName.Equals(UserName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+            User user = context.Users.Where(u => u.Id.Equals(UserName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
 
             if (account.UserManager.IsInRole(user.Id, RoleName))  
             {
@@ -155,6 +159,8 @@ namespace HydroServerTools.Areas.Admin.Controllers
             // prepopulat roles for the view dropdown
             var list = context.Roles.OrderBy(r => r.Name).ToList().Select(rr => new SelectListItem { Value = rr.Name.ToString(), Text = rr.Name }).ToList();
             ViewBag.Roles = list;
+            var users = new SelectList(context.Users, "Id", "UserName");
+            ViewBag.Users = users;
 
             return View("ManageUserRoles");
         }

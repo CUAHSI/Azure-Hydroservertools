@@ -113,24 +113,24 @@ namespace HydroServerTools.Controllers.WebApi
             //Get Connection string
             if (!string.IsNullOrEmpty(HttpContext.Current.User.Identity.Name))
             {
-                var connectionName = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.Current.User.Identity.Name);
+                entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.Current.User.Identity.Name);
 
-                if (!String.IsNullOrEmpty(connectionName))
+                if (String.IsNullOrEmpty(entityConnectionString))
                 {
-                    entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
-                    if (string.IsNullOrEmpty(entityConnectionString))
-                    {
+                    //entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
+                    //if (string.IsNullOrEmpty(entityConnectionString))
+                    //{
                         message = Ressources.HYDROSERVER_USERLOOKUP_FAILED;
                         return;
-                    }
+                    //}
                 }
-                else
-                {
-                    message = Ressources.HYDROSERVER_USERLOOKUP_FAILED;
+                //else
+                //{
+                //    message = Ressources.HYDROSERVER_USERLOOKUP_FAILED;
                      
-                    return;
+                //    return;
 
-                }
+                //}
             }
             else
             {
