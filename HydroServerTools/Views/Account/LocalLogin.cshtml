@@ -1,0 +1,89 @@
+﻿@model HydroServerTools.Models.LoginViewModel
+
+@{
+    ViewBag.Title = "Log in";
+    
+}
+
+@*<h2>@ViewBag.Title.</h2>*@
+<div class="row">
+    <div class="jumbotron">
+
+        HydroServer is a suite of application for sharing time series water data. It has three components:
+        <ul>
+            <li>An instance of the Observations Data Model (ODM) SQL Database in the Azure Cloud</li>
+            <li>An application for uploading data to the ODM Database using CSV templates</li>
+            <li>A WaterOneFlow Web Service for exposing the database</li>
+        </ul>
+
+
+        To begin, login using your Google account, if you have a database assigned to your login you can start download the ODM Templates and populate them with your data and
+        metadata and upload data and register your web service and database with cuahsi’s <a href="http://hiscentral.cuahsi.org" target="_blank">HIS Central</a> catalog.
+        <br />
+        If you don't have a database assigned to you, you will be sent to a form after a successful login where you can request a HIS instance. I you do not have a Google account you can find the
+        request form <a href="https://docs.google.com/forms/d/10c-ZpmxZQX9kXIixDZMV5sNJblyhebn13-CnD1xdwjg/viewform?embedded=true&entry.1429452739=" target="_blank">here</a>
+
+
+        Need help? Contact the
+        <a href="http://wdc.cuahsi.org/WDC/Contact.html" target="_blank">WDC staff</a>.
+        @*<button class="btn btn-primary btn-lg btn-block" data-toggle="modal" data-target="#setConnection">Set Database Connection</button>*@
+        @*<p><a href="/CSVUpload/Sites" class="btn btn-primary btn-lg active" role="button">Import Data into Hydroserver</a></p>*@
+        @*   @Html.ActionLink("Import Data into Hydroserver", "UploadData", "CSVUpload", new { id = "Sites" }, new { @class = "btn btn-primary btn-lg active" })*@
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-8">
+            <section id="loginForm">
+                @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <h4>Use a local account to log in.</h4>
+                    <hr />
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.UserName, new { @class = "col-md-2 control-label" })
+                        <div class="col-md-10">
+                            @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
+                        <div class="col-md-10">
+                            @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <div class="checkbox">
+                                @Html.CheckBoxFor(m => m.RememberMe)
+                                @Html.LabelFor(m => m.RememberMe)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <input type="submit" value="Log in" class="btn btn-default" />
+                        </div>
+                    </div>
+                    
+                    @*<p>
+                        @Html.ActionLink("Register as a new user", "Register")
+                    </p>*@
+                    @* Enable this once you have account confirmation enabled for password reset functionality
+                        <p>
+                            @Html.ActionLink("Forgot your password?", "ForgotPassword")
+                        </p>*@
+                }
+            </section>
+        </div>
+        
+    </div>
+
+   
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

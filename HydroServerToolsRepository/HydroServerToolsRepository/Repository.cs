@@ -232,7 +232,7 @@ namespace HydroServerToolsRepository.Repository
             return result;
         }
 
-        public void AddSites(List<SiteModel> itemList, string entityConnectionString, Guid instanceGuid, out List<SiteModel> listOfIncorrectRecords, out List<SiteModel> listOfCorrectRecords, out List<SiteModel> listOfDuplicateRecords, out List<SiteModel> listOfEditedRecords)
+        public void AddSites(List<SiteModel> itemList, string entityConnectionString, string instanceIdentifier, out List<SiteModel> listOfIncorrectRecords, out List<SiteModel> listOfCorrectRecords, out List<SiteModel> listOfDuplicateRecords, out List<SiteModel> listOfEditedRecords)
         {
             listOfIncorrectRecords = new List<SiteModel>();
             listOfCorrectRecords = new List<SiteModel>();
@@ -250,7 +250,7 @@ namespace HydroServerToolsRepository.Repository
             var SiteTypeCV = context.SiteTypeCVs.ToList();
             var maxCount = itemList.Count;
             var count = 0;
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceGuid, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
 
 
             foreach (var item in itemList)
@@ -259,7 +259,7 @@ namespace HydroServerToolsRepository.Repository
 
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceGuid, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
                     count++;                    
                     //var model = Mapper.Map<SiteModel, Site>(item);
 
@@ -1035,7 +1035,7 @@ namespace HydroServerToolsRepository.Repository
         }
 
 
-        public void AddVariables(List<VariablesModel> itemList, string entityConnectionString, Guid instanceGuid, out List<VariablesModel> listOfIncorrectRecords, out List<VariablesModel> listOfCorrectRecords, out List<VariablesModel> listOfDuplicateRecords, out List<VariablesModel> listOfEditedRecords)
+        public void AddVariables(List<VariablesModel> itemList, string entityConnectionString, string instanceIdentifier, out List<VariablesModel> listOfIncorrectRecords, out List<VariablesModel> listOfCorrectRecords, out List<VariablesModel> listOfDuplicateRecords, out List<VariablesModel> listOfEditedRecords)
         {
             listOfIncorrectRecords = new List<VariablesModel>();
             listOfCorrectRecords = new List<VariablesModel>();
@@ -1059,13 +1059,13 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceGuid, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount)); 
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount)); 
             
             foreach (var item in itemList)
             {
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceGuid, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
                     count++;
 
                     //var model = Mapper.Map<VariablesModel, Variable>(item);
@@ -1621,7 +1621,7 @@ namespace HydroServerToolsRepository.Repository
             return result;
         }
 
-        public void AddOffsetTypes(List<OffsetTypesModel> itemList, string entityConnectionString, Guid instanceGuid, out List<OffsetTypesModel> listOfIncorrectRecords, out List<OffsetTypesModel> listOfCorrectRecords, out List<OffsetTypesModel> listOfDuplicateRecords, out List<OffsetTypesModel> listOfEditedRecords)
+        public void AddOffsetTypes(List<OffsetTypesModel> itemList, string entityConnectionString, string instanceIdentifier, out List<OffsetTypesModel> listOfIncorrectRecords, out List<OffsetTypesModel> listOfCorrectRecords, out List<OffsetTypesModel> listOfDuplicateRecords, out List<OffsetTypesModel> listOfEditedRecords)
         {
             listOfIncorrectRecords = new List<OffsetTypesModel>();
             listOfCorrectRecords = new List<OffsetTypesModel>();
@@ -1635,14 +1635,14 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceGuid, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount)); 
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount)); 
 
             foreach (var item in itemList)
             {
 
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceGuid, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
                     count++;
                     
                     var listOfErrors = new List<ErrorModel>();
@@ -2072,7 +2072,7 @@ namespace HydroServerToolsRepository.Repository
             return result;
         }
 
-        public void AddSources(List<SourcesModel> itemList, string entityConnectionString, Guid instanceGuid, out List<SourcesModel> listOfIncorrectRecords, out List<SourcesModel> listOfCorrectRecords, out List<SourcesModel> listOfDuplicateRecords, out List<SourcesModel> listOfEditedRecords)
+        public void AddSources(List<SourcesModel> itemList, string entityConnectionString, string instanceIdentifier, out List<SourcesModel> listOfIncorrectRecords, out List<SourcesModel> listOfCorrectRecords, out List<SourcesModel> listOfDuplicateRecords, out List<SourcesModel> listOfEditedRecords)
         {
             listOfIncorrectRecords = new List<SourcesModel>();
             listOfCorrectRecords = new List<SourcesModel>();
@@ -2089,13 +2089,13 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceGuid, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));    
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));    
 
             foreach (var item in itemList)
             {
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceGuid, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
                     count++;
  
                     var listOfErrors = new List<ErrorModel>();
@@ -2606,7 +2606,7 @@ namespace HydroServerToolsRepository.Repository
         }
 
 
-        public void AddMethods(List<MethodModel> itemList, string entityConnectionString, Guid instanceGuid, out List<MethodModel> listOfIncorrectRecords, out List<MethodModel> listOfCorrectRecords, out List<MethodModel> listOfDuplicateRecords, out List<MethodModel> listOfEditedRecords)
+        public void AddMethods(List<MethodModel> itemList, string entityConnectionString, string instanceIdentifier, out List<MethodModel> listOfIncorrectRecords, out List<MethodModel> listOfCorrectRecords, out List<MethodModel> listOfDuplicateRecords, out List<MethodModel> listOfEditedRecords)
         {
             listOfIncorrectRecords = new List<MethodModel>();
             listOfCorrectRecords = new List<MethodModel>();
@@ -2618,14 +2618,14 @@ namespace HydroServerToolsRepository.Repository
             //var objContext = ((IObjectContextAdapter)context).ObjectContext;
             var maxCount = itemList.Count;
             var count = 0;
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceGuid, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));    
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));    
 
 
             foreach (var item in itemList)
             {
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceGuid, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
                     count++;
  
                     var listOfErrors = new List<ErrorModel>();
@@ -2859,7 +2859,7 @@ namespace HydroServerToolsRepository.Repository
             return result;
         }
 
-        public void AddLabMethods(List<LabMethodModel> itemList, string entityConnectionString, Guid instanceGuid, out List<LabMethodModel> listOfIncorrectRecords, out List<LabMethodModel> listOfCorrectRecords, out List<LabMethodModel> listOfDuplicateRecords, out List<LabMethodModel> listOfEditedRecords)
+        public void AddLabMethods(List<LabMethodModel> itemList, string entityConnectionString, string instanceIdentifier, out List<LabMethodModel> listOfIncorrectRecords, out List<LabMethodModel> listOfCorrectRecords, out List<LabMethodModel> listOfDuplicateRecords, out List<LabMethodModel> listOfEditedRecords)
         {
             listOfIncorrectRecords = new List<LabMethodModel>();
             listOfCorrectRecords = new List<LabMethodModel>();
@@ -2873,14 +2873,14 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceGuid, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));    
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));    
 
             foreach (var item in itemList)
             {
 
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceGuid, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
                     count++;
 
                     var model = new LabMethod();
@@ -3185,7 +3185,7 @@ namespace HydroServerToolsRepository.Repository
             return result;
         }
 
-        public void AddSamples(List<SampleModel> itemList, string entityConnectionString, Guid instanceGuid, out List<SampleModel> listOfIncorrectRecords, out List<SampleModel> listOfCorrectRecords, out List<SampleModel> listOfDuplicateRecords, out List<SampleModel> listOfEditedRecords)
+        public void AddSamples(List<SampleModel> itemList, string entityConnectionString, string instanceIdentifier, out List<SampleModel> listOfIncorrectRecords, out List<SampleModel> listOfCorrectRecords, out List<SampleModel> listOfDuplicateRecords, out List<SampleModel> listOfEditedRecords)
         {
             listOfIncorrectRecords = new List<SampleModel>();
             listOfCorrectRecords = new List<SampleModel>();
@@ -3199,14 +3199,14 @@ namespace HydroServerToolsRepository.Repository
             var sampleTypeCV = context.SampleTypeCVs.ToList();
             var maxCount = itemList.Count;
             var count = 0;
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceGuid, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));    
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));    
 
             foreach (var item in itemList)
             {
 
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceGuid, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
                     count++;
 
                     var listOfErrors = new List<ErrorModel>();
@@ -3279,7 +3279,7 @@ namespace HydroServerToolsRepository.Repository
                                     }
                                     else
                                     {
-                                        var err = new ErrorModel("AddSamples", string.Format(Ressources.IMPORT_VALUE_NOT_IN_DATABASE, "LabMethodID")); listOfErrors.Add(err); isRejected = true;
+                                        var err = new ErrorModel("AddSamples", string.Format(Ressources.IMPORT_VALUE_NOT_IN_DATABASE,item.LabMethodID ,"LabMethod")); listOfErrors.Add(err); isRejected = true;
                                     }
                                 }
                                 else
@@ -3500,7 +3500,7 @@ namespace HydroServerToolsRepository.Repository
             return result;
         }
 
-        public void AddQualifiers(List<QualifiersModel> itemList, string entityConnectionString, Guid instanceGuid, out List<QualifiersModel> listOfIncorrectRecords, out List<QualifiersModel> listOfCorrectRecords, out List<QualifiersModel> listOfDuplicateRecords, out List<QualifiersModel> listOfEditedRecords)
+        public void AddQualifiers(List<QualifiersModel> itemList, string entityConnectionString, string instanceIdentifier, out List<QualifiersModel> listOfIncorrectRecords, out List<QualifiersModel> listOfCorrectRecords, out List<QualifiersModel> listOfDuplicateRecords, out List<QualifiersModel> listOfEditedRecords)
         {
             listOfIncorrectRecords = new List<QualifiersModel>();
             listOfCorrectRecords = new List<QualifiersModel>();
@@ -3512,14 +3512,14 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceGuid, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));    
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));    
 
             foreach (var item in itemList)
             {
 
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceGuid, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
                     count++;
 
                     var model = new Qualifier();
@@ -3744,7 +3744,7 @@ namespace HydroServerToolsRepository.Repository
             return result;
         }
 
-        public void AddQualityControlLevel(List<QualityControlLevelModel> itemList, string entityConnectionString, Guid instanceGuid, out List<QualityControlLevelModel> listOfIncorrectRecords, out List<QualityControlLevelModel> listOfCorrectRecords, out List<QualityControlLevelModel> listOfDuplicateRecords, out List<QualityControlLevelModel> listOfEditedRecords)
+        public void AddQualityControlLevel(List<QualityControlLevelModel> itemList, string entityConnectionString, string instanceIdentifier, out List<QualityControlLevelModel> listOfIncorrectRecords, out List<QualityControlLevelModel> listOfCorrectRecords, out List<QualityControlLevelModel> listOfDuplicateRecords, out List<QualityControlLevelModel> listOfEditedRecords)
         {
             listOfIncorrectRecords = new List<QualityControlLevelModel>();
             listOfCorrectRecords = new List<QualityControlLevelModel>();
@@ -3755,13 +3755,13 @@ namespace HydroServerToolsRepository.Repository
             var maxCount = itemList.Count;
             var count = 0;
 
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceGuid, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));    
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));    
 
             foreach (var item in itemList)
             {
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceGuid, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
                     count++;
                     
                     var model = new QualityControlLevel();
@@ -4132,7 +4132,7 @@ namespace HydroServerToolsRepository.Repository
             return result;
         }
 
-        public void AddDataValues(List<DataValuesModel> itemList, string entityConnectionString, Guid instanceGuid, out List<DataValuesModel> listOfIncorrectRecords, out List<DataValuesModel> listOfCorrectRecords, out List<DataValuesModel> listOfDuplicateRecords, out List<DataValuesModel> listOfEditedRecords)
+        public void AddDataValues(List<DataValuesModel> itemList, string entityConnectionString, string instanceIdentifier, out List<DataValuesModel> listOfIncorrectRecords, out List<DataValuesModel> listOfCorrectRecords, out List<DataValuesModel> listOfDuplicateRecords, out List<DataValuesModel> listOfEditedRecords)
         {
             listOfIncorrectRecords = new List<DataValuesModel>();
             listOfCorrectRecords = new List<DataValuesModel>();
@@ -4158,13 +4158,13 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceGuid, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));    
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));    
 
             foreach (var item in itemList)
             {
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceGuid, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
                     count++;
 
                     bool isRejected = false;
@@ -4870,7 +4870,7 @@ namespace HydroServerToolsRepository.Repository
             return result;
         }
 
-        public void AddGroupDescriptions(List<GroupDescriptionModel> itemList, string entityConnectionString, Guid instanceGuid, out List<GroupDescriptionModel> listOfIncorrectRecords, out List<GroupDescriptionModel> listOfCorrectRecords, out List<GroupDescriptionModel> listOfDuplicateRecords, out List<GroupDescriptionModel> listOfEditedRecords)
+        public void AddGroupDescriptions(List<GroupDescriptionModel> itemList, string entityConnectionString, string instanceIdentifier, out List<GroupDescriptionModel> listOfIncorrectRecords, out List<GroupDescriptionModel> listOfCorrectRecords, out List<GroupDescriptionModel> listOfDuplicateRecords, out List<GroupDescriptionModel> listOfEditedRecords)
         {
             listOfIncorrectRecords = new List<GroupDescriptionModel>();
             listOfCorrectRecords = new List<GroupDescriptionModel>();
@@ -4881,13 +4881,13 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceGuid, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));    
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));    
 
             foreach (var item in itemList)
             {
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceGuid, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
                     count++;
           
                     var model = new GroupDescription();
@@ -4973,6 +4973,7 @@ namespace HydroServerToolsRepository.Repository
     //  Groups
     public class GroupsRepository : IGroupsRepository
     {
+        public const string CacheName = "default";
 
         public List<GroupsModel> GetAll(string connectionString)
         {
@@ -5070,8 +5071,10 @@ namespace HydroServerToolsRepository.Repository
             return result;
         }
 
-        public void AddGroups(List<GroupsModel> itemList, string entityConnectionString, Guid instanceGuid, out List<GroupsModel> listOfIncorrectRecords, out List<GroupsModel> listOfCorrectRecords, out List<GroupsModel> listOfDuplicateRecords, out List<GroupsModel> listOfEditedRecords)
+        public void AddGroups(List<GroupsModel> itemList, string entityConnectionString, string instanceIdentifier, out List<GroupsModel> listOfIncorrectRecords, out List<GroupsModel> listOfCorrectRecords, out List<GroupsModel> listOfDuplicateRecords, out List<GroupsModel> listOfEditedRecords)
         {
+           
+            
             listOfIncorrectRecords = new List<GroupsModel>();
             listOfCorrectRecords = new List<GroupsModel>();
             listOfDuplicateRecords = new List<GroupsModel>();
@@ -5081,12 +5084,19 @@ namespace HydroServerToolsRepository.Repository
 
             var groupDescriptions = context.GroupDescriptions.ToList();
 
+            var maxCount = itemList.Count;
+            var count = 0;
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));    
+
 
             foreach (var item in itemList)
             {
 
                 try
                 {
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    count++;
+
                     var model = new Group();
                     var listOfErrors = new List<ErrorModel>();
                     bool isRejected = false;
@@ -5316,7 +5326,7 @@ namespace HydroServerToolsRepository.Repository
             return result;
         }
 
-        public void AddDerivedFrom(List<DerivedFromModel> itemList, string entityConnectionString, Guid instanceGuid, out List<DerivedFromModel> listOfIncorrectRecords, out List<DerivedFromModel> listOfCorrectRecords, out List<DerivedFromModel> listOfDuplicateRecords, out List<DerivedFromModel> listOfEditedRecords)
+        public void AddDerivedFrom(List<DerivedFromModel> itemList, string entityConnectionString, string instanceIdentifier, out List<DerivedFromModel> listOfIncorrectRecords, out List<DerivedFromModel> listOfCorrectRecords, out List<DerivedFromModel> listOfDuplicateRecords, out List<DerivedFromModel> listOfEditedRecords)
         {
             listOfIncorrectRecords = new List<DerivedFromModel>();
             listOfCorrectRecords = new List<DerivedFromModel>();
@@ -5329,14 +5339,14 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceGuid, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));    
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));    
 
             foreach (var item in itemList)
             {
 
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceGuid, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
                     count++;
 
                     var model = new DerivedFrom();
@@ -5575,7 +5585,7 @@ namespace HydroServerToolsRepository.Repository
             return result;
         }
 
-        public void AddCategories(List<CategoriesModel> itemList, string entityConnectionString, Guid instanceGuid, out List<CategoriesModel> listOfIncorrectRecords, out List<CategoriesModel> listOfCorrectRecords, out List<CategoriesModel> listOfDuplicateRecords, out List<CategoriesModel> listOfEditedRecords)
+        public void AddCategories(List<CategoriesModel> itemList, string entityConnectionString, string instanceIdentifier, out List<CategoriesModel> listOfIncorrectRecords, out List<CategoriesModel> listOfCorrectRecords, out List<CategoriesModel> listOfDuplicateRecords, out List<CategoriesModel> listOfEditedRecords)
         {
             listOfIncorrectRecords = new List<CategoriesModel>();
             listOfCorrectRecords = new List<CategoriesModel>();
@@ -5590,7 +5600,7 @@ namespace HydroServerToolsRepository.Repository
           
             var maxCount = itemList.Count;
             var count = 0;
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceGuid, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));    
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));    
 
             foreach (var item in itemList)
             {
@@ -5598,7 +5608,7 @@ namespace HydroServerToolsRepository.Repository
                 try
                 {
                     //Updating status
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceGuid, "default", Ressources.IMPORT_STATUS_EXTRACTNG);      
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, "default", Ressources.IMPORT_STATUS_EXTRACTNG);      
                     
                     var model = new Category();
                     var listOfErrors = new List<ErrorModel>();
@@ -5988,13 +5998,13 @@ namespace HydroServerToolsRepository.Repository
 
         }
 
-        public void UpdateSeriesCatalog(Guid instanceGuid, string entityConnectionstring)
+        public void UpdateSeriesCatalog(string instanceIdentifier, string entityConnectionstring)
         {
             //var s = Ressources.EFMODELDEF_IN_CONNECTIONSTRING;
             //var constring = "metadata=res://*/ODM_1_1_1EFModel.csdl|res://*/ODM_1_1_1EFModel.ssdl|res://*/ODM_1_1_1EFModel.msl;provider=System.Data.SqlClient;provider connection string=&quot; Data Source=tcp:bhi5g2ajst.database.windows.net,1433;Initial Catalog=HydroServertest2;User ID=HisCentralAdmin@bhi5g2ajst; Password=f3deratedResearch; Persist Security Info=true; MultipleActiveResultSets=True;App=EntityFramework";
             //var constring = "metadata=res://*/ODM_1_1_1EFModel.csdl|res://*/ODM_1_1_1EFModel.ssdl|res://*/ODM_1_1_1EFModel.msl;provider=System.Data.SqlClient;provider connection string=&quot;data source=mseul-cuahsi;initial catalog=HydroSample2;integrated security=true; MultipleActiveResultSets=True;App=EntityFramework";
             //var cleanedConnectionString = entityConnectionstring.Replace(s, string.Empty);
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceGuid, CacheName, Ressources.IMPORT_STATUS_TIMESERIES);    
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, Ressources.IMPORT_STATUS_TIMESERIES);    
 
             var ec = new EntityConnectionStringBuilder(entityConnectionstring);
             //clear SeriesCatolog table
@@ -6071,13 +6081,13 @@ namespace HydroServerToolsRepository.Repository
 
         }
 
-        public void UpdateSeriesCatalog2(Guid instanceGuid, List<DataValuesModel> listOfRecords, string entityConnectionstring)
+        public void UpdateSeriesCatalog2(string instanceIdentifier, List<DataValuesModel> listOfRecords, string entityConnectionstring)
         {
             //var s = Ressources.EFMODELDEF_IN_CONNECTIONSTRING;
             //var constring = "metadata=res://*/ODM_1_1_1EFModel.csdl|res://*/ODM_1_1_1EFModel.ssdl|res://*/ODM_1_1_1EFModel.msl;provider=System.Data.SqlClient;provider connection string=&quot; Data Source=tcp:bhi5g2ajst.database.windows.net,1433;Initial Catalog=HydroServertest2;User ID=HisCentralAdmin@bhi5g2ajst; Password=f3deratedResearch; Persist Security Info=true; MultipleActiveResultSets=True;App=EntityFramework";
             //var constring = "metadata=res://*/ODM_1_1_1EFModel.csdl|res://*/ODM_1_1_1EFModel.ssdl|res://*/ODM_1_1_1EFModel.msl;provider=System.Data.SqlClient;provider connection string=&quot;data source=mseul-cuahsi;initial catalog=HydroSample2;integrated security=true; MultipleActiveResultSets=True;App=EntityFramework";
             //var cleanedConnectionString = entityConnectionstring.Replace(s, string.Empty);
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceGuid, CacheName, Ressources.IMPORT_STATUS_TIMESERIES);
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, Ressources.IMPORT_STATUS_TIMESERIES);
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionstring);
 
             var rows = context.SeriesCatalogs.ToList();

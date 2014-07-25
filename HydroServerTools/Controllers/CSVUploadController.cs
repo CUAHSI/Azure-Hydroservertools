@@ -28,6 +28,8 @@ namespace HydroServerTools.Controllers
     public class CSVUploadController : Controller
     {
         public const string CacheName = "default";
+
+        public string identifier = MvcApplication.InstanceGuid + System.Web.HttpContext.Current.User.Identity.Name;
         //
         // GET: /CSVUpload/
         public ActionResult Index(ExternalLoginConfirmationViewModel model)
@@ -309,7 +311,7 @@ namespace HydroServerTools.Controllers
                     {
                         
                         //get new record to be added
-                        var listOfRecords = (List<SiteModel>)BusinessObjectsUtils.GetRecordsFromCache<SiteModel>(MvcApplication.InstanceGuid, index, CacheName);
+                        var listOfRecords = (List<SiteModel>)BusinessObjectsUtils.GetRecordsFromCache<SiteModel>(identifier, index, CacheName);
 
                         if (listOfRecords != null)
                         {
@@ -324,7 +326,7 @@ namespace HydroServerTools.Controllers
                                     HydroServerToolsRepository.Repository.RepositoryUtils.CommitUpdateRecords<SiteModel>(connectionString, id, listOfRecords);
                                 }
                                 
-                                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                                BusinessObjectsUtils.RemoveItemFromCache(identifier, CacheName, recordListname);
                                 return Json(new { success = true });
                             }
                         }
@@ -332,7 +334,7 @@ namespace HydroServerTools.Controllers
                     if (id == "variables")
                     {
                         //get new record to be added
-                        var listOfRecords = (List<VariablesModel>)BusinessObjectsUtils.GetRecordsFromCache<VariablesModel>(MvcApplication.InstanceGuid, index, CacheName);
+                        var listOfRecords = (List<VariablesModel>)BusinessObjectsUtils.GetRecordsFromCache<VariablesModel>(identifier, index, CacheName);
                         if (listOfRecords != null)
                         {
                             if (listOfRecords.Count > 0)
@@ -346,7 +348,7 @@ namespace HydroServerTools.Controllers
                                     HydroServerToolsRepository.Repository.RepositoryUtils.CommitUpdateRecords<VariablesModel>(connectionString, id, listOfRecords);
                                 }
 
-                                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                                BusinessObjectsUtils.RemoveItemFromCache(identifier, CacheName, recordListname);
                                 return Json(new { success = true });
                             }
                         }
@@ -354,7 +356,7 @@ namespace HydroServerTools.Controllers
                     if (id == "offsettypes")
                     {
                         //get new record to be added
-                        var listOfRecords = (List<OffsetTypesModel>)BusinessObjectsUtils.GetRecordsFromCache<OffsetTypesModel>(MvcApplication.InstanceGuid, index, CacheName);
+                        var listOfRecords = (List<OffsetTypesModel>)BusinessObjectsUtils.GetRecordsFromCache<OffsetTypesModel>(identifier, index, CacheName);
                         if (listOfRecords != null)
                         {
                             if (listOfRecords.Count > 0)
@@ -368,7 +370,7 @@ namespace HydroServerTools.Controllers
                                     HydroServerToolsRepository.Repository.RepositoryUtils.CommitUpdateRecords<OffsetTypesModel>(connectionString, id, listOfRecords);
                                 }
 
-                                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                                BusinessObjectsUtils.RemoveItemFromCache(identifier, CacheName, recordListname);
                                 return Json(new { success = true });
                             }
                         }
@@ -376,7 +378,7 @@ namespace HydroServerTools.Controllers
                     if (id == "isometadata")
                     {
                         //get new record to be added
-                        var listOfRecords = (List<ISOMetadataModel>)BusinessObjectsUtils.GetRecordsFromCache<ISOMetadataModel>(MvcApplication.InstanceGuid, index, CacheName);
+                        var listOfRecords = (List<ISOMetadataModel>)BusinessObjectsUtils.GetRecordsFromCache<ISOMetadataModel>(identifier, index, CacheName);
                         if (listOfRecords != null)
                         {
                             if (listOfRecords.Count > 0)
@@ -390,7 +392,7 @@ namespace HydroServerTools.Controllers
                                     HydroServerToolsRepository.Repository.RepositoryUtils.CommitUpdateRecords<ISOMetadataModel>(connectionString, id, listOfRecords);
                                 }
 
-                                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                                BusinessObjectsUtils.RemoveItemFromCache(identifier, CacheName, recordListname);
                                 return Json(new { success = true });
                             }
                         }
@@ -398,7 +400,7 @@ namespace HydroServerTools.Controllers
                     if (id == "sources")
                     {
                         //get new record to be added
-                        var listOfRecords = (List<SourcesModel>)BusinessObjectsUtils.GetRecordsFromCache<SourcesModel>(MvcApplication.InstanceGuid, index, CacheName);
+                        var listOfRecords = (List<SourcesModel>)BusinessObjectsUtils.GetRecordsFromCache<SourcesModel>(identifier, index, CacheName);
                         if (listOfRecords != null)
                         {
                             if (listOfRecords.Count > 0)
@@ -412,7 +414,7 @@ namespace HydroServerTools.Controllers
                                     HydroServerToolsRepository.Repository.RepositoryUtils.CommitUpdateRecords<SourcesModel>(connectionString, id, listOfRecords);
                                 }
 
-                                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                                BusinessObjectsUtils.RemoveItemFromCache(identifier, CacheName, recordListname);
                                 return Json(new { success = true });
                             }
                         }
@@ -420,7 +422,7 @@ namespace HydroServerTools.Controllers
                     if (id == "methods")
                     {
                         //get new record to be added
-                        var listOfRecords = (List<MethodModel>)BusinessObjectsUtils.GetRecordsFromCache<MethodModel>(MvcApplication.InstanceGuid, index, CacheName);
+                        var listOfRecords = (List<MethodModel>)BusinessObjectsUtils.GetRecordsFromCache<MethodModel>(identifier, index, CacheName);
                         if (listOfRecords != null)
                         {
                             if (listOfRecords.Count > 0)
@@ -434,7 +436,7 @@ namespace HydroServerTools.Controllers
                                     HydroServerToolsRepository.Repository.RepositoryUtils.CommitUpdateRecords<MethodModel>(connectionString, id, listOfRecords);
                                 }
 
-                                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                                BusinessObjectsUtils.RemoveItemFromCache(identifier, CacheName, recordListname);
                                 return Json(new { success = true });
                             }
                         }
@@ -442,7 +444,7 @@ namespace HydroServerTools.Controllers
                     if (id == "labmethods")
                     {
                         //get new record to be added
-                        var listOfRecords = (List<LabMethodModel>)BusinessObjectsUtils.GetRecordsFromCache<LabMethodModel>(MvcApplication.InstanceGuid, index, CacheName);
+                        var listOfRecords = (List<LabMethodModel>)BusinessObjectsUtils.GetRecordsFromCache<LabMethodModel>(identifier, index, CacheName);
                         if (listOfRecords != null)
                         {
                             if (listOfRecords.Count > 0)
@@ -456,7 +458,7 @@ namespace HydroServerTools.Controllers
                                     HydroServerToolsRepository.Repository.RepositoryUtils.CommitUpdateRecords<LabMethodModel>(connectionString, id, listOfRecords);
                                 }
 
-                                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                                BusinessObjectsUtils.RemoveItemFromCache(identifier, CacheName, recordListname);
                                 return Json(new { success = true });
                             }
                         }
@@ -464,7 +466,7 @@ namespace HydroServerTools.Controllers
                     if (id == "samples")
                     {
                         //get new record to be added
-                        var listOfRecords = (List<SampleModel>)BusinessObjectsUtils.GetRecordsFromCache<SampleModel>(MvcApplication.InstanceGuid, index, CacheName);
+                        var listOfRecords = (List<SampleModel>)BusinessObjectsUtils.GetRecordsFromCache<SampleModel>(identifier, index, CacheName);
                         if (listOfRecords != null)
                         {
                             if (listOfRecords.Count > 0)
@@ -478,7 +480,7 @@ namespace HydroServerTools.Controllers
                                     HydroServerToolsRepository.Repository.RepositoryUtils.CommitUpdateRecords<SampleModel>(connectionString, id, listOfRecords);
                                 }
 
-                                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                                BusinessObjectsUtils.RemoveItemFromCache(identifier, CacheName, recordListname);
                                 return Json(new { success = true });
                             }
                         }
@@ -486,7 +488,7 @@ namespace HydroServerTools.Controllers
                     if (id == "qualifiers")
                     {
                         //get new record to be added
-                        var listOfRecords = (List<QualifiersModel>)BusinessObjectsUtils.GetRecordsFromCache<QualifiersModel>(MvcApplication.InstanceGuid, index, CacheName);
+                        var listOfRecords = (List<QualifiersModel>)BusinessObjectsUtils.GetRecordsFromCache<QualifiersModel>(identifier, index, CacheName);
                         if (listOfRecords != null)
                         {
                             if (listOfRecords.Count > 0)
@@ -500,7 +502,7 @@ namespace HydroServerTools.Controllers
                                     HydroServerToolsRepository.Repository.RepositoryUtils.CommitUpdateRecords<QualifiersModel>(connectionString, id, listOfRecords);
                                 }
 
-                                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                                BusinessObjectsUtils.RemoveItemFromCache(identifier, CacheName, recordListname);
                                 return Json(new { success = true });
                             }
                         }
@@ -508,7 +510,7 @@ namespace HydroServerTools.Controllers
                     if (id == "qualitycontrollevels")
                     {
                         //get new record to be added
-                        var listOfRecords = (List<QualityControlLevelModel>)BusinessObjectsUtils.GetRecordsFromCache<QualityControlLevelModel>(MvcApplication.InstanceGuid, index, CacheName);
+                        var listOfRecords = (List<QualityControlLevelModel>)BusinessObjectsUtils.GetRecordsFromCache<QualityControlLevelModel>(identifier, index, CacheName);
                         if (listOfRecords != null)
                         {
                             if (listOfRecords.Count > 0)
@@ -522,7 +524,7 @@ namespace HydroServerTools.Controllers
                                     HydroServerToolsRepository.Repository.RepositoryUtils.CommitUpdateRecords<QualityControlLevelModel>(connectionString, id, listOfRecords);
                                 }
 
-                                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                                BusinessObjectsUtils.RemoveItemFromCache(identifier, CacheName, recordListname);
                                 return Json(new { success = true });
                             }
                         }
@@ -530,7 +532,7 @@ namespace HydroServerTools.Controllers
                     if (id == "datavalues")
                     {
                         //get new record to be added
-                        var listOfRecords = (List<DataValuesModel>)BusinessObjectsUtils.GetRecordsFromCache<DataValuesModel>(MvcApplication.InstanceGuid, index, CacheName);
+                        var listOfRecords = (List<DataValuesModel>)BusinessObjectsUtils.GetRecordsFromCache<DataValuesModel>(identifier, index, CacheName);
                         if (listOfRecords != null)
                         {
                             if (listOfRecords.Count > 0)
@@ -542,7 +544,7 @@ namespace HydroServerTools.Controllers
                                 
                                     var seriesCatalogRepository = new SeriesCatalogRepository();
                                     seriesCatalogRepository.deleteAll(connectionString);
-                                    seriesCatalogRepository.UpdateSeriesCatalog2(MvcApplication.InstanceGuid, listOfRecords, connectionString);
+                                    seriesCatalogRepository.UpdateSeriesCatalog2(identifier, listOfRecords, connectionString);
                                 }
                                 else
                                 {
@@ -551,7 +553,7 @@ namespace HydroServerTools.Controllers
                                 
                                
                                 
-                                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                                BusinessObjectsUtils.RemoveItemFromCache(identifier, CacheName, recordListname);
                                 return Json(new { success = true });
 
 
@@ -562,7 +564,7 @@ namespace HydroServerTools.Controllers
                     if (id == "groupdescriptions")
                     {
                         //get new record to be added
-                        var listOfRecords = (List<GroupDescriptionModel>)BusinessObjectsUtils.GetRecordsFromCache<GroupDescriptionModel>(MvcApplication.InstanceGuid, index, CacheName);
+                        var listOfRecords = (List<GroupDescriptionModel>)BusinessObjectsUtils.GetRecordsFromCache<GroupDescriptionModel>(identifier, index, CacheName);
                         if (listOfRecords != null)
                         {
                             if (listOfRecords.Count > 0)
@@ -575,7 +577,7 @@ namespace HydroServerTools.Controllers
                                 {
                                     HydroServerToolsRepository.Repository.RepositoryUtils.CommitUpdateRecords<GroupDescriptionModel>(connectionString, id, listOfRecords);
                                 }
-                                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                                BusinessObjectsUtils.RemoveItemFromCache(identifier, CacheName, recordListname);
                                 return Json(new { success = true });
                             }
                         }
@@ -583,7 +585,7 @@ namespace HydroServerTools.Controllers
                     if (id == "groups")
                     {
                         //get new record to be added
-                        var listOfRecords = (List<GroupsModel>)BusinessObjectsUtils.GetRecordsFromCache<GroupsModel>(MvcApplication.InstanceGuid, index, CacheName);
+                        var listOfRecords = (List<GroupsModel>)BusinessObjectsUtils.GetRecordsFromCache<GroupsModel>(identifier, index, CacheName);
                         if (listOfRecords != null)
                         {
                             if (listOfRecords.Count > 0)
@@ -596,7 +598,7 @@ namespace HydroServerTools.Controllers
                                 {
                                     HydroServerToolsRepository.Repository.RepositoryUtils.CommitUpdateRecords<GroupsModel>(connectionString, id, listOfRecords);
                                 }
-                                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                                BusinessObjectsUtils.RemoveItemFromCache(identifier, CacheName, recordListname);
                                 return Json(new { success = true });
                             }
                         }
@@ -604,7 +606,7 @@ namespace HydroServerTools.Controllers
                     if (id == "derivedfrom")
                     {
                         //get new record to be added
-                        var listOfRecords = (List<DerivedFromModel>)BusinessObjectsUtils.GetRecordsFromCache<DerivedFromModel>(MvcApplication.InstanceGuid, index, CacheName);
+                        var listOfRecords = (List<DerivedFromModel>)BusinessObjectsUtils.GetRecordsFromCache<DerivedFromModel>(identifier, index, CacheName);
                         if (listOfRecords != null)
                         {
                             if (listOfRecords.Count > 0)
@@ -617,7 +619,7 @@ namespace HydroServerTools.Controllers
                                 {
                                     HydroServerToolsRepository.Repository.RepositoryUtils.CommitUpdateRecords<DerivedFromModel>(connectionString, id, listOfRecords);
                                 }
-                                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                                BusinessObjectsUtils.RemoveItemFromCache(identifier, CacheName, recordListname);
                                 return Json(new { success = true });
                             }
                         }
@@ -625,7 +627,7 @@ namespace HydroServerTools.Controllers
                     if (id == "categories")
                     {
                         //get new record to be added
-                        var listOfRecords = (List<CategoriesModel>)BusinessObjectsUtils.GetRecordsFromCache<CategoriesModel>(MvcApplication.InstanceGuid, index, CacheName);
+                        var listOfRecords = (List<CategoriesModel>)BusinessObjectsUtils.GetRecordsFromCache<CategoriesModel>(identifier, index, CacheName);
                         if (listOfRecords != null)
                         {
                             if (listOfRecords.Count > 0)
@@ -638,7 +640,7 @@ namespace HydroServerTools.Controllers
                                 {
                                     HydroServerToolsRepository.Repository.RepositoryUtils.CommitUpdateRecords<CategoriesModel>(connectionString, id, listOfRecords);
                                 }
-                                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, recordListname);
+                                BusinessObjectsUtils.RemoveItemFromCache(identifier, CacheName, recordListname);
                                 return Json(new { success = true });
                             }
                         }
@@ -666,10 +668,10 @@ namespace HydroServerTools.Controllers
         {
             try
             {
-                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, "listOfCorrectRecords");
-                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, "listOfIncorrectRecords");
-                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, "listOfEditedRecords");
-                BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, "listOfDuplicateRecords");
+                BusinessObjectsUtils.RemoveItemFromCache(identifier, CacheName, "listOfCorrectRecords");
+                BusinessObjectsUtils.RemoveItemFromCache(identifier, CacheName, "listOfIncorrectRecords");
+                BusinessObjectsUtils.RemoveItemFromCache(identifier, CacheName, "listOfEditedRecords");
+                BusinessObjectsUtils.RemoveItemFromCache(identifier, CacheName, "listOfDuplicateRecords");
 
                 //return new RedirectResult("http://www.google.com");
 
@@ -692,72 +694,72 @@ namespace HydroServerTools.Controllers
              
             if (viewName == "sites")
             {
-                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<SiteModel>(MvcApplication.InstanceGuid, "default");
+                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<SiteModel>(identifier, "default");
             }
 
             if (viewName == "variables")
             {
-                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<VariablesModel>(MvcApplication.InstanceGuid, "default");
+                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<VariablesModel>(identifier, "default");
             }
 
             if (viewName == "offsettypes")
             {
-                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<OffsetTypesModel>(MvcApplication.InstanceGuid, "default");
+                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<OffsetTypesModel>(identifier, "default");
             }
 
             if (viewName == "sources")
             {
-                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<SourcesModel>(MvcApplication.InstanceGuid, "default");
+                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<SourcesModel>(identifier, "default");
             }
 
             if (viewName == "methods")
             {
-                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<MethodModel>(MvcApplication.InstanceGuid, "default");
+                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<MethodModel>(identifier, "default");
             }
 
             if (viewName == "labmethods")
             {
-                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<LabMethodModel>(MvcApplication.InstanceGuid, "default");
+                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<LabMethodModel>(identifier, "default");
             }
 
             if (viewName == "samples")
             {
-                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<SampleModel>(MvcApplication.InstanceGuid, "default");
+                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<SampleModel>(identifier, "default");
             }
 
             if (viewName == "qualifiers")
             {
-                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<QualifiersModel>(MvcApplication.InstanceGuid, "default");
+                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<QualifiersModel>(identifier, "default");
             }
 
             if (viewName == "qualitycontrollevels")
             {
-                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<QualityControlLevelModel>(MvcApplication.InstanceGuid, "default");
+                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<QualityControlLevelModel>(identifier, "default");
             }
 
             if (viewName == "datavalues")
             {
-                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<DataValuesModel>(MvcApplication.InstanceGuid, "default");
+                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<DataValuesModel>(identifier, "default");
             }
 
             if (viewName == "groupdescriptions")
             {
-                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<GroupDescriptionModel>(MvcApplication.InstanceGuid, "default");
+                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<GroupDescriptionModel>(identifier, "default");
             }
 
             if (viewName == "groups")
             {
-                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<GroupsModel>(MvcApplication.InstanceGuid, "default");
+                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<GroupsModel>(identifier, "default");
             }
 
             if (viewName == "derivedfrom")
             {
-                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<DerivedFromModel>(MvcApplication.InstanceGuid, "default");
+                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<DerivedFromModel>(identifier, "default");
             }
 
             if (viewName == "categories")
             {
-                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<CategoriesModel>(MvcApplication.InstanceGuid, "default");
+                uploadStatisticsModel = BusinessObjectsUtils.GetUploadStatsFromCache<CategoriesModel>(identifier, "default");
             }
             var serializer = new JavaScriptSerializer();
 
@@ -778,7 +780,7 @@ namespace HydroServerTools.Controllers
             var listOfRecords = new List<SiteModel>();
             List<SiteModel> items = new List<SiteModel>();
 
-            listOfRecords = (List<SiteModel>)BusinessObjectsUtils.GetRecordsFromCache<SiteModel>(MvcApplication.InstanceGuid, id, CacheName);
+            listOfRecords = (List<SiteModel>)BusinessObjectsUtils.GetRecordsFromCache<SiteModel>(identifier, id, CacheName);
               if (listOfRecords == null) 
               {
                   //return Json( new { error = "true" });
@@ -985,7 +987,7 @@ namespace HydroServerTools.Controllers
             var listOfRecords = new List<VariablesModel>();
             List<VariablesModel> items = new List<VariablesModel>();
 
-            listOfRecords = (List<VariablesModel>)BusinessObjectsUtils.GetRecordsFromCache<VariablesModel>(MvcApplication.InstanceGuid, id, "default");
+            listOfRecords = (List<VariablesModel>)BusinessObjectsUtils.GetRecordsFromCache<VariablesModel>(identifier, id, "default");
 
             var sortedColumns = jQueryDataTablesModel.GetSortedColumns();
 
@@ -1160,7 +1162,7 @@ namespace HydroServerTools.Controllers
             var listOfRecords = new List<OffsetTypesModel>();
             List<OffsetTypesModel> items = new List<OffsetTypesModel>();
 
-            listOfRecords = (List<OffsetTypesModel>)BusinessObjectsUtils.GetRecordsFromCache<OffsetTypesModel>(MvcApplication.InstanceGuid, id, "default");
+            listOfRecords = (List<OffsetTypesModel>)BusinessObjectsUtils.GetRecordsFromCache<OffsetTypesModel>(identifier, id, "default");
 
             var sortedColumns = jQueryDataTablesModel.GetSortedColumns();
 
@@ -1268,7 +1270,7 @@ namespace HydroServerTools.Controllers
             var listOfRecords = new List<SourcesModel>();
             List<SourcesModel> items = new List<SourcesModel>();
 
-            listOfRecords = (List<SourcesModel>)BusinessObjectsUtils.GetRecordsFromCache<SourcesModel>(MvcApplication.InstanceGuid, id, "default");
+            listOfRecords = (List<SourcesModel>)BusinessObjectsUtils.GetRecordsFromCache<SourcesModel>(identifier, id, "default");
 
             var sortedColumns = jQueryDataTablesModel.GetSortedColumns();
 
@@ -1486,7 +1488,7 @@ namespace HydroServerTools.Controllers
             var listOfRecords = new List<MethodModel>();
             List<MethodModel> items = new List<MethodModel>();
 
-            listOfRecords = (List<MethodModel>)BusinessObjectsUtils.GetRecordsFromCache<MethodModel>(MvcApplication.InstanceGuid, id, "default");
+            listOfRecords = (List<MethodModel>)BusinessObjectsUtils.GetRecordsFromCache<MethodModel>(identifier, id, "default");
 
             var sortedColumns = jQueryDataTablesModel.GetSortedColumns();
 
@@ -1594,7 +1596,7 @@ namespace HydroServerTools.Controllers
             var listOfRecords = new List<LabMethodModel>();
             List<LabMethodModel> items = new List<LabMethodModel>();
 
-            listOfRecords = (List<LabMethodModel>)BusinessObjectsUtils.GetRecordsFromCache<LabMethodModel>(MvcApplication.InstanceGuid, id, "default");
+            listOfRecords = (List<LabMethodModel>)BusinessObjectsUtils.GetRecordsFromCache<LabMethodModel>(identifier, id, "default");
 
             var sortedColumns = jQueryDataTablesModel.GetSortedColumns();
 
@@ -1726,7 +1728,7 @@ namespace HydroServerTools.Controllers
             var listOfRecords = new List<SampleModel>();
             List<SampleModel> items = new List<SampleModel>();
 
-            listOfRecords = (List<SampleModel>)BusinessObjectsUtils.GetRecordsFromCache<SampleModel>(MvcApplication.InstanceGuid, id, "default");
+            listOfRecords = (List<SampleModel>)BusinessObjectsUtils.GetRecordsFromCache<SampleModel>(identifier, id, "default");
 
             var sortedColumns = jQueryDataTablesModel.GetSortedColumns();
 
@@ -1850,7 +1852,7 @@ namespace HydroServerTools.Controllers
             var listOfRecords = new List<QualifiersModel>();
             List<QualifiersModel> items = new List<QualifiersModel>();
 
-            listOfRecords = (List<QualifiersModel>)BusinessObjectsUtils.GetRecordsFromCache<QualifiersModel>(MvcApplication.InstanceGuid, id, "default");
+            listOfRecords = (List<QualifiersModel>)BusinessObjectsUtils.GetRecordsFromCache<QualifiersModel>(identifier, id, "default");
 
             var sortedColumns = jQueryDataTablesModel.GetSortedColumns();
 
@@ -1958,7 +1960,7 @@ namespace HydroServerTools.Controllers
             var listOfRecords = new List<QualityControlLevelModel>();
             List<QualityControlLevelModel> items = new List<QualityControlLevelModel>();
 
-            listOfRecords = (List<QualityControlLevelModel>)BusinessObjectsUtils.GetRecordsFromCache<QualityControlLevelModel>(MvcApplication.InstanceGuid, id, "default");
+            listOfRecords = (List<QualityControlLevelModel>)BusinessObjectsUtils.GetRecordsFromCache<QualityControlLevelModel>(identifier, id, "default");
 
             var sortedColumns = jQueryDataTablesModel.GetSortedColumns();
 
@@ -2068,7 +2070,7 @@ namespace HydroServerTools.Controllers
 
             var sortedColumns = jQueryDataTablesModel.GetSortedColumns();
 
-            listOfRecords = BusinessObjectsUtils.GetRecordsFromCache<DataValuesModel>(MvcApplication.InstanceGuid, id, "default");
+            listOfRecords = BusinessObjectsUtils.GetRecordsFromCache<DataValuesModel>(identifier, id, "default");
             //initial value
             if (listOfRecords != null)
             {
@@ -2276,7 +2278,7 @@ namespace HydroServerTools.Controllers
             var listOfRecords = new List<GroupDescriptionModel>();
             List<GroupDescriptionModel> items = new List<GroupDescriptionModel>();
 
-            listOfRecords = (List<GroupDescriptionModel>)BusinessObjectsUtils.GetRecordsFromCache<GroupDescriptionModel>(MvcApplication.InstanceGuid, id, "default");
+            listOfRecords = (List<GroupDescriptionModel>)BusinessObjectsUtils.GetRecordsFromCache<GroupDescriptionModel>(identifier, id, "default");
 
             var sortedColumns = jQueryDataTablesModel.GetSortedColumns();
 
@@ -2375,7 +2377,7 @@ namespace HydroServerTools.Controllers
             var listOfRecords = new List<GroupsModel>();
             List<GroupsModel> items = new List<GroupsModel>();
 
-            listOfRecords = (List<GroupsModel>)BusinessObjectsUtils.GetRecordsFromCache<GroupsModel>(MvcApplication.InstanceGuid, id, "default");
+            listOfRecords = (List<GroupsModel>)BusinessObjectsUtils.GetRecordsFromCache<GroupsModel>(identifier, id, "default");
 
             var sortedColumns = jQueryDataTablesModel.GetSortedColumns();
 
@@ -2476,7 +2478,7 @@ namespace HydroServerTools.Controllers
             var listOfRecords = new List<DerivedFromModel>();
             List<DerivedFromModel> items = new List<DerivedFromModel>();
 
-            listOfRecords = (List<DerivedFromModel>)BusinessObjectsUtils.GetRecordsFromCache<DerivedFromModel>(MvcApplication.InstanceGuid, id, "default");
+            listOfRecords = (List<DerivedFromModel>)BusinessObjectsUtils.GetRecordsFromCache<DerivedFromModel>(identifier, id, "default");
 
             var sortedColumns = jQueryDataTablesModel.GetSortedColumns();
 
@@ -2577,7 +2579,7 @@ namespace HydroServerTools.Controllers
             var listOfRecords = new List<CategoriesModel>();
             List<CategoriesModel> items = new List<CategoriesModel>();
 
-            listOfRecords = (List<CategoriesModel>)BusinessObjectsUtils.GetRecordsFromCache<CategoriesModel>(MvcApplication.InstanceGuid, id, "default");
+            listOfRecords = (List<CategoriesModel>)BusinessObjectsUtils.GetRecordsFromCache<CategoriesModel>(identifier, id, "default");
 
             var sortedColumns = jQueryDataTablesModel.GetSortedColumns();
 

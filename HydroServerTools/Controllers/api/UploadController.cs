@@ -24,6 +24,8 @@ namespace HydroServerTools.Controllers.WebApi
     public class UploadController : ApiController
     {
         public const string CacheName = "default";
+
+        public string instanceIdentifier = MvcApplication.InstanceGuid + HttpContext.Current.User.Identity.Name;
         
         // Enable both Get and Post so that our jquery call can send data, and get a status
         [HttpGet]
@@ -51,11 +53,11 @@ namespace HydroServerTools.Controllers.WebApi
                     //hack to provide unique id, work around the problem with the session and google ID
                    // HttpContext.Current.User.Identity.Name;
 
-                    BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, "listOfCorrectRecords");
-                    BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, "listOfIncorrectRecords");
-                    BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, "listOfEditedRecords");
-                    BusinessObjectsUtils.RemoveItemFromCache(MvcApplication.InstanceGuid, CacheName, "listOfDuplicateRecords");
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(MvcApplication.InstanceGuid, CacheName, Ressources.IMPORT_STATUS_UPLOAD);                   
+                    BusinessObjectsUtils.RemoveItemFromCache(instanceIdentifier, CacheName, "listOfCorrectRecords");
+                    BusinessObjectsUtils.RemoveItemFromCache(instanceIdentifier, CacheName, "listOfIncorrectRecords");
+                    BusinessObjectsUtils.RemoveItemFromCache(instanceIdentifier, CacheName, "listOfEditedRecords");
+                    BusinessObjectsUtils.RemoveItemFromCache(instanceIdentifier, CacheName, "listOfDuplicateRecords");
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, Ressources.IMPORT_STATUS_UPLOAD);                   
                     
                  }
                 //var viewName = httpContext.Request.Form["identifier"];
@@ -175,7 +177,7 @@ namespace HydroServerTools.Controllers.WebApi
                         {
                             var repository = new SitesRepository();
 
-                            repository.AddSites(values, entityConnectionString, MvcApplication.InstanceGuid, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
+                            repository.AddSites(values, entityConnectionString,instanceIdentifier, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
 
                             PutRecordsInCache<SiteModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords);                   
                         }
@@ -218,7 +220,7 @@ namespace HydroServerTools.Controllers.WebApi
                     {
                         var repository = new VariablesRepository();
 
-                        repository.AddVariables(values, entityConnectionString, MvcApplication.InstanceGuid,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
+                        repository.AddVariables(values, entityConnectionString, instanceIdentifier,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
            
                     }
 
@@ -254,7 +256,7 @@ namespace HydroServerTools.Controllers.WebApi
                     {
                         var repository = new OffsetTypesRepository();
 
-                        repository.AddOffsetTypes(values, entityConnectionString, MvcApplication.InstanceGuid,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
+                        repository.AddOffsetTypes(values, entityConnectionString,instanceIdentifier,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
                     }
 
                     PutRecordsInCache<OffsetTypesModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords);
@@ -289,7 +291,7 @@ namespace HydroServerTools.Controllers.WebApi
                     {
                         var repository = new SourcesRepository();
 
-                        repository.AddSources(values, entityConnectionString, MvcApplication.InstanceGuid,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
+                        repository.AddSources(values, entityConnectionString,instanceIdentifier,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
                     }
 
                     PutRecordsInCache<SourcesModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords);
@@ -324,7 +326,7 @@ namespace HydroServerTools.Controllers.WebApi
                     {
                         var repository = new MethodsRepository();
 
-                        repository.AddMethods(values, entityConnectionString, MvcApplication.InstanceGuid,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
+                        repository.AddMethods(values, entityConnectionString,instanceIdentifier,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
                     }
 
                     PutRecordsInCache<MethodModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords);
@@ -359,7 +361,7 @@ namespace HydroServerTools.Controllers.WebApi
                     {
                         var repository = new LabMethodsRepository();
 
-                        repository.AddLabMethods(values, entityConnectionString, MvcApplication.InstanceGuid,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
+                        repository.AddLabMethods(values, entityConnectionString,instanceIdentifier,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
                     }
 
                     PutRecordsInCache<LabMethodModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords);
@@ -394,7 +396,7 @@ namespace HydroServerTools.Controllers.WebApi
                     {
                         var repository = new SamplesRepository();
 
-                        repository.AddSamples(values, entityConnectionString, MvcApplication.InstanceGuid,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
+                        repository.AddSamples(values, entityConnectionString,instanceIdentifier,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
                     }
 
                     PutRecordsInCache<SampleModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords);
@@ -429,7 +431,7 @@ namespace HydroServerTools.Controllers.WebApi
                     {
                         var repository = new QualifiersRepository();
 
-                        repository.AddQualifiers(values, entityConnectionString, MvcApplication.InstanceGuid,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
+                        repository.AddQualifiers(values, entityConnectionString,instanceIdentifier,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
                     }
 
                     PutRecordsInCache<QualifiersModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords);
@@ -464,7 +466,7 @@ namespace HydroServerTools.Controllers.WebApi
                     {
                         var repository = new QualityControlLevelsRepository();
 
-                        repository.AddQualityControlLevel(values, entityConnectionString, MvcApplication.InstanceGuid,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
+                        repository.AddQualityControlLevel(values, entityConnectionString,instanceIdentifier,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
                     }
 
                     PutRecordsInCache<QualityControlLevelModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords);
@@ -498,7 +500,7 @@ namespace HydroServerTools.Controllers.WebApi
                     {
                         var repository = new DataValuesRepository();
 
-                        repository.AddDataValues(values, entityConnectionString, MvcApplication.InstanceGuid,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
+                        repository.AddDataValues(values, entityConnectionString,instanceIdentifier,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
                         ////update Seriescatalog
                         //if (listOfCorrectRecords.Count() > 0)
                         //{
@@ -539,7 +541,7 @@ namespace HydroServerTools.Controllers.WebApi
                     {
                         var repository = new GroupDescriptionsRepository();
 
-                        repository.AddGroupDescriptions(values, entityConnectionString, MvcApplication.InstanceGuid,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
+                        repository.AddGroupDescriptions(values, entityConnectionString,instanceIdentifier,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
                     }
 
                     PutRecordsInCache<GroupDescriptionModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords);
@@ -573,7 +575,7 @@ namespace HydroServerTools.Controllers.WebApi
                     {
                         var repository = new GroupsRepository();
 
-                        repository.AddGroups(values, entityConnectionString, MvcApplication.InstanceGuid,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
+                        repository.AddGroups(values, entityConnectionString,instanceIdentifier,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
                     }
 
                     PutRecordsInCache<GroupsModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords);
@@ -608,7 +610,7 @@ namespace HydroServerTools.Controllers.WebApi
                     {
                         var repository = new DerivedFromRepository();
 
-                        repository.AddDerivedFrom(values, entityConnectionString, MvcApplication.InstanceGuid,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
+                        repository.AddDerivedFrom(values, entityConnectionString,instanceIdentifier,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
                     }
 
                     PutRecordsInCache<DerivedFromModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords);
@@ -645,7 +647,7 @@ namespace HydroServerTools.Controllers.WebApi
 
                         var repository = new CategoriesRepository();
 
-                        repository.AddCategories(values, entityConnectionString, MvcApplication.InstanceGuid,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
+                        repository.AddCategories(values, entityConnectionString,instanceIdentifier,  out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
                     }
 
                     PutRecordsInCache<CategoriesModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords);
@@ -679,7 +681,7 @@ namespace HydroServerTools.Controllers.WebApi
             else
             {
                 DataCache cache = new DataCache("default");
-                var identifier = MvcApplication.InstanceGuid;
+                var identifier = MvcApplication.InstanceGuid + System.Web.HttpContext.Current.User.Identity.Name;
                 if (cache.Get(identifier + "listOfCorrectRecords") == null) cache.Add(identifier + "listOfCorrectRecords", listOfCorrectRecords); else cache.Put(identifier + "listOfCorrectRecords", listOfCorrectRecords);
                 if (cache.Get(identifier + "listOfIncorrectRecords") == null) cache.Add(identifier + "listOfIncorrectRecords", listOfIncorrectRecords); else cache.Put(identifier + "listOfIncorrectRecords", listOfIncorrectRecords);
                 if (cache.Get(identifier + "listOfEditedRecords") == null) cache.Add(identifier + "listOfEditedRecords", listOfEditedRecords); else cache.Put(identifier + "listOfEditedRecords", listOfEditedRecords);
@@ -695,10 +697,12 @@ namespace HydroServerTools.Controllers.WebApi
             StreamReader reader = null;
             var outFolder = "";
 
+            string instanceIdentifier = MvcApplication.InstanceGuid + HttpContext.Current.User.Identity.Name;
+
             if (file.FileName.ToLower().EndsWith(".zip"))
             {
                //Updating status
-                BusinessObjectsUtils.UpdateCachedprocessStatusMessage(MvcApplication.InstanceGuid, CacheName, Ressources.IMPORT_STATUS_EXTRACTNG);        
+                BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, Ressources.IMPORT_STATUS_EXTRACTNG);        
 
                 file.InputStream.Position = 0;
 

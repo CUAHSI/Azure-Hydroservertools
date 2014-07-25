@@ -674,6 +674,7 @@
     <Content Include="Templates\ODMGuide.xlsx" />
     <Content Include="Views\Home\GoogleForm.cshtml" />
     <Content Include="Views\Account\LocalLogin.cshtml" />
+    <Content Include="Templates\UserGuide.pdf" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -46,6 +46,7 @@ $(function () {
                 $('#startupload').addClass('disabled');
                 $('#reset').addClass('disabled');
                 $('#loading').removeClass('hide');
+                $('#reset').unbind('click')
                 data.submit();
 
                 intervalId = setInterval(function () {
@@ -89,6 +90,7 @@ $(function () {
             var returnedMessage = "An Error occured. Please resubmit the file. If the problem persists please validate the content or contact user suport";
             if (typeof data.jqXHR.responseJSON.Message != "undefined") returnedMessage = data.jqXHR.responseJSON.Message;
 
+            resetButtons();
             alert(returnedMessage);
 
         }
@@ -112,6 +114,7 @@ $(function () {
     }
     $('#reset').on('click', function (e) {
         reset_form_element($('#fileupload'));
+        $('.fileinput-button').removeClass('disabled');
         $('#filelistholder').text("");
         $('#startupload').unbind('click')
         $('#startupload').addClass("disabled");
@@ -133,7 +136,18 @@ $(function () {
         return isValid;
 
     }
+    function resetButtons()
+    {
 
+        $('.fileinput-button').removeClass('disabled');
+        $('#filelistholder').text("");
+        $('#startupload').unbind('click')
+        $('#startupload').addClass("disabled");
+        $('#reset').addClass("disabled");
+        $('#loading').addClass('hide');
+
+
+    }
 
     function updateMonitor(status, progress) {
         $('#monitor').html(progress);

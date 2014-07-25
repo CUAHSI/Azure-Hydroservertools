@@ -7,7 +7,7 @@
 
     <ul class="nav navbar-nav navbar-right">
         <li>
-            @Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Manage" })
+            @Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Index", "Home", routeValues: null, htmlAttributes: new { area = "", title = "Manage" })
         </li>
         @*<li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
         <li><a href='https://www.google.com/accounts/Logout?continue=https://appengine.google.com/_ah/logout?continue=http://www.google.com'>Google Log off</a></li>*@      
@@ -19,7 +19,7 @@ else
 {
     <ul class="nav navbar-nav navbar-right">
        @* <li>@Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>*@
-        <li>@Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+        <li>@Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { area = "", id = "loginLink" })</li>
     </ul>
 }
 

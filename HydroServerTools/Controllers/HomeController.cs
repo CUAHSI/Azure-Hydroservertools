@@ -165,12 +165,13 @@ namespace HydroServerTools.Controllers
         {
             return View();
         }
+      
         [Authorize]
         public ActionResult ClearTablesHandler(FormCollection collection)
         {
-            string connectionName = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name.ToString());
+            string entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name.ToString());
 
-            var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
+            //var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
             //"Sites", "Variables", "OffsetTypes", "ISOMetadata", "Sources", "Methods", "LabMethods", "Samples", "Qualifiers", "QualityControlLevels", "DataValues", "GroupDescriptions", "Groups", "DerivedFrom", "Categories"};
 
             //Sites
@@ -218,7 +219,7 @@ namespace HydroServerTools.Controllers
         public ActionResult Progress()
         {
             DataCache cache = new DataCache("default");
-            var identifier = MvcApplication.InstanceGuid;
+            var identifier = MvcApplication.InstanceGuid + User.Identity.Name;
             string StatusMessage = "Uploading...";
             if (cache.Get(identifier + "processStatus") != null)
             {

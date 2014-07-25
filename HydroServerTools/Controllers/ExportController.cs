@@ -19,6 +19,8 @@ namespace HydroServerTools.Controllers
     public class ExportController : Controller
     {
         //
+        public string instanceIdentifier = MvcApplication.InstanceGuid + System.Web.HttpContext.Current.User.Identity.Name;
+
         // GET: /Export/
         public FileStreamResult Download(int identifier, string viewName)
         {
@@ -45,7 +47,7 @@ namespace HydroServerTools.Controllers
             if (viewName == "sites")
             {
 
-                var listOfRecords = (List<SiteModel>)BusinessObjectsUtils.GetRecordsFromCache<SiteModel>(MvcApplication.InstanceGuid, identifier, "default");
+                var listOfRecords = (List<SiteModel>)BusinessObjectsUtils.GetRecordsFromCache<SiteModel>(instanceIdentifier, identifier, "default");
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
@@ -54,7 +56,7 @@ namespace HydroServerTools.Controllers
             }
             if (viewName == "variables")
             {
-                var listOfRecords = (List<VariablesModel>)BusinessObjectsUtils.GetRecordsFromCache<VariablesModel>(MvcApplication.InstanceGuid, identifier, "default");
+                var listOfRecords = (List<VariablesModel>)BusinessObjectsUtils.GetRecordsFromCache<VariablesModel>(instanceIdentifier, identifier, "default");
                 var result = WriteCsvToMemory(listOfRecords);
 
                 var memoryStream = new MemoryStream(result);
@@ -63,7 +65,7 @@ namespace HydroServerTools.Controllers
             if (viewName == "offsettypes")
             {
 
-                var listOfRecords = (List<OffsetTypesModel>)BusinessObjectsUtils.GetRecordsFromCache<OffsetTypesModel>(MvcApplication.InstanceGuid, identifier, "default");
+                var listOfRecords = (List<OffsetTypesModel>)BusinessObjectsUtils.GetRecordsFromCache<OffsetTypesModel>(instanceIdentifier, identifier, "default");
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
@@ -72,7 +74,7 @@ namespace HydroServerTools.Controllers
             if (viewName == "sources")
             {
 
-                var listOfRecords = (List<SourcesModel>)BusinessObjectsUtils.GetRecordsFromCache<SourcesModel>(MvcApplication.InstanceGuid, identifier, "default");
+                var listOfRecords = (List<SourcesModel>)BusinessObjectsUtils.GetRecordsFromCache<SourcesModel>(instanceIdentifier, identifier, "default");
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
@@ -80,7 +82,7 @@ namespace HydroServerTools.Controllers
             }
             if (viewName == "methods")
             {
-                var listOfRecords = (List<MethodModel>)BusinessObjectsUtils.GetRecordsFromCache<MethodModel>(MvcApplication.InstanceGuid, identifier, "default");
+                var listOfRecords = (List<MethodModel>)BusinessObjectsUtils.GetRecordsFromCache<MethodModel>(instanceIdentifier, identifier, "default");
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
@@ -88,7 +90,7 @@ namespace HydroServerTools.Controllers
             }
             if (viewName == "labmethods")
             {
-                var listOfRecords = (List<LabMethodModel>)BusinessObjectsUtils.GetRecordsFromCache<LabMethodModel>(MvcApplication.InstanceGuid, identifier, "default");
+                var listOfRecords = (List<LabMethodModel>)BusinessObjectsUtils.GetRecordsFromCache<LabMethodModel>(instanceIdentifier, identifier, "default");
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
@@ -96,7 +98,7 @@ namespace HydroServerTools.Controllers
             }
             if (viewName == "samples")
             {
-                var listOfRecords = (List<SampleModel>)BusinessObjectsUtils.GetRecordsFromCache<SampleModel>(MvcApplication.InstanceGuid, identifier, "default");
+                var listOfRecords = (List<SampleModel>)BusinessObjectsUtils.GetRecordsFromCache<SampleModel>(instanceIdentifier, identifier, "default");
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
@@ -104,7 +106,7 @@ namespace HydroServerTools.Controllers
             }
             if (viewName == "qualifiers")
             {
-                var listOfRecords = (List<QualifiersModel>)BusinessObjectsUtils.GetRecordsFromCache<QualifiersModel>(MvcApplication.InstanceGuid, identifier, "default");
+                var listOfRecords = (List<QualifiersModel>)BusinessObjectsUtils.GetRecordsFromCache<QualifiersModel>(instanceIdentifier, identifier, "default");
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
@@ -112,7 +114,7 @@ namespace HydroServerTools.Controllers
             }
             if (viewName == "qualitycontrollevels")
             {
-                var listOfRecords = (List<QualityControlLevelModel>)BusinessObjectsUtils.GetRecordsFromCache<QualityControlLevelModel>(MvcApplication.InstanceGuid, identifier, "default");
+                var listOfRecords = (List<QualityControlLevelModel>)BusinessObjectsUtils.GetRecordsFromCache<QualityControlLevelModel>(instanceIdentifier, identifier, "default");
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
@@ -120,7 +122,7 @@ namespace HydroServerTools.Controllers
             }
             if (viewName == "datavalues")
             {
-                var listOfRecords = (List<DataValuesModel>)BusinessObjectsUtils.GetRecordsFromCache<DataValuesModel>(MvcApplication.InstanceGuid, identifier, "default");
+                var listOfRecords = (List<DataValuesModel>)BusinessObjectsUtils.GetRecordsFromCache<DataValuesModel>(instanceIdentifier, identifier, "default");
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
@@ -128,7 +130,7 @@ namespace HydroServerTools.Controllers
             }
             if (viewName == "groupdescriptions")
             {
-                var listOfRecords = (List<GroupDescriptionModel>)BusinessObjectsUtils.GetRecordsFromCache<GroupDescriptionModel>(MvcApplication.InstanceGuid, identifier, "default");
+                var listOfRecords = (List<GroupDescriptionModel>)BusinessObjectsUtils.GetRecordsFromCache<GroupDescriptionModel>(instanceIdentifier, identifier, "default");
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
@@ -136,7 +138,7 @@ namespace HydroServerTools.Controllers
             }
             if (viewName == "groups")
             {
-                var listOfRecords = (List<GroupsModel>)BusinessObjectsUtils.GetRecordsFromCache<GroupsModel>(MvcApplication.InstanceGuid, identifier, "default");
+                var listOfRecords = (List<GroupsModel>)BusinessObjectsUtils.GetRecordsFromCache<GroupsModel>(instanceIdentifier, identifier, "default");
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
@@ -144,7 +146,7 @@ namespace HydroServerTools.Controllers
             }
             if (viewName == "derivedfrom")
             {
-                var listOfRecords = (List<DerivedFromModel>)BusinessObjectsUtils.GetRecordsFromCache<DerivedFromModel>(MvcApplication.InstanceGuid, identifier, "default");
+                var listOfRecords = (List<DerivedFromModel>)BusinessObjectsUtils.GetRecordsFromCache<DerivedFromModel>(instanceIdentifier, identifier, "default");
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
@@ -152,7 +154,7 @@ namespace HydroServerTools.Controllers
             }
             if (viewName == "categories")
             {
-                var listOfRecords = (List<CategoriesModel>)BusinessObjectsUtils.GetRecordsFromCache<CategoriesModel>(MvcApplication.InstanceGuid, identifier, "default");
+                var listOfRecords = (List<CategoriesModel>)BusinessObjectsUtils.GetRecordsFromCache<CategoriesModel>(instanceIdentifier, identifier, "default");
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
@@ -184,17 +186,36 @@ namespace HydroServerTools.Controllers
         }
         public ActionResult DownloadFile(string id)
         {
+            bool fileNotFound = false;
 
+            
             try
             {
                 //var fs = System.IO.File.Open(Server.MapPath("~/Templates/ODMTemplates_" + id));
-                var dir = "~/Templates/";
-                var filename = id + ".xlsx";
-                var filePath = Server.MapPath(dir + filename);
-                if (System.IO.File.Exists(filePath))
-                    return base.File(filePath, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
-                else
-                    return Content("Couldn't find file");
+                string dir = string.Empty;
+                string filename = string.Empty;
+                string filePath = string.Empty;
+                string fileType = string.Empty;
+                switch (id)
+                {
+                    case "ODMGuide":
+                         dir = "~/Templates/";
+                         filename = id + ".xlsx";
+                         filePath = Server.MapPath(dir + filename);
+                         fileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                         break;
+                
+                    case "UserGuide":
+                         dir = "~/Templates/";
+                         filename = id + ".pdf";
+                         fileType = "application/pdf";
+                         filePath = Server.MapPath(dir + filename);
+                         break;
+                }
+               if (System.IO.File.Exists(filePath))
+                   return base.File(filePath, fileType, filename);
+               else
+                   return Content("Couldn't find file");
             }
             catch
             {
