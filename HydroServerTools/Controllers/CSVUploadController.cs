@@ -543,7 +543,7 @@ namespace HydroServerTools.Controllers
                                 //update Seriescatalog
                                 
                                     var seriesCatalogRepository = new SeriesCatalogRepository();
-                                    seriesCatalogRepository.deleteAll(connectionString);
+                                    //seriesCatalogRepository.deleteAll(connectionString);
                                     seriesCatalogRepository.UpdateSeriesCatalog2(identifier, listOfRecords, connectionString);
                                 }
                                 else
@@ -2114,103 +2114,103 @@ namespace HydroServerTools.Controllers
                             switch (sortedColumn.PropertyName.ToLower())
                             {
                                 //user selected
-                                case "2":
+                                case "1":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.DataValue).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.DataValue).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "3":
+                                case "2":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.ValueAccuracy).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.ValueAccuracy).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "4":
+                                case "3":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.LocalDateTime).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.LocalDateTime).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "5":
+                                case "4":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.UTCOffset).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.UTCOffset).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "6":
+                                case "5":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.DateTimeUTC).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.DateTimeUTC).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "7":
+                                case "6":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.SiteCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.SiteCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "8":
+                                case "7":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.VariableCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.VariableCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "9":
+                                case "8":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.OffsetValue).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.OffsetValue).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "10":
+                                case "9":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.OffsetTypeID).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.OffsetTypeID).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "11":
+                                case "10":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.CensorCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.CensorCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "12":
+                                case "11":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.QualifierID).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.QualifierID).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "13":
+                                case "12":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.MethodID).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.MethodID).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "14":
+                                case "13":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.MethodDescription).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.MethodDescription).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "15":
+                                case "14":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.SourceID).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.SourceID).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "16":
+                                case "15":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.SampleID).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.SampleID).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "17":
+                                case "16":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.DerivedFromID).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.DerivedFromID).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "18":
+                                case "17":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.QualityControlLevelCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
@@ -2238,7 +2238,7 @@ namespace HydroServerTools.Controllers
             var rst = from c in items
                       select new[] { 
                         string.Empty,
-                        c.ValueID,
+                        //c.ValueID,
                         c.DataValue,
                         c.ValueAccuracy,
                         c.LocalDateTime,

@@ -496,26 +496,26 @@ function getDatatableOptions(name, index) {
                             return addImageToColumn(index);
                         }
                     },
-                    { "aTargets": [1], "sName": "ValueID", "bVisible": false },
-                    { "aTargets": [2], "sName": "DataValue" },
-                    { "aTargets": [3], "sName": "ValueAccuracy" },
-                    { "aTargets": [4], "sName": "LocalDateTime" },
-                    { "aTargets": [5], "sName": "UTCOffset" },
-                    { "aTargets": [6], "sName": "DateTimeUTC" },
-                    { "aTargets": [7], "sName": "SiteCode" },
+                    //{ "aTargets": [1], "sName": "ValueID", "bVisible": false },
+                    { "aTargets": [1], "sName": "DataValue" },
+                    { "aTargets": [2], "sName": "ValueAccuracy" },
+                    { "aTargets": [3], "sName": "LocalDateTime" },
+                    { "aTargets": [4], "sName": "UTCOffset" },
+                    { "aTargets": [5], "sName": "DateTimeUTC" },
+                    { "aTargets": [6], "sName": "SiteCode" },
                     //{ "aTargets": [7], "sName": "VariableID", "bVisible": false },
-                    { "aTargets": [8], "sName": "VariableCode" },
-                    { "aTargets": [9], "sName": "OffsetValue" },
-                    { "aTargets": [10], "sName": "OffsetTypeID" },
-                    { "aTargets": [11], "sName": "CensorCode" },
-                    { "aTargets": [12], "sName": "QualifierID" },
-                    { "aTargets": [13], "sName": "MethodID" },
-                    { "aTargets": [14], "sName": "MethodDescription", "bVisible": false },
-                    { "aTargets": [15], "sName": "SourceID" },
-                    { "aTargets": [16], "sName": "SampleID" },
-                    { "aTargets": [17], "sName": "DerivedFromID" },
-                    { "aTargets": [18], "sName": "QualityControlLevelCode" },
-                    { "aTargets": [19], "sName": "Errors", "bSortable": false, "bVisible": false }
+                    { "aTargets": [7], "sName": "VariableCode" },
+                    { "aTargets": [8], "sName": "OffsetValue" },
+                    { "aTargets": [9], "sName": "OffsetTypeID" },
+                    { "aTargets": [10], "sName": "CensorCode" },
+                    { "aTargets": [11], "sName": "QualifierID" },
+                    { "aTargets": [12], "sName": "MethodID" },
+                    { "aTargets": [13], "sName": "MethodDescription", "bVisible": false },
+                    { "aTargets": [14], "sName": "SourceID" },
+                    { "aTargets": [15], "sName": "SampleID" },
+                    { "aTargets": [16], "sName": "DerivedFromID" },
+                    { "aTargets": [17], "sName": "QualityControlLevelCode" },
+                    { "aTargets": [18], "sName": "Errors", "bSortable": false, "bVisible": false }
                  ]
             };
             break;
@@ -715,6 +715,26 @@ function addImageToColumn(index) {
 function initCommitAndCancelButton(id) {
 
     $('#0commit').click(function () {
+        $('#0commit').addClass('disabled');
+        $('#cancel').addClass('disabled');
+
+        $('#loading').removeClass('hide');
+        $('#0commit').unbind('click')
+        $('#cancel').unbind('click')
+
+        intervalId = setInterval(function () {
+
+            $.post("/Home/Progress", function (progress) {
+                //if (progress >= 1000) {
+                //    updateMonitor(taskId, "Completed");
+                //    clearInterval(intervalId);
+                //} else {
+                updateMonitor(status, progress);
+                //}
+            });
+
+        }, 1000);
+
         //$.post("/CSVUpload/Commit", { id: "sites" } {
         $.ajax({
             url: '/CSVUpload/Commit/' + id,
@@ -724,10 +744,14 @@ function initCommitAndCancelButton(id) {
             contentType: 'application/json; charset=utf-8',
             success: function () {
 
-                bootbox.alert("Records successfully added.")
-                oTable = $('#0').dataTable(getDatatableOptions(id, 0));
+                bootbox.alert("Records successfully added.");
                 GetUploadStats(id);
+                oTable = $('#0').dataTable(getDatatableOptions(id, 0));
+               
                 $('#0commit').addClass("disabled");
+                $('#loading').addClass('hide');
+                $('#cancel').bind('click');
+
             },
             error: function (xhr) {
                 if (typeof xhr.statusText != "undefined") {
@@ -737,6 +761,7 @@ function initCommitAndCancelButton(id) {
                     var returnedMessage = "An Error occured. Please resubmit the file. If the problem persists please validate the content or contact user suport";
                 }
 
+                $('#loading').addClass('hide');
 
                 bootbox.alert(returnedMessage, function (reslt) {
                     
@@ -751,6 +776,8 @@ function initCommitAndCancelButton(id) {
 
     $('#2commit').click(function () {
         //$.post("/CSVUpload/Commit", { id: "sites" } {
+
+
         $.ajax({
             url: '/CSVUpload/Commit/' + id,
             data: "{ 'index': '2' }",
@@ -875,10 +902,8 @@ function GetUploadStats(viewName)
     });
 }
 
-function CacheTimeoutNotifier()
-{
-    
-
+function updateMonitor(status, progress) {
+    $('#monitor').html(progress);
 }
 
 

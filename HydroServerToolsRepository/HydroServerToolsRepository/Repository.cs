@@ -364,6 +364,7 @@ namespace HydroServerToolsRepository.Repository
                             if (item.LatLongDatumSRSName == "Unknown")
                             {
                                 model.LatLongDatumID = 0;
+                                item.LatLongDatumID = "0";// write back to viewmodel to not have to convert again when values are committed to DB
                             }
                             else
                             {
@@ -6090,7 +6091,12 @@ namespace HydroServerToolsRepository.Repository
             BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, Ressources.IMPORT_STATUS_TIMESERIES);
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionstring);
 
-            var rows = context.SeriesCatalogs.ToList();
+            var uniqueSiteCodes = listOfRecords.GroupBy(item => item.SiteID).ToList();
+
+            var rows2 = context.SeriesCatalogs.Where(p => uniqueSiteCodes.Intersect(uniqueSiteCodes).Any()).ToList();
+
+
+            //var rows = context.SeriesCatalogs.ToList();
                        //listOfRecords.GroupBy(p => p.SiteID, p=>p.VariableID, p=>p.MethodID, p=>p.SourceID);
             // get unique occurences
             var list = (from p in listOfRecords select new {p.SiteID, p.VariableID, p.SourceID, p.MethodID, p.QualityControlLevelID}).
@@ -6098,10 +6104,13 @@ namespace HydroServerToolsRepository.Repository
             
             //var list = (from p in listOfRecords
             //            select new[] { p.SiteID, p.VariableID, p.SourceID, p.MethodID, p.QualityControlLevelID }).Distinct().ToList();
-
+            int count = 0;
+            int maxCount = list.Count;
             //loop and compare
             foreach (var item in list)
             {
+                count++;
+                BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
 
                 var siteID = Convert.ToInt32(item.ElementAt(0).SiteID);
                 var variableID = Convert.ToInt32(item.ElementAt(0).VariableID);
