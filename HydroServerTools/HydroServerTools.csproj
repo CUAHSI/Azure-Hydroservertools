@@ -425,6 +425,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Images\ajax-loader-gray.gif" />
     <Content Include="Images\ajax-loader.gif" />
     <Content Include="Images\close.png" />
     <Content Include="Images\help-browser.png" />

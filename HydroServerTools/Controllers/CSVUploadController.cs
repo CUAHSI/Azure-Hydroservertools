@@ -294,7 +294,8 @@ namespace HydroServerTools.Controllers
             //"Sites", "Variables", "OffsetTypes", "ISOMetadata", "Sources", "Methods", "LabMethods", "Samples", "Qualifiers", "QualityControlLevels", "DataValues", "GroupDescriptions", "Groups", "DerivedFrom", "Categories"};
 
             //Sites
-
+            //reset 
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(identifier, CacheName, Ressources.STATUS_PROCESSING);
             try
             {
                 if (id != null)

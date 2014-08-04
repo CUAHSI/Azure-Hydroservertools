@@ -34,8 +34,10 @@ namespace HydroserverToolsBusinessObjects
         public const string IMPORT_VALUE_UPDATED = "The value {1} in column {0} will be changed to {2}.";
         public const string IMPORT_VALUE_LOCALVALUE_NOT_COMPLETE = "Please make sure that record contains all required values ( LocalX, LocalY, LocalSRSName)";
         public const string IMPORT_VALUE_ELEVATION_VERTICALDATUM = "When specifying a value for Elevation_m a vertical datum from the controlled vocubulary is required. ";
-        public const string IMPORT_STATUS_UPLOAD = "Uploading..";
+        public const string IMPORT_STATUS_UPLOAD = "Uploading...";
+        public const string STATUS_PROCESSING = "Processing...";
         public const string IMPORT_STATUS_PROCESSING = "The Upload is being processed. Processing record {0} of {1}";
+        public const string IMPORT_STATUS_PROCESSING_TIMESERIES = "The timeseries are being processed. Processing site {0} of {1}";
         public const string IMPORT_STATUS_INSERTING = "The data is inserted";
         public const string IMPORT_STATUS_ERROR = "An Error occured during processing.";
         public const string IMPORT_STATUS_EXTRACTNG = "Extracting file";

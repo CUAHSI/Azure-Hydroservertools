@@ -34,6 +34,7 @@ namespace HydroServerTools.Controllers
         public ActionResult Login(string returnUrl)
         {
             ViewBag.ReturnUrl = returnUrl;
+            Session["dummy"] = "dummy"; // Create ASP.NET_SessionId cookie
             return View();
         }
 

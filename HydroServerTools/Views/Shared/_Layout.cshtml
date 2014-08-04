@@ -34,12 +34,12 @@
                 @if (User.Identity.IsAuthenticated)
                 { 
                 <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home", new { area = "" }, null))</li>
+                    <li>@Html.ActionLink("Home", "Index", "Home", new { area = "" }, null)</li>
                     @*<li>@Html.ActionLink("About", "About", "Home")</li>*@
-                    <li>@Html.ActionLink("Contact", "Contact", "Home", new { area = "" }, null))</li>
-                    <li>@Html.ActionLink("Manage", "Manage", "Home", new { area = "" }, null))</li>
-                    <li>@Html.ActionLink("Templates", "Templates", "Home", new { area = "" }, null))</li>
-                    <li>@Html.ActionLink("Controlled Vocabularies", "ControlledVocabularies", "Home", new { area = "" }, null))</li>
+                    <li>@Html.ActionLink("Contact", "Contact", "Home", new { area = "" }, null)</li>
+                    <li>@Html.ActionLink("Manage", "Manage", "Home", new { area = "" }, null)</li>
+                    <li>@Html.ActionLink("Templates", "Templates", "Home", new { area = "" }, null)</li>
+                    <li>@Html.ActionLink("Controlled Vocabularies", "ControlledVocabularies", "Home", new { area = "" }, null)</li>
                  
                     @*<li>@Html.ActionLink("MVCUploder", "Demo", "Home")</li>
                     <li>@Html.ActionLink("JQupload", "JQupload", "Home", new { identifier = "Sites" }, null)</li>
@@ -102,13 +102,10 @@
                                 <li>@Html.ActionLink("Roles", "Index", "Roles", new { area = "Admin" }, null)</li>
                                 <li>@Html.ActionLink("Add Connection", "Index", "ConnectionParameters", new { area = "Admin" }, null)</li>
                                 <li>@Html.ActionLink("Link Connections", "Index", "ConnectionParametersUsers", new { area = "Admin" }, null)</li>
-                                <li>@Html.ActionLink("Register as a new user", "Register", "Account", new { area = "" })</li>
-
+                                <li>@Html.ActionLink("Register as a new user", "Register", "Account", new { area = "" },null)</li>
                             </ul>
                         </li>
                      }
-    
-
                 </ul>
                 }
                 @if (User.Identity.IsAuthenticated)
@@ -128,7 +125,7 @@
         <footer>
             <hr />
 
-            <p>&copy; @DateTime.Now.Year - &copy; CUAHSI Version 1.1.0</p>
+            <p><a href="https://github.com/CUAHSI/Azure-Hydroservertools/issues" class="h5" target="_blank">Report a bug here!</a><span style="float:right"> &copy; @DateTime.Now.Year - &copy; CUAHSI Version 1.1.1</span></p>
         </footer>
     </div>
    @* @Scripts.Render("~/bundles/jquery")*@

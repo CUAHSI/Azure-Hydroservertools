@@ -268,37 +268,38 @@ namespace HydroServerTools.Controllers
                     }
                 }
                 csvWriter.NextRecord();
-
-
-                //Loop through the collection, then the properties and add the values
-                for (int i = 0; i <= records.Count - 1; i++)
+                if (records != null)
                 {
 
-                    T item = records[i];
-                    //csvWriter..WriteField("SiteCode");
-                    for (int j = 0; j <= propInfos.Length - 1; j++)
+                    //Loop through the collection, then the properties and add the values
+                    for (int i = 0; i <= records.Count - 1; i++)
                     {
 
-                        var attribs = propInfos[j].GetCustomAttributes();
-                        if (attribs.OfType<DisplayAttribute>().Count() == 0)
+                        T item = records[i];
+                        //csvWriter..WriteField("SiteCode");
+                        for (int j = 0; j <= propInfos.Length - 1; j++)
                         {
-                            object o = item.GetType().GetProperty(propInfos[j].Name).GetValue(item, null);
 
-                            if (o != null)
+                            var attribs = propInfos[j].GetCustomAttributes();
+                            if (attribs.OfType<DisplayAttribute>().Count() == 0)
                             {
-                                string value = o.ToString();
+                                object o = item.GetType().GetProperty(propInfos[j].Name).GetValue(item, null);
 
-                                csvWriter.WriteField(value);
-                            }
-                            else
-                            {
-                                csvWriter.WriteField(string.Empty);
+                                if (o != null)
+                                {
+                                    string value = o.ToString();
+
+                                    csvWriter.WriteField(value);
+                                }
+                                else
+                                {
+                                    csvWriter.WriteField(string.Empty);
+                                }
                             }
                         }
+                        csvWriter.NextRecord();
                     }
-                    csvWriter.NextRecord();
                 }
-
 
                 //foreach (var item in records)
                 //{

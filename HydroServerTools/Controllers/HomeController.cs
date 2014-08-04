@@ -220,7 +220,7 @@ namespace HydroServerTools.Controllers
         {
             DataCache cache = new DataCache("default");
             var identifier = MvcApplication.InstanceGuid + User.Identity.Name;
-            string StatusMessage = "Uploading...";
+            string StatusMessage = "Processing...";
             if (cache.Get(identifier + "processStatus") != null)
             {
                 if (cache.Get(identifier + "processStatus") != null)   StatusMessage = (string)cache.Get(identifier + "processStatus");
