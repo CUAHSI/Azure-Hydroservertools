@@ -242,10 +242,12 @@ namespace HydroServerTools.Controllers
             }
 
             // Sign in the user with this external login provider if the user already has a login
-            var user = await UserManager.FindAsync(loginInfo.Login);
+            //var user = await UserManager.FindAsync(loginInfo.Login);
             var externalIdentity = HttpContext.GetOwinContext().Authentication.GetExternalIdentityAsync(DefaultAuthenticationTypes.ExternalCookie);
             var emailClaim = externalIdentity.Result.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
             var email = emailClaim.Value;
+            
+            var user = UserManager.FindByName(email);
             if (user != null)
             {
                 await SignInAsync(user, isPersistent: false);

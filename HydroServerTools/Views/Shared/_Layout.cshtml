@@ -94,7 +94,7 @@
 
                         </ul>
                     </li>
-                     @if (User.IsInRole("Admin") || User.Identity.Name=="mseul@cuahsi.org" )
+                    @if (User.IsInRole("Admin") || User.Identity.Name=="mseul@cuahsi.org" )
                      { 
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin<b class="caret"></b></a>
@@ -125,7 +125,7 @@
         <footer>
             <hr />
 
-            <p><a href="https://github.com/CUAHSI/Azure-Hydroservertools/issues" class="h5" target="_blank">Report a bug here!</a><span style="float:right"> &copy; @DateTime.Now.Year - &copy; CUAHSI Version 1.1.1</span></p>
+            <p><a href="https://github.com/CUAHSI/Azure-Hydroservertools/issues" class="h5" target="_blank">Report a bug here!</a><span style="float:right"> &copy; @DateTime.Now.Year - &copy; CUAHSI Version 1.1.2</span></p>
         </footer>
     </div>
    @* @Scripts.Render("~/bundles/jquery")*@

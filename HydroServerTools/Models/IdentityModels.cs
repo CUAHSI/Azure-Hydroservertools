@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNet.Identity.EntityFramework;
+﻿using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using System.ComponentModel.DataAnnotations;
 using System.Data.Entity;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace HydroServerTools.Models
 {
@@ -8,15 +11,26 @@ namespace HydroServerTools.Models
     public class User : IdentityUser
     {
         public string UserEmail { get; set; }
+
+        public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<User> manager)
+        {
+            // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
+            var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);
+            // Add custom user claims here
+            return userIdentity;
+        }
     }
 
     public class ApplicationDbContext : IdentityDbContext<User>
     {
         public ApplicationDbContext()
-            : base("DefaultConnection")
+            : base("DefaultConnection", throwIfV1Schema: false)
         {
         }
-
+        public static ApplicationDbContext Create()
+        {
+            return new ApplicationDbContext();
+        }
 
 
         public DbSet<ConnectionParameters> ConnectionParameters { get; set; }
