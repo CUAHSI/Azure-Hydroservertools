@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using HydroServerToolsRepository;
 using System.Data.Entity.Core.Objects;
+using System.Data.Entity;
 
 namespace HydroServerToolsRepository.Repository
 {
@@ -315,7 +316,8 @@ namespace HydroServerToolsRepository.Repository
                             existingItem.Comments = model.Comments;
                             existingItem.SiteType = model.SiteType;
 
-                            context.Sites.Add(existingItem);
+                            context.Sites.Attach(existingItem);
+                            context.Entry(existingItem).State = EntityState.Modified;
                         }
                         
                     }
@@ -348,54 +350,128 @@ namespace HydroServerToolsRepository.Repository
                             existingItem.GeneralCategory = model.GeneralCategory;
                             existingItem.NoDataValue = model.NoDataValue;
 
-                            context.Variables.Add(existingItem);
+                            context.Variables.Attach(existingItem);
+                            context.Entry(existingItem).State = EntityState.Modified;
                         }
                     }
                     context.SaveChanges();
                 }
                 if (id == "offsettypes")
                 {
-                    
+                    var recordsToInsert = new List<OffsetType>();
+                    var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
+                    foreach (T item in list)
+                    {
+                        var model = Mapper.Map<T, OffsetType>(item);
+                        var existingItem = context.OffsetTypes.Where(a => a.OffsetTypeCode == model.OffsetTypeCode).FirstOrDefault();
+
+                        if (existingItem != null)
+                        {
+                            existingItem.OffsetTypeCode = model.OffsetTypeCode;
+                            existingItem.OffsetUnitsID = model.OffsetUnitsID;
+                            existingItem.OffsetDescription = model.OffsetDescription;
+
+                            context.OffsetTypes.Attach(existingItem);
+                            context.Entry(existingItem).State = EntityState.Modified;
+
+                        }
+                    }
+                    context.SaveChanges();
                 }
                 if (id == "sources")
                 {
-                    //var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
-                    //var objContext = ((IObjectContextAdapter)context).ObjectContext;
-                    //var sourcerecordsToInsert = new List<Source>();
-                    //var isometadatarecordsToInsert = new List<ISOMetadata>();
-                    ////wrap in transaction in case something goes wrong
-                    //using (TransactionScope scope = new TransactionScope())
-                    //{
-                    //    foreach (T item in list)
-                    //    {
-                    //        var isometadatamodel = Mapper.Map<T, ISOMetadata>(item);
-                    //        //isometadatarecordsToInsert.Add(isometadatamodel);
-                    //        context.ISOMetadatas.Add(isometadatamodel);
-                    //        objContext.SaveChanges(false);
-                    //        //var newItem = Convert.ChangeType(item, typeof(SourcesModel));
-                    //        var source = Mapper.Map<T, Source>(item);
-                    //        source.MetadataID = isometadatamodel.MetadataID;
-                    //        context.Sources.Add(source);
-                    //    }
-                    //    //BulkInsert<ISOMetadata>(providerConnectionString, id, isometadatarecordsToInsert);
+                    var recordsToInsert = new List<Source>();
+                    var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
+                    var objContext = ((IObjectContextAdapter)context).ObjectContext;
+                  
+                    foreach (T item in list)
+                    {
+                        var sourceModel = Mapper.Map<T, Source>(item);
+                        var isometaDataModel = Mapper.Map<T, ISOMetadata>(item);
+                        var existingItem = context.Sources.Where(a => a.SourceCode == sourceModel.SourceCode).FirstOrDefault();
+                        //var existingItem = context.Sources.Find(sourceModel.SourceCode);
 
+                        if (existingItem != null)
+                        {
+                            existingItem.SourceCode = sourceModel.SourceCode;
+                            existingItem.Organization = sourceModel.Organization;
+                            existingItem.SourceDescription = sourceModel.SourceDescription;
+                            existingItem.SourceLink = sourceModel.SourceLink;
+                            existingItem.ContactName = sourceModel.ContactName;
+                            existingItem.Phone = sourceModel.Phone;
+                            existingItem.Email = sourceModel.Email;
+                            existingItem.Address = sourceModel.Address;
+                            existingItem.City = sourceModel.City;
+                            existingItem.State = sourceModel.State;
+                            existingItem.ZipCode = sourceModel.ZipCode;
 
-                    //    //BulkInsert<Source>(providerConnectionString, id, sourcerecordsToInsert);
-                    //    objContext.SaveChanges(false);
-                    //    //if we get here things are looking good.
-                    //    scope.Complete();
-                    //    objContext.AcceptAllChanges();
-                    //}
+                            var existingIsometadata = context.ISOMetadatas.Where(a => a.MetadataID == existingItem.MetadataID).FirstOrDefault();
+                            if (existingIsometadata != null)
+                            {
+                                existingIsometadata.TopicCategory = isometaDataModel.TopicCategory;
+                                existingIsometadata.Title = isometaDataModel.Title;
+                                existingIsometadata.Abstract = isometaDataModel.Abstract;
+                                existingIsometadata.ProfileVersion = isometaDataModel.ProfileVersion;
+                                existingIsometadata.MetadataLink = isometaDataModel.MetadataLink;
+                                //context.ISOMetadatas.Add(existingIsometadata);
+
+                                context.ISOMetadatas.Attach(existingIsometadata);
+                                context.Entry(existingIsometadata).State = EntityState.Modified;
+                            }
+                            context.Sources.Attach(existingItem);
+                            context.Entry(existingItem).State = EntityState.Modified;
+                        }
+                    }
+                    //context.SaveChanges();
+                    objContext.SaveChanges(SaveOptions.AcceptAllChangesAfterSave);
                 }
 
                 if (id == "methods")
                 {
-                    
+                    var recordsToInsert = new List<Method>();
+                    var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
+                    foreach (T item in list)
+                    {
+                        var model = Mapper.Map<T, Method>(item);
+                        var existingItem = context.Methods.Where(a => a.MethodCode == model.MethodCode).FirstOrDefault();
+
+                        if (existingItem != null)
+                        {
+                            existingItem.MethodCode = model.MethodCode;
+                            existingItem.MethodDescription = model.MethodDescription;
+                            existingItem.MethodLink = model.MethodLink;
+
+                            context.Methods.Attach(existingItem);
+                            context.Entry(existingItem).State = EntityState.Modified;
+
+                        }
+                    }
+                    context.SaveChanges();
                 }
 
                 if (id == "labmethods")
                 {
-                    
+                    var recordsToInsert = new List<LabMethod>();
+                    var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
+                    foreach (T item in list)
+                    {
+                        var model = Mapper.Map<T, LabMethod>(item);
+                        var existingItem = context.LabMethods.Where(a => a.LabMethodName == model.LabMethodName).FirstOrDefault();
+
+                        if (existingItem != null)
+                        {                            
+                            existingItem.LabName = model.LabName;
+                            existingItem.LabOrganization = model.LabOrganization;
+                            existingItem.LabMethodName = model.LabMethodName;
+                            existingItem.LabMethodDescription = model.LabMethodDescription;
+                            existingItem.LabMethodLink = model.LabMethodLink;
+
+                            context.LabMethods.Attach(existingItem);
+                            context.Entry(existingItem).State = EntityState.Modified;
+
+                        }
+                    }
+                    context.SaveChanges();
 
                 }
 
@@ -414,7 +490,8 @@ namespace HydroServerToolsRepository.Repository
                             existingItem.SampleType = model.SampleType;
                             existingItem.LabMethodID = model.LabMethodID;
                         }
-                        context.Samples.Add(existingItem);
+                        context.Samples.Attach(existingItem);
+                        context.Entry(existingItem).State = EntityState.Modified;
                     }
                     context.SaveChanges();                   
 
@@ -422,7 +499,23 @@ namespace HydroServerToolsRepository.Repository
 
                 if (id == "qualifiers")
                 {
-                    
+                    var recordsToInsert = new List<Qualifier>();
+                    var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
+                    foreach (T item in list)
+                    {
+                        var model = Mapper.Map<T, Qualifier>(item);
+                        var existingItem = context.Qualifiers.Where(a => a.QualifierCode == model.QualifierCode).FirstOrDefault();
+
+                        if (existingItem != null)
+                        {
+
+                            existingItem.QualifierCode = model.QualifierCode;
+                            existingItem.QualifierDescription = model.QualifierDescription;
+                        }
+                        context.Qualifiers.Attach(existingItem);
+                        context.Entry(existingItem).State = EntityState.Modified;
+                    }
+                    context.SaveChanges();      
 
                 }
 
@@ -441,7 +534,8 @@ namespace HydroServerToolsRepository.Repository
                             existingItem.Definition = model.Definition;
                             existingItem.Explanation = model.Explanation;  
                         }
-                        context.QualityControlLevels.Add(existingItem);
+                        context.QualityControlLevels.Attach(existingItem);
+                        context.Entry(existingItem).State = EntityState.Modified;
                     }
                     context.SaveChanges();
 

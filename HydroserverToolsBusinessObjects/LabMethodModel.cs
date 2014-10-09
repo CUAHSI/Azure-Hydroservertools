@@ -9,7 +9,9 @@ namespace HydroserverToolsBusinessObjects.Models
 {
     public class LabMethodModel
     {
-        public string LabMethodID { get; set; }
+        //public string LabMethodID { get; set; }
+        //[Required]
+        //public string LabMethodCode { get; set; }
         [Required]
         public string LabName { get; set; }
         [Required]

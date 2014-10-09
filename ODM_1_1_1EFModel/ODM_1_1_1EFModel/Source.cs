@@ -32,6 +32,7 @@ namespace ODM_1_1_1EFModel
         public string ZipCode { get; set; }
         public string Citation { get; set; }
         public int MetadataID { get; set; }
+        public string SourceCode { get; set; }
     
         public virtual ICollection<DataValue> DataValues { get; set; }
         public virtual ISOMetadata ISOMetadata { get; set; }

@@ -35,6 +35,13 @@
         @{ Html.RenderPartial("_UploadDataBaseTable", Model, new ViewDataDictionary { { "index", 3 }, { "viewName", ViewBag.Name } });}
     </div>
 </div>
+<div class="well-sm alert-info hide" id="loading">
+
+    <div id="monitor">
+        Processing...
+        @*<img src="~/Images/ajax-loader.gif" />*@
+    </div>
+</div>
 <div id="pager">
    @* @Html.Action("_Pager", "CSVUpload", new { name = ViewBag.Name })*@
 </div>

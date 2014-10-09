@@ -22,6 +22,7 @@ namespace ODM_1_1_1EFModel
         public int MethodID { get; set; }
         public string MethodDescription { get; set; }
         public string MethodLink { get; set; }
+        public string MethodCode { get; set; }
     
         public virtual ICollection<DataValue> DataValues { get; set; }
     }

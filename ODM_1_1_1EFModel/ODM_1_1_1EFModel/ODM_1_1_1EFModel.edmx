@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="ODM_1_1_1EFModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="ODM_1_1_1EFModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Categories">
           <Key>
             <PropertyRef Name="AutoCounter" />
@@ -101,6 +101,7 @@
           <Property Name="LabMethodName" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="LabMethodDescription" Type="nvarchar(max)" Nullable="false" />
           <Property Name="LabMethodLink" Type="nvarchar" MaxLength="500" />
+          <Property Name="LabMethodCode" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="Methods">
           <Key>
@@ -109,6 +110,7 @@
           <Property Name="MethodID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="MethodDescription" Type="nvarchar(max)" Nullable="false" />
           <Property Name="MethodLink" Type="nvarchar" MaxLength="500" />
+          <Property Name="MethodCode" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="ODMVersion">
           <Key>
@@ -124,6 +126,7 @@
           <Property Name="OffsetTypeID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="OffsetUnitsID" Type="int" Nullable="false" />
           <Property Name="OffsetDescription" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="OffsetTypeCode" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="Qualifiers">
           <Key>
@@ -157,6 +160,7 @@
           <Property Name="SampleType" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="LabSampleCode" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="LabMethodID" Type="int" Nullable="false" />
+          <Property Name="SampleCode" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="SampleTypeCV">
           <Key>
@@ -206,7 +210,7 @@
             <PropertyRef Name="SiteID" />
           </Key>
           <Property Name="SiteID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="SiteCode" Type="nvarchar" MaxLength="50" Nullable="false" StoreGeneratedPattern="None" />
+          <Property Name="SiteCode" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="SiteName" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="Latitude" Type="float" Nullable="false" />
           <Property Name="Longitude" Type="float" Nullable="false" />
@@ -246,6 +250,7 @@
           <Property Name="ZipCode" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="Citation" Type="nvarchar(max)" Nullable="false" />
           <Property Name="MetadataID" Type="int" Nullable="false" />
+          <Property Name="SourceCode" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="SpatialReferences">
           <Key>
@@ -1114,6 +1119,7 @@
           <Property Name="MethodDescription" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="MethodLink" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="DataValues" Relationship="ODM_1_1_1EFModel.FK_DataValues_Methods" FromRole="Method" ToRole="DataValue" />
+          <Property Name="MethodCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="ODMVersion">
           <Key>
@@ -1131,6 +1137,7 @@
           <Property Name="OffsetDescription" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="DataValues" Relationship="ODM_1_1_1EFModel.FK_DataValues_OffsetTypes" FromRole="OffsetType" ToRole="DataValue" />
           <NavigationProperty Name="Unit" Relationship="ODM_1_1_1EFModel.FK_OffsetTypes_Units" FromRole="OffsetType" ToRole="Unit" />
+          <Property Name="OffsetTypeCode" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Qualifier">
           <Key>
@@ -1268,6 +1275,7 @@
           <Property Name="MetadataID" Type="Int32" Nullable="false" />
           <NavigationProperty Name="DataValues" Relationship="ODM_1_1_1EFModel.FK_DataValues_Sources" FromRole="Source" ToRole="DataValue" />
           <NavigationProperty Name="ISOMetadata" Relationship="ODM_1_1_1EFModel.FK_Sources_ISOMetaData" FromRole="Source" ToRole="ISOMetadata" />
+          <Property Name="SourceCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="SpatialReference">
           <Key>
@@ -1837,6 +1845,7 @@
           <EntitySetMapping Name="Methods">
             <EntityTypeMapping TypeName="ODM_1_1_1EFModel.Method">
               <MappingFragment StoreEntitySet="Methods">
+                <ScalarProperty Name="MethodCode" ColumnName="MethodCode" />
                 <ScalarProperty Name="MethodLink" ColumnName="MethodLink" />
                 <ScalarProperty Name="MethodDescription" ColumnName="MethodDescription" />
                 <ScalarProperty Name="MethodID" ColumnName="MethodID" />
@@ -1854,6 +1863,7 @@
           <EntitySetMapping Name="OffsetTypes">
             <EntityTypeMapping TypeName="ODM_1_1_1EFModel.OffsetType">
               <MappingFragment StoreEntitySet="OffsetTypes">
+                <ScalarProperty Name="OffsetTypeCode" ColumnName="OffsetTypeCode" />
                 <ScalarProperty Name="OffsetDescription" ColumnName="OffsetDescription" />
                 <ScalarProperty Name="OffsetUnitsID" ColumnName="OffsetUnitsID" />
                 <ScalarProperty Name="OffsetTypeID" ColumnName="OffsetTypeID" />
@@ -1975,6 +1985,7 @@
           <EntitySetMapping Name="Sources">
             <EntityTypeMapping TypeName="ODM_1_1_1EFModel.Source">
               <MappingFragment StoreEntitySet="Sources">
+                <ScalarProperty Name="SourceCode" ColumnName="SourceCode" />
                 <ScalarProperty Name="MetadataID" ColumnName="MetadataID" />
                 <ScalarProperty Name="Citation" ColumnName="Citation" />
                 <ScalarProperty Name="ZipCode" ColumnName="ZipCode" />

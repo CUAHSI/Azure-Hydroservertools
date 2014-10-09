@@ -169,7 +169,8 @@ namespace HydroServerTools.Controllers
 
             var result = from c in items
                          select new[] { 
-                            c.OffsetTypeID,
+                            //c.OffsetTypeID,
+                            c.OffsetTypeCode,
                             c.OffsetUnitsName,
                             c.OffsetDescription
                 };
@@ -204,7 +205,7 @@ namespace HydroServerTools.Controllers
 
             var result = from c in items
                          select new[] { 
-                            c.SourceID,
+                            c.SourceCode,
                             c.Organization,
                             c.SourceDescription,
                             c.SourceLink,
@@ -253,7 +254,7 @@ namespace HydroServerTools.Controllers
 
             var result = from c in items
                          select new[] { 
-                            c.SampleID,
+                            
                             c.SampleType,
                             c.LabSampleCode,
                             c.LabMethodName,
@@ -290,7 +291,7 @@ namespace HydroServerTools.Controllers
 
             var result = from c in items
                          select new[] { 
-                            c.MethodID,
+                            c.MethodCode,
                             c.MethodDescription,
                             c.MethodLink
                 };
@@ -324,8 +325,7 @@ namespace HydroServerTools.Controllers
                 totalRecordCount: out totalRecordCount, searchRecordCount: out searchRecordCount, searchString: jQueryDataTablesModel.sSearch);
 
             var result = from c in items
-                         select new[] { 
-                            c.LabMethodID,
+                         select new[] {                             
                             c.LabName,
                             c.LabOrganization,
                             c.LabMethodName,
@@ -362,8 +362,7 @@ namespace HydroServerTools.Controllers
                 totalRecordCount: out totalRecordCount, searchRecordCount: out searchRecordCount, searchString: jQueryDataTablesModel.sSearch);
 
             var result = from c in items
-                         select new[] { 
-                            c.QualifierID,
+                         select new[] {                            
                             c.QualifierCode,
                             c.QualifierDescription                        
                 };

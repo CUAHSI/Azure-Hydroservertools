@@ -9,7 +9,9 @@ namespace HydroserverToolsBusinessObjects.Models
 {
     public class MethodModel
     {
-        public string MethodID { get; set; }
+        //public string MethodID { get; set; }
+        [Required]
+        public string MethodCode { get; set; }
         [Required]
         public string MethodDescription { get; set; }
         public string MethodLink { get; set; }

@@ -22,6 +22,7 @@ namespace ODM_1_1_1EFModel
         public int OffsetTypeID { get; set; }
         public int OffsetUnitsID { get; set; }
         public string OffsetDescription { get; set; }
+        public string OffsetTypeCode { get; set; }
     
         public virtual ICollection<DataValue> DataValues { get; set; }
         public virtual Unit Unit { get; set; }

@@ -1181,7 +1181,7 @@ namespace HydroServerTools.Controllers
                         var searchString = jQueryDataTablesModel.sSearch.ToLower();
                         var filteredItems = listOfRecords.
                             Where(c =>
-                                      c.OffsetTypeID != null && c.OffsetTypeID.ToString().ToLower().Contains(searchString.ToLower())
+                                      c.OffsetTypeCode != null && c.OffsetTypeCode.ToString().ToLower().Contains(searchString.ToLower())
                                     || c.OffsetUnitsName != null && c.OffsetUnitsName.ToLower().Contains(searchString.ToLower())
                                     || c.OffsetDescription != null && c.OffsetDescription.ToLower().Contains(searchString.ToLower())
                         );
@@ -1204,9 +1204,9 @@ namespace HydroServerTools.Controllers
                             {
                                 case "1":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
-                                    { items = listOfRecords.OrderBy(a => a.OffsetTypeID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    { items = listOfRecords.OrderBy(a => a.OffsetTypeCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
-                                    { items = listOfRecords.OrderByDescending(a => a.OffsetTypeID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    { items = listOfRecords.OrderByDescending(a => a.OffsetTypeCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
                                 case "2":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
@@ -1222,9 +1222,9 @@ namespace HydroServerTools.Controllers
                                     break;
                                 default:
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
-                                    { items = listOfRecords.OrderBy(a => a.OffsetTypeID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    { items = listOfRecords.OrderBy(a => a.OffsetTypeCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
-                                    { items = listOfRecords.OrderByDescending(a => a.OffsetTypeID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    { items = listOfRecords.OrderByDescending(a => a.OffsetTypeCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
 
                             }
@@ -1247,7 +1247,8 @@ namespace HydroServerTools.Controllers
             var rst = from c in items
                       select new[] { 
                                         string.Empty,
-                                        c.OffsetTypeID,
+                                        //c.OffsetTypeID,
+                                        c.OffsetTypeCode,
                                         c.OffsetUnitsName,
                                         c.OffsetDescription,
                                         c.Errors
@@ -1289,7 +1290,7 @@ namespace HydroServerTools.Controllers
                         var searchString = jQueryDataTablesModel.sSearch.ToLower();
                         var filteredItems = listOfRecords.
                             Where(c =>
-                                       c.SourceID != null && c.SourceID.ToString().ToLower().Contains(searchString.ToLower())
+                                       c.SourceCode != null && c.SourceCode.ToString().ToLower().Contains(searchString.ToLower())
                                     || c.Organization != null && c.Organization.ToLower().Contains(searchString.ToLower())
                                     || c.SourceDescription != null && c.SourceDescription.ToLower().Contains(searchString.ToLower())
                                     || c.SourceLink != null && c.SourceLink.ToLower().Contains(searchString.ToLower())
@@ -1326,9 +1327,9 @@ namespace HydroServerTools.Controllers
                             {
                                 case "1":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
-                                    { items = listOfRecords.OrderBy(a => a.SourceID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    { items = listOfRecords.OrderBy(a => a.SourceCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
-                                    { items = listOfRecords.OrderByDescending(a => a.SourceID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    { items = listOfRecords.OrderByDescending(a => a.SourceCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
                                 case "2":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
@@ -1428,14 +1429,14 @@ namespace HydroServerTools.Controllers
                                     break;
                                 default:
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
-                                    { items = listOfRecords.OrderBy(a => a.SourceID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    { items = listOfRecords.OrderBy(a => a.SourceCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
-                                    { items = listOfRecords.OrderByDescending(a => a.SourceID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    { items = listOfRecords.OrderByDescending(a => a.SourceCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
                             }
                         }
 
-                        if (items == null) items = listOfRecords.OrderByDescending(a => a.SourceID).Skip(startIndex).Take(pageSize).ToList();
+                        if (items == null) items = listOfRecords.OrderByDescending(a => a.SourceCode).Skip(startIndex).Take(pageSize).ToList();
 
 
                     }
@@ -1451,7 +1452,7 @@ namespace HydroServerTools.Controllers
             var rst = from c in items
                       select new[] { 
                                         string.Empty,
-                                        c.SourceID,
+                                        c.SourceCode,
                                         c.Organization,
                                         c.SourceDescription,
                                         c.SourceLink,
@@ -1507,7 +1508,7 @@ namespace HydroServerTools.Controllers
                         var searchString = jQueryDataTablesModel.sSearch.ToLower();
                         var filteredItems = listOfRecords.
                             Where(c =>
-                                       c.MethodID != null && c.MethodID.ToString().ToLower().Contains(searchString.ToLower())
+                                       c.MethodCode != null && c.MethodCode.ToString().ToLower().Contains(searchString.ToLower())
                                     || c.MethodDescription != null && c.MethodDescription.ToLower().Contains(searchString.ToLower())
                                     || c.MethodLink != null && c.MethodLink.ToLower().Contains(searchString.ToLower())
                                 );
@@ -1530,9 +1531,9 @@ namespace HydroServerTools.Controllers
                             {
                                 case "1":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
-                                    { items = listOfRecords.OrderBy(a => a.MethodID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    { items = listOfRecords.OrderBy(a => a.MethodCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
-                                    { items = listOfRecords.OrderByDescending(a => a.MethodID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    { items = listOfRecords.OrderByDescending(a => a.MethodCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
                                 case "2":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
@@ -1548,9 +1549,9 @@ namespace HydroServerTools.Controllers
                                     break;
                                 default:
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
-                                    { items = listOfRecords.OrderBy(a => a.MethodID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    { items = listOfRecords.OrderBy(a => a.MethodCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
-                                    { items = listOfRecords.OrderByDescending(a => a.MethodID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    { items = listOfRecords.OrderByDescending(a => a.MethodCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
 
                             }
@@ -1573,7 +1574,7 @@ namespace HydroServerTools.Controllers
             var rst = from c in items
                       select new[] { 
                             string.Empty,
-                            c.MethodID,
+                            c.MethodCode,
                             c.MethodDescription,
                             c.MethodLink,
                             c.Errors
@@ -1615,8 +1616,7 @@ namespace HydroServerTools.Controllers
                         var searchString = jQueryDataTablesModel.sSearch.ToLower();
                         var filteredItems = listOfRecords.
                             Where(c =>
-                                           c.LabMethodID != null && c.LabMethodID.ToString().ToLower().Contains(searchString.ToLower())
-                                        || c.LabName != null && c.LabName.ToLower().Contains(searchString.ToLower())
+                                            c.LabName != null && c.LabName.ToLower().Contains(searchString.ToLower())
                                         || c.LabOrganization != null && c.LabOrganization.ToLower().Contains(searchString.ToLower())
                                         || c.LabMethodName != null && c.LabMethodName.ToLower().Contains(searchString.ToLower())
                                         || c.LabMethodDescription != null && c.LabMethodDescription.ToLower().Contains(searchString.ToLower())
@@ -1639,37 +1639,32 @@ namespace HydroServerTools.Controllers
                         {
                             switch (sortedColumn.PropertyName.ToLower())
                             {
+                                
                                 case "1":
-                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
-                                    { items = listOfRecords.OrderBy(a => a.LabMethodID).Skip(startIndex).Take(pageSize).ToList(); }
-                                    else
-                                    { items = listOfRecords.OrderByDescending(a => a.LabMethodID).Skip(startIndex).Take(pageSize).ToList(); }
-                                    break;
-                                case "2":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.LabName).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.LabName).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "3":
+                                case "2":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.LabOrganization).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.LabOrganization).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "4":
+                                case "3":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.LabMethodName).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.LabMethodName).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "5":
+                                case "4":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.LabMethodDescription).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.LabMethodDescription).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "6":
+                                case "5":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.LabMethodLink).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
@@ -1677,9 +1672,9 @@ namespace HydroServerTools.Controllers
                                     break;
                                 default:
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
-                                    { items = listOfRecords.OrderBy(a => a.LabMethodID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    { items = listOfRecords.OrderBy(a => a.LabMethodName).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
-                                    { items = listOfRecords.OrderByDescending(a => a.LabMethodID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    { items = listOfRecords.OrderByDescending(a => a.LabMethodName).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
 
                             }
@@ -1701,8 +1696,7 @@ namespace HydroServerTools.Controllers
 
             var rst = from c in items
                       select new[] { 
-                                        string.Empty,
-                                        c.LabMethodID,
+                                        string.Empty,                                        
                                         c.LabName,
                                         c.LabOrganization,
                                         c.LabMethodName,
@@ -1747,8 +1741,7 @@ namespace HydroServerTools.Controllers
                         var searchString = jQueryDataTablesModel.sSearch.ToLower();
                         var filteredItems = listOfRecords.
                             Where(c =>
-                                           c.SampleID != null && c.SampleID.ToString().ToLower().Contains(searchString.ToLower())
-                                        || c.SampleType != null && c.SampleType.ToLower().Contains(searchString.ToLower())
+                                            c.SampleType != null && c.SampleType.ToLower().Contains(searchString.ToLower())
                                         || c.LabSampleCode != null && c.LabSampleCode.ToLower().Contains(searchString.ToLower())
                                         || c.LabMethodName != null && c.LabMethodName.Contains(searchString.ToLower())
                                         || c.LabMethodID != null && c.LabMethodID.ToString().Contains(searchString.ToLower())
@@ -1770,41 +1763,31 @@ namespace HydroServerTools.Controllers
                         {
                             switch (sortedColumn.PropertyName.ToLower())
                             {
+                               
                                 case "1":
-                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
-                                    { items = listOfRecords.OrderBy(a => a.SampleID).Skip(startIndex).Take(pageSize).ToList(); }
-                                    else
-                                    { items = listOfRecords.OrderByDescending(a => a.SampleID).Skip(startIndex).Take(pageSize).ToList(); }
-                                    break;
-                                case "2":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.SampleType).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.SampleType).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "3":
+                                case "2":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.LabSampleCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.LabSampleCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "4":
+                                case "3":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.LabMethodName).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.LabMethodName).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "5":
-                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
-                                    { items = listOfRecords.OrderBy(a => a.LabMethodID).Skip(startIndex).Take(pageSize).ToList(); }
-                                    else
-                                    { items = listOfRecords.OrderByDescending(a => a.LabMethodID).Skip(startIndex).Take(pageSize).ToList(); }
-                                    break;
+                                
                                 default:
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
-                                    { items = listOfRecords.OrderBy(a => a.SampleID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    { items = listOfRecords.OrderBy(a => a.LabSampleCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
-                                    { items = listOfRecords.OrderByDescending(a => a.SampleID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    { items = listOfRecords.OrderByDescending(a => a.LabSampleCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
 
                             }
@@ -1826,12 +1809,10 @@ namespace HydroServerTools.Controllers
 
             var rst = from c in items
                       select new[] { 
-                                        string.Empty,
-                                        c.SampleID,
+                                        string.Empty,                                       
                                         c.SampleType,
                                         c.LabSampleCode,
-                                        c.LabMethodName,
-                                        c.LabMethodID,
+                                        c.LabMethodName,                                        
                                         c.Errors
                                     };
 
@@ -1871,8 +1852,7 @@ namespace HydroServerTools.Controllers
                         var searchString = jQueryDataTablesModel.sSearch.ToLower();
                         var filteredItems = listOfRecords.
                             Where(c =>
-                                       c.QualifierID != null && c.QualifierID.ToString().ToLower().Contains(searchString.ToLower())
-                                    || c.QualifierCode != null && c.QualifierCode.ToLower().Contains(searchString.ToLower())
+                                       c.QualifierCode != null && c.QualifierCode.ToLower().Contains(searchString.ToLower())
                                     || c.QualifierDescription != null && c.QualifierDescription.ToLower().Contains(searchString.ToLower())
                                 );
 
@@ -1892,19 +1872,14 @@ namespace HydroServerTools.Controllers
                         {
                             switch (sortedColumn.PropertyName.ToLower())
                             {
+                                
                                 case "0":
-                                    if (sortedColumn.Direction.ToString().ToLower() == "ascending")
-                                    { items = listOfRecords.OrderBy(a => a.QualifierID).Skip(startIndex).Take(pageSize).ToList(); }
-                                    else
-                                    { items = listOfRecords.OrderByDescending(a => a.QualifierID).Skip(startIndex).Take(pageSize).ToList(); }
-                                    break;
-                                case "1":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.QualifierCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
                                     { items = listOfRecords.OrderByDescending(a => a.QualifierCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
-                                case "2":
+                                case "1":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
                                     { items = listOfRecords.OrderBy(a => a.QualifierDescription).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
@@ -1912,9 +1887,9 @@ namespace HydroServerTools.Controllers
                                     break;
                                 default:
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
-                                    { items = listOfRecords.OrderBy(a => a.QualifierID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    { items = listOfRecords.OrderBy(a => a.QualifierCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
-                                    { items = listOfRecords.OrderByDescending(a => a.QualifierID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    { items = listOfRecords.OrderByDescending(a => a.QualifierCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
 
 
@@ -1936,8 +1911,7 @@ namespace HydroServerTools.Controllers
 
             var rst = from c in items
                         select new[] { 
-                                        string.Empty,
-                                        c.QualifierID,
+                                        string.Empty,                                        
                                         c.QualifierCode,
                                         c.QualifierDescription,
                                         c.Errors
@@ -2086,18 +2060,18 @@ namespace HydroServerTools.Controllers
                         var searchString = jQueryDataTablesModel.sSearch.ToLower();
                         var filteredItems = (List<DataValuesModel>)listOfRecords.
                             FindAll(c =>
-                                        (c.CensorCode != null && c.CensorCode.ToLower().Contains(searchString))
+                                       (c.CensorCode != null && c.CensorCode.ToLower().Contains(searchString))
                                     || (c.DataValue != null && c.DataValue.ToLower().Contains(searchString))
                                     || (c.DateTimeUTC != null && c.DateTimeUTC.Contains(searchString))
                                     || (c.DerivedFromID != null && c.DerivedFromID.Contains(searchString))
                                     || (c.LocalDateTime != null && c.LocalDateTime.ToLower().Contains(searchString))
                                     || (c.MethodDescription != null && c.MethodDescription.Contains(searchString))
-                                    || (c.OffsetTypeID != null && c.OffsetTypeID.Contains(searchString))
-                                    || (c.QualifierID != null && c.QualifierID.Contains(searchString))
+                                    || (c.OffsetTypeCode != null && c.OffsetTypeCode.Contains(searchString))
+                                    || (c.QualifierCode != null && c.QualifierCode.Contains(searchString))
                                     || (c.QualityControlLevelCode != null && c.QualityControlLevelCode.Contains(searchString))
-                                    || (c.SampleID != null && c.SampleID.ToLower().Contains(searchString))
+                                    || (c.LabSampleCode != null && c.LabSampleCode.ToLower().Contains(searchString))
                                     || (c.SiteCode != null && c.SiteCode.ToLower().Contains(searchString))
-                                    || (c.SourceID != null && c.SourceID.ToLower().Contains(searchString))
+                                    || (c.SourceCode != null && c.SourceCode.ToLower().Contains(searchString))
                                     || (c.UTCOffset != null && c.UTCOffset.ToLower().Contains(searchString))
                                     || (c.ValueAccuracy != null && c.ValueAccuracy.ToLower().Contains(searchString))
                                     || (c.VariableCode != null && c.VariableCode.ToLower().Contains(searchString))
@@ -2165,9 +2139,9 @@ namespace HydroServerTools.Controllers
                                     break;
                                 case "9":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
-                                    { items = listOfRecords.OrderBy(a => a.OffsetTypeID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    { items = listOfRecords.OrderBy(a => a.OffsetTypeCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
-                                    { items = listOfRecords.OrderByDescending(a => a.OffsetTypeID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    { items = listOfRecords.OrderByDescending(a => a.OffsetTypeCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
                                 case "10":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
@@ -2177,15 +2151,15 @@ namespace HydroServerTools.Controllers
                                     break;
                                 case "11":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
-                                    { items = listOfRecords.OrderBy(a => a.QualifierID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    { items = listOfRecords.OrderBy(a => a.QualifierCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
-                                    { items = listOfRecords.OrderByDescending(a => a.QualifierID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    { items = listOfRecords.OrderByDescending(a => a.QualifierCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
                                 case "12":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
-                                    { items = listOfRecords.OrderBy(a => a.MethodID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    { items = listOfRecords.OrderBy(a => a.MethodCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
-                                    { items = listOfRecords.OrderByDescending(a => a.MethodID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    { items = listOfRecords.OrderByDescending(a => a.MethodCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
                                 case "13":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
@@ -2195,15 +2169,15 @@ namespace HydroServerTools.Controllers
                                     break;
                                 case "14":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
-                                    { items = listOfRecords.OrderBy(a => a.SourceID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    { items = listOfRecords.OrderBy(a => a.SourceCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
-                                    { items = listOfRecords.OrderByDescending(a => a.SourceID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    { items = listOfRecords.OrderByDescending(a => a.SourceCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
                                 case "15":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
-                                    { items = listOfRecords.OrderBy(a => a.SampleID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    { items = listOfRecords.OrderBy(a => a.LabSampleCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     else
-                                    { items = listOfRecords.OrderByDescending(a => a.SampleID).Skip(startIndex).Take(pageSize).ToList(); }
+                                    { items = listOfRecords.OrderByDescending(a => a.LabSampleCode).Skip(startIndex).Take(pageSize).ToList(); }
                                     break;
                                 case "16":
                                     if (sortedColumn.Direction.ToString().ToLower() == "ascending")
@@ -2249,13 +2223,13 @@ namespace HydroServerTools.Controllers
                         //c.VariableID,
                         c.VariableCode,
                         c.OffsetValue,
-                        c.OffsetTypeID,
+                        c.OffsetTypeCode,
                         c.CensorCode,
-                        c.QualifierID,
-                        c.MethodID,
+                        c.QualifierCode,
+                        c.MethodCode,
                         c.MethodDescription,
-                        c.SourceID,
-                        c.SampleID,
+                        c.SourceCode,
+                        c.LabSampleCode,
                         c.DerivedFromID,
                         c.QualityControlLevelCode,
                         c.Errors

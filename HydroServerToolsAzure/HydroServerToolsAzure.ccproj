@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>2.3</ProductVersion>
+    <ProductVersion>2.4</ProductVersion>
     <ProjectGuid>3a865bbe-ec6a-411f-a891-81c87679040e</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -39,12 +39,12 @@
     <ServiceConfiguration Include="ServiceConfiguration.Cloud.cscfg" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CacheWorkerRole1\CacheWorkerRole1.csproj">
-      <Name>CacheWorkerRole1</Name>
-      <Project>{76e49d88-a2bd-405d-b2c4-393136a48d51}</Project>
+    <ProjectReference Include="..\CacheWorkerRole2\CacheWorkerRole2.csproj">
+      <Name>CacheWorkerRole2</Name>
+      <Project>{ffc2cb37-55f2-45d2-b413-a38070aa1bd2}</Project>
       <Private>True</Private>
       <RoleType>Worker</RoleType>
-      <RoleName>CacheWorkerRole1</RoleName>
+      <RoleName>CacheWorkerRole2</RoleName>
       <UpdateDiagnosticsConnectionStringOnPublish>True</UpdateDiagnosticsConnectionStringOnPublish>
     </ProjectReference>
     <ProjectReference Include="..\HydroServerTools\HydroServerTools.csproj">
@@ -57,12 +57,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="CacheWorkerRole1Content\" />
+    <Folder Include="CacheWorkerRole2Content\" />
     <Folder Include="HydroServerToolsContent\" />
     <Folder Include="Profiles" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="CacheWorkerRole1Content\diagnostics.wadcfg">
+    <Content Include="CacheWorkerRole2Content\diagnostics.wadcfg">
       <SubType>Content</SubType>
     </Content>
     <Content Include="HydroServerToolsContent\diagnostics.wadcfg">
@@ -75,7 +75,7 @@
   <!-- Import the target files for this project template -->
   <PropertyGroup>
     <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
-    <CloudExtensionsDir Condition=" '$(CloudExtensionsDir)' == '' ">$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Windows Azure Tools\2.3\</CloudExtensionsDir>
+    <CloudExtensionsDir Condition=" '$(CloudExtensionsDir)' == '' ">$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Windows Azure Tools\2.4\</CloudExtensionsDir>
   </PropertyGroup>
   <Import Project="$(CloudExtensionsDir)Microsoft.WindowsAzure.targets" />
 </Project>

@@ -48,10 +48,12 @@ $(function () {
                 $('#loading').removeClass('hide');
                 $('#reset').unbind('click')
                 data.submit();
+               // intervalId = setInterval(funcName,1000)
+
 
                 intervalId = setInterval(function () {
 
-                    $.post("/Home/Progress", function (progress) {
+                   $.post("/Home/Progress", function (progress) {
                         //if (progress >= 1000) {
                         //    updateMonitor(taskId, "Completed");
                         //    clearInterval(intervalId);
@@ -62,6 +64,7 @@ $(function () {
 
                 }, 1000);
             });
+            
         },
         done: function (e, data) {
             //data.context.text(data.files[0].SiteID + '... Completed');
@@ -89,7 +92,7 @@ $(function () {
             $('#reset').trigger("click");
             var returnedMessage = "An Error occured. Please resubmit the file. If the problem persists please validate the content or contact user suport";
             if (typeof data.jqXHR.responseJSON.Message != "undefined") returnedMessage = data.jqXHR.responseJSON.Message;
-
+            clearInterval(intervalId);
             resetButtons();
             alert(returnedMessage);
 
@@ -151,5 +154,9 @@ $(function () {
 
     function updateMonitor(status, progress) {
         $('#monitor').html(progress);
+    }
+
+    function funcName() {
+        alert("test");
     }
 });

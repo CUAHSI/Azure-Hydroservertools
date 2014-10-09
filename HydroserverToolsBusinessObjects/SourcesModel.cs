@@ -9,7 +9,9 @@ namespace HydroserverToolsBusinessObjects.Models
 {
     public class SourcesModel
     {
-        public string SourceID { get; set; }
+        //public string SourceID { get; set; }
+        [Required]
+        public string SourceCode { get; set; }
         [Required]
         public string Organization { get; set; }
         [Required]

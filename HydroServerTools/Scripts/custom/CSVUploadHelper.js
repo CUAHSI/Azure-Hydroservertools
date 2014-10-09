@@ -227,9 +227,10 @@ function getDatatableOptions(name, index) {
                             return addImageToColumn(index);
                         }
                     },
-                    { "aTargets": [1], "sName": "OffsetTypeID", "bVisible": false },
+                    //{ "aTargets": [1], "sName": "OffsetTypeID", "bVisible": false },
+                    { "aTargets": [1], "sName": "OffsetTypeCode" },
                     { "aTargets": [2], "sName": "OffsetUnitsName" },
-                    { "aTargets": [3], "sName": "OffsetDescription" },
+                    { "aTargets": [3], "sName": "OffsetDescription" },                    
                     { "aTargets": [4], "sName": "Errors", "bSortable": false, "bVisible": false }
                  ]
             }
@@ -263,7 +264,7 @@ function getDatatableOptions(name, index) {
                             return addImageToColumn(index);
                         }
                     },
-                    { "aTargets": [1], "sName": "SourceID", "sWidth": "110px", "bVisible": false },
+                    { "aTargets": [1], "sName": "SourceCode", "sWidth": "110px" },
                     { "aTargets": [2], "sName": "Organization", "sWidth": "200px" },
                     { "aTargets": [3], "sName": "SourceDescription", "sWidth": "300px" },
                     {
@@ -319,7 +320,7 @@ function getDatatableOptions(name, index) {
                             return addImageToColumn(index);
                         }
                     },
-                    { "aTargets": [1], "sName": "MethodId", "bVisible": false },
+                    { "aTargets": [1], "sName": "MethodCode" },
                     { "aTargets": [2], "sName": "MethodDescription" },
                     {
                         "aTargets": [3], "sName": "MethodLink", "fnRender": function (aData, val) {
@@ -356,17 +357,16 @@ function getDatatableOptions(name, index) {
                             return addImageToColumn(index);
                         }
                     },
-                    { "aTargets": [1], "sName": "LabMethodID", "bVisible": false },
-                    { "aTargets": [2], "sName": "LabName" },
-                    { "aTargets": [3], "sName": "LabOrganization" },
-                    { "aTargets": [4], "sName": "LabMethodName" },
-                    { "aTargets": [5], "sName": "LabMethodDescription" },
+                    { "aTargets": [1], "sName": "LabName" },
+                    { "aTargets": [2], "sName": "LabOrganization" },
+                    { "aTargets": [3], "sName": "LabMethodName" },
+                    { "aTargets": [4], "sName": "LabMethodDescription" },
                     {
-                        "aTargets": [6], "sName": "LabMethodLink", "fnRender": function (aData, val) {
+                        "aTargets": [5], "sName": "LabMethodLink", "fnRender": function (aData, val) {
                             return '<a href="/' + val + '" target=_Blank>' + val + '</a>';
                         }
                     },
-                    { "aTargets": [7], "sName": "Errors", "bSortable": false, "bVisible": false }
+                    { "aTargets": [6], "sName": "Errors", "bSortable": false, "bVisible": false }
                  ]
             }
             break;
@@ -396,12 +396,11 @@ function getDatatableOptions(name, index) {
                             return addImageToColumn(index);
                         }
                     },
-                    { "aTargets": [1], "sName": "SampleID", "bVisible": false },
-                    { "aTargets": [2], "sName": "SampleType" },
-                    { "aTargets": [3], "sName": "LabSampleCode" },
-                    { "aTargets": [4], "sName": "LabMethodName", "bVisible": false },
-                    { "aTargets": [5], "sName": "LabMethodID" },
-                    { "aTargets": [6], "sName": "Errors", "bSortable": false, "bVisible": false }
+                   
+                    { "aTargets": [1], "sName": "SampleType" },
+                    { "aTargets": [2], "sName": "LabSampleCode" },
+                    { "aTargets": [3], "sName": "LabMethodName" },                    
+                    { "aTargets": [4], "sName": "Errors", "bSortable": false, "bVisible": false }
                  ]
             }
             break;
@@ -430,11 +429,10 @@ function getDatatableOptions(name, index) {
                         "fnRender": function (oObj) {
                             return addImageToColumn(index);
                         }
-                    },
-                    { "aTargets": [1], "sName": "QualifierID", "bVisible": false },
-                    { "aTargets": [2], "sName": "QualifierCode" },
-                    { "aTargets": [3], "sName": "QualifierDescription" },
-                    { "aTargets": [4], "sName": "Errors", "bSortable": false, "bVisible": false }
+                    },                    
+                    { "aTargets": [1], "sName": "QualifierCode" },
+                    { "aTargets": [2], "sName": "QualifierDescription" },
+                    { "aTargets": [3], "sName": "Errors", "bSortable": false, "bVisible": false }
                  ]
             }
             break;
@@ -464,7 +462,7 @@ function getDatatableOptions(name, index) {
                             return addImageToColumn(index);
                         }
                     },
-                    { "aTargets": [1], "sName": "QualityControlLevelCode", "sWidth": "110px" },
+                    { "aTargets": [1], "sName": "QualityControlLevelCode", "sWidth": "200px" },
                     { "aTargets": [2], "sName": "Definition" },
                     { "aTargets": [3], "sName": "Explanation" },
                     { "aTargets": [4], "sName": "Errors", "bSortable": false, "bVisible": false }
@@ -776,7 +774,25 @@ function initCommitAndCancelButton(id) {
 
     $('#2commit').click(function () {
         //$.post("/CSVUpload/Commit", { id: "sites" } {
+        $('#2commit').addClass('disabled');
+        $('#cancel').addClass('disabled');
 
+        $('#loading').removeClass('hide');
+        $('#2commit').unbind('click')
+        $('#cancel').unbind('click')
+
+        intervalId = setInterval(function () {
+
+            $.post("/Home/Progress", function (progress) {
+                //if (progress >= 1000) {
+                //    updateMonitor(taskId, "Completed");
+                //    clearInterval(intervalId);
+                //} else {
+                updateMonitor(status, progress);
+                //}
+            });
+
+        }, 1000);
 
         $.ajax({
             url: '/CSVUpload/Commit/' + id,
@@ -788,7 +804,9 @@ function initCommitAndCancelButton(id) {
                 bootbox.alert("Records successfully added.")
                 oTable = $('#2').dataTable(getDatatableOptions(id, 2));
                 GetUploadStats(id);
-                $('#2commit').addClass("disabled");
+                $('#2commit').addClass("disabled");               
+                $('#loading').addClass('hide');
+                $('#cancel').bind('click');
             },
             error: function (xhr) {
                 if (typeof xhr.statusText != "undefined") {
