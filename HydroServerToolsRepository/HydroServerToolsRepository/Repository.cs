@@ -250,6 +250,7 @@ namespace HydroServerToolsRepository.Repository
             var SiteTypeCV = context.SiteTypeCVs.ToList();
             var maxCount = itemList.Count;
             var count = 0;
+           
             BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
 
 
@@ -361,10 +362,11 @@ namespace HydroServerToolsRepository.Repository
                         }
                         else
                         {
-                            if (item.LatLongDatumSRSName == "Unknown")
+                            if (item.LatLongDatumSRSName.ToLower() == "unknown")
                             {
-                                model.LatLongDatumID = 0;
-                                item.LatLongDatumID = "0";// write back to viewmodel to not have to convert again when values are committed to DB
+                                var unknownID = context.SpatialReferences.Where(p => p.SRSName.ToLower() == "unknown").Select(p => p.SpatialReferenceID).FirstOrDefault();
+                                model.LatLongDatumID = unknownID;
+                                item.LatLongDatumID = unknownID.ToString();// write back to viewmodel to not have to convert again when values are committed to DB
                             }
                             else
                             {
@@ -516,9 +518,11 @@ namespace HydroServerToolsRepository.Repository
                         }
                         else
                         {
-                            if (item.LocalProjectionSRSName == "Unknown")
+                            if (item.LatLongDatumSRSName.ToLower() == "unknown")
                             {
-                                model.LocalProjectionID = 0;
+                                var unknownID = context.SpatialReferences.Where(p => p.SRSName.ToLower() == "unknown").Select(p => p.SpatialReferenceID).FirstOrDefault();
+                                model.LatLongDatumID = unknownID;
+                                item.LatLongDatumID = unknownID.ToString();// write back to viewmodel to not have to convert again when values are committed to DB
                             }
                             else
                             {

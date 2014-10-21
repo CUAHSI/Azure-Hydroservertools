@@ -198,17 +198,28 @@ namespace HydroServerTools.Controllers
                 string fileType = string.Empty;
                 switch (id)
                 {
-                    case "ODMGuide":
+                    case "ODMGuide-Excel":
                          dir = "~/Templates/";
                          filename = id + ".xlsx";
                          filePath = Server.MapPath(dir + filename);
                          fileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                         break;
-                
+                         break;                
                     case "UserGuide":
                          dir = "~/Templates/";
                          filename = id + ".pdf";
                          fileType = "application/pdf";
+                         filePath = Server.MapPath(dir + filename);
+                         break;
+                    case "DataUploadTutorial":
+                         dir = "~/Templates/";
+                         filename = id + ".pdf";
+                         fileType = "application/pdf";
+                         filePath = Server.MapPath(dir + filename);
+                         break;
+                    case "ODMGuide-OpenOffice":
+                         dir = "~/Templates/";
+                         filename = id + ".ods";
+                         fileType = "application/vnd.oasis.opendocument.spreadsheet";
                          filePath = Server.MapPath(dir + filename);
                          break;
                 }

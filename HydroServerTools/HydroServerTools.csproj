@@ -696,10 +696,12 @@
     <Content Include="Views\Home\ChangeHistory.cshtml" />
     <Content Include="Views\Home\ControlledVocabularies.cshtml" />
     <Content Include="Views\CSVUpload\_UploadTabs.cshtml" />
-    <Content Include="Templates\ODMGuide.xlsx" />
+    <Content Include="Templates\ODMGuide-Excel.xlsx" />
     <Content Include="Views\Home\GoogleForm.cshtml" />
     <Content Include="Views\Account\LocalLogin.cshtml" />
     <Content Include="Templates\UserGuide.pdf" />
+    <Content Include="Templates\DataUploadTutorial.pdf" />
+    <Content Include="Templates\ODMGuide-OpenOffice.ods" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
