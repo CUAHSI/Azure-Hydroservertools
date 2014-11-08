@@ -10,6 +10,7 @@ using HydroServerTools.Models;
 
 namespace HydroServerTools.Areas.Admin.Controllers
 {
+    [Authorize]
     public class ConnectionParametersController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();

@@ -11,6 +11,7 @@ using System.Web.Mvc;
 
 namespace HydroServerTools.Areas.Admin.Controllers
 {
+    [Authorize]
     public class ConnectionParametersUsersController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();

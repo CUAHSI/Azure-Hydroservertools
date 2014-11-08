@@ -10,6 +10,7 @@ using HydroServerTools.Controllers;
 
 namespace HydroServerTools.Areas.Admin.Controllers
 {
+    [Authorize]
     public class RolesController : Controller
     {
         ApplicationDbContext context = new ApplicationDbContext();

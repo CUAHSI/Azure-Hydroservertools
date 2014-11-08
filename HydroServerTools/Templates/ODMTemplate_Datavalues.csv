@@ -1,1 +1,1 @@
-DataValue,ValueAccuracy,LocalDateTime,UTCOffset,DateTimeUTC,SiteCode,VariableCode,OffsetValue,OffsetTypeCode,CensorCode,QualifierCode,MethodCode,SourceCode,SampleID,DerivedFromID,QualityControlLevelCode
+DataValue,ValueAccuracy,LocalDateTime,UTCOffset,DateTimeUTC,SiteCode,VariableCode,OffsetValue,OffsetTypeCode,CensorCode,QualifierCode,MethodCode,SourceCode,LabSampleCode,DerivedFromID,QualityControlLevelCode
