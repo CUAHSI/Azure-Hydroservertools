@@ -13,16 +13,21 @@ Description
 
 The motivation for this project is the replacement of several windows desktop based applications with a solution that is entirely web based. This project provides the code for the uploading data client.
 
-
+Prerequisites
+---
+- Runs in the Microsoft Azure cloud as a Cloud Service. 
+- Requires a Cache worker role to store state information. 
+- Requires asp.net 4.5.
+- User database and ODM databases required to be SQl server 2008/2012 databases.
 
 Current Features and Functionality
 --
 - Built for Windows Azure Web deployment not suitable for local deployment 
 - Single Sign on with OpenID and Google account
-- View all tables in Database with sort and limited search functionality. Data processing is implemented on backend to enable scaling to larger datasets  
-- Maintenance of state using caching using azure caching 
+- View all tables in Database with sort and limited search functionality using jquery datatables. Data processing is implemented on backend to enable scaling to larger datasets  
+- Maintenance of state using azure caching 
 - Asynchronous upload of data to not block UI thread and prevent timeouts 
-- Visualization of results in 4 categories: new, Rejected, Updated and Duplicate
+- Visualization of results in 4 categories: New, Rejected, Updated and Duplicate
 
 Major Libraries
 --
@@ -35,25 +40,26 @@ Major Libraries
 - **Caching**: windows azure caching
 - **Data Access ORM**: Entity Framework 
 - **Object mapping**: Automapper
-- **Eroor handling**: ELMAH
+- **Error handling**: ELMAH
+
+
 
 
 Set-up
 ---
-Application requires at least 2 databases. One for the usermanagemnt aand one or many ODM 1.1.1 databases. They are linked through a xml file mapping users to login information. 
-After a successful authentication with google users can upload timeseries data into the ODM database that is associated with this account. 
-The 
+Application require at database for the usermanagement and one or many ODM 1.1.1 databases. The Usermanagement database stores the log-in information, the connection to the ODM databses and the associated ODM database for a user (google account). Currently only one database can be associated with a user account. Admininstration can be done when login in a as an admininstrator (role).    
+After a successful authentication with google snd successful association of the user account with a registered database, the users can upload timeseries data and associated metadata into the ODM database that is associated with this account. 
+
 
 To Do
 ----
-- Build out user management to enable a user to select multiple databses interactively and add roles.
 - Add additional upload templates to simplify upload.
- 
+- inprove performance for large datasets > 50000 values. Currently does not scale well. 
 
 Version
 ------
 
-1.0
+1.1.2
 
 Contact
 --------
