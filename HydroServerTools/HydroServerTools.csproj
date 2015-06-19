@@ -571,6 +571,7 @@
     <None Include="Microsoft.WindowsAzure.Caching\ClientPerfCountersInstaller.exe.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Content Include="ODM_1_1_1\ODM_1_1_1_01131015.bak" />
     <None Include="Properties\PublishProfiles\HISToolsPreview - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\HISToolsPreview - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\HydroservertoolsSandbox - FTP.pubxml" />

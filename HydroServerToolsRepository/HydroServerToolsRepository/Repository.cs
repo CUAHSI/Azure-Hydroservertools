@@ -1056,7 +1056,7 @@ namespace HydroServerToolsRepository.Repository
             //read CV in to list for fster searching
             var variableCV = context.VariableNameCVs.ToList();
             var speciationCV = context.SpeciationCVs.ToList();
-            var units = context.Units.ToDictionary(p => p.UnitsName.Trim(), p => p.UnitsID);
+            var units = context.Units.Distinct().ToDictionary(p => p.UnitsName.Trim(), p => p.UnitsID);
             var sampleMediumCV = context.SampleMediumCVs.ToList();
             var valueTypeCV = context.ValueTypeCVs.ToList();
             var dataTypeCV = context.DataTypeCVs.ToList();
@@ -6622,8 +6622,9 @@ namespace HydroServerToolsRepository.Repository
                     timeseriesExists.ValueCount = tsd.ValueCount;
                     context.SeriesCatalogs.Add(timeseriesExists);
                 }
-                context.SaveChanges();
+                
             }
+            context.SaveChanges();
         }
     }
 

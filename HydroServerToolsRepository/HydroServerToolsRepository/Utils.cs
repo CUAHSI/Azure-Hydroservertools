@@ -628,7 +628,7 @@ namespace HydroServerToolsRepository.Repository
                 destinationConnection.Open();
 
                 using (SqlBulkCopy bulkCopy =
-                            new SqlBulkCopy(destinationConnection.ConnectionString, SqlBulkCopyOptions.KeepNulls | SqlBulkCopyOptions.CheckConstraints))
+                            new SqlBulkCopy(destinationConnection.ConnectionString, SqlBulkCopyOptions.KeepNulls))//| SqlBulkCopyOptions.CheckConstraints
                 {
                     //bulkCopy.SqlRowsCopied += new SqlRowsCopiedEventHandler(OnSqlRowsTransfer);
                     //bulkCopy.NotifyAfter = 100;
