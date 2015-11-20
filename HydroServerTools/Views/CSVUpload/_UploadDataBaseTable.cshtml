@@ -76,8 +76,11 @@
                 <i class="glyphicon glyphicon-remove"></i>
                 Cancel
         </button>
-        
+      
+
+
             <span>
+                @Html.ActionLink("Refresh All Timeseries metadata", "RecreateSeriescatalog", "Home", null, new { @class = "btn btn-info active" })
                 @Html.ActionLink("Download as CSV", "Download", "Export", new { identifier = @ViewData["index"], viewName = @ViewData["viewName"] }, new { @class = "btn btn-info active pull-right", target = "_blank" })
             </span>
        

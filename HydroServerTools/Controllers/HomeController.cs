@@ -165,7 +165,18 @@ namespace HydroServerTools.Controllers
         {
             return View();
         }
-      
+        [Authorize]
+        public ActionResult RecreateSeriescatalog()
+        {
+            string entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name.ToString());
+
+            RepositoryUtils.recreateSeriescatalog(entityConnectionString);
+            //return Json(new { success = true });
+            return RedirectToAction("Index");
+        }
+
+
+
         [Authorize]
         public ActionResult ClearTablesHandler(FormCollection collection)
         {
@@ -215,20 +226,27 @@ namespace HydroServerTools.Controllers
             return Json(new { success = true });
 
         }
-        [HttpPost]
+        
         public ActionResult Progress()
         {
-            DataCache cache = new DataCache("default");
-            var identifier = MvcApplication.InstanceGuid + User.Identity.Name;
-            string StatusMessage = "Processing...";
-
-            if (cache != null)
+            //DataCache cache = new DataCache("default");
+            var identifier = User.Identity.Name;
+            var StatusMessage = string.Empty;
+            //var session = Request.RequestContext.HttpContext.Session;
+            if (HttpRuntime.Cache.Get(identifier + "_processStatus") != null)
             {
-                if (cache.Get(identifier + "processStatus") != null)
-                {
-                    if (cache.Get(identifier + "processStatus") != null) StatusMessage = (string)cache.Get(identifier + "processStatus");
-                }
+                 StatusMessage = HttpRuntime.Cache.Get(identifier + "_processStatus").ToString();
             }
+            
+
+            //if (session != null)
+            //{
+            //    if (session["processStatus"] != null)
+            //    {
+            //        StatusMessage = (string)session["processStatus"];
+            //        //StatusMessage = "in proc";
+            //    }
+            //}
             return Json(StatusMessage);
         }
     }

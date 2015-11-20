@@ -80,6 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutoMapperConfiguration.cs" />
+    <Compile Include="CustomExceptions.cs" />
     <Compile Include="DatatablesHelper.cs" />
     <Compile Include="ISitesRepository.cs" />
     <Compile Include="IRepository.cs" />

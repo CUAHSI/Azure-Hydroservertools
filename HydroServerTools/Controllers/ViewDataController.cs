@@ -582,7 +582,7 @@ namespace HydroServerTools.Controllers
                             c.QualifierID,
                             c.MethodID,
                             c.SourceID,
-                            c.SampleID,
+                            c.LabSampleCode,
                             c.DerivedFromID,
                             c.QualityControlLevelCode
                 };

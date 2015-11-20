@@ -628,11 +628,11 @@ namespace HydroServerToolsRepository.Repository
                 destinationConnection.Open();
 
                 using (SqlBulkCopy bulkCopy =
-                            new SqlBulkCopy(destinationConnection.ConnectionString, SqlBulkCopyOptions.KeepNulls))//| SqlBulkCopyOptions.CheckConstraints
+                            new SqlBulkCopy(destinationConnection.ConnectionString, SqlBulkCopyOptions.KeepNulls| SqlBulkCopyOptions.CheckConstraints ))
                 {
                     //bulkCopy.SqlRowsCopied += new SqlRowsCopiedEventHandler(OnSqlRowsTransfer);
-                    //bulkCopy.NotifyAfter = 100;
-                    bulkCopy.BatchSize = 50;
+                    //bulkCopy.NotifyAfter = 10000;
+                    bulkCopy.BatchSize = 10000;
 
 
                     // bulkCopy.ColumnMappings.Add("OrderID", "NewOrderID");     
@@ -735,6 +735,26 @@ namespace HydroServerToolsRepository.Repository
             
             return timeseriesData;
         }
-               
+
+        public static void recreateSeriescatalog(string entityConnectionstring)
+        {
+            string providerConnectionString = new EntityConnectionStringBuilder(entityConnectionstring).ProviderConnectionString;
+
+            var seriesCatalogRepository = new SeriesCatalogRepository();
+                                    //seriesCatalogRepository.deleteAll(connectionString);
+            using (var conn = new SqlConnection(providerConnectionString))
+                using (var command = new SqlCommand("dbo.spUpdateSeriesCatalog", conn)
+                    { 
+                        CommandType = CommandType.StoredProcedure,
+                        CommandTimeout = 60000 })
+                       
+                        {
+                           
+                           conn.Open();
+                           command.ExecuteNonQuery();
+                           conn.Close();
+                        }
+            
+        }
     }
 }

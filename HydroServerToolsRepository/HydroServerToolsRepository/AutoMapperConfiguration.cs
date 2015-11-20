@@ -90,15 +90,19 @@ namespace HydroServerToolsRepository
             //  QualityControlLevels
             Mapper.CreateMap<QualityControlLevel, QualityControlLevelModel>();
             Mapper.CreateMap<QualityControlLevelModel, QualityControlLevel>()
-                 .ForMember(c => c.QualityControlLevelID, opt => opt.Ignore()); ;
+                 .ForMember(c => c.QualityControlLevelID, opt => opt.Ignore()); 
 
             //  DataValues
             Mapper.CreateMap<DataValue, DataValuesModel>()
-                .ForMember(c => c.DataValue, m=>m.MapFrom(s=>s.DataValue1));
+                .ForMember(c => c.DataValue, m=>m.MapFrom(s=>s.DataValue1))
+                .ForMember(c => c.LabSampleCode, m => m.MapFrom(s => s.Sample.LabSampleCode)); 
+                
+
             Mapper.CreateMap<DataValuesModel, DataValue>()
                 .ForMember(c => c.ValueID, opt => opt.Ignore())
                 //.ForMember(c => c.VariableID, opt => opt.Ignore())
                 .ForMember(c => c.DataValue1, m => m.MapFrom(s => s.DataValue)); 
+                
 
             //  GroupDescriptions
             Mapper.CreateMap<GroupDescription, GroupDescriptionModel>()

@@ -2,7 +2,7 @@
 //    $('input[type=file]').bootstrapFileInput();
 //});
 
-$(function () {
+//$(function () {
 
     //var viewName = $.url().param('identifier');
 
@@ -12,7 +12,12 @@ $(function () {
     var viewName = sPath.substring(sPath.lastIndexOf('/') + 1);
     var intervalId;
     //var acceptFiletypes= ["zip","csv"];
-
+    //$('#refresh').bind("click");
+    //$('#refresh').click(function ()
+    //{
+    //    alert()
+    //})
+        
     $('#fileupload').fileupload({
         dataType: "json",
         url: "/api/upload/" + viewName,
@@ -20,6 +25,7 @@ $(function () {
         sequentialUploads: true,
         acceptFileTypes: /(\.|\/)(zip|csv)$/i,
         replaceFileInput: false,
+        
 
         add: function (e, data) {
 
@@ -42,52 +48,98 @@ $(function () {
             //$('</div><div class="progress"><div class="bar" style="width:0%"></div></div>').appendTo(data.context);
             $('#startupload').click(function () {
                 
+                // intervalId = setInterval(setupinterval, 1000)
                 $('.fileinput-button').addClass('disabled');
                 $('#startupload').addClass('disabled');
                 $('#reset').addClass('disabled');
                 $('#loading').removeClass('hide');
                 $('#reset').unbind('click')
+              
+
+                intervalId = interval(function () {
+                    funcName();
+                }, 2000, 1000);
+
                 data.submit();
-               // intervalId = setInterval(funcName,1000)
+               
+                
+
+                //kick off the process
+                //start polling
+                //(function poll() {
+                //    setTimeout(function () {
+                //        $.Ajax({
+                //            url: "/Home/Progress",
+                //            success: function (data) {
+                //                //Update the progress bar
+                //                //setProgress(data.value);
+                //                alert();
+                //                //Setup the next poll recursively
+                //                poll();
+                //            },
+                //            fail: function ()
+                //            { alert("fail")},
+                //            dataType: "json"
+                //        });
+                //    }, 1000);
+                //})();
 
 
-                intervalId = setInterval(function () {
 
-                   $.post("/Home/Progress", function (progress) {
-                        //if (progress >= 1000) {
-                        //    updateMonitor(taskId, "Completed");
-                        //    clearInterval(intervalId);
-                        //} else {
-                            updateMonitor(status, progress);
-                        //}
-                    });
 
-                }, 1000);
+                // intervalId = setInterval(funcName,1000)
+                //var i = 0;
+                //(function foo() {
+                //    $.post("/Home/Progress", function (progress) {
+                //        //if (progress >= 1000) {
+                //        //    updateMonitor(taskId, "Completed");
+                //        //    clearInterval(intervalId);
+                //        //} else {
+                //        updateMonitor(status, progress);
+                //        //}
+                //    });
+                //    setTimeout(foo, 1000);
+                //})();
+
+
+                //intervalId = setInterval(function () {
+
+                //    $.post("/Home/Progress", function (progress) {
+                //        //if (progress >= 1000) {
+                //        //    updateMonitor(taskId, "Completed");
+                //        //    clearInterval(intervalId);
+                //        //} else {
+                //        updateMonitor(status, progress);
+                //        //}
+                //    });
+
+                //}, 100);
+               
             });
-            
+             
         },
-        done: function (e, data) {
+        done: function (data, o) {
             //data.context.text(data.files[0].SiteID + '... Completed');
             clearInterval(intervalId);
-            updateMonitor( "Done", "Processing completed");
-            window.location.href = '/CSVUpload/' + viewName
+            //updateMonitor("Done", "Processing completed");
+            window.location.href = '/CSVUpload/' +viewName
             //alert(result);
             //$('</div><div class="progress"><div class="bar" style="width:60%"></div></div>').appendTo(data.context);
         },
-        progressall: function (e, data) {
-            var progress = parseInt(data.loaded / data.total * 100, 10);
-            //$('#overallbar').css('width', progress + '%');
+        //progressall: function (e, data) {
+        //    var progress = parseInt(data.loaded / data.total * 100, 10);
+        //    //$('#overallbar').css('width', progress + '%');
 
-            $("#progressbar").progressbar({
-                value: progress
-            });
-        },
-        progress: function (e, data) {
-            var progress = parseInt(data.loaded / data.total * 100, 10);
-            data.context.find('.bar').progressbar({
-                value: progress
-            });
-        },
+        //    $("#progressbar").progressbar({
+        //        value: progress
+        //    });
+        //},
+        //progress: function (e, data) {
+        //    var progress = parseInt(data.loaded / data.total * 100, 10);
+        //    data.context.find('.bar').progressbar({
+        //        value: progress
+        //    });
+        //},
         fail: function (e, data, errorThrown) {
             $('#reset').trigger("click");
             var returnedMessage = "An Error occured. Please resubmit the file. If the problem persists please validate the content or contact user suport";
@@ -97,18 +149,19 @@ $(function () {
             alert(returnedMessage);
 
         }
+    })
+    //}).bind('fileuploadalways', function (e, data) {
+    //    var currentFile = data.files[data.index];
+    //    if (data.files.error && currentFile.error) {
+    //        // there was an error, do something about it
+    //        console.log(currentFile.error);
+    //    }
+    //});
+    //;
+    //$('#fileupload').bind('fileuploadadded', function (e, data) {
+    //    console.log(data.files.valid);
+    
 
-    }).bind('fileuploadalways', function (e, data) {
-        var currentFile = data.files[data.index];
-        if (data.files.error && currentFile.error) {
-            // there was an error, do something about it
-            console.log(currentFile.error);
-        }
-    });
-    ;
-    $('#fileupload').bind('fileuploadadded', function (e, data) {
-        console.log(data.files.valid);
-    });
     function reset_form_element(e) {
         e.wrap('<form>').parent('form').trigger('reset');
         e.unwrap();
@@ -152,11 +205,80 @@ $(function () {
 
     }
 
-    function updateMonitor(status, progress) {
-        $('#monitor').html(progress);
+    function setupInterval()
+    {
+        intervalId = setInterval(funcName, 1000);
+
+        
+    }
+  
+
+    function interval(func, wait, times) {
+        var interv = function (w, t) {
+            return function () {
+                if (typeof t === "undefined" || t-- > 0) {
+                    setTimeout(interv, w);
+                    try {
+                        func.call(null);
+                    }
+                    catch (e) {
+                        t = 0;
+                        throw e.toString();
+                    }
+                }
+            };
+        }(wait, times);
+
+        setTimeout(interv, wait);
+    };
+
+    function trackJobProgress(job) {
+        setProgressBarWidth(job.Progress);
+        $("#completedDisplay").hide();
+        $('#progressDisplay').show();
+
+        var hubProxy = $.connection.progressHub;
+
+        hubProxy.client.progressChanged = function (jobId, progress) {
+            setProgressBarWidth(progress);
+        };
+
+        hubProxy.client.jobCompleted = function (jobId) {
+            $('#progressDisplay').hide();
+            $("#completedDisplay").show();
+            $("#startButton").prop('disabled', false);
+            $.connection.hub.stop();
+            window.location.href = '/CSVUpload/' + viewName
+
+        };
+
+        $.connection.hub.start().done(function () {
+            hubProxy.server.trackJob(job.JobId);
+        });
     }
 
-    function funcName() {
-        alert("test");
+    function setProgressBarWidth(progress) {
+        $("#progresssBarValue").css("width", progress + "%");
     }
-});
+
+//});
+function funcName() {
+
+    //
+    var jqxhr = $.post("/Home/Progress", function (progress) {
+        updateMonitor(status, progress);
+    })
+
+    // $.post('Home/Progress', function (progress) {
+    //   //if (progress >= 1000) {
+    //   //    updateMonitor(taskId, "Completed");
+    //   //    clearInterval(intervalId);
+    //   //} else {
+    //    updateMonitor(d, progress);
+    //   //}
+    //});
+
+}
+function updateMonitor(status, progress) {
+        $('#monitor').html(progress);
+    }

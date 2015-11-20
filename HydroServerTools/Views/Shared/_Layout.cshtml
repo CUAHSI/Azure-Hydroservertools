@@ -13,6 +13,25 @@
     <script src="~/Scripts/bootstrap.min.js"></script>
     <script src="~/Scripts/purl.js"></script>@*//url parser*@
     <script src="~/Scripts/bootbox.min.js"></script>
+    @*<script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
+    <script src="/signalr/hubs"></script>
+    <script>
+
+    $(function() {
+        // Save the reference to the SignalR hub
+        var theHub = $.connection.yourAppHub;
+
+        // Invoke the function to be called back from the server
+        // when changes are detected
+        
+        // Start the SignalR client-side listener
+        $.connection.hub.start().done(function () {
+            // Do here any initialization work you may need
+            
+        });
+    });
+    </script>*@
+
 </head>
 <body>
     <div class="container">
