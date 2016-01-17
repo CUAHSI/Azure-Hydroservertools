@@ -3772,11 +3772,12 @@ namespace HydroServerToolsRepository.Repository
                     bool isRejected = false;
 
                     model.QualifierCode = null;
+                    model.QualifierDescription = null;
 
                     //QualifierCode
                     if (!string.IsNullOrWhiteSpace(item.QualifierCode))
                     {
-                        if (RepositoryUtils.containsSpecialCharacters(item.QualifierCode))
+                        if (RepositoryUtils.containsNotOnlyAllowedCaracters(item.QualifierCode))
                         {
                             var err = new ErrorModel("AddQualifiers", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "QualifierCode")); listOfErrors.Add(err); isRejected = true;
                         }
@@ -4477,11 +4478,18 @@ namespace HydroServerToolsRepository.Repository
                     HashSet<double> setDataValue = new HashSet<double>(from d in context.DataValues.AsNoTracking()
                                                                   where d.SiteID == currentSiteId
                                                                   select d.DataValue1);
+                    HashSet<int> setVariableId = new HashSet<int>(from d in context.DataValues.AsNoTracking()
+                                                                          where d.SiteID == currentSiteId
+                                                                          select d.VariableID);
+                    HashSet<int> setMethodId = new HashSet<int>(from d in context.DataValues.AsNoTracking()
+                                                                  where d.SiteID == currentSiteId
+                                                                  select d.MethodID);
+
                     a_end = DateTime.Now;
 
-                    HashSet<DataValue> foo = new HashSet<DataValue>((from d in context.DataValues.AsNoTracking()
-                                                      where d.SiteID == currentSiteId
-                                                      select d).ToList());
+                    HashSet<DataValue> allValues = new HashSet<DataValue>((from d in context.DataValues.AsNoTracking()
+                                                                           where d.SiteID == currentSiteId
+                                                                           select d).ToList());
 
 
                     //List<HashSet<string>> lines = new List<HashSet<string>>(); //Hashset is very fast in searching duplicates
@@ -4527,7 +4535,7 @@ namespace HydroServerToolsRepository.Repository
                         {
                             BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
                             count++;
-
+                            #region data matching
                             bool isRejected = false;
                             var model = new DataValue();
                             var listOfErrors = new List<ErrorModel>();
@@ -4546,15 +4554,15 @@ namespace HydroServerToolsRepository.Repository
                             model.QualityControlLevelID = -9999;
 
 
-
+                          
 
                             //DataValue
                             if (!string.IsNullOrWhiteSpace(item.DataValue))
                             {
                                 double result;
                                 bool canConvert = UniversalTypeConverter.TryConvertTo<double>(item.DataValue, out result);
-
-                                if (!canConvert)
+                                //NaN can be converted properly ino a double sql field is a float and will not accept this so we need to test separately for NaN and reject
+                                if (!canConvert || Double.IsNaN(result))
                                 {
                                     var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "DataValue")); listOfErrors.Add(err); isRejected = true;
                                 }
@@ -4982,6 +4990,8 @@ namespace HydroServerToolsRepository.Repository
                             // var dataType = dataTypeCV
                             //                         .Exists(a => a.Term.ToString() == item.DataType);
 
+                            #endregion data
+
                             if (isRejected)
                             {
                                 var sb = new StringBuilder();
@@ -5023,30 +5033,30 @@ namespace HydroServerToolsRepository.Repository
 
                             a_start = DateTime.Now; 
                             bool doesExist = false;
-                            //pretest with date
-                            var possibleInSet = setDatetime.Contains(model.DateTimeUTC) && setDataValue.Contains(model.DataValue1);
+                            //pretest with date and datavalue if 
+                            var possibleInSet = setDatetime.Contains(model.DateTimeUTC) && setDataValue.Contains(model.DataValue1) && setVariableId.Contains(model.VariableID) && setMethodId.Contains(model.MethodID);
                             //var possibleInSet2 = foo.Contains(model);
-                            foo.Add(model);
+                            //allValues.Add(model);
                             if (possibleInSet)
                             {
 
-                                doesExist = foo.Where(a =>
-                                                            a.DataValue1 == model.DataValue1 &&
-                                                            a.ValueAccuracy == model.ValueAccuracy &&
-                                                            a.LocalDateTime == model.LocalDateTime &&
-                                                            a.UTCOffset == model.UTCOffset &&
-                                                            a.DateTimeUTC.Ticks == model.DateTimeUTC.Ticks &&
-                                                            a.SiteID == model.SiteID &&
-                                                            a.VariableID == model.VariableID &&
-                                                            a.OffsetValue == model.OffsetValue &&
-                                                            a.OffsetTypeID == model.OffsetTypeID &&
-                                                            a.CensorCode == model.CensorCode &&
-                                                            a.QualifierID == model.QualifierID &&
-                                                            a.MethodID == model.MethodID &&
-                                                            a.SourceID == model.SourceID &&
-                                                            a.SampleID == model.SampleID &&
-                                                            a.DerivedFromID == model.DerivedFromID &&
-                                                            a.QualityControlLevelID == model.QualityControlLevelID
+                                doesExist = allValues.Where(a =>
+                                                            a.DataValue1.Equals(model.DataValue1) &&
+                                                            a.ValueAccuracy.Equals(model.ValueAccuracy) &&
+                                                            a.LocalDateTime.Equals(model.LocalDateTime) &&
+                                                            a.UTCOffset.Equals(model.UTCOffset) &&
+                                                            a.DateTimeUTC.Ticks.Equals(model.DateTimeUTC.Ticks) &&
+                                                            a.SiteID.Equals(model.SiteID) &&
+                                                            a.VariableID.Equals(model.VariableID) &&
+                                                            a.OffsetValue.Equals(model.OffsetValue) &&
+                                                            a.OffsetTypeID.Equals(model.OffsetTypeID) &&
+                                                            a.CensorCode.Equals(model.CensorCode) &&
+                                                            a.QualifierID.Equals(model.QualifierID) &&
+                                                            a.MethodID.Equals(model.MethodID) &&
+                                                            a.SourceID.Equals(model.SourceID) &&
+                                                            a.SampleID.Equals(model.SampleID) &&
+                                                            a.DerivedFromID.Equals(model.DerivedFromID) &&
+                                                            a.QualityControlLevelID.Equals(model.QualityControlLevelID)
                                                             ).FirstOrDefault() != null;
 
                                 a_end = DateTime.Now;
@@ -5115,13 +5125,22 @@ namespace HydroServerToolsRepository.Repository
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
             try
             {
-                 var rows = from o in context.DataValues
-                           select o;
+                //context.Configuration.AutoDetectChangesEnabled = false;
+                int rowsCount = (from o in context.DataValues
+                                 select o).Count(); 
 
-                if (rows.Count() != 0)
+                //var rows = from o in context.DataValues
+                //           select o;
+
+                if (rowsCount > 0)
                 {
-                    context.DataValues.RemoveRange(rows);
-                    context.SaveChanges();
+                    int count = rowsCount / 10000 ;
+                    for (int i = 0; i <= count; i++)
+                    {
+                        //context.Database.CommandTimeout = 60;
+                        context.Database.ExecuteSqlCommand("Delete top (10000) from DataValues");
+                    }
+                    //context.Database.SaveChanges();
                 }
  
                 var seriescatalogrows = from o in context.SeriesCatalogs

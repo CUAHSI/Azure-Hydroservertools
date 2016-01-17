@@ -28,6 +28,13 @@ Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "HydroservertoolsAzure", "Hy
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CacheWorkerRole1", "CacheWorkerRole1\CacheWorkerRole1.csproj", "{320294F2-506A-44CA-830C-C60750C9B0FB}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{E56494F5-196D-4D95-A11E-9DCB7BB4E413}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
