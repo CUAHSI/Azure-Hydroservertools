@@ -111,8 +111,10 @@ namespace HydroServerTools.Controllers.WebApi
                    
                     textReader = new StringReader(o);
                 }
-                catch
-                { }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
                 finally
                 {
                     //clean up ressources

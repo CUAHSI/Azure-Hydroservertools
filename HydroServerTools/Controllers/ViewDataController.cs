@@ -580,8 +580,8 @@ namespace HydroServerTools.Controllers
                             c.OffsetTypeID,
                             c.CensorCode,
                             c.QualifierID,
-                            c.MethodID,
-                            c.SourceID,
+                            c.MethodCode,
+                            c.SourceCode,
                             c.LabSampleCode,
                             c.DerivedFromID,
                             c.QualityControlLevelCode
