@@ -7,8 +7,25 @@
 <link rel="stylesheet" href="~/Content/mvcfileupload/blueimp/jquery.fileupload.css" />
 @*<link rel="stylesheet" href="/Content/mvcfileupload/blueimp/jquery.fileupload-ui.css">*@
 
-
+<script src="~/Scripts/test/uploader.js"></script>
 <script src="~/Scripts/mvcfileupload/vendor/jquery.ui.widget.js"></script>
+@*<script type="text/javascript">
+		$(function(){
+			var $b = $('#upload'),
+				$f = $('#file'),
+				$p = $('#progress'),
+				up = new uploader($f.get(0), {
+					url:'/',
+					progress:function(ev){ console.log('progress'); $p.html(((ev.loaded/ev.total)*100)+'%'); $p.css('width',$p.html()); },
+					error:function(ev){ console.log('error'); },
+					success:function(data){ console.log('success'); $p.html('100%'); $p.css('width',$p.html()); }
+				});
+
+			$b.click(function(){
+				up.send();
+			});
+		});
+</script>*@
 
 
 @Html.Action("_Breadcrumb", "CSVUpload", new { id = ViewBag.Name })
@@ -65,6 +82,13 @@
                 
 </div>
         </div>
+        @*<p>
+            <label for="file">Choose file</label>
+            <input type="file" id="file" name="file" accept="*" />
+        </p>
+        <p><button id="upload">Upload</button></p>
+        <p><span id="progress" class="progress">0%</span></p>*@
+
     </form>
    
 </div>
@@ -76,6 +100,9 @@
 <script src="~/Scripts/mvcfileupload/blueimp/jquery.fileupload.js"></script>
 <script src="~/Scripts/mvcfileupload/blueimp/jquery.fileupload-ui.js"></script>
 <script src="~/Scripts/mvcfileupload/blueimp/jquery.iframe-transport.js"></script>
+@*<script src="~/Scripts/mvcfileupload/blueimp/jquery.fileupload-validate.js"></script>*@
+<script src="~/Scripts/mvcfileupload/blueimp/jquery.fileupload-process.js"></script>
+
 @*<script src="~/Scripts/mvcfileupload/blueimp/jquery.fileupload-process.js"></script>
     <script src="~/Scripts/mvcfileupload/blueimp/jquery.fileupload-validate.js"></script>*@
 @*<script src="~/Scripts/jquery.validate.min.js"></script>

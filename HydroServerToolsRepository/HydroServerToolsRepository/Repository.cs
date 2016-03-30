@@ -4182,8 +4182,7 @@ namespace HydroServerToolsRepository.Repository
     {
         public const string CacheName = "default";
 
-        public const int maxAllowedDuplicates = 10000;
-
+        
         public List<DataValuesModel> GetAll(string connectionString)
         {
             // Create an EntityConnection.         
@@ -4259,6 +4258,23 @@ namespace HydroServerToolsRepository.Repository
                                         .Where(a => a.SiteID == item.SiteID)
                                         .Select(a => a.SiteCode)
                                         .FirstOrDefault();
+                    model.LabSampleCode = context.Samples
+                                       .Where(a => a.SampleID == item.SampleID)
+                                       .Select(a => a.LabSampleCode)
+                                       .FirstOrDefault();
+
+                    model.QualityControlLevelCode = context.QualityControlLevels
+                                        .Where(a => a.QualityControlLevelID == item.QualityControlLevelID)
+                                        .Select(a => a.QualityControlLevelCode)
+                                        .FirstOrDefault();
+                    model.MethodCode = context.Methods
+                                         .Where(a => a.MethodID == item.MethodID)
+                                         .Select(a => a.MethodCode)
+                                         .FirstOrDefault();
+                    model.SourceCode = context.Sources
+                                         .Where(a => a.SourceID == item.SourceID)
+                                         .Select(a => a.SourceCode)
+                                         .FirstOrDefault();
 
                     
                     result.Add(model);
@@ -4404,6 +4420,14 @@ namespace HydroServerToolsRepository.Repository
                                         .Where(a => a.QualityControlLevelID == item.QualityControlLevelID)
                                         .Select(a => a.QualityControlLevelCode)
                                         .FirstOrDefault();
+                    model.MethodCode = context.Methods
+                                         .Where(a => a.MethodID == item.MethodID)
+                                         .Select(a => a.MethodCode)
+                                         .FirstOrDefault();
+                    model.SourceCode = context.Sources
+                                         .Where(a => a.SourceID == item.SourceID)
+                                         .Select(a => a.SourceCode)
+                                         .FirstOrDefault();
 
                     result.Add(model);
                 }
@@ -4424,14 +4448,16 @@ namespace HydroServerToolsRepository.Repository
             var timeToFindDatavalues = new TimeSpan();
             var timeExistInUpload = new TimeSpan();
             var timeToFindDuplicates = new TimeSpan();
-           
-            
+
+            int maxAllowedDuplicates = int.Parse(System.Configuration.ConfigurationManager.AppSettings["maxAllowedDuplicates"]);
+
 
             var recordsToInsert = new List<DataValue>();
 
             var startTime = DateTime.Now;
 
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
+            //context.Database.CommandTimeout = 10000;
             //var objContext = ((IObjectContextAdapter)context).ObjectContext;
             //get data to lookup values
             var sitesIds = context.Sites.ToDictionary(p => p.SiteCode, p => p.SiteID);
@@ -5116,7 +5142,8 @@ namespace HydroServerToolsRepository.Repository
             Debug.WriteLine("timeExistInUpload: " + timeExistInUpload);           
             timeTocomplete = DateTime.Now - startTime;
             Debug.WriteLine("timeTocomplete: " + timeTocomplete);
-            
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING_DONE, count, maxCount));
+
             return;
         }
 

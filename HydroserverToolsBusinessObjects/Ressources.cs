@@ -15,6 +15,7 @@ namespace HydroserverToolsBusinessObjects
         public const string CONNECTION_FAILED_SERVERNAME = "Database connection failed. Please validate that the name of the Server is correct";
         public const string CONNECTION_FAILED_DATASOURCENAME = "Database connection failed. Please validate that the name of the Datasource is correct";
         public const string CONNECTION_FAILED_LOGIN = "Database connection failed. Please validate that the Username and Password are correct";
+        public const string NOT_LINKED_TO_DATABASE = "The user account is not linked to a Database.";
         public const string HYDROSERVER_USERLOOKUP_FAILED = "The current user does not have an associated Hydroserver database. Please contact your administrator or CUAHSI";
         public const string IMPORT_FAILED = "The Import failed please validate your input. Please make sure the file contains all necessary fields.";
         public const string FILETYPE_NOT_CSV = "The uploaded file is not a CSV file. Please upload a correct file.";
@@ -44,8 +45,10 @@ namespace HydroserverToolsBusinessObjects
         public const string IMPORT_STATUS_ERROR = "An error occured during processing.";
         public const string IMPORT_STATUS_EXTRACTNG = "Extracting file";
         public const string IMPORT_STATUS_TIMESERIES = "Updating timeseries...";
-
+        public static string IMPORT_STATUS_PROCESSING_DONE = "Processing Complete";
         public static string IMPORT_UNSPECIFIED_ERROR = "An error occured inserting the data.";
         public static string IMPORT_CREATE_SERIESCATALOG = "Error updating series catalog table. Missing {0} Information.";
+
+        
     }
 }

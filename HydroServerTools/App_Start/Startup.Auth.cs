@@ -18,7 +18,7 @@ namespace HydroServerTools
             app.CreatePerOwinContext(ApplicationDbContext.Create);
             app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);
            //add signalR
-            app.MapSignalR();
+            //app.MapSignalR();
 
 
             // Enable the application to use a cookie to store information for the signed in user

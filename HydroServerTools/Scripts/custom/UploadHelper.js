@@ -10,22 +10,28 @@
 
     var sPath = window.location.pathname;
     var viewName = sPath.substring(sPath.lastIndexOf('/') + 1);
-    var intervalId;
+    var uploadMonitor = { 'intervalId': null }
+
+    //var d = funcName();
+    //var intervalId  = { 'intervalId' : null };
     //var acceptFiletypes= ["zip","csv"];
     //$('#refresh').bind("click");
     //$('#refresh').click(function ()
     //{
     //    alert()
-    //})
-        
+//})
+//startUploadMonitor()
+//MS: as of now 03/24/2016 Azure webapps have a default timeout for webrequests of 4min so a longer upload will fail. Therefor a VM is requires to host the application
+//and the weblimits have to be set https://www.iis.net/configreference/system.applicationhost/weblimits
+       
     $('#fileupload').fileupload({
         dataType: "json",
-        url: "/api/upload/" + viewName,
+        url: "/api/upload/UploadFile/" + viewName,
         limitConcurrentUploads: 1,
         sequentialUploads: true,
         acceptFileTypes: /(\.|\/)(zip|csv)$/i,
         replaceFileInput: false,
-        
+        //maxChunkSize: 10000000, // 10 MB,
 
         add: function (e, data) {
 
@@ -56,12 +62,12 @@
                 $('#reset').unbind('click')
               
 
-                intervalId = interval(function () {
-                    funcName();
-                }, 2000, 1000);
-
+                //uploadMonitor.intervalId = interval(function () {
+                //    monitor();
+                //}, 2000, 2000);
+                startUploadMonitor()
                 data.submit();
-               
+              
                 
 
                 //kick off the process
@@ -120,8 +126,8 @@
         },
         done: function (data, o) {
             //data.context.text(data.files[0].SiteID + '... Completed');
-            clearInterval(intervalId);
-            //updateMonitor("Done", "Processing completed");
+            clearInterval(uploadMonitor.intervalId)
+            updateMonitor("Done", "Processing completed");
             window.location.href = '/CSVUpload/' +viewName
             //alert(result);
             //$('</div><div class="progress"><div class="bar" style="width:60%"></div></div>').appendTo(data.context);
@@ -141,15 +147,23 @@
         //    });
         //},
         fail: function (e, data, errorThrown) {
-            $('#reset').trigger("click");
+            //$('#reset').trigger("click");
             var returnedMessage = "An Error occured. Please resubmit the file. If the problem persists please validate the content or contact user suport";
-            if (typeof data.jqXHR.responseJSON.Message != "undefined") returnedMessage = data.jqXHR.responseJSON.Message;
-            clearInterval(intervalId);
+            //if (typeof data.jqXHR.responseJSON.Message != "undefined") returnedMessage = data.jqXHR.responseJSON.Message;
+            
             resetButtons();
-            alert(returnedMessage);
+            alert(data.jqXHR.responseJSON.Message);
 
+        },
+        always: function (e, data)
+        {
+            clearInterval(uploadMonitor.intervalId);
         }
+       
     })
+        
+/**/
+
     //}).bind('fileuploadalways', function (e, data) {
     //    var currentFile = data.files[data.index];
     //    if (data.files.error && currentFile.error) {
@@ -262,13 +276,28 @@
     }
 
 //});
-function funcName() {
+function monitor() {
 
     //
-    var jqxhr = $.post("/Home/Progress", function (progress) {
-        updateMonitor(status, progress);
-    })
-
+    //var jqxhr = $.post("/api/upload/Progress", function (progress) {
+    //    updateMonitor(status, progress);
+    //})
+    $.ajax({
+        url: "/api/upload/Progress",
+        type: 'POST',
+        async:true,
+        contentType: 'json',
+        dataType: "json",
+        success: function (progress) {
+                       
+            updateMonitor(status, progress);
+                        
+                    },
+        fail: function ()
+                    { alert("fail")}
+                    
+         });
+        //    }, 1000);
     // $.post('Home/Progress', function (progress) {
     //   //if (progress >= 1000) {
     //   //    updateMonitor(taskId, "Completed");
@@ -280,5 +309,28 @@ function funcName() {
 
 }
 function updateMonitor(status, progress) {
-        $('#monitor').html(progress);
+    $('#monitor').html(progress);
+    if (progress == "Processing Complete")
+        window.location.href = '/CSVUpload/' + viewName
+}
+
+function startUploadMonitor() {
+    if (null === uploadMonitor.intervalId) {
+        //Monitor function not running - start...
+        uploadMonitor.intervalId = setInterval(function () {
+            var actionUrl = "/Home/Progress";
+            $.ajax({
+                url: actionUrl,
+                type: 'POST',
+                contentType: 'json',
+                //data: JSON.stringify(Ids),
+                success: function (progress) {
+                    updateMonitor(status, progress);
+                },
+                error: function (xmlhttprequest, textStatus, message) {
+                    //alert('error')
+                }
+            })
+        },2000)
     }
+}

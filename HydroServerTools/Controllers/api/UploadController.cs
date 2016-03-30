@@ -28,8 +28,7 @@ namespace HydroServerTools.Controllers.WebApi
     public class UploadController : ApiController
     {
         public const string CacheName = "default";
-        public const int maxAllowedRows = 750000;
-
+       
         public string instanceIdentifier = HttpContext.Current.User.Identity.Name;
 
 
@@ -38,7 +37,7 @@ namespace HydroServerTools.Controllers.WebApi
         [HttpGet]
         [HttpPost]
         [Authorize]
-        public HttpResponseMessage Upload(string id)
+        public HttpResponseMessage UploadFile(string id)
         {
             try
             {
@@ -910,8 +909,9 @@ namespace HydroServerTools.Controllers.WebApi
         {
             Stopwatch sw = new Stopwatch();//just a timer
             //var s = new StreamReader();
+             int maxAllowedRows = int.Parse(System.Configuration.ConfigurationManager.AppSettings["maxAllowedRows"]);
 
-            List<HashSet<string>> lines = new List<HashSet<string>>(); //Hashset is very fast in searching duplicates
+        List<HashSet<string>> lines = new List<HashSet<string>>(); //Hashset is very fast in searching duplicates
             HashSet<string> current = new HashSet<string>(); //This hashset is used at the moment
             lines.Add(current); //Add the current Hashset to a list of hashsets
             sw.Restart(); //just a timer
@@ -948,6 +948,60 @@ namespace HydroServerTools.Controllers.WebApi
             //current.ForEach(set =>  sb.Append(lines)); //Fill the list of strings
             
             return sb.ToString(); //Return the list
+        }
+        [HttpGet]
+        [HttpPost]
+        public HttpResponseMessage Progress()
+        {
+            //DataCache cache = new DataCache("default");
+            var identifier = User.Identity.Name;
+            var StatusMessage = string.Empty;
+            //var session = Request.RequestContext.HttpContext.Session;
+            if (HttpRuntime.Cache.Get(identifier + "_processStatus") != null)
+            {
+                StatusMessage = HttpRuntime.Cache.Get(identifier + "_processStatus").ToString();
+            }
+
+
+            //if (session != null)
+            //{
+            //    if (session["processStatus"] != null)
+            //    {
+            //        StatusMessage = (string)session["processStatus"];
+            //        //StatusMessage = "in proc";
+            //    }
+            //}
+            //return Json(StatusMessage).ToString();
+            HttpContext.Current.Response.ContentType = "text/plain";
+            var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+            var result = new { name = "test" };
+
+            HttpContext.Current.Response.Write(serializer.Serialize(result));
+            HttpContext.Current.Response.StatusCode = 200;
+
+            // For compatibility with IE's "done" event we need to return a result as well as setting the context.response
+            return new HttpResponseMessage(HttpStatusCode.OK);
+        }
+
+        [HttpPost]
+        public void UploadFile()
+        {
+            if (HttpContext.Current.Request.Files.AllKeys.Any())
+            {
+                // Get the uploaded image from the Files collection
+                var httpPostedFile = HttpContext.Current.Request.Files["UploadedImage"];
+
+                if (httpPostedFile != null)
+                {
+                    // Validate the uploaded image(optional)
+
+                    // Get the complete file path
+                    var fileSavePath = Path.Combine(HttpContext.Current.Server.MapPath("~/UploadedFiles"), httpPostedFile.FileName);
+
+                    // Save the uploaded file to "UploadedFiles" folder
+                    httpPostedFile.SaveAs(fileSavePath);
+                }
+            }
         }
 
     }

@@ -40,6 +40,7 @@
 //});
 
 var oTable;
+var UploadMonitorID
 
 $(document).ready(function () {
 
@@ -720,7 +721,7 @@ function initCommitAndCancelButton(id) {
         $('#0commit').unbind('click')
         $('#cancel').unbind('click')
 
-        intervalId = setInterval(function () {
+        UploadMonitorID = setInterval(function () {
 
             $.post("/Home/Progress", function (progress) {
                 //if (progress >= 1000) {
@@ -749,6 +750,7 @@ function initCommitAndCancelButton(id) {
                 $('#0commit').addClass("disabled");
                 $('#loading').addClass('hide');
                 $('#cancel').bind('click');
+                window.clearInterval(UploadMonitorID);
 
             },
             error: function (xhr) {
@@ -765,7 +767,7 @@ function initCommitAndCancelButton(id) {
                     
                         window.location.href = '/CSVUpload/UploadData/' + id
                     
-
+                window.clearInterval(UploadMonitorID);
                 })
             }
         });
@@ -920,9 +922,9 @@ function GetUploadStats(viewName)
     });
 }
 
-function updateMonitor(status, progress) {
-    $('#monitor').html(progress);
-}
+//function updateMonitor(status, progress) {
+//    $('#monitor').html(progress);
+//}
 
 
 

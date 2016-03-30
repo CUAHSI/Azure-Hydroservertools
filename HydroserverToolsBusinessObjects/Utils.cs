@@ -92,18 +92,18 @@ namespace HydroserverToolsBusinessObjects
             //DataCache cache = new DataCache(dataCacheName);
             //needed to uniquely identify 
 
-            HttpRuntime.Cache.Insert(instanceIdentifier + "_processStatus", message);
-            //var session = System.Web.HttpContext.Current.Session;
+            //HttpRuntime.Cache.Insert(instanceIdentifier + "_processStatus", message);
+            var session = System.Web.HttpContext.Current.Session;
 
-            //if (session["processStatus"] == null)
-            //{ 
-            //    session.Add("processStatus", message); 
-            //}
-            //else
-            //{ 
-            //    session["processStatus"] = message; 
-            //}
-           // Debug.WriteLine(message);
+            if (session["processStatus"] == null)
+            {
+                session.Add("processStatus", message);
+            }
+            else
+            {
+                session["processStatus"] = message;
+            }
+            // Debug.WriteLine(message);
         }
 
 

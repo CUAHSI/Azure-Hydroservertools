@@ -22,6 +22,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using System.Web.UI.WebControls;
+using System.Threading.Tasks;
 
 namespace HydroServerTools.Controllers
 {
@@ -35,6 +36,9 @@ namespace HydroServerTools.Controllers
             var tableValueCounts = new DatabaseTableValueCountModel();
 
             //string entityConnectionString = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name.ToString());
+
+            //get connection name
+            string connectionName = HydroServerToolsUtils.getConnectionName(HttpContext.User.Identity.Name.ToString());
 
             string entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name.ToString());
 
@@ -226,7 +230,7 @@ namespace HydroServerTools.Controllers
             return Json(new { success = true });
 
         }
-        
+        [HttpPost]
         public ActionResult Progress()
         {
             //DataCache cache = new DataCache("default");
@@ -238,6 +242,30 @@ namespace HydroServerTools.Controllers
                  StatusMessage = HttpRuntime.Cache.Get(identifier + "_processStatus").ToString();
             }
             
+
+            //if (session != null)
+            //{
+            //    if (session["processStatus"] != null)
+            //    {
+            //        StatusMessage = (string)session["processStatus"];
+            //        //StatusMessage = "in proc";
+            //    }
+            //}
+            return Json(StatusMessage);
+        }
+
+        [HttpPost][HttpGet]
+        public async Task<ActionResult> ProgressAsync()
+        {
+            //DataCache cache = new DataCache("default");
+            var identifier = User.Identity.Name;
+            var StatusMessage = string.Empty;
+            //var session = Request.RequestContext.HttpContext.Session;
+            if (HttpRuntime.Cache.Get(identifier + "_processStatus") != null)
+            {
+                 StatusMessage = await Task.Run(()=> HttpRuntime.Cache.Get(identifier + "_processStatus").ToString());
+            }
+
 
             //if (session != null)
             //{

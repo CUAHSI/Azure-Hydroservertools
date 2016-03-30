@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HydroServerTools", "HydroServerTools\HydroServerTools.csproj", "{F8C4C4C8-B264-4D76-B6AB-BBF26C0332B5}"
 EndProject
@@ -23,8 +23,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "jQuery.DataTables.Mvc", "jQuery.DataTables.Mvc\jQuery.DataTables.Mvc.csproj", "{3383D0E2-C499-4F02-9D29-F744741AA999}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebRole1", "WebRole1\WebRole1.csproj", "{1E73929C-D2E5-4362-839D-3E8FF61545D0}"
-EndProject
-Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "HydroservertoolsAzure", "HydroservertoolsAzure\HydroservertoolsAzure.ccproj", "{E394C94A-27B6-4E0F-A8E1-5C59AB98CC13}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CacheWorkerRole1", "CacheWorkerRole1\CacheWorkerRole1.csproj", "{320294F2-506A-44CA-830C-C60750C9B0FB}"
 EndProject
@@ -73,10 +71,6 @@ Global
 		{1E73929C-D2E5-4362-839D-3E8FF61545D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E73929C-D2E5-4362-839D-3E8FF61545D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1E73929C-D2E5-4362-839D-3E8FF61545D0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E394C94A-27B6-4E0F-A8E1-5C59AB98CC13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E394C94A-27B6-4E0F-A8E1-5C59AB98CC13}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E394C94A-27B6-4E0F-A8E1-5C59AB98CC13}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E394C94A-27B6-4E0F-A8E1-5C59AB98CC13}.Release|Any CPU.Build.0 = Release|Any CPU
 		{320294F2-506A-44CA-830C-C60750C9B0FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{320294F2-506A-44CA-830C-C60750C9B0FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{320294F2-506A-44CA-830C-C60750C9B0FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
