@@ -65,7 +65,7 @@
                 //uploadMonitor.intervalId = interval(function () {
                 //    monitor();
                 //}, 2000, 2000);
-                startUploadMonitor()
+                //startUploadMonitor()
                 data.submit();
               
                 
@@ -126,11 +126,35 @@
         },
         done: function (data, o) {
             //data.context.text(data.files[0].SiteID + '... Completed');
-            clearInterval(uploadMonitor.intervalId)
-            updateMonitor("Done", "Processing completed");
-            window.location.href = '/CSVUpload/' +viewName
+            //clearInterval(uploadMonitor.intervalId)
+            //updateMonitor("Done", "Processing completed");
+            //window.location.href = '/CSVUpload/' +viewName
             //alert(result);
             //$('</div><div class="progress"><div class="bar" style="width:60%"></div></div>').appendTo(data.context);
+            startUploadMonitor()
+            $.ajax({
+                url: "/api/upload/startProcess/" + viewName,
+                type: 'POST',
+                async: true,
+                contentType: 'json',
+                dataType: "json",
+                success: function (progress) {
+                    //clearInterval(uploadMonitor.intervalId);
+                    alert(progress)                  
+
+                },
+                fail: function ()
+                {
+                    //clearInterval(uploadMonitor.intervalId);
+                    alert("fail")
+                },
+                always: function (e, data)
+                {
+                        clearInterval(uploadMonitor.intervalId);
+                }
+
+            });
+            
         },
         //progressall: function (e, data) {
         //    var progress = parseInt(data.loaded / data.total * 100, 10);
@@ -157,7 +181,7 @@
         },
         always: function (e, data)
         {
-            clearInterval(uploadMonitor.intervalId);
+            //clearInterval(uploadMonitor.intervalId);
         }
        
     })
@@ -311,13 +335,21 @@ function monitor() {
 function updateMonitor(status, progress) {
     $('#monitor').html(progress);
     if (progress == "Processing Complete")
+    {
         window.location.href = '/CSVUpload/' + viewName
+        clearInterval(uploadMonitor.intervalId);
+    }
+    if (progress.indexOf("The import failed",0) > -1) 
+    {
+        clearInterval(uploadMonitor.intervalId);
+    }
 }
 
 function startUploadMonitor() {
     if (null === uploadMonitor.intervalId) {
         //Monitor function not running - start...
         uploadMonitor.intervalId = setInterval(function () {
+            //var actionUrl = "/Home/Progress";
             var actionUrl = "/Home/Progress";
             $.ajax({
                 url: actionUrl,
@@ -326,9 +358,10 @@ function startUploadMonitor() {
                 //data: JSON.stringify(Ids),
                 success: function (progress) {
                     updateMonitor(status, progress);
+
                 },
                 error: function (xmlhttprequest, textStatus, message) {
-                    //alert('error')
+                    alert('error')
                 }
             })
         },2000)

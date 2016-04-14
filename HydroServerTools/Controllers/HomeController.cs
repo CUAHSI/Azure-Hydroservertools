@@ -236,12 +236,12 @@ namespace HydroServerTools.Controllers
             //DataCache cache = new DataCache("default");
             var identifier = User.Identity.Name;
             var StatusMessage = string.Empty;
-            //var session = Request.RequestContext.HttpContext.Session;
+            var session = Request.RequestContext.HttpContext.Session;
             if (HttpRuntime.Cache.Get(identifier + "_processStatus") != null)
             {
-                 StatusMessage = HttpRuntime.Cache.Get(identifier + "_processStatus").ToString();
+                StatusMessage = HttpRuntime.Cache.Get(identifier + "_processStatus").ToString();
             }
-            
+
 
             //if (session != null)
             //{

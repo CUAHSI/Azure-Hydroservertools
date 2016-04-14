@@ -721,18 +721,18 @@ function initCommitAndCancelButton(id) {
         $('#0commit').unbind('click')
         $('#cancel').unbind('click')
 
-        UploadMonitorID = setInterval(function () {
+        //UploadMonitorID = setInterval(function () {
 
-            $.post("/Home/Progress", function (progress) {
-                //if (progress >= 1000) {
-                //    updateMonitor(taskId, "Completed");
-                //    clearInterval(intervalId);
-                //} else {
-                updateMonitor(status, progress);
-                //}
-            });
+        //    $.post("/Home/Progress", function (progress) {
+        //        //if (progress >= 1000) {
+        //        //    updateMonitor(taskId, "Completed");
+        //        //    clearInterval(intervalId);
+        //        //} else {
+        //        updateMonitor(status, progress);
+        //        //}
+        //    });
 
-        }, 1000);
+        //}, 1000);
 
         //$.post("/CSVUpload/Commit", { id: "sites" } {
         $.ajax({
@@ -750,7 +750,7 @@ function initCommitAndCancelButton(id) {
                 $('#0commit').addClass("disabled");
                 $('#loading').addClass('hide');
                 $('#cancel').bind('click');
-                window.clearInterval(UploadMonitorID);
+               // window.clearInterval(UploadMonitorID);
 
             },
             error: function (xhr) {
@@ -767,7 +767,7 @@ function initCommitAndCancelButton(id) {
                     
                         window.location.href = '/CSVUpload/UploadData/' + id
                     
-                window.clearInterval(UploadMonitorID);
+                //window.clearInterval(UploadMonitorID);
                 })
             }
         });
@@ -783,18 +783,18 @@ function initCommitAndCancelButton(id) {
         $('#2commit').unbind('click')
         $('#cancel').unbind('click')
 
-        intervalId = setInterval(function () {
+        //intervalId = setInterval(function () {
 
-            $.post("/Home/Progress", function (progress) {
-                //if (progress >= 1000) {
-                //    updateMonitor(taskId, "Completed");
-                //    clearInterval(intervalId);
-                //} else {
-                updateMonitor(status, progress);
-                //}
-            });
+        //    $.post("/Home/Progress", function (progress) {
+        //        //if (progress >= 1000) {
+        //        //    updateMonitor(taskId, "Completed");
+        //        //    clearInterval(intervalId);
+        //        //} else {
+        //        updateMonitor(status, progress);
+        //        //}
+        //    });
 
-        }, 1000);
+        //}, 1000);
 
         $.ajax({
             url: '/CSVUpload/Commit/' + id,
