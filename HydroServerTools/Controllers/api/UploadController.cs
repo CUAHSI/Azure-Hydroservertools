@@ -42,6 +42,8 @@ namespace HydroServerTools.Controllers.WebApi
         {
             try
             {
+                BusinessObjectsUtils.RemoveItemFromCache(instanceIdentifier, Ressources.IMPORT_STATUS_UPLOAD);
+
                 // Get a reference to the file that our jQuery sent.  Even with multiple files, they will all be their own request and be the 0 index
                 HttpPostedFile file = HttpContext.Current.Request.Files[0];
                 string message = string.Empty;
@@ -64,6 +66,7 @@ namespace HydroServerTools.Controllers.WebApi
                         //Updating status
                         //BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, Ressources.IMPORT_STATUS_EXTRACTNG);
 
+                        BusinessObjectsUtils.RemoveItemFromCache(instanceIdentifier, Ressources.IMPORT_STATUS_EXTRACTNG);
 
                         ZipInputStream zipInputStream = new ZipInputStream(file.InputStream);
                         ZipEntry zipEntry = zipInputStream.GetNextEntry();
@@ -105,6 +108,7 @@ namespace HydroServerTools.Controllers.WebApi
                     }
                     else
                     {
+                        BusinessObjectsUtils.RemoveItemFromCache(instanceIdentifier, Ressources.IMPORT_STATUS_PROCESSING);
                         reader = new StreamReader(file.InputStream, Encoding.GetEncoding("iso-8859-1"));
                     }
                     var o = GetDistinct(reader);
@@ -223,7 +227,7 @@ namespace HydroServerTools.Controllers.WebApi
             if (session["Uploadedfile"] != null)
             {
                 var textReader = (TextReader)session["Uploadedfile"];
-                BusinessObjectsUtils.UpdateCachedprocessStatusMessage(userName, "Default", "Started");
+                BusinessObjectsUtils.UpdateCachedprocessStatusMessage(userName, "Default", Ressources.STATUS_PROCESSING);
 
 
                 Task.Run(async () =>

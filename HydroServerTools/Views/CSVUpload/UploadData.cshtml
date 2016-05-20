@@ -38,7 +38,8 @@
                 <h3 class="panel-title">Currently importing: @ViewBag.Name</h3>
             </div>
             <div class="panel-body h4">
-                <i class="icon-plus"></i><p>Please select or drag-in your file</p>
+                <i class="icon-plus"></i><p>Please select or drag-in your file (.csv/.zip)</p>
+                <h5>If your .csv file is larger than 5MB please zip the file before uploading. The application can process up to 750.000 records in one upload.</h5>
                 @*<input type="file" id="fileupload" name="fileupload" accept=".csv,.zip" >*@
                 <p>
                     <span class="btn btn-success fileinput-button active ">
@@ -76,7 +77,7 @@
             <div class="well-sm alert-info hide" id="loading">
             
                 <div id="monitor">
-                    Processing...
+                    Upload started.
                     @*<img src="~/Images/ajax-loader.gif" />*@
                 </div>
                 

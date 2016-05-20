@@ -9,16 +9,19 @@
             
             <div class="well">
 
-            <h2>Please select:</h2>
+                <h4>Click to Upload:</h4>
 
-            @*<button class="btn btn-primary btn-lg btn-block" data-toggle="modal" data-target="#setConnection">Set Database Connection</button>*@
-            @*<p><a href="/CSVUpload/Sites" class="btn btn-primary btn-lg active" role="button">Import Data into Hydroserver</a></p>*@
-            @Html.ActionLink("Import CSV Data into Hydroserver", "UploadData", "CSVUpload", new { id = "Sites" }, new { @class = "btn btn-primary btn active" })
-            @Html.ActionLink("Refresh All Timeseries metadata", "RecreateSeriescatalog", "Home", new { @class = "btn btn-info active" })
+                @*<button class="btn btn-primary btn-lg btn-block" data-toggle="modal" data-target="#setConnection">Set Database Connection</button>*@
+                @*<p><a href="/CSVUpload/Sites" class="btn btn-primary btn-lg active" role="button">Import Data into Hydroserver</a></p>*@
+                @Html.ActionLink("Import CSV Data into Hydroserver", "UploadData", "CSVUpload", new { id = "Sites" }, new { @class = "btn btn-primary btn active" })
+            </div>
+            <div class="well">
+                <h4>Click to update the time series catalog. Required after uploading datavalues</h4>
+                @Html.ActionLink("Refresh All Timeseries metadata", "RecreateSeriescatalog", "Home", new { @class = "btn btn-info active" })
 
+                </div>
 
-             </div>
-        </div>
+            </div>
 
         <div class="panel panel-default  col-lg-4 col-lg-offset-2">
             <div class="panel-heading">

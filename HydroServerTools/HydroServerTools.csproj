@@ -584,7 +584,6 @@
     <Content Include="Scripts\mvcfileupload\blueimp\tmpl.min.js" />
     <Content Include="Scripts\mvcfileupload\vendor\bootstrap.min.js" />
     <Content Include="Scripts\mvcfileupload\vendor\jquery.ui.widget.js" />
-    <Content Include="Scripts\custom\Upload.js" />
     <Content Include="Scripts\Purl.js" />
     <Content Include="Scripts\test\uploader.js" />
     <Content Include="Scripts\URLParser.js" />
@@ -605,6 +604,8 @@
     <None Include="Properties\PublishProfiles\dev-Hydroservertools.pubxml" />
     <None Include="Properties\PublishProfiles\HISToolsPreview - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\HISToolsPreview - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\hydroserver - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\hydroserver - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\HydroservertoolsSandbox - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\HydroservertoolsSandbox - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\local.pubxml" />

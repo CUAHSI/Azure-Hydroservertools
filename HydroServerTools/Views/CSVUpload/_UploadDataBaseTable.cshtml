@@ -80,10 +80,13 @@
 
 
             <span>
-                @Html.ActionLink("Refresh All Timeseries metadata", "RecreateSeriescatalog", "Home", null, new { @class = "btn btn-info active" })
-                @Html.ActionLink("Download as CSV", "Download", "Export", new { identifier = @ViewData["index"], viewName = @ViewData["viewName"] }, new { @class = "btn btn-info active pull-right", target = "_blank" })
+                 @Html.ActionLink("Download as CSV", "Download", "Export", new { identifier = @ViewData["index"], viewName = @ViewData["viewName"] }, new { @class = "btn btn-info active pull-right", target = "_blank" })
             </span>
-       
+        <br />
+        <div class="well">
+            <h5>Click to update the time series catalog. Required to register the new datavalues with the timeseries. This can be the last step of uploading multiple sheets of data.</h5>
+            @Html.ActionLink("Refresh All Timeseries metadata", "RecreateSeriescatalog", "Home", null, new { @class = "btn btn-info active" })
+           </div>
             @* <span class="glyphicon glyphicon-download"></span>@Html.ActionLink("Download as CSV", "Download", "Export", new { identifier = @ViewData["index"], viewName = @ViewData["viewName"] }, new { target = "_blank" })*@
         </div>
     </div>
