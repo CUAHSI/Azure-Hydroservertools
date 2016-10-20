@@ -40,6 +40,10 @@ namespace HydroServerTools.Controllers
             //get connection name
             string connectionName = HydroServerToolsUtils.getConnectionName(HttpContext.User.Identity.Name.ToString());
 
+            if (connectionName == Ressources.NOT_LINKED_TO_DATABASE)
+            {
+                return RedirectToAction("NoDBForm");
+            }
             string entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name.ToString());
 
 
@@ -79,6 +83,12 @@ namespace HydroServerTools.Controllers
         {
             ViewBag.Message = "";
 
+            return View();
+        }
+        public ActionResult NoDBForm()
+        {
+            ViewBag.Message = Ressources.HYDROSERVER_USERLOOKUP_FAILED;
+            //var user = User.Identity.Name;
             return View();
         }
         public ActionResult GoogleForm()
@@ -184,6 +194,8 @@ namespace HydroServerTools.Controllers
         [Authorize]
         public ActionResult ClearTablesHandler(FormCollection collection)
         {
+
+
             string entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name.ToString());
 
             //var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);

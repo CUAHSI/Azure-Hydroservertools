@@ -606,6 +606,7 @@
     <None Include="Properties\PublishProfiles\HISToolsPreview - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\hydroserver - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\hydroserver - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\hydroservertools.pubxml" />
     <None Include="Properties\PublishProfiles\HydroservertoolsSandbox - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\HydroservertoolsSandbox - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\local.pubxml" />
@@ -734,9 +735,11 @@
     <Content Include="Templates\ODMGuide-Excel.xlsx" />
     <Content Include="Views\Home\GoogleForm.cshtml" />
     <Content Include="Views\Account\LocalLogin.cshtml" />
-    <Content Include="Templates\UserGuide.pdf" />
+    <Content Include="Templates\UserGuide_jan_2016.pdf" />
     <Content Include="Templates\DataUploadTutorial.pdf" />
     <Content Include="Templates\ODMGuide-OpenOffice.ods" />
+    <Content Include="Templates\UserGuide.pdf" />
+    <Content Include="Views\Shared\NoDBForm.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

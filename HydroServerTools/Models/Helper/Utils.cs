@@ -181,11 +181,17 @@ namespace HydroServerTools
             ApplicationDbContext context = new ApplicationDbContext();
 
             var p = (from c in context.ConnectionParametersUser
-                     where c.User.UserName == userName
-                     select new
-                     {
-                         c.ConnectionParameters.Name
-                     }).FirstOrDefault().ToString();
+                         where c.User.UserName == userName
+                         select new
+                         {
+                             c.ConnectionParameters.Name
+                         }).FirstOrDefault();
+            if (p != null)
+            {
+                connectionName = p.Name;
+            }
+            
+
 
             return connectionName;
         }

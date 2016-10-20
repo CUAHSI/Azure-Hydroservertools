@@ -104,6 +104,7 @@
     <Compile Include="UploadStatisticsModel.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="VariablesModel.cs" />
+    <Compile Include="ViewModels.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="HISRessources.resx">

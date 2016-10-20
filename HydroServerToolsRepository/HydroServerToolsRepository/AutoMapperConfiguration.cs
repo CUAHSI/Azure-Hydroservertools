@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HydroServerTools.Models;
 using HydroserverToolsBusinessObjects.Models;
 using ODM_1_1_1EFModel;
 using System;
@@ -95,8 +96,11 @@ namespace HydroServerToolsRepository
             //  DataValues
             Mapper.CreateMap<DataValue, DataValuesModel>()
                 .ForMember(c => c.DataValue, m=>m.MapFrom(s=>s.DataValue1))
-                .ForMember(c => c.LabSampleCode, m => m.MapFrom(s => s.Sample.LabSampleCode)); 
-                
+                .ForMember(c => c.LabSampleCode, m => m.MapFrom(s => s.Sample.LabSampleCode));
+            //  DataValues added for view
+            //Mapper.CreateMap<DataValue, DataValuesViewModel>()
+            //    .ForMember(c => c.DataValue, m => m.MapFrom(s => s.DataValue1))
+            //    .ForMember(c => c.LabSampleCode, m => m.MapFrom(s => s.Sample.LabSampleCode));
 
             Mapper.CreateMap<DataValuesModel, DataValue>()
                 .ForMember(c => c.ValueID, opt => opt.Ignore())

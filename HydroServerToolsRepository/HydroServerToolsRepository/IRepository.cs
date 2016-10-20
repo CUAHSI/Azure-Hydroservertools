@@ -1,4 +1,5 @@
-﻿using HydroserverToolsBusinessObjects.Models;
+﻿using HydroServerTools.Models;
+using HydroserverToolsBusinessObjects.Models;
 using jQuery.DataTables.Mvc;
 using System;
 using System.Collections.Generic;

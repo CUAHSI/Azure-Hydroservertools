@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HydroServerTools.Models;
 using HydroserverToolsBusinessObjects;
 using HydroserverToolsBusinessObjects.Models;
 using HydroServerToolsRepository;
@@ -821,7 +822,7 @@ namespace HydroServerToolsRepository.Repository
                 }
 
             }
-
+          
             return;
         }
 
@@ -4217,11 +4218,13 @@ namespace HydroServerToolsRepository.Repository
             }
             if (!string.IsNullOrWhiteSpace(searchString))
             {
-                var allItems = context.DataValues.ToList();
-                var rst = allItems.
+                //var allItems = context.DataValues.ToList();
+                var rst = context.DataValues.
                     Where(c =>
                                 c.ValueID.ToString().ToLower().Contains(searchString.ToLower())
                              || c.DataValue1 != null && c.DataValue1.ToString().ToLower().Contains(searchString.ToLower())
+                             || c.Site.SiteCode != null && c.Site.SiteName.ToLower().Contains(searchString.ToLower())
+                             || c.Variable.VariableCode != null && c.Variable.VariableName.ToString().ToLower().Contains(searchString.ToLower())
                              || c.ValueAccuracy != null && c.ValueAccuracy.ToString().ToLower().Contains(searchString.ToLower())
                              || c.LocalDateTime != null && c.LocalDateTime.ToString().Contains(searchString.ToLower())
                              || c.UTCOffset != null && c.UTCOffset.ToString().ToLower().Contains(searchString.ToLower())
@@ -4240,7 +4243,26 @@ namespace HydroServerToolsRepository.Repository
                           );
                 if (rst == null) return result;
                 //count
-                searchRecordCount = rst.Count();
+                //searchRecordCount = context.DataValues.
+                //    Where(c =>
+                //                c.ValueID.ToString().ToLower().Contains(searchString.ToLower())
+                //             || c.DataValue1 != null && c.DataValue1.ToString().ToLower().Contains(searchString.ToLower())
+                //             || c.ValueAccuracy != null && c.ValueAccuracy.ToString().ToLower().Contains(searchString.ToLower())
+                //             || c.LocalDateTime != null && c.LocalDateTime.ToString().Contains(searchString.ToLower())
+                //             || c.UTCOffset != null && c.UTCOffset.ToString().ToLower().Contains(searchString.ToLower())
+                //             || c.DateTimeUTC != null && c.DateTimeUTC.ToString().ToLower().Contains(searchString.ToLower())
+                //             || c.Site.SiteCode != null && c.Site.SiteCode.ToLower().Contains(searchString.ToLower())
+                //             || c.Variable.VariableCode != null && c.Variable.VariableCode.ToString().ToLower().Contains(searchString.ToLower())
+                //             || c.OffsetValue != null && c.OffsetValue.ToString().ToLower().Contains(searchString.ToLower())
+                //             || c.OffsetType.OffsetTypeCode != null && c.OffsetType.OffsetTypeCode.ToLower().Contains(searchString.ToLower())
+                //             || c.CensorCode != null && c.CensorCode.ToLower().Contains(searchString.ToLower())
+                //             || c.Qualifier.QualifierCode != null && c.Qualifier.QualifierCode.ToLower().Contains(searchString.ToLower())
+                //             || c.Method.MethodCode != null && c.Method.MethodCode.ToLower().Contains(searchString.ToLower())
+                //             || c.Source.SourceCode != null && c.Source.SourceCode.ToString().ToLower().Contains(searchString.ToLower())
+                //             || c.Sample.LabSampleCode != null && c.Sample.LabSampleCode.ToLower().Contains(searchString.ToLower())
+                //             || c.DerivedFromID != null && c.DerivedFromID.ToString().ToLower().Contains(searchString.ToLower())
+                //             || c.QualityControlLevel.QualityControlLevelCode != null && c.QualityControlLevel.QualityControlLevelCode.ToLower().Contains(searchString.ToLower())
+                //          ).Count();
                 //take only top x
                 var finalrst = rst.Take(pageSize).ToList();
 
@@ -4542,7 +4564,7 @@ namespace HydroServerToolsRepository.Repository
                     timeToFindDatavalues.Add(span);
                     Debug.WriteLine("timeToRetrieve " + site.SiteCode + ": " + span);
 
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount, listOfCorrectRecords.Count(), listOfIncorrectRecords.Count(), listOfDuplicateRecords.Count()));
                     #region loop through series
                     var filteredList = (from i in itemList
                                         where i.SiteCode == site.SiteCode
@@ -4559,7 +4581,7 @@ namespace HydroServerToolsRepository.Repository
                     {
                         try
                         {
-                            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount, listOfCorrectRecords.Count(), listOfIncorrectRecords.Count(), listOfDuplicateRecords.Count()));
                             count++;
                             #region data matching
                             bool isRejected = false;
@@ -5130,7 +5152,9 @@ namespace HydroServerToolsRepository.Repository
                 throw;
             }
             catch (Exception ex)
-                {}
+            {
+                throw;
+            }
             //context.SaveChanges();
             //Pass in cnx, tablename, and list of imports
             //RepositoryUtils.BulkInsert(context.Database.Connection.ConnectionString, "Datavalues", recordsToInsert);
@@ -5142,7 +5166,7 @@ namespace HydroServerToolsRepository.Repository
             Debug.WriteLine("timeExistInUpload: " + timeExistInUpload);           
             timeTocomplete = DateTime.Now - startTime;
             Debug.WriteLine("timeTocomplete: " + timeTocomplete);
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING_DONE, count, maxCount));
+            //BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING_DONE, count, maxCount));
 
             return;
         }

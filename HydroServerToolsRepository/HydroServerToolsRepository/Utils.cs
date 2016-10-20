@@ -630,10 +630,11 @@ namespace HydroServerToolsRepository.Repository
                 using (SqlBulkCopy bulkCopy =
                             new SqlBulkCopy(destinationConnection.ConnectionString, SqlBulkCopyOptions.KeepNulls| SqlBulkCopyOptions.CheckConstraints ))
                 {
-                    //bulkCopy.SqlRowsCopied += new SqlRowsCopiedEventHandler(OnSqlRowsTransfer);
-                    //bulkCopy.NotifyAfter = 10000;
+                    bulkCopy.SqlRowsCopied += new SqlRowsCopiedEventHandler(OnSqlRowsTransfer);
+                    bulkCopy.NotifyAfter = 2000;
                     bulkCopy.BatchSize = 10000;
-
+                    // Set the timeout.
+                    bulkCopy.BulkCopyTimeout = 180;
 
                     // bulkCopy.ColumnMappings.Add("OrderID", "NewOrderID");     
                     bulkCopy.DestinationTableName = tableName;
@@ -641,14 +642,19 @@ namespace HydroServerToolsRepository.Repository
                 }
             }
                 }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 throw;
             }
             //bulkCopy.WriteToServer(table);
 
         }
 
+        private static void OnSqlRowsTransfer(object sender, SqlRowsCopiedEventArgs e)
+        {
+            Console.WriteLine(e.RowsCopied + " loaded");
+        }
         public static bool containsInvalidCharacters(string value)
         {
 

@@ -19,39 +19,39 @@ namespace HydroserverToolsBusinessObjects
     public class BusinessObjectsUtils
     {
         
-        const string EFMODEL = @"res://*/ODM_1_1_1EFModel.csdl|res://*/ODM_1_1_1EFModel.ssdl|res://*/ODM_1_1_1EFModel.msl";      
+        const string EFMODEL = @"res://*/ODM_1_1_1EFModel.csdl|res://*/ODM_1_1_1EFModel.ssdl|res://*/ODM_1_1_1EFModel.msl";
 
-        //public static List<T> GetRecordsFromCache<T>(string identifier, int id)
-        //{
-        //    DataCache cache = new DataCache(dataCacheName);
+        public static List<T> GetRecordsFromCache<T>(string identifier, int id)
+        {
+            //DataCache cache = new DataCache(dataCacheName);
 
-            
 
-        //    var listOfRecords = new List<T>();                  
-              
-        //        switch (id)
-        //        {
-        //            case 0:
-        //                if (cache.Get(identifier + "listOfCorrectRecords") != null) listOfRecords = (List<T>)cache.Get(identifier + "listOfCorrectRecords");
-        //                else listOfRecords = null;
-        //                break;
-        //            case 1:
-        //                if (cache.Get(identifier + "listOfIncorrectRecords") != null) listOfRecords = (List<T>)cache.Get(identifier + "listOfIncorrectRecords");
-        //                else listOfRecords = null;
-        //                break;
-        //            case 2:
-        //                if (cache.Get(identifier + "listOfEditedRecords") != null) listOfRecords = (List<T>)cache.Get(identifier + "listOfEditedRecords");
-        //                else listOfRecords = null;
-        //                break;
-        //            case 3:
-        //                if (cache.Get(identifier + "listOfDuplicateRecords") != null) listOfRecords = (List<T>)cache.Get(identifier + "listOfDuplicateRecords");
-        //                else listOfRecords = null;
-        //                break;
-        //        }
-            
 
-        //    return listOfRecords;
-        //}
+            var listOfRecords = new List<T>();
+
+            switch (id)
+            {
+                case 0:
+                    if (HttpRuntime.Cache.Get(identifier + "listOfCorrectRecords") != null) listOfRecords = (List<T>)HttpRuntime.Cache.Get(identifier + "listOfCorrectRecords");
+                    else listOfRecords = null;
+                    break;
+                case 1:
+                    if (HttpRuntime.Cache.Get(identifier + "listOfIncorrectRecords") != null) listOfRecords = (List<T>)HttpRuntime.Cache.Get(identifier + "listOfIncorrectRecords");
+                    else listOfRecords = null;
+                    break;
+                case 2:
+                    if (HttpRuntime.Cache.Get(identifier + "listOfEditedRecords") != null) listOfRecords = (List<T>)HttpRuntime.Cache.Get(identifier + "listOfEditedRecords");
+                    else listOfRecords = null;
+                    break;
+                case 3:
+                    if (HttpRuntime.Cache.Get(identifier + "listOfDuplicateRecords") != null) listOfRecords = (List<T>)HttpRuntime.Cache.Get(identifier + "listOfDuplicateRecords");
+                    else listOfRecords = null;
+                    break;
+            }
+
+
+            return listOfRecords;
+        }
 
         public static List<T> GetRecordsFromSession<T>(string identifier, int id)
         {
@@ -92,29 +92,29 @@ namespace HydroserverToolsBusinessObjects
             //DataCache cache = new DataCache(dataCacheName);
             //needed to uniquely identify 
 
-            //HttpRuntime.Cache.Insert(instanceIdentifier + "_processStatus", message);
-            var session = System.Web.HttpContext.Current.Session;
+            HttpRuntime.Cache.Insert(instanceIdentifier + "_processStatus", message);
+            //var session = System.Web.HttpContext.Current.Session;
 
-            if (session["processStatus"] == null)
-            {
-                session.Add("processStatus", message);
-            }
-            else
-            {
-                session["processStatus"] = message;
-            }
+            //if (session["processStatus"] == null)
+            //{
+            //    session.Add("processStatus", message);
+            //}
+            //else
+            //{
+            //    session["processStatus"] = message;
+            //}
             // Debug.WriteLine(message);
         }
 
 
 
-        public static void RemoveItemFromCache(string identifier, string dataCacheName, string itemName)
+        public static void RemoveItemFromCache(string identifier, string itemName)
         {
-            DataCache cache = new DataCache(dataCacheName);
+            //DataCache cache = new DataCache(dataCacheName);
             //needed to uniquely identify 
 
 
-            cache.Remove(identifier + itemName);
+            HttpRuntime.Cache.Remove(identifier + itemName);
         }
 
         public static void RemoveItemFromSession(string identifier, string itemName)
@@ -127,30 +127,32 @@ namespace HydroserverToolsBusinessObjects
             session.Remove(itemName);
         }
 
+ 
 
 
-        public static UploadStatisticsModel GetUploadStatsFromCache<T>(string identifier, string dataCacheName)
+
+        public static UploadStatisticsModel GetUploadStatsFromCache<T>(string identifier)
         {
-            DataCache cache = new DataCache(dataCacheName);
+            //DataCache cache = new DataCache(dataCacheName);
             var uploadStatisticsModel = new UploadStatisticsModel();
-            if (cache.Get(identifier + "listOfCorrectRecords") != null) 
+            if (HttpRuntime.Cache.Get(identifier + "listOfCorrectRecords") != null) 
             {
-               var l  = (List<T>)cache.Get(identifier + "listOfCorrectRecords");
+               var l  = (List<T>)HttpRuntime.Cache.Get(identifier + "listOfCorrectRecords");
                 uploadStatisticsModel.NewRecordCount = l.Count();
             }
-            if (cache.Get(identifier + "listOfIncorrectRecords") != null)
+            if (HttpRuntime.Cache.Get(identifier + "listOfIncorrectRecords") != null)
             {
-                var l = (List<T>)cache.Get(identifier + "listOfIncorrectRecords");
+                var l = (List<T>)HttpRuntime.Cache.Get(identifier + "listOfIncorrectRecords");
                 uploadStatisticsModel.RejectedRecordCount = l.Count();
             }
-            if (cache.Get(identifier + "listOfEditedRecords") != null)
+            if (HttpRuntime.Cache.Get(identifier + "listOfEditedRecords") != null)
             {
-                var l = (List<T>)cache.Get(identifier + "listOfEditedRecords");
+                var l = (List<T>)HttpRuntime.Cache.Get(identifier + "listOfEditedRecords");
                 uploadStatisticsModel.UpdatedRecordCount = l.Count();
             }
-            if (cache.Get(identifier + "listOfDuplicateRecords") != null)
+            if (HttpRuntime.Cache.Get(identifier + "listOfDuplicateRecords") != null)
             {
-                var l = (List<T>)cache.Get(identifier + "listOfDuplicateRecords");
+                var l = (List<T>)HttpRuntime.Cache.Get(identifier + "listOfDuplicateRecords");
                 uploadStatisticsModel.DuplicateRecordCount = l.Count();
             }            
 
