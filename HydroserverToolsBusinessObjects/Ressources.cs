@@ -15,9 +15,12 @@ namespace HydroserverToolsBusinessObjects
         public const string CONNECTION_FAILED_SERVERNAME = "Database connection failed. Please validate that the name of the Server is correct";
         public const string CONNECTION_FAILED_DATASOURCENAME = "Database connection failed. Please validate that the name of the Datasource is correct";
         public const string CONNECTION_FAILED_LOGIN = "Database connection failed. Please validate that the Username and Password are correct";
+        public const string NOT_LINKED_TO_DATABASE = "The user account is not linked to a Database.";
         public const string HYDROSERVER_USERLOOKUP_FAILED = "The current user does not have an associated Hydroserver database. Please contact your administrator or CUAHSI";
         public const string IMPORT_FAILED = "The Import failed please validate your input. Please make sure the file contains all necessary fields.";
         public const string FILETYPE_NOT_CSV = "The uploaded file is not a CSV file. Please upload a correct file.";
+        public const string FILETYPE_NOT_CSV_ZIP = "The uploaded file is not a CSV or ZIP file. Please upload a correct file.";
+       
         public const string UPLOAD_SITES_HELP = "Sites Help";
 
         public const string IMPORT_FAILED_NOVALIDDATA = "The import failed. The file {0} does not contain valid data.";
@@ -36,14 +39,17 @@ namespace HydroserverToolsBusinessObjects
         public const string IMPORT_VALUE_ELEVATION_VERTICALDATUM = "When specifying a value for Elevation_m a vertical datum from the controlled vocabulary is required. ";
         public const string IMPORT_STATUS_UPLOAD = "Uploading...";
         public const string STATUS_PROCESSING = "Processing...";
-        public const string IMPORT_STATUS_PROCESSING = "The Upload is being processed. Processing record {0} of {1}";
+        public const string IMPORT_STATUS_PROCESSING = "The Upload is being processed. Processing record {0} of {1}; (New {2} of {0}, Rej. {3} of {0}, Dupl. {4} of {0})";
         public const string IMPORT_STATUS_PROCESSING_TIMESERIES = "The timeseries are being processed. Processing site {0} of {1}";
         public const string IMPORT_STATUS_INSERTING = "The data is inserted";
         public const string IMPORT_STATUS_ERROR = "An error occured during processing.";
         public const string IMPORT_STATUS_EXTRACTNG = "Extracting file";
         public const string IMPORT_STATUS_TIMESERIES = "Updating timeseries...";
-
+        public static string IMPORT_STATUS_PROCESSING_DONE = "Processing Complete";
         public static string IMPORT_UNSPECIFIED_ERROR = "An error occured inserting the data.";
         public static string IMPORT_CREATE_SERIESCATALOG = "Error updating series catalog table. Missing {0} Information.";
+        public static string IMPORT_COMMIT_PROGRESS = "The data is being processed. Inserted {0} of {1} records.";
+        public static string IMPORT_COMMIT_COMPLETE = "Processing Complete";
+        public static string IMPORT_COMMIT_FAILED = "Processing Failed";
     }
 }

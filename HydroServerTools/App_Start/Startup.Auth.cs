@@ -17,6 +17,9 @@ namespace HydroServerTools
             // Configure the db context and user manager to use a single instance per request
             app.CreatePerOwinContext(ApplicationDbContext.Create);
             app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);
+           //add signalR
+            //app.MapSignalR();
+
 
             // Enable the application to use a cookie to store information for the signed in user
             // and to use a cookie to temporarily store information about a user logging in with a third party login provider
@@ -53,8 +56,8 @@ namespace HydroServerTools
 
            var googleOAuth2AuthenticationOptions = new GoogleOAuth2AuthenticationOptions
             {
-                ClientId = "216334742809-er9vr34ucn4a4l2gv98248ps6a5nikmq.apps.googleusercontent.com",
-                ClientSecret = "EMIodFb4cgnPIJXQMRojTv6h",
+                ClientId = "208043537148-ds7a83pm5ssa61kj2jpg7rpojqrqchfj.apps.googleusercontent.com",
+                ClientSecret = "ah5IH-1uSPb0LAgusAGy5AZM",
                 CallbackPath = new PathString("/signin-google")                
             };
 

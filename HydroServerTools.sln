@@ -19,6 +19,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "jQuery.DataTables.Mvc", "jQ
 EndProject
 Project("{BB40F520-413E-3EBA-ABD4-2177801094F0}") = "HydroServerToolsAzure", "HydroServerToolsAzure\HydroServerToolsAzure.ccproj", "{3A865BBE-EC6A-411F-A891-81C87679040E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{E56494F5-196D-4D95-A11E-9DCB7BB4E413}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

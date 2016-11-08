@@ -22,6 +22,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using System.Web.UI.WebControls;
+using System.Threading.Tasks;
 
 namespace HydroServerTools.Controllers
 {
@@ -36,6 +37,13 @@ namespace HydroServerTools.Controllers
 
             //string entityConnectionString = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name.ToString());
 
+            //get connection name
+            string connectionName = HydroServerToolsUtils.getConnectionName(HttpContext.User.Identity.Name.ToString());
+
+            if (connectionName == Ressources.NOT_LINKED_TO_DATABASE)
+            {
+                return RedirectToAction("NoDBForm");
+            }
             string entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name.ToString());
 
 
@@ -75,6 +83,12 @@ namespace HydroServerTools.Controllers
         {
             ViewBag.Message = "";
 
+            return View();
+        }
+        public ActionResult NoDBForm()
+        {
+            ViewBag.Message = Ressources.HYDROSERVER_USERLOOKUP_FAILED;
+            //var user = User.Identity.Name;
             return View();
         }
         public ActionResult GoogleForm()
@@ -165,10 +179,23 @@ namespace HydroServerTools.Controllers
         {
             return View();
         }
-      
+        [Authorize]
+        public ActionResult RecreateSeriescatalog()
+        {
+            string entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name.ToString());
+
+            RepositoryUtils.recreateSeriescatalog(entityConnectionString);
+            //return Json(new { success = true });
+            return RedirectToAction("Index");
+        }
+
+
+
         [Authorize]
         public ActionResult ClearTablesHandler(FormCollection collection)
         {
+
+
             string entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name.ToString());
 
             //var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
@@ -218,17 +245,48 @@ namespace HydroServerTools.Controllers
         [HttpPost]
         public ActionResult Progress()
         {
-            DataCache cache = new DataCache("default");
-            var identifier = MvcApplication.InstanceGuid + User.Identity.Name;
-            string StatusMessage = "Processing...";
-
-            if (cache != null)
+            //DataCache cache = new DataCache("default");
+            var identifier = User.Identity.Name;
+            var StatusMessage = string.Empty;
+            var session = Request.RequestContext.HttpContext.Session;
+            if (HttpRuntime.Cache.Get(identifier + "_processStatus") != null)
             {
-                if (cache.Get(identifier + "processStatus") != null)
-                {
-                    if (cache.Get(identifier + "processStatus") != null) StatusMessage = (string)cache.Get(identifier + "processStatus");
-                }
+                StatusMessage = HttpRuntime.Cache.Get(identifier + "_processStatus").ToString();
             }
+
+
+            //if (session != null)
+            //{
+            //    if (session["processStatus"] != null)
+            //    {
+            //        StatusMessage = (string)session["processStatus"];
+            //        //StatusMessage = "in proc";
+            //    }
+            //}
+            return Json(StatusMessage);
+        }
+
+        [HttpPost][HttpGet]
+        public async Task<ActionResult> ProgressAsync()
+        {
+            //DataCache cache = new DataCache("default");
+            var identifier = User.Identity.Name;
+            var StatusMessage = string.Empty;
+            //var session = Request.RequestContext.HttpContext.Session;
+            if (HttpRuntime.Cache.Get(identifier + "_processStatus") != null)
+            {
+                 StatusMessage = await Task.Run(()=> HttpRuntime.Cache.Get(identifier + "_processStatus").ToString());
+            }
+
+
+            //if (session != null)
+            //{
+            //    if (session["processStatus"] != null)
+            //    {
+            //        StatusMessage = (string)session["processStatus"];
+            //        //StatusMessage = "in proc";
+            //    }
+            //}
             return Json(StatusMessage);
         }
     }

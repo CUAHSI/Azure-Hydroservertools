@@ -25,11 +25,14 @@ namespace HydroserverToolsBusinessObjects.Models
         public string SiteID { get; set; }
         [Required]
         public string SiteCode { get; set; }
-
+        //[Required]
+        //public string SiteName { get; set; }
         [Display(Name = "NotVisible")]//
         public string VariableID { get; set; }
         [Required]
         public string VariableCode { get; set; }
+        //[Required]
+        //public string VariableName { get; set; }
 
         public string OffsetValue { get; set; }
 

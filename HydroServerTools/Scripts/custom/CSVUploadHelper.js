@@ -1,49 +1,14 @@
 ﻿//$(document).ready(function () {
 
-//var oTable = $('table.display').dataTable({
-//    "sScrollX": "100%",
-//    //"sScrollY": 400,
-//    "sScrollXInner": "150%",
-//    "bScrollCollapse": true,
-//    "sPaginationType": "full_numbers",
-//    "bPaginate": true,
-//    "bJQueryUI": true,
-//    "sDom": '<"clear">Tlfrtip',
-//    //"sCharSet": "UTF16LE",
-//    "oTableTools": {
-//        "sSwfPath": "/Content/DataTables-1.9.4/extras/TableTools/media/swf/copy_csv_xls_pdf.swf"
-//    },
-//    "aoColumnDefs": [
-//        { "sWidth": "10%", "aTargets": [-1] }
-//    ]
-//});
-
-//$("#tabs", tabs-1).tabs({
-//    "show": function (event, ui) {
-//        var oTable = $('div.dataTables_scrollBody>table.display', ui.panel).dataTable();
-//        if (oTable.length > 0) {
-//            oTable.fnAdjustColumnSizing();
-//            oTable.fnResizeButtons();
-//            alert("buttons should work");
-//        }
-//    }
-//});
 
 
 
-//$('[data-toggle="popover"]').popover({
-//    trigger: 'hover',
-//    'placement': 'top'
-//});
 
+//$(document).ready(function () {
 
-//});
-
-var oTable;
-
-$(document).ready(function () {
-
-
+    var oTable;
+    var UploadMonitorID
+    var commitMonitor = { 'intervalId': null }
 
     var sPath = window.location.pathname;
     var viewName = (sPath.substring(sPath.lastIndexOf('/') + 1)).toLowerCase();
@@ -90,7 +55,7 @@ $(document).ready(function () {
 
 
 
-});
+
 
 function getDatatableOptions(name, index) {
 
@@ -720,20 +685,22 @@ function initCommitAndCancelButton(id) {
         $('#0commit').unbind('click')
         $('#cancel').unbind('click')
 
-        intervalId = setInterval(function () {
+        //UploadMonitorID = setInterval(function () {
 
-            $.post("/Home/Progress", function (progress) {
-                //if (progress >= 1000) {
-                //    updateMonitor(taskId, "Completed");
-                //    clearInterval(intervalId);
-                //} else {
-                updateMonitor(status, progress);
-                //}
-            });
+        //    $.post("/Home/Progress", function (progress) {
+        //        //if (progress >= 1000) {
+        //        //    updateMonitor(taskId, "Completed");
+        //        //    clearInterval(intervalId);
+        //        //} else {
+        //        updateMonitor(status, progress);
+        //        //}
+        //    });
 
-        }, 1000);
+        //}, 1000);
 
         //$.post("/CSVUpload/Commit", { id: "sites" } {
+
+        startCommitMonitor();
         $.ajax({
             url: '/CSVUpload/Commit/' + id,
             data: "{ 'index': '0' }",
@@ -747,9 +714,15 @@ function initCommitAndCancelButton(id) {
                 oTable = $('#0').dataTable(getDatatableOptions(id, 0));
                
                 $('#0commit').addClass("disabled");
-                $('#loading').addClass('hide');
+                //$('#loading').addClass('hide');
                 $('#cancel').bind('click');
+                // window.clearInterval(UploadMonitorID);
+                clearInterval(commitMonitor.intervalId);            
 
+            },
+            always: function (e, data)
+            {
+                clearInterval(uploadMonitor.intervalId);
             },
             error: function (xhr) {
                 if (typeof xhr.statusText != "undefined") {
@@ -765,9 +738,9 @@ function initCommitAndCancelButton(id) {
                     
                         window.location.href = '/CSVUpload/UploadData/' + id
                     
-
+                //window.clearInterval(UploadMonitorID);
                 })
-            }
+            },timeout:600000
         });
 
     });
@@ -781,18 +754,18 @@ function initCommitAndCancelButton(id) {
         $('#2commit').unbind('click')
         $('#cancel').unbind('click')
 
-        intervalId = setInterval(function () {
+        //intervalId = setInterval(function () {
 
-            $.post("/Home/Progress", function (progress) {
-                //if (progress >= 1000) {
-                //    updateMonitor(taskId, "Completed");
-                //    clearInterval(intervalId);
-                //} else {
-                updateMonitor(status, progress);
-                //}
-            });
+        //    $.post("/Home/Progress", function (progress) {
+        //        //if (progress >= 1000) {
+        //        //    updateMonitor(taskId, "Completed");
+        //        //    clearInterval(intervalId);
+        //        //} else {
+        //        updateMonitor(status, progress);
+        //        //}
+        //    });
 
-        }, 1000);
+        //}, 1000);
 
         $.ajax({
             url: '/CSVUpload/Commit/' + id,
@@ -920,8 +893,42 @@ function GetUploadStats(viewName)
     });
 }
 
-function updateMonitor(status, progress) {
-    $('#monitor').html(progress);
+function startCommitMonitor() {
+    if (null === commitMonitor.intervalId) {
+        //Monitor function not running - start...
+        commitMonitor.intervalId = setInterval(function () {
+            //var actionUrl = "/Home/Progress";
+            var actionUrl = "/Home/Progress";
+            $.ajax({
+                url: actionUrl,
+                type: 'POST',
+                contentType: 'json',
+                //data: JSON.stringify(Ids),
+                success: function (progress) {
+                    commitMonitor2(status, progress);
+
+                },
+                error: function (xmlhttprequest, textStatus, message) {
+                    alert('error')
+                }
+            })
+        }, 2000)
+    }
 }
+
+function commitMonitor2(status, progress) {
+    $('#monitor').html(progress);
+    if (progress == "Processing Complete") {
+         clearInterval(commitMonitor.intervalId);
+    }
+    if (progress.indexOf("Processing Failed", 0) > -1) {
+        clearInterval(commitMonitor.intervalId);
+    }
+}
+//function updateMonitor(status, progress) {
+//    $('#monitor').html(progress);
+//}
+
+//});
 
 

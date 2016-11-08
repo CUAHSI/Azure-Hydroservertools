@@ -1,5 +1,5 @@
 /*
- * jQuery File Upload jQuery UI Plugin 8.7.0
+ * jQuery File Upload jQuery UI Plugin
  * https://github.com/blueimp/jQuery-File-Upload
  *
  * Copyright 2013, Sebastian Tschan
@@ -10,13 +10,16 @@
  */
 
 /* jshint nomen:false */
-/* global define, window */
+/* global define, require, window */
 
 (function (factory) {
     'use strict';
     if (typeof define === 'function' && define.amd) {
         // Register as an anonymous AMD module:
         define(['jquery', './jquery.fileupload-ui'], factory);
+    } else if (typeof exports === 'object') {
+        // Node/CommonJS:
+        factory(require('jquery'));
     } else {
         // Browser globals:
         factory(window.jQuery);
@@ -27,6 +30,9 @@
     $.widget('blueimp.fileupload', $.blueimp.fileupload, {
 
         options: {
+            processdone: function (e, data) {
+                data.context.find('.start').button('enable');
+            },
             progress: function (e, data) {
                 if (data.context) {
                     data.context.find('.progress').progressbar(
@@ -83,6 +89,11 @@
                 node.hide();
             }
             return node;
+        },
+
+        _startHandler: function (e) {
+            $(e.currentTarget).button('disable');
+            this._super(e);
         },
 
         _transition: function (node) {

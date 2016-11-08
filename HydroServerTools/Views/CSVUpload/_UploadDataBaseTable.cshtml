@@ -76,11 +76,22 @@
                 <i class="glyphicon glyphicon-remove"></i>
                 Cancel
         </button>
-        
+      
+
+
             <span>
-                @Html.ActionLink("Download as CSV", "Download", "Export", new { identifier = @ViewData["index"], viewName = @ViewData["viewName"] }, new { @class = "btn btn-info active pull-right", target = "_blank" })
+                 @Html.ActionLink("Download as CSV", "Download", "Export", new { identifier = @ViewData["index"], viewName = @ViewData["viewName"] }, new { @class = "btn btn-info active pull-right", target = "_blank" })
             </span>
-       
+        <br />
+        <br />
+        <div class="well">
+            <h5>Click "Update Timeseries metadata" after data is saved to the database.
+This is required to register the new data values with the existing timeseries or create new timeseries.
+Failing to do this will result in the new data not being discoverable.
+Since this can take a long period of time depending on the amount of data in the database
+it is recommended to be the last step of uploading multiple sheets of data.  </h5>
+            @Html.ActionLink("Update Timeseries metadata", "RecreateSeriescatalog", "Home", null, new { @class = "btn btn-info active" })
+           </div>
             @* <span class="glyphicon glyphicon-download"></span>@Html.ActionLink("Download as CSV", "Download", "Export", new { identifier = @ViewData["index"], viewName = @ViewData["viewName"] }, new { target = "_blank" })*@
         </div>
     </div>

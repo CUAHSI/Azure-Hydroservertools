@@ -580,9 +580,9 @@ namespace HydroServerTools.Controllers
                             c.OffsetTypeID,
                             c.CensorCode,
                             c.QualifierID,
-                            c.MethodID,
-                            c.SourceID,
-                            c.SampleID,
+                            c.MethodCode,
+                            c.SourceCode,
+                            c.LabSampleCode,
                             c.DerivedFromID,
                             c.QualityControlLevelCode
                 };
@@ -664,10 +664,14 @@ namespace HydroServerTools.Controllers
 
             //var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
-            if (String.IsNullOrEmpty(entityConnectionString)) { ViewBag.Message = Ressources.HYDROSERVER_USERLOOKUP_FAILED; return View("Error"); }
+            if (String.IsNullOrEmpty(entityConnectionString))
+            {
+                ViewBag.Message = Ressources.HYDROSERVER_USERLOOKUP_FAILED;
+                return View("NoDBForm");
+            }
 
 
-            if (identifier.ToLower() == "sites") { var repo = new SiteModel(); return View("ViewSites", repo); };
+                if (identifier.ToLower() == "sites") { var repo = new SiteModel(); return View("ViewSites", repo); };
             if (identifier.ToLower() == "variables") {var  repo = new VariablesModel(); return View("ViewVariables", repo); };
             if (identifier.ToLower() == "offsettypes") { var repo = new OffsetTypesModel(); return View("ViewOffsetTypes", repo); };
             if (identifier.ToLower() == "isometadata") { var repo = new ISOMetadataModel(); return View("ViewISOMetadata", repo); };

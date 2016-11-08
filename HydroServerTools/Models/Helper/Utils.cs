@@ -175,12 +175,33 @@ namespace HydroServerTools
             return userEmail;
         }
 
+        public static string getConnectionName(string userName)
+        {
+            string connectionName = Ressources.NOT_LINKED_TO_DATABASE; 
+            ApplicationDbContext context = new ApplicationDbContext();
+
+            var p = (from c in context.ConnectionParametersUser
+                         where c.User.UserName == userName
+                         select new
+                         {
+                             c.ConnectionParameters.Name
+                         }).FirstOrDefault();
+            if (p != null)
+            {
+                connectionName = p.Name;
+            }
+            
+
+
+            return connectionName;
+        }
+
         public static string BuildConnectionStringForUserName(string userName)
         {
             string connectionString = string.Empty;
 
             ApplicationDbContext context = new ApplicationDbContext();
-
+            context.Database.CommandTimeout = 10000;
            // var entityConnectionstringParameters = context.ConnectionParameters.Where(r => r.Name.Equals(userName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
 
             //var entityConnectionstringParameters = context.ConnectionParametersUser.Where(r => r.Name.Equals(userName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();

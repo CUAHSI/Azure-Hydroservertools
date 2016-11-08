@@ -49,9 +49,13 @@ namespace HydroServerToolsRepository.Repository
 
         public static void CommitNewRecords<T>(string entityConnectionString, string id, IList<T> list)
         {
-
             string providerConnectionString = new EntityConnectionStringBuilder(entityConnectionString).ProviderConnectionString;
+            string instanceIdentifier = "mseul@cuahsi.org";
+            string CacheName = "default";
 
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format("test"));
+
+         
             try 
             { 
                 if (id == "sites")
@@ -62,7 +66,7 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map< T,Site>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<Site>(providerConnectionString, id, recordsToInsert);                   
+                    BulkInsert<Site>(providerConnectionString, id, recordsToInsert, instanceIdentifier, CacheName);                   
                 }
 
                
@@ -74,7 +78,7 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, Variable>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<Variable>(providerConnectionString, id, recordsToInsert);
+                    BulkInsert<Variable>(providerConnectionString, id, recordsToInsert, instanceIdentifier, CacheName);
                 }
                 if (id == "offsettypes")
                 {
@@ -84,7 +88,7 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, OffsetType>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<OffsetType>(providerConnectionString, id, recordsToInsert);
+                    BulkInsert<OffsetType>(providerConnectionString, id, recordsToInsert, instanceIdentifier, CacheName);
                 }
                 if (id == "sources")
                 {
@@ -166,7 +170,7 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, Method>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<Method>(providerConnectionString, id, recordsToInsert);
+                    BulkInsert<Method>(providerConnectionString, id, recordsToInsert, instanceIdentifier, CacheName);
 
                 }
 
@@ -178,7 +182,7 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, LabMethod>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<LabMethod>(providerConnectionString, id, recordsToInsert);
+                    BulkInsert<LabMethod>(providerConnectionString, id, recordsToInsert, instanceIdentifier, CacheName);
 
                 }
 
@@ -190,7 +194,7 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, Sample>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<Sample>(providerConnectionString, id, recordsToInsert);
+                    BulkInsert<Sample>(providerConnectionString, id, recordsToInsert, instanceIdentifier, CacheName);
 
                 }
 
@@ -202,7 +206,7 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, Qualifier>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<Qualifier>(providerConnectionString, id, recordsToInsert);
+                    BulkInsert<Qualifier>(providerConnectionString, id, recordsToInsert, instanceIdentifier, CacheName);
 
                 }
 
@@ -214,7 +218,7 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, QualityControlLevel>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<QualityControlLevel>(providerConnectionString, id, recordsToInsert);
+                    BulkInsert<QualityControlLevel>(providerConnectionString, id, recordsToInsert, instanceIdentifier, CacheName);
 
                 }
 
@@ -226,7 +230,8 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, DataValue>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<DataValue>(providerConnectionString, id, recordsToInsert);
+                    BulkInsert<DataValue>(providerConnectionString, id, recordsToInsert, instanceIdentifier, CacheName);
+                 
 
                 }
 
@@ -238,7 +243,7 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, GroupDescription>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<GroupDescription>(providerConnectionString, id, recordsToInsert);
+                    BulkInsert<GroupDescription>(providerConnectionString, id, recordsToInsert, instanceIdentifier, CacheName);
 
                 }
 
@@ -250,7 +255,7 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, Group>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<Group>(providerConnectionString, id, recordsToInsert);
+                    BulkInsert<Group>(providerConnectionString, id, recordsToInsert, instanceIdentifier, CacheName);
                 }
 
                 if (id == "derivedfrom")
@@ -261,7 +266,7 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, DerivedFrom>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<DerivedFrom>(providerConnectionString, id, recordsToInsert);
+                    BulkInsert<DerivedFrom>(providerConnectionString, id, recordsToInsert, instanceIdentifier, CacheName);
                 }
 
                 if (id == "categories")
@@ -272,21 +277,20 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, Category>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<Category>(providerConnectionString, id, recordsToInsert);
+                    BulkInsert<Category>(providerConnectionString, id, recordsToInsert, instanceIdentifier, CacheName);
                 }
            }
             catch (Exception ex)
             {
                 throw;
             }
-   
+          
         }
 
         public static void CommitUpdateRecords<T>(string entityConnectionString, string id, IList<T> list)
         {
 
-            string providerConnectionString = new EntityConnectionStringBuilder(entityConnectionString).ProviderConnectionString;
-
+          
             try
             {
                 if (id == "sites")
@@ -575,7 +579,7 @@ namespace HydroServerToolsRepository.Repository
 
         }
 
-        public static void BulkInsert<T>(string connection, string tableName, IList<T> list)
+        public static void BulkInsert<T>(string connection, string tableName, IList<T> list, string instanceIdentifier, string CacheName)
         {
             try 
             { 
@@ -628,12 +632,21 @@ namespace HydroServerToolsRepository.Repository
                 destinationConnection.Open();
 
                 using (SqlBulkCopy bulkCopy =
-                            new SqlBulkCopy(destinationConnection.ConnectionString, SqlBulkCopyOptions.KeepNulls))//| SqlBulkCopyOptions.CheckConstraints
+                            new SqlBulkCopy(destinationConnection.ConnectionString, SqlBulkCopyOptions.KeepNulls| SqlBulkCopyOptions.CheckConstraints ))
                 {
-                    //bulkCopy.SqlRowsCopied += new SqlRowsCopiedEventHandler(OnSqlRowsTransfer);
-                    //bulkCopy.NotifyAfter = 100;
-                    bulkCopy.BatchSize = 50;
 
+                        //bulkCopy.SqlRowsCopied += new SqlRowsCopiedEventHandler(OnSqlRowsTransfer, instanceIdentifier, CacheName);
+                        bulkCopy.SqlRowsCopied += (s, e) =>
+                        {
+                            Console.WriteLine(e.RowsCopied + " loaded");
+                            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_COMMIT_PROGRESS, e.RowsCopied.ToString(), table.Rows.Count.ToString()));
+
+                        };
+                        //bulkCopy.SqlRowsCopied += (sender, e) => { = instanceIdentifier, CacheName};
+                        bulkCopy.NotifyAfter = 5000;
+                    bulkCopy.BatchSize = 10000;
+                    // Set the timeout.
+                    bulkCopy.BulkCopyTimeout = 600;
 
                     // bulkCopy.ColumnMappings.Add("OrderID", "NewOrderID");     
                     bulkCopy.DestinationTableName = tableName;
@@ -641,14 +654,26 @@ namespace HydroServerToolsRepository.Repository
                 }
             }
                 }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 throw;
             }
             //bulkCopy.WriteToServer(table);
+      
+        }
+        public void newSqlRowsCopiedEventHandler (object sender, SqlRowsCopiedEventArgs e, string instanceIdentifier, string CacheName)
+        {
+          
+            Console.WriteLine(e.RowsCopied + " loaded");
+        }
+        private static void OnSqlRowsTransfer(object sender, SqlRowsCopiedEventArgs e, string instanceIdentifier, string CacheName)
+        {
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(e.RowsCopied.ToString()));
+
+            Console.WriteLine(e.RowsCopied + " loaded");
 
         }
-
         public static bool containsInvalidCharacters(string value)
         {
 
@@ -735,6 +760,26 @@ namespace HydroServerToolsRepository.Repository
             
             return timeseriesData;
         }
-               
+
+        public static void recreateSeriescatalog(string entityConnectionstring)
+        {
+            string providerConnectionString = new EntityConnectionStringBuilder(entityConnectionstring).ProviderConnectionString;
+
+            var seriesCatalogRepository = new SeriesCatalogRepository();
+                                    //seriesCatalogRepository.deleteAll(connectionString);
+            using (var conn = new SqlConnection(providerConnectionString))
+                using (var command = new SqlCommand("dbo.spUpdateSeriesCatalog", conn)
+                    { 
+                        CommandType = CommandType.StoredProcedure,
+                        CommandTimeout = 60000 })
+                       
+                        {
+                           
+                           conn.Open();
+                           command.ExecuteNonQuery();
+                           conn.Close();
+                        }
+            
+        }
     }
 }

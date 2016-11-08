@@ -19,7 +19,7 @@ namespace HydroServerTools.Controllers
     public class ExportController : Controller
     {
         //
-        public string instanceIdentifier = MvcApplication.InstanceGuid + System.Web.HttpContext.Current.User.Identity.Name;
+        public string instanceIdentifier = System.Web.HttpContext.Current.User.Identity.Name;
 
         // GET: /Export/
         public FileStreamResult Download(int identifier, string viewName)
@@ -47,7 +47,7 @@ namespace HydroServerTools.Controllers
             if (viewName == "sites")
             {
 
-                var listOfRecords = (List<SiteModel>)BusinessObjectsUtils.GetRecordsFromCache<SiteModel>(instanceIdentifier, identifier, "default");
+                var listOfRecords = (List<SiteModel>)BusinessObjectsUtils.GetRecordsFromCache<SiteModel>(instanceIdentifier, identifier);
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
@@ -56,7 +56,7 @@ namespace HydroServerTools.Controllers
             }
             if (viewName == "variables")
             {
-                var listOfRecords = (List<VariablesModel>)BusinessObjectsUtils.GetRecordsFromCache<VariablesModel>(instanceIdentifier, identifier, "default");
+                var listOfRecords = (List<VariablesModel>)BusinessObjectsUtils.GetRecordsFromCache<VariablesModel>(instanceIdentifier, identifier);
                 var result = WriteCsvToMemory(listOfRecords);
 
                 var memoryStream = new MemoryStream(result);
@@ -65,7 +65,7 @@ namespace HydroServerTools.Controllers
             if (viewName == "offsettypes")
             {
 
-                var listOfRecords = (List<OffsetTypesModel>)BusinessObjectsUtils.GetRecordsFromCache<OffsetTypesModel>(instanceIdentifier, identifier, "default");
+                var listOfRecords = (List<OffsetTypesModel>)BusinessObjectsUtils.GetRecordsFromCache<OffsetTypesModel>(instanceIdentifier, identifier);
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
@@ -74,7 +74,7 @@ namespace HydroServerTools.Controllers
             if (viewName == "sources")
             {
 
-                var listOfRecords = (List<SourcesModel>)BusinessObjectsUtils.GetRecordsFromCache<SourcesModel>(instanceIdentifier, identifier, "default");
+                var listOfRecords = (List<SourcesModel>)BusinessObjectsUtils.GetRecordsFromCache<SourcesModel>(instanceIdentifier, identifier);
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
@@ -82,7 +82,7 @@ namespace HydroServerTools.Controllers
             }
             if (viewName == "methods")
             {
-                var listOfRecords = (List<MethodModel>)BusinessObjectsUtils.GetRecordsFromCache<MethodModel>(instanceIdentifier, identifier, "default");
+                var listOfRecords = (List<MethodModel>)BusinessObjectsUtils.GetRecordsFromCache<MethodModel>(instanceIdentifier, identifier);
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
@@ -90,7 +90,7 @@ namespace HydroServerTools.Controllers
             }
             if (viewName == "labmethods")
             {
-                var listOfRecords = (List<LabMethodModel>)BusinessObjectsUtils.GetRecordsFromCache<LabMethodModel>(instanceIdentifier, identifier, "default");
+                var listOfRecords = (List<LabMethodModel>)BusinessObjectsUtils.GetRecordsFromCache<LabMethodModel>(instanceIdentifier, identifier);
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
@@ -98,7 +98,7 @@ namespace HydroServerTools.Controllers
             }
             if (viewName == "samples")
             {
-                var listOfRecords = (List<SampleModel>)BusinessObjectsUtils.GetRecordsFromCache<SampleModel>(instanceIdentifier, identifier, "default");
+                var listOfRecords = (List<SampleModel>)BusinessObjectsUtils.GetRecordsFromCache<SampleModel>(instanceIdentifier, identifier);
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
@@ -106,7 +106,7 @@ namespace HydroServerTools.Controllers
             }
             if (viewName == "qualifiers")
             {
-                var listOfRecords = (List<QualifiersModel>)BusinessObjectsUtils.GetRecordsFromCache<QualifiersModel>(instanceIdentifier, identifier, "default");
+                var listOfRecords = (List<QualifiersModel>)BusinessObjectsUtils.GetRecordsFromCache<QualifiersModel>(instanceIdentifier, identifier);
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
@@ -114,7 +114,7 @@ namespace HydroServerTools.Controllers
             }
             if (viewName == "qualitycontrollevels")
             {
-                var listOfRecords = (List<QualityControlLevelModel>)BusinessObjectsUtils.GetRecordsFromCache<QualityControlLevelModel>(instanceIdentifier, identifier, "default");
+                var listOfRecords = (List<QualityControlLevelModel>)BusinessObjectsUtils.GetRecordsFromCache<QualityControlLevelModel>(instanceIdentifier, identifier);
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
@@ -122,7 +122,7 @@ namespace HydroServerTools.Controllers
             }
             if (viewName == "datavalues")
             {
-                var listOfRecords = (List<DataValuesModel>)BusinessObjectsUtils.GetRecordsFromCache<DataValuesModel>(instanceIdentifier, identifier, "default");
+                var listOfRecords = (List<DataValuesModel>)BusinessObjectsUtils.GetRecordsFromCache<DataValuesModel>(instanceIdentifier, identifier);
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
@@ -130,7 +130,7 @@ namespace HydroServerTools.Controllers
             }
             if (viewName == "groupdescriptions")
             {
-                var listOfRecords = (List<GroupDescriptionModel>)BusinessObjectsUtils.GetRecordsFromCache<GroupDescriptionModel>(instanceIdentifier, identifier, "default");
+                var listOfRecords = (List<GroupDescriptionModel>)BusinessObjectsUtils.GetRecordsFromCache<GroupDescriptionModel>(instanceIdentifier, identifier);
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
@@ -138,7 +138,7 @@ namespace HydroServerTools.Controllers
             }
             if (viewName == "groups")
             {
-                var listOfRecords = (List<GroupsModel>)BusinessObjectsUtils.GetRecordsFromCache<GroupsModel>(instanceIdentifier, identifier, "default");
+                var listOfRecords = (List<GroupsModel>)BusinessObjectsUtils.GetRecordsFromCache<GroupsModel>(instanceIdentifier, identifier);
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
@@ -146,7 +146,7 @@ namespace HydroServerTools.Controllers
             }
             if (viewName == "derivedfrom")
             {
-                var listOfRecords = (List<DerivedFromModel>)BusinessObjectsUtils.GetRecordsFromCache<DerivedFromModel>(instanceIdentifier, identifier, "default");
+                var listOfRecords = (List<DerivedFromModel>)BusinessObjectsUtils.GetRecordsFromCache<DerivedFromModel>(instanceIdentifier, identifier);
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);
@@ -154,7 +154,7 @@ namespace HydroServerTools.Controllers
             }
             if (viewName == "categories")
             {
-                var listOfRecords = (List<CategoriesModel>)BusinessObjectsUtils.GetRecordsFromCache<CategoriesModel>(instanceIdentifier, identifier, "default");
+                var listOfRecords = (List<CategoriesModel>)BusinessObjectsUtils.GetRecordsFromCache<CategoriesModel>(instanceIdentifier, identifier);
 
                 var result = WriteCsvToMemory(listOfRecords);
                 var memoryStream = new MemoryStream(result);

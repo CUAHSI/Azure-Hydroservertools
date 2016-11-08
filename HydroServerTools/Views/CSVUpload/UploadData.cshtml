@@ -7,8 +7,25 @@
 <link rel="stylesheet" href="~/Content/mvcfileupload/blueimp/jquery.fileupload.css" />
 @*<link rel="stylesheet" href="/Content/mvcfileupload/blueimp/jquery.fileupload-ui.css">*@
 
-
+<script src="~/Scripts/test/uploader.js"></script>
 <script src="~/Scripts/mvcfileupload/vendor/jquery.ui.widget.js"></script>
+@*<script type="text/javascript">
+		$(function(){
+			var $b = $('#upload'),
+				$f = $('#file'),
+				$p = $('#progress'),
+				up = new uploader($f.get(0), {
+					url:'/',
+					progress:function(ev){ console.log('progress'); $p.html(((ev.loaded/ev.total)*100)+'%'); $p.css('width',$p.html()); },
+					error:function(ev){ console.log('error'); },
+					success:function(data){ console.log('success'); $p.html('100%'); $p.css('width',$p.html()); }
+				});
+
+			$b.click(function(){
+				up.send();
+			});
+		});
+</script>*@
 
 
 @Html.Action("_Breadcrumb", "CSVUpload", new { id = ViewBag.Name })
@@ -21,7 +38,8 @@
                 <h3 class="panel-title">Currently importing: @ViewBag.Name</h3>
             </div>
             <div class="panel-body h4">
-                <i class="icon-plus"></i><p>Please select or drag-in your file</p>
+                <i class="icon-plus"></i><p>Please select or drag-in your file (.csv/.zip)</p>
+                <h4>If your .csv file is larger than 5MB please zip the file before uploading. The application can process up to 750.000 records in one upload.</h4>
                 @*<input type="file" id="fileupload" name="fileupload" accept=".csv,.zip" >*@
                 <p>
                     <span class="btn btn-success fileinput-button active ">
@@ -43,7 +61,7 @@
                     <div class="clearfix">
                     </div>
                     <p>
-                        <div class="well-sm hide h4" id="filelistholder">
+                        <div class="well-sm hide h3" id="filelistholder">
 
                             @*<div id="progressbar"></div>*@
                         </div>
@@ -56,14 +74,22 @@
                
                 </p>
             </div>
-            <div class="well-sm alert-info hide" id="loading">
+            <div class="well-sm alert-info hide h4" id="loading">
             
                 <div id="monitor">
-                    Processing...
+                    Upload started.
                     @*<img src="~/Images/ajax-loader.gif" />*@
                 </div>
-            </div>
+                
+</div>
         </div>
+        @*<p>
+            <label for="file">Choose file</label>
+            <input type="file" id="file" name="file" accept="*" />
+        </p>
+        <p><button id="upload">Upload</button></p>
+        <p><span id="progress" class="progress">0%</span></p>*@
+
     </form>
    
 </div>
@@ -75,6 +101,9 @@
 <script src="~/Scripts/mvcfileupload/blueimp/jquery.fileupload.js"></script>
 <script src="~/Scripts/mvcfileupload/blueimp/jquery.fileupload-ui.js"></script>
 <script src="~/Scripts/mvcfileupload/blueimp/jquery.iframe-transport.js"></script>
+@*<script src="~/Scripts/mvcfileupload/blueimp/jquery.fileupload-validate.js"></script>*@
+<script src="~/Scripts/mvcfileupload/blueimp/jquery.fileupload-process.js"></script>
+
 @*<script src="~/Scripts/mvcfileupload/blueimp/jquery.fileupload-process.js"></script>
     <script src="~/Scripts/mvcfileupload/blueimp/jquery.fileupload-validate.js"></script>*@
 @*<script src="~/Scripts/jquery.validate.min.js"></script>
