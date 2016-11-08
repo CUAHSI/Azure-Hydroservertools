@@ -659,8 +659,13 @@ namespace HydroServerToolsRepository.Repository
                 Console.WriteLine(ex.Message);
                 throw;
             }
+            finally
+            {
+                BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_COMMIT_COMPLETE));
+
+            }
             //bulkCopy.WriteToServer(table);
-      
+
         }
         public void newSqlRowsCopiedEventHandler (object sender, SqlRowsCopiedEventArgs e, string instanceIdentifier, string CacheName)
         {
