@@ -215,32 +215,34 @@ namespace HydroServerTools.Controllers
 
                 file.InputStream.Position = 0;
 
-                ZipInputStream zipInputStream = new ZipInputStream(file.InputStream);
-                ZipEntry zipEntry = zipInputStream.GetNextEntry();
-                while (zipEntry != null)
+                using (ZipInputStream zipInputStream = new ZipInputStream(file.InputStream))
                 {
-                    String entryFileName = zipEntry.Name;
-                    // to remove the folder from the entry:- entryFileName = Path.GetFileName(entryFileName);
-                    // Optionally match entrynames against a selection list here to skip as desired.
-                    // The unpacked length is available in the zipEntry.Size property.
+                    ZipEntry zipEntry = zipInputStream.GetNextEntry();
+                    while (zipEntry != null)
+                    {
+                        String entryFileName = zipEntry.Name;
+                        // to remove the folder from the entry:- entryFileName = Path.GetFileName(entryFileName);
+                        // Optionally match entrynames against a selection list here to skip as desired.
+                        // The unpacked length is available in the zipEntry.Size property.
 
-                    byte[] buffer = new byte[4096];     // 4K is optimum
+                        byte[] buffer = new byte[4096];     // 4K is optimum
 
-                    // Manipulate the output filename here as desired.
-                    String fullZipToPath = Path.Combine(outFolder, entryFileName);
-                    string directoryName = Path.GetDirectoryName(fullZipToPath);
-                    if (directoryName.Length > 0)
-                        Directory.CreateDirectory(directoryName);
+                        // Manipulate the output filename here as desired.
+                        String fullZipToPath = Path.Combine(outFolder, entryFileName);
+                        string directoryName = Path.GetDirectoryName(fullZipToPath);
+                        if (directoryName.Length > 0)
+                            Directory.CreateDirectory(directoryName);
 
-                    // Unzip file in buffered chunks. This is just as fast as unpacking to a buffer the full size
-                    // of the file, but does not waste memory.
-                    // The "using" will close the stream even if an exception occurs.
-                    MemoryStream streamWriter = new MemoryStream();
+                        // Unzip file in buffered chunks. This is just as fast as unpacking to a buffer the full size
+                        // of the file, but does not waste memory.
+                        // The "using" will close the stream even if an exception occurs.
+                        MemoryStream streamWriter = new MemoryStream();
 
-                    StreamUtils.Copy(zipInputStream, ms, buffer);
+                        StreamUtils.Copy(zipInputStream, ms, buffer);
 
-                    zipEntry = zipInputStream.GetNextEntry();
+                        zipEntry = zipInputStream.GetNextEntry();
 
+                    }
                 }
                 ms.Position = 0;
                 reader = new StreamReader(ms, Encoding.GetEncoding("iso-8859-1"));

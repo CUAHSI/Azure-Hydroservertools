@@ -4482,20 +4482,45 @@ namespace HydroServerToolsRepository.Repository
             //context.Database.CommandTimeout = 10000;
             //var objContext = ((IObjectContextAdapter)context).ObjectContext;
             //get data to lookup values
-            var sitesIds = context.Sites.ToDictionary(p => p.SiteCode, p => p.SiteID);
-            var variablesIds = context.Variables.ToDictionary(p => p.VariableCode, p => p.VariableID);
-            var offsetTypeIds = context.OffsetTypes.ToDictionary(p => p.OffsetTypeCode, p => p.OffsetTypeID);
+            var siteCodes = context.Sites.ToDictionary(p => p.SiteCode, p => p.SiteID);
+            var variableCodes = context.Variables.ToDictionary(p => p.VariableCode, p => p.VariableID);
+            var offsetTypeCodes = context.OffsetTypes.ToDictionary(p => p.OffsetTypeCode, p => p.OffsetTypeID);
             var censorCodeCV = context.CensorCodeCVs.ToList();
-            var qualifierIds = context.Qualifiers.ToDictionary(p => p.QualifierCode, p => p.QualifierID);
-            var methodIds = context.Methods.ToDictionary(p => p.MethodCode, p => p.MethodID);
-            var sourceIds = context.Sources.ToDictionary(p => p.SourceCode, p => p.SourceID);
-            var sampleIds = context.Samples.ToDictionary(p => p.LabSampleCode, p => p.SampleID);
+            var qualifierCodes = context.Qualifiers.ToDictionary(p => p.QualifierCode, p => p.QualifierID);
+            var methodCodes = context.Methods.ToDictionary(p => p.MethodCode, p => p.MethodID);
+            var sourceCodes = context.Sources.ToDictionary(p => p.SourceCode, p => p.SourceID);
+            var sampleCodes = context.Samples.ToDictionary(p => p.LabSampleCode, p => p.SampleID);
+            var siteCodeVarCodePermutations = (from s in itemList
+                                             group s by new { s.SiteCode, s.VariableCode } into d
+                                          select
+                                          new
+                                          {
+                                              d.Key.SiteCode,                                              
+                                              d.Key.VariableCode
+                                          }).ToList();
 
-            //var derivedFromIds = context.DerivedFroms.Select(p => p.DerivedFromID);
+
+            //context.DataValues.GroupBy(p => new { p.SiteID, p.VariableID }).ToList();
+
+
+//var derivedFromIds = context.DerivedFroms.Select(p => p.DerivedFromID);
             var qualityControlLevelIds = context.QualityControlLevels.ToDictionary(p => p.QualityControlLevelCode, p => p.QualityControlLevelID);
 
             //get unique sitecodes to speed up search
             var uniqueSitecodes = itemList.GroupBy(g => g.SiteCode).Select(grp => new { SiteCode = grp.Key }).ToList();
+
+            //Retrieve Minimum Date
+            DateTime MinDate;
+            var d1 = (from d in itemList select d.DateTimeUTC).Min();
+            bool isConvertable = UniversalTypeConverter.TryConvertTo<DateTime>(d1, out MinDate);
+            if (!isConvertable) MinDate = DateTime.MinValue;
+
+            //Retrieve Maximum Date
+            DateTime MaxDate;
+            var d2 =(from d in itemList select d.DateTimeUTC).Max();
+            isConvertable = UniversalTypeConverter.TryConvertTo<DateTime>(d2, out MaxDate);
+            if (!isConvertable) MaxDate = DateTime.MaxValue;
+
 
             var maxCount = itemList.Count;
             var count = 0;
@@ -4506,37 +4531,48 @@ namespace HydroServerToolsRepository.Repository
             Debug.WriteLine("timeToRetrieveVars:" + timeToRetrieveVars);
             try
             {
-                foreach (var site in uniqueSitecodes)
+                foreach (var sv in siteCodeVarCodePermutations)
                 {
+                    //siteid for sitecode
                     int currentSiteId = 0;
-                    if (sitesIds.ContainsKey(site.SiteCode))
+                    if (siteCodes.ContainsKey(sv.SiteCode))
                     {
-                        currentSiteId = sitesIds[site.SiteCode];
-                        //update model
-
+                        currentSiteId = siteCodes[sv.SiteCode];
                     }
+                    //variableId for variablecode
+                    int currentVariableId = 0;
+                    if (variableCodes.ContainsKey(sv.VariableCode))
+                    {
+                        currentVariableId = variableCodes[sv.VariableCode];
+                    }
+
                     var a_start = DateTime.Now;
+                    //get min/max dates in upload
+
                     //var datavaluesWithSiteIDInDatabase = context.DataValues.Select(p => p).Where(f.Equals(currentSiteId)).ToList();
-                    List<DataValue> datavaluesWithSiteIDInDatabase = (from d in context.DataValues.AsNoTracking()
-                                                          where d.SiteID == currentSiteId
-                                                          select d).ToList();
+                    //List<DataValue> datavaluesWithSiteIDInDatabase = (from d in context.DataValues.AsNoTracking()
+                    //                                      where d.SiteID == currentSiteId 
+                    //                                            && d.DateTimeUTC > MinDate && d.DateTimeUTC < MaxDate
+                    //                                                  select d).ToList();
                     HashSet <DateTime> setDatetime = new HashSet<DateTime>(from d in context.DataValues.AsNoTracking()
-                                                                    where d.SiteID == currentSiteId
-                                                                    select d.DateTimeUTC);
+                                                                           where d.SiteID == currentSiteId && d.VariableID == currentVariableId
+                                                                           //where d.SiteID == sv.SiteCode && d.VariableID == sv.VariableID
+                                                                           select d.DateTimeUTC);
                     HashSet<double> setDataValue = new HashSet<double>(from d in context.DataValues.AsNoTracking()
-                                                                  where d.SiteID == currentSiteId
-                                                                  select d.DataValue1);
+                                                                       where d.SiteID == currentSiteId && d.VariableID == currentVariableId
+                                                                       select d.DataValue1);
                     HashSet<int> setVariableId = new HashSet<int>(from d in context.DataValues.AsNoTracking()
-                                                                          where d.SiteID == currentSiteId
-                                                                          select d.VariableID);
+                                                                  where d.SiteID == currentSiteId && d.VariableID == currentVariableId
+                                                                  select d.VariableID);
                     HashSet<int> setMethodId = new HashSet<int>(from d in context.DataValues.AsNoTracking()
-                                                                  where d.SiteID == currentSiteId
-                                                                  select d.MethodID);
+                                                                where d.SiteID == currentSiteId && d.VariableID == currentVariableId
+                                                                select d.MethodID);
 
                     a_end = DateTime.Now;
 
                     HashSet<DataValue> allValues = new HashSet<DataValue>((from d in context.DataValues.AsNoTracking()
-                                                                           where d.SiteID == currentSiteId
+                                                                           where d.SiteID == currentSiteId && d.VariableID == currentVariableId
+                                                                           //&& d.DateTimeUTC >= MinDate && d.DateTimeUTC <= MaxDate
                                                                            select d).ToList());
 
 
@@ -4562,14 +4598,14 @@ namespace HydroServerToolsRepository.Repository
 
                     var span = a_end - a_start;
                     timeToFindDatavalues.Add(span);
-                    Debug.WriteLine("timeToRetrieve " + site.SiteCode + ": " + span);
+                    Debug.WriteLine("timeToRetrieve " + currentSiteId + ": " + span);
 
                     BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount, listOfCorrectRecords.Count(), listOfIncorrectRecords.Count(), listOfDuplicateRecords.Count()));
                     #region loop through series
                     var filteredList = (from i in itemList
-                                        where i.SiteCode == site.SiteCode
-                                        select i);
-                    
+                                        where i.SiteCode == sv.SiteCode && i.VariableCode == sv.VariableCode
+                                        select i).ToList();
+
                     //var distinctList = filteredList.Distinct().ToList();
 
                     //var duplicateList = from x in filteredList
@@ -4705,9 +4741,9 @@ namespace HydroServerToolsRepository.Repository
                                 }
                                 else
                                 {
-                                    if (sitesIds.ContainsKey(item.SiteCode))
+                                    if (siteCodes.ContainsKey(item.SiteCode))
                                     {
-                                        var siteId = sitesIds[item.SiteCode];
+                                        var siteId = siteCodes[item.SiteCode];
                                         //update model
                                         model.SiteID = siteId;
                                         item.SiteID = siteId.ToString();
@@ -4736,9 +4772,9 @@ namespace HydroServerToolsRepository.Repository
                                 }
                                 else
                                 {
-                                    if (variablesIds.ContainsKey(item.VariableCode))
+                                    if (variableCodes.ContainsKey(item.VariableCode))
                                     {
-                                        var variableId = variablesIds[item.VariableCode];
+                                        var variableId = variableCodes[item.VariableCode];
                                         //update model
                                         model.VariableID = variableId;
                                         item.VariableID = variableId.ToString();
@@ -4783,9 +4819,9 @@ namespace HydroServerToolsRepository.Repository
                                 }
                                 else
                                 {
-                                    if (offsetTypeIds.ContainsKey(item.OffsetTypeCode))
+                                    if (offsetTypeCodes.ContainsKey(item.OffsetTypeCode))
                                     {
-                                        var offsetTypeId = offsetTypeIds[item.OffsetTypeCode];
+                                        var offsetTypeId = offsetTypeCodes[item.OffsetTypeCode];
                                         //update model
                                         model.OffsetTypeID = offsetTypeId;
                                         item.OffsetTypeID = offsetTypeId.ToString();
@@ -4834,9 +4870,9 @@ namespace HydroServerToolsRepository.Repository
                                 }
                                 else
                                 {
-                                    if (qualifierIds.ContainsKey(item.QualifierCode))
+                                    if (qualifierCodes.ContainsKey(item.QualifierCode))
                                     {
-                                        var qualifierId = qualifierIds[item.QualifierCode];
+                                        var qualifierId = qualifierCodes[item.QualifierCode];
                                         //update model
                                         model.QualifierID = qualifierId;
                                         item.QualifierID = qualifierId.ToString();
@@ -4858,9 +4894,9 @@ namespace HydroServerToolsRepository.Repository
                                 }
                                 else
                                 {
-                                    if (methodIds.ContainsKey(item.MethodCode))
+                                    if (methodCodes.ContainsKey(item.MethodCode))
                                     {
-                                        var methodId = methodIds[item.MethodCode];
+                                        var methodId = methodCodes[item.MethodCode];
                                         //update model
                                         model.MethodID = methodId;
                                         item.MethodID = methodId.ToString();
@@ -4885,9 +4921,9 @@ namespace HydroServerToolsRepository.Repository
                                 }
                                 else
                                 {
-                                    if (sourceIds.ContainsKey(item.SourceCode))
+                                    if (sourceCodes.ContainsKey(item.SourceCode))
                                     {
-                                        var sourceId = sourceIds[item.SourceCode];
+                                        var sourceId = sourceCodes[item.SourceCode];
                                         //update model
                                         model.SourceID = sourceId;
                                         item.SourceID = sourceId.ToString();
@@ -4912,9 +4948,9 @@ namespace HydroServerToolsRepository.Repository
                                 }
                                 else
                                 {
-                                    if (sampleIds.ContainsKey(item.LabSampleCode))
+                                    if (sampleCodes.ContainsKey(item.LabSampleCode))
                                     {
-                                        var sampleId = sampleIds[item.LabSampleCode];
+                                        var sampleId = sampleCodes[item.LabSampleCode];
                                         //update model
                                         model.SampleID = sampleId;
                                         item.SampleID = sampleId.ToString();
