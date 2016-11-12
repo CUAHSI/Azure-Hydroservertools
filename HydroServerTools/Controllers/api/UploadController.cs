@@ -68,38 +68,40 @@ namespace HydroServerTools.Controllers.WebApi
 
                         BusinessObjectsUtils.RemoveItemFromCache(instanceIdentifier, Ressources.IMPORT_STATUS_EXTRACTNG);
 
-                        ZipInputStream zipInputStream = new ZipInputStream(file.InputStream);
-                        ZipEntry zipEntry = zipInputStream.GetNextEntry();
-                        while (zipEntry != null)
-                        {
-                            String entryFileName = zipEntry.Name;
-                            // to remove the folder from the entry:- entryFileName = Path.GetFileName(entryFileName);
-                            // Optionally match entrynames against a selection list here to skip as desired.
-                            // The unpacked length is available in the zipEntry.Size property.
-
-                            byte[] buffer = new byte[4096];     // 4K is optimum
-
-                            // Manipulate the output filename here as desired.
-                            //String fullZipToPath = Path.Combine(outFolder, entryFileName);
-                            //string directoryName = Path.GetDirectoryName(fullZipToPath);
-                            //if (directoryName.Length > 0)
-                            //    Directory.CreateDirectory(directoryName);
-
-                            // Unzip file in buffered chunks. This is just as fast as unpacking to a buffer the full size
-                            // of the file, but does not waste memory.
-                            // The "using" will close the stream even if an exception occurs.
-
-                            using (MemoryStream streamWriter = new MemoryStream())
+                        using (ZipInputStream zipInputStream = new ZipInputStream(file.InputStream))
+                        { 
+                            ZipEntry zipEntry = zipInputStream.GetNextEntry();
+                            while (zipEntry != null)
                             {
-                                StreamUtils.Copy(zipInputStream, ms, buffer);
+                                String entryFileName = zipEntry.Name;
+                                // to remove the folder from the entry:- entryFileName = Path.GetFileName(entryFileName);
+                                // Optionally match entrynames against a selection list here to skip as desired.
+                                // The unpacked length is available in the zipEntry.Size property.
+
+                                byte[] buffer = new byte[4096];     // 4K is optimum
+
+                                // Manipulate the output filename here as desired.
+                                //String fullZipToPath = Path.Combine(outFolder, entryFileName);
+                                //string directoryName = Path.GetDirectoryName(fullZipToPath);
+                                //if (directoryName.Length > 0)
+                                //    Directory.CreateDirectory(directoryName);
+
+                                // Unzip file in buffered chunks. This is just as fast as unpacking to a buffer the full size
+                                // of the file, but does not waste memory.
+                                // The "using" will close the stream even if an exception occurs.
+
+                                using (MemoryStream streamWriter = new MemoryStream())
+                                {
+                                    StreamUtils.Copy(zipInputStream, ms, buffer);
+                                }
+
+
+
+                                //StreamUtils.Copy(zipInputStream, ms, buffer);
+
+                                zipEntry = zipInputStream.GetNextEntry();
+
                             }
-
-
-
-                            //StreamUtils.Copy(zipInputStream, ms, buffer);
-
-                            zipEntry = zipInputStream.GetNextEntry();
-
                         }
                         ms.Position = 0;
                         reader = new StreamReader(ms, Encoding.GetEncoding("iso-8859-1"));
@@ -125,8 +127,8 @@ namespace HydroServerTools.Controllers.WebApi
                     //writer.Close();
                 
                     ms.Close();
-                    //reader.Close();
-                    //output.Close();
+                    reader.Close();
+                    //textReader.Close();
                     //reader2.Close();
                 }
 
@@ -242,14 +244,14 @@ namespace HydroServerTools.Controllers.WebApi
                     //    await Task.Delay(3000);
                     //}
                 }).ConfigureAwait(false);
-
+                textReader.Close();
                 //await TaskProcessData(userName, textReader, viewName, out message);
             }
             else
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest);
             }
-
+            
             //var str = await ProcessData();
             return new HttpResponseMessage(HttpStatusCode.OK); ;
         }
