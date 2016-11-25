@@ -4490,6 +4490,7 @@ namespace HydroServerToolsRepository.Repository
             var methodCodes = context.Methods.ToDictionary(p => p.MethodCode, p => p.MethodID);
             var sourceCodes = context.Sources.ToDictionary(p => p.SourceCode, p => p.SourceID);
             var sampleCodes = context.Samples.ToDictionary(p => p.LabSampleCode, p => p.SampleID);
+            
             var siteCodeVarCodePermutations = (from s in itemList
                                              group s by new { s.SiteCode, s.VariableCode } into d
                                           select
@@ -4600,7 +4601,7 @@ namespace HydroServerToolsRepository.Repository
                     timeToFindDatavalues.Add(span);
                     Debug.WriteLine("timeToRetrieve " + currentSiteId + ": " + span);
 
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount, listOfCorrectRecords.Count(), listOfIncorrectRecords.Count(), listOfDuplicateRecords.Count()));
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING_DATAVALUES, count, maxCount, listOfCorrectRecords.Count(), listOfIncorrectRecords.Count(), listOfDuplicateRecords.Count()));
                     #region loop through series
                     var filteredList = (from i in itemList
                                         where i.SiteCode == sv.SiteCode && i.VariableCode == sv.VariableCode
@@ -4617,7 +4618,7 @@ namespace HydroServerToolsRepository.Repository
                     {
                         try
                         {
-                            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount, listOfCorrectRecords.Count(), listOfIncorrectRecords.Count(), listOfDuplicateRecords.Count()));
+                            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING_DATAVALUES, count, maxCount, listOfCorrectRecords.Count(), listOfIncorrectRecords.Count(), listOfDuplicateRecords.Count()));
                             count++;
                             #region data matching
                             bool isRejected = false;
@@ -4940,8 +4941,12 @@ namespace HydroServerToolsRepository.Repository
                                 var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "SourceCode")); listOfErrors.Add(err); isRejected = true;
                             }
                             //SampleID- labsamplecode is unique identifier
-                            if (!string.IsNullOrWhiteSpace(item.LabSampleCode))
+                            if (!string.IsNullOrWhiteSpace(item.LabSampleCode)|| !string.IsNullOrWhiteSpace(item.SampleCode))
                             {
+
+                                //setting Sample code to Labcsample code to correct a bug where template contained samplecode instead of Labsamplecode MS 11/25/2016                                
+                                if (string.IsNullOrWhiteSpace(item.LabSampleCode)) { item.LabSampleCode = item.SampleCode; };
+
                                 if (RepositoryUtils.containsSpecialCharacters(item.LabSampleCode))
                                 {
                                     var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "LabSampleCode")); listOfErrors.Add(err); isRejected = true;
