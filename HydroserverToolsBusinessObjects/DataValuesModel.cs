@@ -61,6 +61,8 @@ namespace HydroserverToolsBusinessObjects.Models
         [Display(Name = "NotVisible")]//
         public string SampleID { get; set; }
         public string LabSampleCode { get; set; }
+        [Display(Name = "NotVisible")]//
+        public string SampleCode { get; set; }
         public string DerivedFromID { get; set; }
         [Required]
         public string QualityControlLevelCode { get; set; }

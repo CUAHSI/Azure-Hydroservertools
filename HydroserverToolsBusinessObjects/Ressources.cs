@@ -39,7 +39,9 @@ namespace HydroserverToolsBusinessObjects
         public const string IMPORT_VALUE_ELEVATION_VERTICALDATUM = "When specifying a value for Elevation_m a vertical datum from the controlled vocabulary is required. ";
         public const string IMPORT_STATUS_UPLOAD = "Uploading...";
         public const string STATUS_PROCESSING = "Processing...";
-        public const string IMPORT_STATUS_PROCESSING = "The Upload is being processed. Processing record {0} of {1}; (New {2} of {0}, Rej. {3} of {0}, Dupl. {4} of {0})";
+        public const string IMPORT_STATUS_PROCESSING_DATAVALUES = "The Upload is being processed. Processing record {0} of {1}; (New {2} of {0}, Rej. {3} of {0}, Dupl. {4} of {0})";
+        public const string IMPORT_STATUS_PROCESSING = "The Upload is being processed. Processing record {0} of {1};";
+
         public const string IMPORT_STATUS_PROCESSING_TIMESERIES = "The timeseries are being processed. Processing site {0} of {1}";
         public const string IMPORT_STATUS_INSERTING = "The data is inserted";
         public const string IMPORT_STATUS_ERROR = "An error occured during processing.";
