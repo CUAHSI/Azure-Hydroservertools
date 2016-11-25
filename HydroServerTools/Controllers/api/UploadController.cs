@@ -59,6 +59,7 @@ namespace HydroServerTools.Controllers.WebApi
                 var ms = new MemoryStream();
                 StreamReader reader = null;
                 TextReader textReader = null;
+                List<string> allLines = new List<string>();
                 try
                 {
                     if (file.FileName.ToLower().EndsWith(".zip"))
@@ -68,8 +69,11 @@ namespace HydroServerTools.Controllers.WebApi
 
                         BusinessObjectsUtils.RemoveItemFromCache(instanceIdentifier, Ressources.IMPORT_STATUS_EXTRACTNG);
 
+
+                        
+
                         using (ZipInputStream zipInputStream = new ZipInputStream(file.InputStream))
-                        { 
+                        {
                             ZipEntry zipEntry = zipInputStream.GetNextEntry();
                             while (zipEntry != null)
                             {
@@ -92,10 +96,9 @@ namespace HydroServerTools.Controllers.WebApi
 
                                 using (MemoryStream streamWriter = new MemoryStream())
                                 {
-                                    StreamUtils.Copy(zipInputStream, ms, buffer);
+                                    //StreamUtils.Copy(zipInputStream, ms, buffer);
+                                    zipInputStream.CopyTo(ms);
                                 }
-
-
 
                                 //StreamUtils.Copy(zipInputStream, ms, buffer);
 
@@ -106,15 +109,33 @@ namespace HydroServerTools.Controllers.WebApi
                         ms.Position = 0;
                         reader = new StreamReader(ms, Encoding.GetEncoding("iso-8859-1"));
                         //ms.Close();
-                        /**/
                     }
+                        /**/
+                    
                     else
                     {
                         BusinessObjectsUtils.RemoveItemFromCache(instanceIdentifier, Ressources.IMPORT_STATUS_PROCESSING);
                         reader = new StreamReader(file.InputStream, Encoding.GetEncoding("iso-8859-1"));
                     }
+                    //required to make sure there are no duplicates in upload by removing them!
                     var o = GetDistinct(reader);
-                   
+
+                    //using (MemoryStream mst = new MemoryStream())
+                    //{
+                    //    using (StreamWriter sw = new StreamWriter(mst, Encoding.Unicode))
+                    //    {
+                    //        foreach (string l in allLines)
+                    //        {
+                    //            sw.WriteLine(l);
+                    //        }
+                    //        textReader = new StringReader(sw.ToString());
+                            
+                    //    }
+                    //    //do somthing with ms
+                        
+                    //}
+                    
+
                     textReader = new StringReader(o);
                 }
                 catch (Exception ex)
@@ -244,7 +265,7 @@ namespace HydroServerTools.Controllers.WebApi
                     //    await Task.Delay(3000);
                     //}
                 }).ConfigureAwait(false);
-                textReader.Close();
+                
                 //await TaskProcessData(userName, textReader, viewName, out message);
             }
             else
@@ -1020,10 +1041,10 @@ namespace HydroServerTools.Controllers.WebApi
         static string GetDistinct(StreamReader reader)
         {
             Stopwatch sw = new Stopwatch();//just a timer
-            //var s = new StreamReader();
-             int maxAllowedRows = int.Parse(System.Configuration.ConfigurationManager.AppSettings["maxAllowedRows"]);
+                                           //var s = new StreamReader();
+            int maxAllowedRows = int.Parse(System.Configuration.ConfigurationManager.AppSettings["maxAllowedRows"]);
 
-        List<HashSet<string>> lines = new List<HashSet<string>>(); //Hashset is very fast in searching duplicates
+            List<HashSet<string>> lines = new List<HashSet<string>>(); //Hashset is very fast in searching duplicates
             HashSet<string> current = new HashSet<string>(); //This hashset is used at the moment
             lines.Add(current); //Add the current Hashset to a list of hashsets
             sw.Restart(); //just a timer
@@ -1031,7 +1052,7 @@ namespace HydroServerTools.Controllers.WebApi
             //foreach (string line in reader.ReadLine)
             string line;
             var sb = new StringBuilder();
-            while (( line = reader.ReadLine()) != null)
+            while ((line = reader.ReadLine()) != null)
 
             {
                 try
@@ -1053,12 +1074,12 @@ namespace HydroServerTools.Controllers.WebApi
             }
             sw.Stop();//just a timer
             Console.WriteLine("File distinct read in " + sw.Elapsed.TotalMilliseconds + " ms");//just an output message
-            
-            
+
+
             //List<string> concatinated = new List<string>(); //Create a list of strings out of the hashset list
             //lines.ForEach(set => concatinated.AddRange(set)); //Fill the list of strings
             //current.ForEach(set =>  sb.Append(lines)); //Fill the list of strings
-            
+
             return sb.ToString(); //Return the list
         }
         [HttpGet]
