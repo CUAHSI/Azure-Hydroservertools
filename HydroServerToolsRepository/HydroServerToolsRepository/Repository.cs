@@ -4521,7 +4521,15 @@ namespace HydroServerToolsRepository.Repository
             var d2 =(from d in itemList select d.DateTimeUTC).Max();
             isConvertable = UniversalTypeConverter.TryConvertTo<DateTime>(d2, out MaxDate);
             if (!isConvertable) MaxDate = DateTime.MaxValue;
+            bool ignoreDuplicateTest = false;
+            try
+            {
+                ignoreDuplicateTest = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["ignoreDuplicateTest"]);
+            }
+            catch
+            {
 
+            }
 
             var maxCount = itemList.Count;
             var count = 0;
@@ -4550,33 +4558,42 @@ namespace HydroServerToolsRepository.Repository
                     var a_start = DateTime.Now;
                     //get min/max dates in upload
 
-                    //var datavaluesWithSiteIDInDatabase = context.DataValues.Select(p => p).Where(f.Equals(currentSiteId)).ToList();
-                    //List<DataValue> datavaluesWithSiteIDInDatabase = (from d in context.DataValues.AsNoTracking()
-                    //                                      where d.SiteID == currentSiteId 
-                    //                                            && d.DateTimeUTC > MinDate && d.DateTimeUTC < MaxDate
-                    //                                                  select d).ToList();
-                    HashSet <DateTime> setDatetime = new HashSet<DateTime>(from d in context.DataValues.AsNoTracking()
-                                                                           where d.SiteID == currentSiteId && d.VariableID == currentVariableId
-                                                                           //where d.SiteID == sv.SiteCode && d.VariableID == sv.VariableID
-                                                                           select d.DateTimeUTC);
-                    HashSet<double> setDataValue = new HashSet<double>(from d in context.DataValues.AsNoTracking()
-                                                                       where d.SiteID == currentSiteId && d.VariableID == currentVariableId
-                                                                       select d.DataValue1);
-                    HashSet<int> setVariableId = new HashSet<int>(from d in context.DataValues.AsNoTracking()
-                                                                  where d.SiteID == currentSiteId && d.VariableID == currentVariableId
-                                                                  select d.VariableID);
-                    HashSet<int> setMethodId = new HashSet<int>(from d in context.DataValues.AsNoTracking()
-                                                                where d.SiteID == currentSiteId && d.VariableID == currentVariableId
-                                                                select d.MethodID);
+                    HashSet<DateTime> setDatetime = null;
+                    HashSet<double> setDataValue = null;                    
+                    HashSet<int> setVariableId = null;
+                    HashSet<int> setMethodId = null;
+                    HashSet<DataValue> allValues = null;
 
-                    a_end = DateTime.Now;
+                    if (!ignoreDuplicateTest)
+                    {
+                        //var datavaluesWithSiteIDInDatabase = context.DataValues.Select(p => p).Where(f.Equals(currentSiteId)).ToList();
+                        //List<DataValue> datavaluesWithSiteIDInDatabase = (from d in context.DataValues.AsNoTracking()
+                        //                                      where d.SiteID == currentSiteId 
+                        //                                            && d.DateTimeUTC > MinDate && d.DateTimeUTC < MaxDate
+                        //                                                  select d).ToList();
+                        setDatetime = new HashSet<DateTime>(from d in context.DataValues.AsNoTracking()
+                                                            where d.SiteID == currentSiteId && d.VariableID == currentVariableId
+                                                            //where d.SiteID == sv.SiteCode && d.VariableID == sv.VariableID
+                                                            select d.DateTimeUTC);
 
-                    HashSet<DataValue> allValues = new HashSet<DataValue>((from d in context.DataValues.AsNoTracking()
-                                                                           where d.SiteID == currentSiteId && d.VariableID == currentVariableId
-                                                                           //&& d.DateTimeUTC >= MinDate && d.DateTimeUTC <= MaxDate
-                                                                           select d).ToList());
+                        setDataValue = new HashSet<double>(from d in context.DataValues.AsNoTracking()
+                                                           where d.SiteID == currentSiteId && d.VariableID == currentVariableId
+                                                           select d.DataValue1);
+                        setVariableId = new HashSet<int>(from d in context.DataValues.AsNoTracking()
+                                                         where d.SiteID == currentSiteId && d.VariableID == currentVariableId
+                                                         select d.VariableID);
+                        setMethodId = new HashSet<int>(from d in context.DataValues.AsNoTracking()
+                                                       where d.SiteID == currentSiteId && d.VariableID == currentVariableId
+                                                       select d.MethodID);
 
+                        a_end = DateTime.Now;
 
+                        allValues = new HashSet<DataValue>((from d in context.DataValues.AsNoTracking()
+                                                            where d.SiteID == currentSiteId && d.VariableID == currentVariableId
+                                                            //&& d.DateTimeUTC >= MinDate && d.DateTimeUTC <= MaxDate
+                                                            select d).ToList());
+
+                    }
                     //List<HashSet<string>> lines = new List<HashSet<string>>(); //Hashset is very fast in searching duplicates
                     //datavaluesWithSiteIDInDatabase.ForEach(a=>
                     //                                            a.DataValue1.ToString() +
@@ -5123,7 +5140,12 @@ namespace HydroServerToolsRepository.Repository
                             a_start = DateTime.Now; 
                             bool doesExist = false;
                             //pretest with date and datavalue if 
-                            var possibleInSet = setDatetime.Contains(model.DateTimeUTC) && setDataValue.Contains(model.DataValue1) && setVariableId.Contains(model.VariableID) && setMethodId.Contains(model.MethodID);
+                            var possibleInSet = false;
+                            if (!ignoreDuplicateTest && setDatetime != null)
+                            {
+                                possibleInSet = setDatetime.Contains(model.DateTimeUTC) && setDataValue.Contains(model.DataValue1) && setVariableId.Contains(model.VariableID) && setMethodId.Contains(model.MethodID);
+                            }
+                            
                             //var possibleInSet2 = foo.Contains(model);
                             //allValues.Add(model);
                             if (possibleInSet)
@@ -6545,11 +6567,11 @@ namespace HydroServerToolsRepository.Repository
                 destinationConnection.Open();
 
                 using (SqlBulkCopy bulkCopy =
-                            new SqlBulkCopy(destinationConnection.ConnectionString, SqlBulkCopyOptions.KeepNulls | SqlBulkCopyOptions.CheckConstraints))
+                            new SqlBulkCopy(destinationConnection.ConnectionString, SqlBulkCopyOptions.KeepNulls )) //| SqlBulkCopyOptions.CheckConstraints
                 {
                     //bulkCopy.SqlRowsCopied += new SqlRowsCopiedEventHandler(OnSqlRowsTransfer);
                     //bulkCopy.NotifyAfter = 100;
-                    bulkCopy.BatchSize = 50;
+                    bulkCopy.BatchSize = 10000;
 
                     foreach (DataColumn dc in dataTable.Columns)
                     {

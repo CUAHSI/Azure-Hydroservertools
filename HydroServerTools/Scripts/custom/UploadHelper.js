@@ -361,7 +361,7 @@ function startUploadMonitor() {
 
                 },
                 error: function (xmlhttprequest, textStatus, message) {
-                    alert('error')
+                    alert("the app encountered a problem, please try again, if the problem persists please contact support. Error message: ")
                 }
             })
         },2000)

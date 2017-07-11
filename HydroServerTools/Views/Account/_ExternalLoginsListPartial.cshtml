@@ -20,13 +20,17 @@
             <div id="socialLoginList">
                
                 @foreach (AuthenticationDescription p in loginProviders)
-{
+                {
+                    if (returnUrl != null && returnUrl.ToLower() == "googleform")
+                    {
+                        <button type="submit" class="btn btn-block btn-primary active center" id="@p.AuthenticationType" name="provider" value="@p.AuthenticationType" title="Log in using your @p.Caption account">Request data service</button>
+                    }
+                    else
+                    {
+                         <button type="submit" class="btn btn-block btn-primary active center" id="@p.AuthenticationType" name="provider" value="@p.AuthenticationType" title="Log in using your @p.Caption account">LOG in</button>
+                    }
+                }
 
-    <h4> Use your Google account to log in. </h4>
-           <button type="submit" class="btn btn-block btn-primary active center" id="@p.AuthenticationType" name="provider" value="@p.AuthenticationType" title="Log in using your @p.Caption account">@p.AuthenticationType</button>
-   
-}
-              
             </div>
         }
     }

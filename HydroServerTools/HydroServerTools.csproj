@@ -31,6 +31,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <FilesToIncludeForPublish>AllFilesInTheProject</FilesToIncludeForPublish>
+    <PublishDatabases>true</PublishDatabases>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -472,8 +474,9 @@
     <Content Include="Content\uploads\readme.txt" />
     <Content Include="Content\ViewData.css" />
     <Content Include="favicon.ico" />
-    <Content Include="fonts\fontawesome-webfont.svg" />
-    <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Images\request.png" />
+    <Content Include="Properties\fonts\fontawesome-webfont.svg" />
+    <Content Include="Properties\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="Images\ajax-loader-gray.gif" />
@@ -585,31 +588,26 @@
     <Content Include="Scripts\mvcfileupload\vendor\bootstrap.min.js" />
     <Content Include="Scripts\mvcfileupload\vendor\jquery.ui.widget.js" />
     <Content Include="Scripts\Purl.js" />
-    <Content Include="Scripts\test\uploader.js" />
     <Content Include="Scripts\URLParser.js" />
     <Content Include="XML\Users.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="fonts\fontawesome-webfont.woff" />
-    <Content Include="fonts\fontawesome-webfont.ttf" />
-    <Content Include="fonts\fontawesome-webfont.eot" />
-    <Content Include="fonts\FontAwesome.otf" />
+    <Content Include="Properties\fonts\fontawesome-webfont.woff" />
+    <Content Include="Properties\fonts\fontawesome-webfont.ttf" />
+    <Content Include="Properties\fonts\fontawesome-webfont.eot" />
+    <Content Include="Properties\fonts\FontAwesome.otf" />
     <Content Include="Content\mvcfileupload\fonts\glyphicons-halflings-regular.woff" />
     <Content Include="Content\mvcfileupload\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="Content\mvcfileupload\fonts\glyphicons-halflings-regular.eot" />
     <None Include="Microsoft.WindowsAzure.Caching\ClientPerfCountersInstaller.exe.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Properties\PublishProfiles\dev-Hydroservertools.pubxml" />
-    <None Include="Properties\PublishProfiles\HISToolsPreview - FTP.pubxml" />
-    <None Include="Properties\PublishProfiles\HISToolsPreview - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\hydroserver - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\hydroserver - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\hydroserver-staging - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\hydroservertools-staging - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\hydroservertools-staging - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\hydroservertools.pubxml" />
-    <None Include="Properties\PublishProfiles\HydroservertoolsSandbox - FTP.pubxml" />
-    <None Include="Properties\PublishProfiles\HydroservertoolsSandbox - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\local.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\DataTables-1.9.4\extras\TableTools\media\js\ZeroClipboard.js" />
@@ -741,18 +739,21 @@
     <Content Include="Templates\ODMGuide-OpenOffice.ods" />
     <Content Include="Templates\UserGuide.pdf" />
     <Content Include="Views\Shared\NoDBForm.cshtml" />
+    <Content Include="Views\Home\Default.cshtml" />
+    <Content Include="Templates\ODMTemplates.zip" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Admin\Views\test\" />
+    <Folder Include="Scripts\test\" />
     <Folder Include="Utilities\" />
     <Folder Include="Views\Export\" />
     <Folder Include="Views\User\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Properties\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Properties\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Properties\fonts\glyphicons-halflings-regular.eot" />
     <Content Include="packages.config">
       <SubType>Designer</SubType>
     </Content>

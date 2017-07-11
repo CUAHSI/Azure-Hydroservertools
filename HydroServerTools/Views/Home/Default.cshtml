@@ -1,0 +1,133 @@
+﻿@*model HydroServerTools.Models.LoginViewModel*@
+
+@{
+    ViewBag.Title = "Log in";
+
+}
+
+
+
+<div class="container">
+    <div class="row">
+        <ul class="thumbnails">
+
+            <li class="col-md-3 col-md-offset-1">
+                <div class="thumbnail">
+                    <img src="http://placehold.it/320x200" alt="ALT NAME">
+                    <div class="caption">
+                        <h3>Request Hydroserver</h3>
+                        <p align="center"><a href="~/Home/GoogleForm" target="_top" class="btn btn-primary btn-block">Open</a>/p>
+                    </div>
+                </div>
+            </li>
+            <li class="col-md-3 col-md-offset-1">
+                <div class="thumbnail">
+                    <img src="http://placehold.it/320x200" alt="ALT NAME">
+                    <div class="caption">
+                        <h3>Header Name</h3>
+                        <p>Description</p>
+                       
+                        @Html.Action("_ExternalLoginsListPartial","Account", new { Action = "ExternalLogin", ReturnUrl = ViewBag.ReturnUrl })
+
+                        @Html.ActionLink("Training Login", "LocalLogin", "Account", new { area = "" }, null)
+                    </div>
+                </div>
+            </li>
+            <li class="col-md-3 col-md-offset-1">
+                <div class="thumbnail">
+                    <img src="http://placehold.it/320x200" alt="ALT NAME">
+                    <div class="caption">
+                        <h3>Header Name</h3>
+                        <p>Description</p>
+                        <p align="center"><a href="#" class="btn btn-primary btn-block" id="dialog">Open</a></p>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+
+@*<h2>@ViewBag.Title.</h2>*@
+
+
+
+<div class="row">
+
+
+    @*<button class="btn btn-primary btn-lg btn-block" data-toggle="modal" data-target="#setConnection">Set Database Connection</button>*@
+    @*<p><a href="/CSVUpload/Sites" class="btn btn-primary btn-lg active" role="button">Import Data into Hydroserver</a></p>*@
+    @*   @Html.ActionLink("Import Data into Hydroserver", "UploadData", "CSVUpload", new { id = "Sites" }, new { @class = "btn btn-primary btn-lg active" })*@
+</div>
+
+
+<div class="col-md-4">
+
+</div>
+
+
+<div class="modal fade" id="modelWindow" role="dialog">
+    <div class="modal-dialog modal-sm vertical-align-center">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Heading</h4>
+            </div>
+            <div class="modal-body">
+
+                HydroServer is a suite of application for sharing time series water data. It has three components:
+                <ul>
+                    <li>1. An instance of the Observations Data Model (ODM 1.1.1) SQL Database in the Azure Cloud</li>
+                    <li>2. This application for uploading data to the ODM Database using CSV templates</li>
+                    <li>3. A WaterOneFlow Web Service for exposing the database</li>
+                </ul>
+
+                To begin, log in using your Google account, if you have not requested a hydroserver instance previously, you will be redirected to a web page where you an request a Hydroserver.
+                Please fill out the form and we will contact you once the setup is complete.
+                <br />
+                After a Hydroserver is assigned to your Google Account* you can start using the application and:
+                <ul>
+                    <li>1. Download the ODM Templates and populate them with your data and metadata </li>
+                    <li>2. Upload data</li>
+                    <li>3. Register your web service and database with CUAHSI’s <a href="http://hiscentral.cuahsi.org" target="_blank">HIS Central</a> catalog.</li>
+                </ul>
+
+                <br />
+                If you do not have a Google account you can find the
+                request form <a href="https://docs.google.com/forms/d/10c-ZpmxZQX9kXIixDZMV5sNJblyhebn13-CnD1xdwjg/viewform?embedded=true&entry.1429452739=" target="_blank">here</a>
+
+
+                Need help? Contact the
+                <a href="http://wdc.cuahsi.org/Contact" target="_blank">WDC staff</a>.
+                <h6>
+                    *Note for Chrome users – If your browser’s Google account is different than the Google account used to register your HydroServer, please sign out of your browser’s account (located on the home page) before logging in.  Alternatively, you may use an incognito Chrome window.
+                </h6>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn btn-default">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    $("#dialog").on("click", function () {
+        $('#modelWindow').modal('show');
+        //var dialog = bootbox.dialog({
+        //    title: 'A custom dialog with init',
+        //    message: '<p><i class="fa fa-spin fa-spinner"></i> Loading...</p>'
+        //});
+        //dialog.init(function(){
+        //    setTimeout(function(){
+        //        dialog.find('.bootbox-body').html('I was loaded after the dialog was shown!');
+        //    }, 3000);
+        //});
+
+    }
+)
+</script>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+}
