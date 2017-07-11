@@ -222,6 +222,13 @@ namespace HydroServerTools.Controllers
                          fileType = "application/vnd.oasis.opendocument.spreadsheet";
                          filePath = Server.MapPath(dir + filename);
                          break;
+                    case "ODMTemplateszip":
+                        dir = "~/Templates/";
+                        filename = "ODMTemplates.zip";
+                        fileType = "application/zip";
+                        filePath = Server.MapPath(dir + filename);
+                        break;
+                        
                 }
                if (System.IO.File.Exists(filePath))
                    return base.File(filePath, fileType, filename);

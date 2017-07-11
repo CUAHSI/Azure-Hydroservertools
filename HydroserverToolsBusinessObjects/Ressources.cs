@@ -53,5 +53,7 @@ namespace HydroserverToolsBusinessObjects
         public static string IMPORT_COMMIT_PROGRESS = "The data is being processed. Inserted {0} of {1} records.";
         public static string IMPORT_COMMIT_COMPLETE = "Processing Complete";
         public static string IMPORT_COMMIT_FAILED = "Processing Failed";
+
+        public static string USERACCOUNT_NOT_LINKED = "This google account has no associated data service . Please request a service by clicking on 'Request Service'. If you requested a service and have not been contacted please reach out to help@cuahsi.org.";
     }
 }

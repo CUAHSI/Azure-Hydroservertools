@@ -34,7 +34,7 @@ namespace HydroServerTools.Controllers
         public ActionResult Login(string returnUrl)
         {
             ViewBag.ReturnUrl = returnUrl;
-            Session["dummy"] = "dummy"; // Create ASP.NET_SessionId cookie
+            //Session["dummy"] = "dummy"; // Create ASP.NET_SessionId cookie
             return View();
         }
 
@@ -51,7 +51,7 @@ namespace HydroServerTools.Controllers
                 if (user != null)
                 {
                     await SignInAsync(user, model.RememberMe);
-                    return RedirectToLocal(returnUrl);
+                    return RedirectToLocal(returnUrl, user);
                 }
                 else
                 {
@@ -85,7 +85,7 @@ namespace HydroServerTools.Controllers
                 if (user != null)
                 {
                     await SignInAsync(user, model.RememberMe);
-                    return RedirectToLocal(returnUrl);
+                    return RedirectToLocal(returnUrl, user);
                 }
                 else
                 {
@@ -240,7 +240,7 @@ namespace HydroServerTools.Controllers
             {
                 return RedirectToAction("Login");
             }
-
+            
             // Sign in the user with this external login provider if the user already has a login
             //var user = await UserManager.FindAsync(loginInfo.Login);
             var externalIdentity = HttpContext.GetOwinContext().Authentication.GetExternalIdentityAsync(DefaultAuthenticationTypes.ExternalCookie);
@@ -251,7 +251,14 @@ namespace HydroServerTools.Controllers
             if (user != null)
             {
                 await SignInAsync(user, isPersistent: false);
-                return RedirectToLocal(returnUrl);
+                if (returnUrl != null && returnUrl.ToLower() == "googleform")
+                {
+
+                    return RedirectToAction("GoogleForm", "home");
+                }
+                else
+
+                return RedirectToLocal(returnUrl, user);
             }
             else
             {
@@ -274,7 +281,7 @@ namespace HydroServerTools.Controllers
                     if (result.Succeeded)
                     {
                         await SignInAsync(newUser, isPersistent: false);
-                        return RedirectToLocal(returnUrl);
+                        return RedirectToLocal(returnUrl,user);
                     }
                 }
                 AddErrors(result);
@@ -329,6 +336,7 @@ namespace HydroServerTools.Controllers
                 {
                     return View("ExternalLoginFailure");
                 }
+               
                 var user = new User() { UserName = model.UserName, UserEmail = model.UserEmail };
                 var result = await UserManager.CreateAsync(user);
                 if (result.Succeeded)
@@ -337,7 +345,7 @@ namespace HydroServerTools.Controllers
                     if (result.Succeeded)
                     {
                         await SignInAsync(user, isPersistent: false);
-                        return RedirectToLocal(returnUrl);
+                        return RedirectToLocal(returnUrl, user);
                     }
                 }
                 AddErrors(result);
@@ -429,7 +437,7 @@ namespace HydroServerTools.Controllers
             Error
         }
 
-        private ActionResult RedirectToLocal(string returnUrl)
+        private ActionResult RedirectToLocal(string returnUrl, Models.User user)
         {
             if (Url.IsLocalUrl(returnUrl))
             {
@@ -437,7 +445,7 @@ namespace HydroServerTools.Controllers
             }
             else
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Home",user);
             }
         }
 

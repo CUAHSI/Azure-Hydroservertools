@@ -30,7 +30,7 @@ namespace HydroServerTools.Controllers
     public class HomeController : Controller
     {
 
-
+        
         public ActionResult Index()
         {
             var tableValueCounts = new DatabaseTableValueCountModel();
@@ -42,7 +42,8 @@ namespace HydroServerTools.Controllers
 
             if (connectionName == Ressources.NOT_LINKED_TO_DATABASE)
             {
-                return RedirectToAction("NoDBForm");
+                TempData["message"] = Ressources.USERACCOUNT_NOT_LINKED;
+                return RedirectToAction("Login","Account");
             }
             string entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name.ToString());
 
@@ -64,7 +65,12 @@ namespace HydroServerTools.Controllers
             }
             
         }
+        public ActionResult Index2()
+        {
+            ViewBag.Message = "";
 
+            return RedirectToAction("Login","Account"); 
+        }
         public ActionResult About()
         {
             ViewBag.Message = "";
@@ -91,12 +97,14 @@ namespace HydroServerTools.Controllers
             //var user = User.Identity.Name;
             return View();
         }
+        [AllowAnonymous]
         public ActionResult GoogleForm()
         {
             ViewBag.Message = "";
             //var user = User.Identity.Name;
             return View();
         }
+        [AllowAnonymous]
         public ContentResult _GoogleFormIframe()
         {
             var sb = new StringBuilder();
@@ -117,6 +125,7 @@ namespace HydroServerTools.Controllers
             ViewBag.Message = "SimpleUpload";
             return View();
         }
+       
         [HttpPost]
         public ActionResult UploadFile(HttpPostedFileBase file)
         {
