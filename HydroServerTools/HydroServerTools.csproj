@@ -605,6 +605,8 @@
     </None>
     <None Include="Properties\PublishProfiles\hydroserver - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\hydroserver - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\hydroserver-staging - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\hydroserver-staging - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\hydroservertools-staging - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\hydroservertools-staging - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\hydroservertools.pubxml" />
