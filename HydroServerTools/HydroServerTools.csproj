@@ -743,6 +743,7 @@
     <Content Include="Views\Shared\NoDBForm.cshtml" />
     <Content Include="Views\Home\Default.cshtml" />
     <Content Include="Templates\ODMTemplates.zip" />
+    <Content Include="Views\Home\_CountInTables.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

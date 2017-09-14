@@ -23,6 +23,7 @@ using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using System.Web.UI.WebControls;
 using System.Threading.Tasks;
+using System.Data;
 
 namespace HydroServerTools.Controllers
 {
@@ -88,6 +89,30 @@ namespace HydroServerTools.Controllers
         public ActionResult Manage()
         {
             ViewBag.Message = "";
+
+            var tableValueCounts = new DatabaseTableValueCountModel();
+
+            string connectionName = HydroServerToolsUtils.getConnectionName(HttpContext.User.Identity.Name.ToString());
+
+            if (connectionName == Ressources.NOT_LINKED_TO_DATABASE)
+            {
+                TempData["message"] = Ressources.USERACCOUNT_NOT_LINKED;
+                return RedirectToAction("Login", "Account");
+            }
+            string entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name.ToString());
+
+
+            if (!String.IsNullOrEmpty(entityConnectionString))
+            {
+                //var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
+
+                var databaseRepository = new DatabaseRepository();
+
+                tableValueCounts = databaseRepository.GetDatabaseTableValueCount(entityConnectionString);
+
+                return View(tableValueCounts);
+
+            }
 
             return View();
         }
@@ -198,7 +223,85 @@ namespace HydroServerTools.Controllers
             return RedirectToAction("Index");
         }
 
+        [Authorize]
+        public ActionResult RemoveDatavalueIndex()
+        {
+            try
+            {
+                string entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name.ToString());
+                string providerConnectionString = new EntityConnectionStringBuilder(entityConnectionString).ProviderConnectionString;
 
+
+                
+                using (var conn = new SqlConnection(providerConnectionString))
+                using (var command = new SqlCommand("RemoveDatavalueIndex", conn)
+                {
+                    CommandType = CommandType.StoredProcedure
+                })
+                {
+                    conn.Open();
+                    command.ExecuteNonQuery();
+                }
+
+                //ALTER TABLE[dbo].[DataValues] DROP CONSTRAINT[UNIQUE_DataValues]
+
+                //HttpContext.Response.ContentType = "text/plain";
+                //HttpContext.Response.StatusCode = 200;
+
+                // For compatibility with IE's "done" event we need to return a result as well as setting the context.response
+                return RedirectToAction("Index");
+                //return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                //HttpContext.Response.ContentType = "text/plain";
+                //Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                //return Json(new { success = false });
+                return RedirectToAction("Index");
+
+            }
+            
+        }
+
+        [Authorize]
+        public ActionResult DeleteDuplicatesDatavalues()
+        {
+            try
+            {
+                string entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name.ToString());
+                string providerConnectionString = new EntityConnectionStringBuilder(entityConnectionString).ProviderConnectionString;
+
+
+
+                using (var conn = new SqlConnection(providerConnectionString))
+                using (var command = new SqlCommand("spDeleteDuplicatesDatavalues", conn)
+                {
+                    CommandType = CommandType.StoredProcedure
+                })
+                {
+                    conn.Open();
+                    command.ExecuteNonQuery();
+                }
+
+                //ALTER TABLE[dbo].[DataValues] DROP CONSTRAINT[UNIQUE_DataValues]
+
+                //HttpContext.Response.ContentType = "text/plain";
+                //HttpContext.Response.StatusCode = 200;
+
+                // For compatibility with IE's "done" event we need to return a result as well as setting the context.response
+                return RedirectToAction("Index");
+                //return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                //HttpContext.Response.ContentType = "text/plain";
+                //Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                //return Json(new { success = false });
+                return RedirectToAction("Index");
+
+            }
+
+        }
 
         [Authorize]
         public ActionResult ClearTablesHandler(FormCollection collection)
@@ -250,7 +353,13 @@ namespace HydroServerTools.Controllers
             // For compatibility with IE's "done" event we need to return a result as well as setting the context.response
             return Json(new { success = true });
 
+
+            //return View();
+
+
         }
+
+
         [HttpPost]
         public ActionResult Progress()
         {
