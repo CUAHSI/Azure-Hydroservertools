@@ -235,6 +235,10 @@ namespace HydroServerTools.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> ExternalLoginCallback(string returnUrl)
         {
+            //https://stackoverflow.com/questions/36459051/getexternallogininfoasync-logininfo-return-null-but-only-after-a-few-hours/36903338#36903338
+            // added this to fix problem with login nt working after a while and only restrat fixes it. ms 8/9/17
+            ControllerContext.HttpContext.Session.RemoveAll();
+
             var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync();
             if (loginInfo == null)
             {

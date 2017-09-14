@@ -1,4 +1,4 @@
-﻿
+﻿@model HydroserverToolsBusinessObjects.Models.DatabaseTableValueCountModel
 @{
     ViewBag.Title = "Manage";
 }
@@ -66,8 +66,10 @@
             </div>
         </div>
     </form>
+    @*@Html.Partial("_CountInTables")*@
 </div>
 @section scripts
 {  
     <script src="~/Scripts/custom/Manage.js"></script>
+<script src="~/Scripts/bootbox.min.js"></script>
 }
