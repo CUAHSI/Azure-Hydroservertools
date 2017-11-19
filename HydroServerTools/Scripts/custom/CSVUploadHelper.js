@@ -717,7 +717,8 @@ function initCommitAndCancelButton(id) {
                 //$('#loading').addClass('hide');
                 $('#cancel').bind('click');
                 // window.clearInterval(UploadMonitorID);
-                clearInterval(commitMonitor.intervalId);            
+                clearInterval(commitMonitor.intervalId); 
+                $('#monitor').html('');
 
             },
             always: function (e, data)
