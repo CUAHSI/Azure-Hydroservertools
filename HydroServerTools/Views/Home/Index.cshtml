@@ -11,7 +11,7 @@
 <div class="container">
     
 
-    <div class="col-lg-6 ">
+    <div class="col-lg-8 ">
 
         <div class="well">
 
@@ -22,9 +22,16 @@
             @Html.ActionLink("Import CSV Data into Hydroserver", "UploadData", "CSVUpload", new { id = "Sites" }, new { @class = "btn btn-primary btn active" })
         </div>
         <div class="well">
-            <h4>Click to update the time series catalog. Required after uploading datavalues</h4>
-            @Html.ActionLink("Refresh All Timeseries metadata", "RecreateSeriescatalog", "Home", new { @class = "btn btn-info active" })
-
+            <h4>
+                Click "Update Timeseries metadata" after new data is saved to the database.                
+            </h4>
+            @Html.ActionLink("Refresh Timeseries metadata", "RecreateSeriescatalog", "Home", new { @class = "btn btn-info active" })
+            <h5>
+                This is required to register the new data values with the existing timeseries or create new timeseries.
+                Failing to do this will result in the new data not being discoverable.
+                Since this can take a long period of time depending on the amount of data in the database
+                it is recommended to be the last step of uploading multiple sheets of data.
+            </h5>
         </div>
         @if (User.IsInRole("Admin"))
         {
