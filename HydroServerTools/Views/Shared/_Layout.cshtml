@@ -130,6 +130,9 @@
                 @if (User.Identity.IsAuthenticated)
                 {
                      @Html.Partial("_LoginPartial")
+                   
+                     @Html.ActionLink("Sign-out", "SignOut", "Account", new { @class = "btn btn-info", @id = "logout" })
+                    
                 }
             </div>
         </div>

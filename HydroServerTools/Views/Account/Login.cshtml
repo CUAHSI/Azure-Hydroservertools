@@ -34,7 +34,10 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
+                   
                 </button>
+                
+             
             </div>
             @*<ul class="nav  navbar-nav">
                 
@@ -45,6 +48,8 @@
             @if (User.Identity.IsAuthenticated)
             {
                 @Html.Partial("_LoginPartial")
+                @Html.ActionLink("Sign-out", "SignOut", "Account", new { @class = "btn btn-info navbar navbar-inverse", @id = "logout" })
+
             }
         </div>
 

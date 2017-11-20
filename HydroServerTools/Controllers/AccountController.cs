@@ -369,6 +369,11 @@ namespace HydroServerTools.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        public ActionResult SignOut()
+        {
+            AuthenticationManager.SignOut();
+            return RedirectToAction("Index", "Home");
+        }
         //
         // GET: /Account/ExternalLoginFailure
         [AllowAnonymous]
