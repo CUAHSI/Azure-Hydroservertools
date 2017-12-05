@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace HydroserverToolsBusinessObjects.Models
 {
+    [Serializable()]
     public class OffsetTypesModel
     {
         //public string OffsetTypeID { get; set; }

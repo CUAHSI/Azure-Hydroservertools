@@ -1,0 +1,236 @@
+﻿
+@{
+    ViewBag.Title = "ValidateFiles";
+    ViewBag.Name = "validateFiles";
+}
+
+<link rel="stylesheet" href="~/Content/mvcfileupload/blueimp/jquery.fileupload.css" />
+
+
+<h2>File Validation Summary</h2>
+
+<!-- Dynamic panel template -->
+<div class="panel panel-default templatePanelClass hidden">
+    <div class="panel-heading">
+        <h4 class="panel-title">
+            <a class="accordion-toggle" data-toggle="collapse" data-parent="#pnlgrpFiles" href="#collapseTemplate">
+                Panel Template
+            </a>
+        </h4>
+    </div>
+    <div id="collapseTemplate" class="panel-collapse collapse">
+        <div class="panel-body">
+            <ul class="listTemplate">
+                <!-- <li> markup goes here...</li> -->
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- Dynamic collapse for validated files -->
+    <div class="row">
+        <div class="col_md_12">
+            <div class="panel-group" id="pnlgrpFiles">
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="btn-group col-md-12" style="position: relative;">
+            <div class="pull-right">
+                <a href="/home/index" class="btn btn-warning cancel">Cancel</a>
+                <button type="button" id="btnValidationSummaryContinue" class="btn btn-success" style="margin-left: 0.5em;">Continue</button>
+                <a id="btnDbSummaryReport" class="btn btn-primary hidden" href="/CSVUpload/RevisedUploadData/DbSummaryReport" style="margin-left: 0.5em;">DB Summary Report</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+
+    //Build dynamic collapse(s) for file validation results...
+    function buildValidationResultsMarkup(panelGroupId, validationResults) {
+        //Validate/initialize input parameters...
+        if (('undefined' !== typeof panelGroupId && null != panelGroupId) &&
+            ('undefined' !== typeof validationResults && null != validationResults)) {
+            //Input parameters valid...
+            var jqPanelGroup = $('#' + panelGroupId);
+            var jqPanelTemplate = $('.templatePanelClass');
+            var idCount = 0;
+
+            //Clear current collapse markup, if any...
+            jqPanelGroup.empty();
+
+            //For each validation result...
+            var length = validationResults.length;
+            for (var i = 0; i < length; ++i) {
+                var validationResult = validationResults[i];
+
+                //Clone panel template...
+                var newPanel = jqPanelTemplate.clone();
+                newPanel.removeClass('hidden');
+                newPanel.find('.collapse').removeClass('in');
+
+                //Update anchor href...
+                var toggle = newPanel.find('.accordion-toggle');
+                var id = 'collapse-' + (idCount++);
+                toggle.attr('href', '#' + id);
+
+                //Display file name and validation information... 
+                var fileName = validationResult.FileName
+                var validation = validationResult.FileValidator;
+
+                var msg = 'File: ' + fileName;
+
+                msg += ' - Headers: ' + ((0 >= validation.InvalidHeaderNames.length) ? 'valid' : 'invalid');
+                msg += ' - Data: ' + ((0 >= validation.DataErrors.length) ? 'valid' : 'invalid'); 
+                 
+                toggle.text(msg);
+
+                //Update collapse id...
+                newPanel.find('.panel-collapse').attr('id', id);
+
+                //Add items to panel list...
+                var panelList = newPanel.find('.listTemplate');
+                var dataErrors = validation.DataErrors;
+                var dLength = dataErrors.length;
+
+                if (0 < dLength) {
+                    //Data errors - add to list...
+                    for (var dI = 0; dI < dLength; ++dI) {
+                        var dataError = dataErrors[dI];
+
+                        var dMsg = 'Row: ' + dataError.RowIndex + ', Column: ' + dataError.FieldIndex + ' - "' + dataError.Reason + '"';
+                        panelList.append('<li> ' + dMsg + '</li>');
+                    }
+                }
+                else {
+                    //No data errors - add data OK message to list...
+                    panelList.append('<li> ' + 'No data validation errors reported...' + '</li>');
+                }
+
+                //Append to panel group...
+                jqPanelGroup.append(newPanel.fadeIn());
+            }
+        }
+    }
+
+    //Retrieve validation results for the input uploadId...
+    function getValidationResults(currentUploadId) {
+        //Validate/initialize input parameters...
+        if ('undefined' !== typeof currentUploadId && null !== currentUploadId) {
+            //Input parameters valid - set url...
+            var url = '/api/revisedupload/get/' + currentUploadId + '/';
+
+            $.ajax({
+                "url": url,
+                "type": "GET",
+                "async": true,
+                "dataType": "json",
+                "cache": false, //So IE does not cache when calling the same URL - source: http://stackoverflow.com/questions/7846707/ie9-jquery-ajax-call-first-time-doing-well-second-time-not
+                "success": function (data, textStatus, jqXHR) {
+                    console.log('RevisedUpload GET success!!');
+                    var validationResults = data;
+                    var length = validationResults.length;
+                    console.log('getValidationResults(...) validationResults.length = ' + length);
+                    for (var i = 0; i < length; ++i) {
+                        console.log("Validation results for: " + validationResults[i].FileName);
+                    }
+
+                    //Display validation results...
+                    buildValidationResultsMarkup('pnlgrpFiles', validationResults);
+                },
+                "error": function (xmlhttprequest, textStatus, message) {
+                    //Failure - Log messsage received from server...
+                    console.log('RevisedUpload GET reports error: ' + xmlhttprequest.status + ' (' + message + ')');
+                }
+            });
+        }
+    }
+
+    //Start DB processing of the validated CSV files...
+    function startDbProcessing(currentUploadId) {
+        //Validate/initialize input parameters...
+        if ('undefined' !== typeof currentUploadId && null !== currentUploadId) {
+            //Input parameters valid - set url...
+            var url = '/api/revisedupload/put/' + currentUploadId + '/';
+
+            $.ajax({
+                "url": url,
+                "type": "PUT",
+                "async": true,
+                "dataType": "json",
+                "cache": false, //So IE does not cache when calling the same URL - source: http://stackoverflow.com/questions/7846707/ie9-jquery-ajax-call-first-time-doing-well-second-time-not
+                "success": function (data, textStatus, jqXHR) {
+                    console.log('RevisedUpload PUT success!!');
+                    var dbResults = data;
+                    //TO DO - disable continue button
+                    //        show show DB Summary Report button...
+                },
+                "error": function (xmlhttprequest, textStatus, message) {
+                    //Failure - Log messsage received from server...
+                    console.log('RevisedUpload PUT reports error: ' + xmlhttprequest.status + ' (' + message + ')');
+                }
+            });
+        }
+    }
+
+    $(document).ready(function () {
+        console.log('Validation Summary - document ready called!!');
+
+        //Retrieve current upload Id...
+        var currentUploadId = sessionStorage.currentUploadId;
+        console.log('Validation Summary retrieves upload Id: ' + currentUploadId);
+
+        var fileUploadCount = parseInt(sessionStorage.fileUploadCount);
+        console.log('Validation Summary retrieves upload count: ' + fileUploadCount);
+
+        //'Click' handler for Validation Summary, Continue
+        $('#' + 'btnValidationSummaryContinue').on('click', function (event) {
+            startDbProcessing(currentUploadId);
+        });
+
+        //Queue retrievel of validation results...
+        setTimeout(function () {
+            getValidationResults(currentUploadId);
+        }, 100);
+    });
+
+        ////For now - set an interval to request validation data...
+        //var intervalId = setInterval(function () {
+
+        //    $.ajax({
+        //        "url": url,
+        //        "type": "GET",
+        //        "async": true,
+        //        "dataType": "json",
+        //        "cache": false, //So IE does not cache when calling the same URL - source: http://stackoverflow.com/questions/7846707/ie9-jquery-ajax-call-first-time-doing-well-second-time-not
+        //        "success": function (data, textStatus, jqXHR) {
+        //            console.log('RevisedUpload GET success!!');
+        //            var validationResults = data;
+        //            var length = validationResults.length;
+        //            for (var i = 0; i < length; ++i) {
+        //                console.log("Validation results for: " + validationResults[i].FileName);
+        //            }
+
+        //            //Display validation results...
+        //            buildValidationResultsMarkup('pnlgrpFiles', validationResults);
+
+        //            //Check for all results returned...
+        //            if (fileUploadCount === validationResults.length) {
+        //                clearInterval(intervalId);  //Clear the interval...
+        //            }
+        //        },
+        //        "error": function (xmlhttprequest, textStatus, message) {
+        //            //Failure - Log messsage received from server...
+        //            console.log('RevisedUpload GET reports error: ' + xmlhttprequest.status + ' (' + message + ')');
+        //            clearInterval(intervalId);  //Clear the interval...
+        //        }                
+        //    });
+        //}, 100);
+
+
+</script>

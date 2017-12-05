@@ -19,6 +19,10 @@ using System.Text;
 using System.Web;
 using TB.ComponentModel;
 
+//using System.Data.Entity;
+
+using EntityFramework.Metadata.Extensions; 
+
 namespace HydroServerToolsRepository.Repository
 {
     
@@ -258,7 +262,7 @@ namespace HydroServerToolsRepository.Repository
             var maxCount = itemList.Count;
             var count = 0;
            
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));
 
 
             foreach (var item in itemList)
@@ -267,7 +271,7 @@ namespace HydroServerToolsRepository.Repository
 
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));
                     count++;                    
                     //var model = Mapper.Map<SiteModel, Site>(item);
 
@@ -282,9 +286,9 @@ namespace HydroServerToolsRepository.Repository
                     //SiteCode
                     if (!string.IsNullOrWhiteSpace(item.SiteCode))
                     {
-                        if (RepositoryUtils.containsNotOnlyAllowedCaracters(item.SiteCode))
+                        if (RepositoryUtils.containsNotOnlyAllowedCharacters(item.SiteCode))
                         {
-                            var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "SiteCode")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "SiteCode")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -294,7 +298,7 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "SiteCode")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "SiteCode")); listOfErrors.Add(err); isRejected = true;
                     }
 
                     //SiteName
@@ -302,7 +306,7 @@ namespace HydroServerToolsRepository.Repository
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.SiteName))
                         {
-                            var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "SiteName")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "SiteName")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -311,7 +315,7 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "SiteName")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "SiteName")); listOfErrors.Add(err); isRejected = true;
                     }
                     //Latitude
                     if (!string.IsNullOrWhiteSpace(item.Latitude))
@@ -321,20 +325,20 @@ namespace HydroServerToolsRepository.Repository
 
                         if (!canConvert)
                         {
-                            var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "Latitude")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "Latitude")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
                             if (result >= -90 && result <= 90) model.Latitude = result;
                             else
                             {
-                                var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_INVALIDRANGE, "Latitude", "-90 to +90")); listOfErrors.Add(err); isRejected = true;
+                                var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_INVALIDRANGE, "Latitude", "-90 to +90")); listOfErrors.Add(err); isRejected = true;
                             }
                         }
                     }
                     else
                     {
-                        var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "Latitude")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "Latitude")); listOfErrors.Add(err); isRejected = true;
                     }
                     //Longitude
                     if (!string.IsNullOrWhiteSpace(item.Longitude))
@@ -344,20 +348,20 @@ namespace HydroServerToolsRepository.Repository
 
                         if (!canConvert)
                         {
-                            var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "Longitude")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "Longitude")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
                             if (result >= -180 && result <= 180) model.Longitude = result;
                             else
                             {
-                                var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_INVALIDRANGE, "Longitude", "-180 to +180")); listOfErrors.Add(err); isRejected = true;
+                                var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_INVALIDRANGE, "Longitude", "-180 to +180")); listOfErrors.Add(err); isRejected = true;
                             }
                         }
                     }
                     else
                     {
-                        var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "Longitude")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "Longitude")); listOfErrors.Add(err); isRejected = true;
                     }
                     //#####################
                     //LatLongDatumID
@@ -365,7 +369,7 @@ namespace HydroServerToolsRepository.Repository
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.LatLongDatumSRSName))
                         {
-                            var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "LatLongDatumSRSName")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "LatLongDatumSRSName")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -394,7 +398,7 @@ namespace HydroServerToolsRepository.Repository
                                     }
                                     else
                                     {
-                                        var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "LatLongDatumSRSName")); listOfErrors.Add(err); isRejected = true;
+                                        var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "LatLongDatumSRSName")); listOfErrors.Add(err); isRejected = true;
                                     }
                                 }
                                 else
@@ -411,7 +415,7 @@ namespace HydroServerToolsRepository.Repository
                                     }
                                     else
                                     {
-                                        var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "LatLongDatumSRSName")); listOfErrors.Add(err); isRejected = true;
+                                        var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "LatLongDatumSRSName")); listOfErrors.Add(err); isRejected = true;
                                     }
                                 }
 
@@ -420,7 +424,7 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "LatLongDatumSRSName")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "LatLongDatumSRSName")); listOfErrors.Add(err); isRejected = true;
                     }
 
                     //#####################
@@ -432,7 +436,7 @@ namespace HydroServerToolsRepository.Repository
 
                         if (!canConvert)
                         {
-                            var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "Elevation_m")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "Elevation_m")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -440,7 +444,7 @@ namespace HydroServerToolsRepository.Repository
                             model.Elevation_m = result;
                             //    else
                             //    {
-                            //        var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_INVALIDRANGE, "Longitude", "-180 to +180")); listOfErrors.Add(err); isRejected = true;
+                            //        var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_INVALIDRANGE, "Longitude", "-180 to +180")); listOfErrors.Add(err); isRejected = true;
                             //    }
                         }
                     }
@@ -453,7 +457,7 @@ namespace HydroServerToolsRepository.Repository
                     {
                         if (RepositoryUtils.containsInvalidCharacters(item.VerticalDatum))
                         {
-                            var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "VerticalDatum")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "VerticalDatum")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -462,7 +466,7 @@ namespace HydroServerToolsRepository.Repository
 
                             if (verticalDatum == null)
                             {
-                                var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_NOT_IN_CV, item.VerticalDatum, "VerticalDatum"));
+                                var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_NOT_IN_CV, item.VerticalDatum, "VerticalDatum"));
                                 listOfErrors.Add(err); isRejected = true;
                             }
                             else
@@ -486,7 +490,7 @@ namespace HydroServerToolsRepository.Repository
 
                         if (!canConvert)
                         {
-                            var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "LocalX")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "LocalX")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -505,7 +509,7 @@ namespace HydroServerToolsRepository.Repository
 
                         if (!canConvert)
                         {
-                            var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "LocalY")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "LocalY")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -521,7 +525,7 @@ namespace HydroServerToolsRepository.Repository
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.LocalProjectionSRSName))
                         {
-                            var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "LocalProjectionSRSName")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "LocalProjectionSRSName")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -549,7 +553,7 @@ namespace HydroServerToolsRepository.Repository
                                     }
                                     else
                                     {
-                                        var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "LocalProjectionSRSName")); listOfErrors.Add(err); isRejected = true;
+                                        var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "LocalProjectionSRSName")); listOfErrors.Add(err); isRejected = true;
                                     }
                                 }
                                 else
@@ -566,7 +570,7 @@ namespace HydroServerToolsRepository.Repository
                                     }
                                     else
                                     {
-                                        var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "LocalProjectionSRSName")); listOfErrors.Add(err); isRejected = true;
+                                        var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "LocalProjectionSRSName")); listOfErrors.Add(err); isRejected = true;
                                     }
                                 }
 
@@ -585,7 +589,7 @@ namespace HydroServerToolsRepository.Repository
 
                         if (!canConvert)
                         {
-                            var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "PosAccuracy_m")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "PosAccuracy_m")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -593,7 +597,7 @@ namespace HydroServerToolsRepository.Repository
                             model.PosAccuracy_m = result;
                             //    else
                             //    {
-                            //        var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_INVALIDRANGE, "Longitude", "-180 to +180")); listOfErrors.Add(err); isRejected = true;
+                            //        var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_INVALIDRANGE, "Longitude", "-180 to +180")); listOfErrors.Add(err); isRejected = true;
                             //    }
                         }
                     }
@@ -606,7 +610,7 @@ namespace HydroServerToolsRepository.Repository
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.State))
                         {
-                            var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "State")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "State")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -623,7 +627,7 @@ namespace HydroServerToolsRepository.Repository
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.County))
                         {
-                            var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "County")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "County")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -640,7 +644,7 @@ namespace HydroServerToolsRepository.Repository
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.Comments))
                         {
-                            var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "Comments")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "Comments")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -663,7 +667,7 @@ namespace HydroServerToolsRepository.Repository
 
                         if (siteType == null)
                         {
-                            var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_NOT_IN_CV, item.SiteType, "SiteType"));
+                            var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_NOT_IN_CV, item.SiteType, "SiteType"));
                             listOfErrors.Add(err);
                             isRejected = true;
                         }
@@ -677,7 +681,7 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "SiteType")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "SiteType")); listOfErrors.Add(err); isRejected = true;
                     }
 
                     //general rules check If one of these fields are included, then so should the rest: LocalX, LocalY, LocalSRSName 
@@ -686,14 +690,14 @@ namespace HydroServerToolsRepository.Repository
                     {
                         if (!(model.LocalX != null && model.LocalY != null && model.LocalProjectionID != null))
                         {
-                            var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_LOCALVALUE_NOT_COMPLETE)); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_LOCALVALUE_NOT_COMPLETE)); listOfErrors.Add(err); isRejected = true;
                         }
                     }
                     if (model.Elevation_m != null )
                     {
                         if (model.VerticalDatum == null)
                         {
-                            var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_ELEVATION_VERTICALDATUM)); listOfErrors.Add(err); isRejected = true;                 
+                            var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_ELEVATION_VERTICALDATUM)); listOfErrors.Add(err); isRejected = true;                 
                         }
                     }
 
@@ -729,7 +733,7 @@ namespace HydroServerToolsRepository.Repository
                         }
                         else
                         {
-                            var err = new ErrorModel("AddSites", string.Format(Ressources.IMPORT_VALUE_ISDUPLICATE,"SiteCode")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_ISDUPLICATE,"SiteCode")); listOfErrors.Add(err); isRejected = true;
                             listOfIncorrectRecords.Add(item);
                             item.Errors += err.ErrorMessage + ";";
 
@@ -742,9 +746,9 @@ namespace HydroServerToolsRepository.Repository
                         var existingItem = context.Sites.Where(a => a.SiteCode.ToLower() == item.SiteCode.ToLower()).FirstOrDefault();
 
                         //if (existingItem.SiteCode != model.SiteCode) { listOfUpdates.Add(new UpdateFieldsModel("Sites", "SiteCode", existingItem.SiteCode.ToString(), item.SiteCode.ToString())); }
-                        if (model.Latitude != null && existingItem.Latitude != model.Latitude) { listOfUpdates.Add(new UpdateFieldsModel("Sites", "Latitude", existingItem.Latitude.ToString(), item.Latitude.ToString())); }
-                        if (model.Longitude != null && existingItem.Longitude != model.Longitude) { listOfUpdates.Add(new UpdateFieldsModel("Sites", "Longitude", existingItem.Longitude.ToString(), item.Longitude.ToString())); }
-                        if (model.LatLongDatumID != null && existingItem.LatLongDatumID != model.LatLongDatumID) { listOfUpdates.Add(new UpdateFieldsModel("Sites", "LatLongDatumSRSName", existingItem.SpatialReference.SRSName.ToString(), item.LatLongDatumSRSName.ToString())); }
+                        if (existingItem.Latitude != model.Latitude) { listOfUpdates.Add(new UpdateFieldsModel("Sites", "Latitude", existingItem.Latitude.ToString(), item.Latitude.ToString())); }
+                        if (existingItem.Longitude != model.Longitude) { listOfUpdates.Add(new UpdateFieldsModel("Sites", "Longitude", existingItem.Longitude.ToString(), item.Longitude.ToString())); }
+                        if (existingItem.LatLongDatumID != model.LatLongDatumID) { listOfUpdates.Add(new UpdateFieldsModel("Sites", "LatLongDatumSRSName", existingItem.SpatialReference.SRSName.ToString(), item.LatLongDatumSRSName.ToString())); }
                         if (model.Elevation_m != null && existingItem.Elevation_m != model.Elevation_m) { listOfUpdates.Add(new UpdateFieldsModel("Sites", "Elevation_m", existingItem.Elevation_m.ToString(), item.Elevation_m.ToString())); }
                         if (model.VerticalDatum != null && existingItem.VerticalDatum != model.VerticalDatum) { listOfUpdates.Add(new UpdateFieldsModel("Sites", "VerticalDatum", existingItem.VerticalDatum != null ? existingItem.VerticalDatum.ToString() : String.Empty, item.VerticalDatum.ToString())); }
                         if (model.LocalX != null && existingItem.LocalX != model.LocalX) { listOfUpdates.Add(new UpdateFieldsModel("Sites", "LocalX", existingItem.LocalX.ToString(), item.LocalX.ToString())); }
@@ -764,7 +768,7 @@ namespace HydroServerToolsRepository.Repository
                             var sb = new StringBuilder();
                             foreach (var u in listOfUpdates)
                             {
-                                sb.Append(string.Format(Ressources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue + ";"));
+                                sb.Append(string.Format(Resources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue + ";"));
                             }
                             item.Errors = sb.ToString();
                            
@@ -811,12 +815,14 @@ namespace HydroServerToolsRepository.Repository
 
                 }
                 //Datum not in CV
-                catch (KeyNotFoundException ex)
+                //catch (KeyNotFoundException ex)
+                catch (KeyNotFoundException)
                 {
 
                     listOfIncorrectRecords.Add(item);
                 }
-                catch (Exception ex)
+                //catch (Exception ex)
+                catch (Exception)
                 {
                     listOfIncorrectRecords.Add(item);
                 }
@@ -843,7 +849,7 @@ namespace HydroServerToolsRepository.Repository
             }
             catch (DbUpdateException ex)
             {
-                throw;
+                throw ex;
             }
 
         }
@@ -877,7 +883,8 @@ namespace HydroServerToolsRepository.Repository
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(connectionString);
             var result = new List<VariablesModel>();
 
-            if (context.Variables.Count() != null)
+            //if (context.Variables.Count() != null)
+            if (0 < context.Variables.Count())
             {
                 totalRecordCount = context.Variables.Count();
                 searchRecordCount = totalRecordCount;
@@ -897,12 +904,15 @@ namespace HydroServerToolsRepository.Repository
                                 || c.Unit != null && c.VariableUnitsID.ToString().Contains(searchString.ToLower())
                                 || c.SampleMedium != null && c.SampleMedium.ToLower().Contains(searchString.ToLower())
                                 || c.ValueType != null && c.ValueType.ToLower().Contains(searchString.ToLower())
-                                || c.IsRegular != null && c.IsRegular.ToString().ToLower().Contains(searchString.ToLower())
-                                || c.TimeSupport != null && c.TimeSupport.ToString().ToLower().Contains(searchString.ToLower())
+                                //|| c.IsRegular != null && c.IsRegular.ToString().ToLower().Contains(searchString.ToLower())
+                                || c.IsRegular.ToString().ToLower().Contains(searchString.ToLower())
+                                //|| c.TimeSupport != null && c.TimeSupport.ToString().ToLower().Contains(searchString.ToLower())
+                                || c.TimeSupport.ToString().ToLower().Contains(searchString.ToLower())
                                 || c.Unit != null && c.Unit.UnitsName.ToLower().Contains(searchString.ToLower())
                                 || c.DataType != null && c.DataType.ToLower().Contains(searchString.ToLower())
                                 || c.GeneralCategory != null && c.GeneralCategory.ToLower().Contains(searchString.ToLower())
-                                || c.NoDataValue != null && c.NoDataValue.ToString().ToLower().Contains(searchString.ToLower())
+                                //|| c.NoDataValue != null && c.NoDataValue.ToString().ToLower().Contains(searchString.ToLower())
+                                || c.NoDataValue.ToString().ToLower().Contains(searchString.ToLower())
                            );
 
                 if (rst == null) return result;
@@ -1081,13 +1091,13 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount)); 
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount)); 
             
             foreach (var item in itemList)
             {
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));
                     count++;
 
                     //var model = Mapper.Map<VariablesModel, Variable>(item);
@@ -1112,9 +1122,9 @@ namespace HydroServerToolsRepository.Repository
                     //VariableCode
                     if (!string.IsNullOrWhiteSpace(item.VariableCode))
                     {
-                        if (RepositoryUtils.containsNotOnlyAllowedCaracters(item.VariableCode))
+                        if (RepositoryUtils.containsNotOnlyAllowedCharacters(item.VariableCode))
                         {
-                            var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "VariableCode")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "VariableCode")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -1124,7 +1134,7 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "VariableCode")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "VariableCode")); listOfErrors.Add(err); isRejected = true;
                     }
                     //VariableName
                     if (!string.IsNullOrWhiteSpace(item.VariableName))
@@ -1134,7 +1144,7 @@ namespace HydroServerToolsRepository.Repository
 
                         if (variableName == null)
                         {
-                            var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_NOT_IN_CV, item.VariableName, "variableName"));
+                            var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_NOT_IN_CV, item.VariableName, "variableName"));
                             listOfErrors.Add(err);
                             isRejected = true;
                         }
@@ -1146,7 +1156,7 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "VariableName")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "VariableName")); listOfErrors.Add(err); isRejected = true;
                     }
                     //Speciation
                     if (!string.IsNullOrWhiteSpace(item.Speciation))
@@ -1156,7 +1166,7 @@ namespace HydroServerToolsRepository.Repository
 
                         if (speciation == null)
                         {
-                            var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_NOT_IN_CV, item.Speciation, "Speciation"));
+                            var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_NOT_IN_CV, item.Speciation, "Speciation"));
                             listOfErrors.Add(err);
                             isRejected = true;
                         }
@@ -1168,14 +1178,14 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "Speciation")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "Speciation")); listOfErrors.Add(err); isRejected = true;
                     }
                     //VariableUnitsName
                     if (!string.IsNullOrWhiteSpace(item.VariableUnitsName))
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.VariableUnitsName))
                         {
-                            var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "VariableUnitsName")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "VariableUnitsName")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -1192,7 +1202,7 @@ namespace HydroServerToolsRepository.Repository
                                 }
                                 else
                                 {
-                                    var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "VariableUnitsName")); listOfErrors.Add(err); isRejected = true;
+                                    var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "VariableUnitsName")); listOfErrors.Add(err); isRejected = true;
                                 }
                             }
                             else
@@ -1208,14 +1218,14 @@ namespace HydroServerToolsRepository.Repository
                                     }
                                     else
                                     {
-                                        var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "VariableUnitsName")); listOfErrors.Add(err); isRejected = true;
+                                        var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "VariableUnitsName")); listOfErrors.Add(err); isRejected = true;
                                     }
                             }                            
                         }
                     }
                     else
                     {
-                        var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "VariableUnitsName")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "VariableUnitsName")); listOfErrors.Add(err); isRejected = true;
                     }
                     //SampleMedium
                     if (!string.IsNullOrWhiteSpace(item.SampleMedium))
@@ -1224,7 +1234,7 @@ namespace HydroServerToolsRepository.Repository
                                             .Where(a => a.Term.ToString().ToLower() == item.SampleMedium.ToLower()).FirstOrDefault();
                         if (sampleMedium == null)
                         {
-                            var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_NOT_IN_CV, item.SampleMedium, "SampleMedium"));
+                            var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_NOT_IN_CV, item.SampleMedium, "SampleMedium"));
                             listOfErrors.Add(err);
                             isRejected = true;
                         }
@@ -1236,7 +1246,7 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "SampleMedium")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "SampleMedium")); listOfErrors.Add(err); isRejected = true;
                     }
                     //ValueType
                     if (!string.IsNullOrWhiteSpace(item.ValueType))
@@ -1245,7 +1255,7 @@ namespace HydroServerToolsRepository.Repository
                                            .Where(a => a.Term.ToString().ToLower() == item.ValueType.ToLower()).FirstOrDefault();
                         if (valueType == null)
                         {
-                            var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_NOT_IN_CV, item.ValueType, "ValueType"));
+                            var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_NOT_IN_CV, item.ValueType, "ValueType"));
                             listOfErrors.Add(err);
                             isRejected = true;
                         }
@@ -1257,7 +1267,7 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "ValueType")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "ValueType")); listOfErrors.Add(err); isRejected = true;
                     }
                     //IsRegular
                     if (!string.IsNullOrWhiteSpace(item.IsRegular))
@@ -1267,7 +1277,7 @@ namespace HydroServerToolsRepository.Repository
                         
                         if (!canConvert)
                         {
-                            var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_NOT_IN_CV, item.IsRegular, "IsRegular"));
+                            var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_NOT_IN_CV, item.IsRegular, "IsRegular"));
                             listOfErrors.Add(err);
                             isRejected = true;
                         }
@@ -1279,7 +1289,7 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "IsRegular")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "IsRegular")); listOfErrors.Add(err); isRejected = true;
                     }
                     //TimeSupport
                     if (!string.IsNullOrWhiteSpace(item.TimeSupport))
@@ -1289,7 +1299,7 @@ namespace HydroServerToolsRepository.Repository
                         
                         if (!canConvert)
                         {
-                            var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_NOT_IN_CV, item.TimeSupport, "TimeSupport"));
+                            var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_NOT_IN_CV, item.TimeSupport, "TimeSupport"));
                             listOfErrors.Add(err);
                             isRejected = true;
                         }
@@ -1301,14 +1311,14 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "TimeSupport")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "TimeSupport")); listOfErrors.Add(err); isRejected = true;
                     }
                     //TimeUnitsID
                     if (!string.IsNullOrWhiteSpace(item.TimeUnitsName))
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.TimeUnitsName))
                         {
-                            var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "TimeUnitsName")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "TimeUnitsName")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -1325,7 +1335,7 @@ namespace HydroServerToolsRepository.Repository
                                 }
                                 else
                                 {
-                                    var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "TimeUnitsName")); listOfErrors.Add(err); isRejected = true;
+                                    var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "TimeUnitsName")); listOfErrors.Add(err); isRejected = true;
                                 }
                             }
                             else
@@ -1341,14 +1351,14 @@ namespace HydroServerToolsRepository.Repository
                                 }
                                 else
                                 {
-                                    var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "TimeUnitsName")); listOfErrors.Add(err); isRejected = true;
+                                    var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "TimeUnitsName")); listOfErrors.Add(err); isRejected = true;
                                 }
                             }
                         }
                     }
                     else
                     {
-                        var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "TimeUnitsName")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "TimeUnitsName")); listOfErrors.Add(err); isRejected = true;
                     }
                     //DataType
                     if (!string.IsNullOrWhiteSpace(item.DataType))
@@ -1357,7 +1367,7 @@ namespace HydroServerToolsRepository.Repository
                                            .Where(a => a.Term.ToString().ToLower() == item.DataType.ToLower()).FirstOrDefault();
                         if (dataType == null)
                         {
-                            var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_NOT_IN_CV, item.DataType, "DataType"));
+                            var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_NOT_IN_CV, item.DataType, "DataType"));
                             listOfErrors.Add(err);
                             isRejected = true;
                         }
@@ -1369,7 +1379,7 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "DataType")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "DataType")); listOfErrors.Add(err); isRejected = true;
                     }
                     //GeneralCategory
                     if (!string.IsNullOrWhiteSpace(item.GeneralCategory))
@@ -1378,7 +1388,7 @@ namespace HydroServerToolsRepository.Repository
                                             .Where(a => a.Term.ToString().ToLower() == item.GeneralCategory.ToLower()).FirstOrDefault();
                         if (generalCategory == null)
                         {
-                            var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_NOT_IN_CV, item.GeneralCategory, "GeneralCategory"));
+                            var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_NOT_IN_CV, item.GeneralCategory, "GeneralCategory"));
                             listOfErrors.Add(err);
                             isRejected = true;
                         }
@@ -1390,7 +1400,7 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "GeneralCategory")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "GeneralCategory")); listOfErrors.Add(err); isRejected = true;
                     }
                     //NoDataValue
                     if (!string.IsNullOrWhiteSpace(item.NoDataValue))
@@ -1399,7 +1409,7 @@ namespace HydroServerToolsRepository.Repository
                         bool canConvert = UniversalTypeConverter.TryConvertTo<double>(item.NoDataValue, out result);
                         if (!canConvert)
                         {
-                            var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_FAILED_NOVALIDDATA, "NoDataValue"));
+                            var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_FAILED_NOVALIDDATA, "NoDataValue"));
                             listOfErrors.Add(err);
                             isRejected = true;
                         }
@@ -1411,7 +1421,7 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "NoDataValue")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "NoDataValue")); listOfErrors.Add(err); isRejected = true;
                     }
 
                     if (isRejected)
@@ -1443,7 +1453,7 @@ namespace HydroServerToolsRepository.Repository
                         }
                         else
                         {
-                            var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_ISDUPLICATE, "VariableCode")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_ISDUPLICATE, "VariableCode")); listOfErrors.Add(err); isRejected = true;
                             listOfIncorrectRecords.Add(item);
                             item.Errors += err.ErrorMessage + ";";
                         }
@@ -1472,7 +1482,7 @@ namespace HydroServerToolsRepository.Repository
                             var sb = new StringBuilder();
                             foreach (var u in listOfUpdates)
                             {
-                                sb.Append(string.Format(Ressources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue + ";"));
+                                sb.Append(string.Format(Resources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue + ";"));
                             }
                             item.Errors = sb.ToString();
 
@@ -1485,7 +1495,8 @@ namespace HydroServerToolsRepository.Repository
 
                     }
                 }
-                catch (Exception ex)
+                //catch (Exception ex)
+                catch (Exception)
                 {
                     listOfIncorrectRecords.Add(item);
                 }
@@ -1511,7 +1522,7 @@ namespace HydroServerToolsRepository.Repository
             }
             catch (DbUpdateException ex)
             {
-                throw;
+                throw ex;
             }
 
         }
@@ -1658,14 +1669,14 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount)); 
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount)); 
 
             foreach (var item in itemList)
             {
 
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));
                     count++;
                     
                     var listOfErrors = new List<ErrorModel>();
@@ -1679,7 +1690,7 @@ namespace HydroServerToolsRepository.Repository
                                 {
                                     if (RepositoryUtils.containsSpecialCharacters(item.OffsetUnitsName))
                                     {
-                                        var err = new ErrorModel("AddOffsetTypes", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "OffsetUnitsName")); listOfErrors.Add(err); isRejected = true;
+                                        var err = new ErrorModel("AddOffsetTypes", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "OffsetUnitsName")); listOfErrors.Add(err); isRejected = true;
                                     }
                                     else
                                     {
@@ -1692,7 +1703,7 @@ namespace HydroServerToolsRepository.Repository
                                             if (result != 0) model.OffsetUnitsID = result;
                                             else
                                             {
-                                                var err = new ErrorModel("AddOffsetTypes", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "OffsetUnitsName")); listOfErrors.Add(err); isRejected = true;
+                                                var err = new ErrorModel("AddOffsetTypes", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "OffsetUnitsName")); listOfErrors.Add(err); isRejected = true;
                                             }
                                         }
                                         else
@@ -1708,21 +1719,21 @@ namespace HydroServerToolsRepository.Repository
                                             }
                                             else
                                             {
-                                                var err = new ErrorModel("AddOffsetTypes", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "OffsetUnitsName")); listOfErrors.Add(err); isRejected = true;
+                                                var err = new ErrorModel("AddOffsetTypes", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "OffsetUnitsName")); listOfErrors.Add(err); isRejected = true;
                                             }
                                         }
                                     }
                                 }
                                 else
                                 {
-                                    var err = new ErrorModel("AddOffsetTypes", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "OffsetUnitsName")); listOfErrors.Add(err); isRejected = true;
+                                    var err = new ErrorModel("AddOffsetTypes", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "OffsetUnitsName")); listOfErrors.Add(err); isRejected = true;
                                 }
                                 //OffsetDescription
                                 if (!string.IsNullOrWhiteSpace(item.OffsetDescription))
                                 {
                                     if (RepositoryUtils.containsSpecialCharacters(item.OffsetDescription))
                                     {
-                                        var err = new ErrorModel("AddOffsetTypes", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "OffsetDescription")); listOfErrors.Add(err); isRejected = true;
+                                        var err = new ErrorModel("AddOffsetTypes", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "OffsetDescription")); listOfErrors.Add(err); isRejected = true;
                                     }
                                     else
                                     {
@@ -1748,9 +1759,9 @@ namespace HydroServerToolsRepository.Repository
                                 //OffsetTypeCode
                                 if (!string.IsNullOrWhiteSpace(item.OffsetTypeCode))
                                 {
-                                    if (RepositoryUtils.containsNotOnlyAllowedCaracters(item.OffsetTypeCode))
+                                    if (RepositoryUtils.containsNotOnlyAllowedCharacters(item.OffsetTypeCode))
                                     {
-                                        var err = new ErrorModel("AddOffsetType", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "OffsetTypeCode")); listOfErrors.Add(err); isRejected = true;
+                                        var err = new ErrorModel("AddOffsetType", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "OffsetTypeCode")); listOfErrors.Add(err); isRejected = true;
                                     }
                                     else
                                     {
@@ -1760,7 +1771,7 @@ namespace HydroServerToolsRepository.Repository
                                 }
                                 else
                                 {
-                                    var err = new ErrorModel("AddOffsetType", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "OffsetTypeCode")); listOfErrors.Add(err); isRejected = true;
+                                    var err = new ErrorModel("AddOffsetType", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "OffsetTypeCode")); listOfErrors.Add(err); isRejected = true;
                                 }
                     //lookup duplicates
                     //check if item with this variablecode exists in the database
@@ -1777,7 +1788,7 @@ namespace HydroServerToolsRepository.Repository
                         }
                         else
                         {
-                            var err = new ErrorModel("AddOffsetType", string.Format(Ressources.IMPORT_VALUE_ISDUPLICATE, "OffsetTypeCode")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddOffsetType", string.Format(Resources.IMPORT_VALUE_ISDUPLICATE, "OffsetTypeCode")); listOfErrors.Add(err); isRejected = true;
                             listOfIncorrectRecords.Add(item);
                             item.Errors += err.ErrorMessage + ";";
                         }
@@ -1787,7 +1798,8 @@ namespace HydroServerToolsRepository.Repository
 
                         //if (existingItem.OffsetTypeCode != model.OffsetTypeCode) { listOfUpdates.Add(new UpdateFieldsModel("OffsetType", "OffsetTypeCode", existingItem.OffsetTypeCode.ToString(), item.OffsetTypeCode.ToString())); }
                         if (model.OffsetDescription != null && existingItem.OffsetDescription != model.OffsetTypeCode) { listOfUpdates.Add(new UpdateFieldsModel("OffsetType", "OffsetDescription", existingItem.OffsetDescription.ToString(), item.OffsetDescription.ToString())); }
-                        if (model.OffsetUnitsID != null && existingItem.OffsetUnitsID != model.OffsetUnitsID) { listOfUpdates.Add(new UpdateFieldsModel("OffsetType", "OffsetUnitsID", existingItem.OffsetUnitsID.ToString(), item.OffsetUnitsName.ToString())); }
+                        //if (model.OffsetUnitsID != null && existingItem.OffsetUnitsID != model.OffsetUnitsID) { listOfUpdates.Add(new UpdateFieldsModel("OffsetType", "OffsetUnitsID", existingItem.OffsetUnitsID.ToString(), item.OffsetUnitsName.ToString())); }
+                        if (existingItem.OffsetUnitsID != model.OffsetUnitsID) { listOfUpdates.Add(new UpdateFieldsModel("OffsetType", "OffsetUnitsID", existingItem.OffsetUnitsID.ToString(), item.OffsetUnitsName.ToString())); }
 
                         if (listOfUpdates.Count() > 0)
                         {
@@ -1795,7 +1807,7 @@ namespace HydroServerToolsRepository.Repository
                             var sb = new StringBuilder();
                             foreach (var u in listOfUpdates)
                             {
-                                sb.Append(string.Format(Ressources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue + ";"));
+                                sb.Append(string.Format(Resources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue + ";"));
                             }
                             item.Errors = sb.ToString();
 
@@ -1808,7 +1820,8 @@ namespace HydroServerToolsRepository.Repository
                     }
 
                 }
-                catch (Exception ex)
+                //catch (Exception ex)
+                catch (Exception)
                 {
                     listOfIncorrectRecords.Add(item);
                 }
@@ -1834,7 +1847,7 @@ namespace HydroServerToolsRepository.Repository
             }
             catch (DbUpdateException ex)
             {
-                throw;
+                throw ex;
             }
 
         }
@@ -1952,7 +1965,8 @@ namespace HydroServerToolsRepository.Repository
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(connectionString);
             var result = new List<SourcesModel>();
 
-            if (context.Sources.Count() != null)
+            //if (context.Sources.Count() != null)
+            if (0 < context.Sources.Count())
             {
                 totalRecordCount = context.Sources.Count();
                 searchRecordCount = totalRecordCount;
@@ -2159,13 +2173,13 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));    
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));    
 
             foreach (var item in itemList)
             {
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));
                     count++;
  
                     var listOfErrors = new List<ErrorModel>();
@@ -2196,9 +2210,9 @@ namespace HydroServerToolsRepository.Repository
                     //SourceCode
                     if (!string.IsNullOrWhiteSpace(item.SourceCode))
                     {
-                        if (RepositoryUtils.containsNotOnlyAllowedCaracters(item.SourceCode))
+                        if (RepositoryUtils.containsNotOnlyAllowedCharacters(item.SourceCode))
                         {
-                            var err = new ErrorModel("AddSource", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "SourceCode")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSource", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "SourceCode")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -2208,14 +2222,14 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddSource", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "SourceCode")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddSource", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "SourceCode")); listOfErrors.Add(err); isRejected = true;
                     }	
                     //Organization
                     if (!string.IsNullOrWhiteSpace(item.Organization))
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.Organization))
                         {
-                            var err = new ErrorModel("AddSources", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "Organization")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "Organization")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -2224,14 +2238,14 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddSources", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "Organization")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "Organization")); listOfErrors.Add(err); isRejected = true;
                     }
                     //SourceDescription
                     if (!string.IsNullOrWhiteSpace(item.SourceDescription))
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.SourceDescription))
                         {
-                            var err = new ErrorModel("AddSources", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "SourceDescription")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "SourceDescription")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -2240,14 +2254,14 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddSources", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "SourceDescription")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "SourceDescription")); listOfErrors.Add(err); isRejected = true;
                     }
                     //SourceLink
                     if (!string.IsNullOrWhiteSpace(item.SourceLink))
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.SourceLink))
                         {
-                            var err = new ErrorModel("AddSources", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "SourceLink")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "SourceLink")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -2260,7 +2274,7 @@ namespace HydroServerToolsRepository.Repository
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.ContactName))
                         {
-                            var err = new ErrorModel("AddSources", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "ContactName")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "ContactName")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -2269,14 +2283,14 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddSources", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "ContactName")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "ContactName")); listOfErrors.Add(err); isRejected = true;
                     }
                     //Phone
                     if (!string.IsNullOrWhiteSpace(item.Phone))
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.Phone))
                         {
-                            var err = new ErrorModel("AddSources", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "Phone")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "Phone")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -2285,14 +2299,14 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddSources", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "Phone")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "Phone")); listOfErrors.Add(err); isRejected = true;
                     }
                     //Email
                     if (!string.IsNullOrWhiteSpace(item.Email))
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.Email))
                         {
-                            var err = new ErrorModel("AddSources", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "Email")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "Email")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -2301,14 +2315,14 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddSources", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "Email")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "Email")); listOfErrors.Add(err); isRejected = true;
                     }
                     //Address
                     if (!string.IsNullOrWhiteSpace(item.Address))
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.Address))
                         {
-                            var err = new ErrorModel("AddSources", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "Address")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "Address")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -2317,14 +2331,14 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddSources", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "Address")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "Address")); listOfErrors.Add(err); isRejected = true;
                     }
                     //City
                     if (!string.IsNullOrWhiteSpace(item.City))
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.City))
                         {
-                            var err = new ErrorModel("AddSources", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "City")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "City")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -2333,14 +2347,14 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddSources", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "City")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "City")); listOfErrors.Add(err); isRejected = true;
                     }
                     //State
                     if (!string.IsNullOrWhiteSpace(item.State))
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.State))
                         {
-                            var err = new ErrorModel("AddSources", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "State")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "State")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -2349,14 +2363,14 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddSources", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "State")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "State")); listOfErrors.Add(err); isRejected = true;
                     }
                     //ZipCode
                     if (!string.IsNullOrWhiteSpace(item.ZipCode))
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.ZipCode))
                         {
-                            var err = new ErrorModel("AddSources", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "ZipCode")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "ZipCode")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -2365,14 +2379,14 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddSources", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "ZipCode")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "ZipCode")); listOfErrors.Add(err); isRejected = true;
                     }
                     //Citation
                     if (!string.IsNullOrWhiteSpace(item.Citation))
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.Citation))
                         {
-                            var err = new ErrorModel("AddSources", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "Citation")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "Citation")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -2381,7 +2395,7 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddSources", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "Citation")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "Citation")); listOfErrors.Add(err); isRejected = true;
                     }
 
 
@@ -2392,7 +2406,7 @@ namespace HydroServerToolsRepository.Repository
                                .Exists(a => a.Term.ToString() == item.TopicCategory);
                         if (!topicCategory)
                         {
-                            var err = new ErrorModel("AddSources", string.Format(Ressources.IMPORT_VALUE_NOT_IN_CV, item.TopicCategory, "TopicCategory"));
+                            var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_NOT_IN_CV, item.TopicCategory, "TopicCategory"));
                             listOfErrors.Add(err);
                             isRejected = true;
                         }
@@ -2404,14 +2418,14 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddSources", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "TopicCategory")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "TopicCategory")); listOfErrors.Add(err); isRejected = true;
                     }
                     //Title
                     if (!string.IsNullOrWhiteSpace(item.Title))
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.Title))
                         {
-                            var err = new ErrorModel("AddSources", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "Title")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "Title")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -2420,14 +2434,14 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddSources", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "Title")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "Title")); listOfErrors.Add(err); isRejected = true;
                     }
                     //Abstract
                     if (!string.IsNullOrWhiteSpace(item.Abstract))
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.Abstract))
                         {
-                            var err = new ErrorModel("AddSources", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "Abstract")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "Abstract")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -2436,14 +2450,14 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddSources", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "Abstract")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "Abstract")); listOfErrors.Add(err); isRejected = true;
                     }
                     //ProfileVersion
                     if (!string.IsNullOrWhiteSpace(item.ProfileVersion))
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.ProfileVersion))
                         {
-                            var err = new ErrorModel("AddSources", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "ProfileVersion")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "ProfileVersion")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -2452,14 +2466,14 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddSources", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "ProfileVersion")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "ProfileVersion")); listOfErrors.Add(err); isRejected = true;
                     }
                     //MetadataLink
                     if (!string.IsNullOrWhiteSpace(item.MetadataLink))
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.MetadataLink))
                         {
-                            var err = new ErrorModel("AddSources", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "MetadataLink")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "MetadataLink")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -2544,7 +2558,7 @@ namespace HydroServerToolsRepository.Repository
                         }
                         else
                         {
-                            var err = new ErrorModel("AddSources", string.Format(Ressources.IMPORT_VALUE_ISDUPLICATE, "SourceCode")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_ISDUPLICATE, "SourceCode")); listOfErrors.Add(err); isRejected = true;
                             listOfIncorrectRecords.Add(item);
                             item.Errors += err.ErrorMessage + ";";
                         }
@@ -2577,7 +2591,7 @@ namespace HydroServerToolsRepository.Repository
                             var sb = new StringBuilder();
                             foreach (var u in listOfUpdates)
                             {
-                                sb.Append(string.Format(Ressources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue + ";"));
+                                sb.Append(string.Format(Resources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue + ";"));
                             }
                             item.Errors = sb.ToString();
 
@@ -2591,7 +2605,8 @@ namespace HydroServerToolsRepository.Repository
                    
 
                 }
-                catch (Exception ex)
+                //catch (Exception ex)
+                catch (Exception)
                 {
                     listOfIncorrectRecords.Add(item);
                 }
@@ -2620,7 +2635,7 @@ namespace HydroServerToolsRepository.Repository
             }
             catch (DbUpdateException ex)
             {
-                throw;
+                throw ex;
             }
            
             
@@ -2655,6 +2670,11 @@ namespace HydroServerToolsRepository.Repository
         {
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(connectionString);
             var result = new List<MethodModel>();
+
+            //BC - Test - 02-Dec-2017 - Test EntityFramework.metadata package...
+            var methodData = context.Db<Method>();
+
+            var tableName = methodData.TableName;
 
             if (context.Methods.Count() != null)
             {
@@ -2747,22 +2767,22 @@ namespace HydroServerToolsRepository.Repository
             listOfCorrectRecords = new List<MethodModel>();
             listOfDuplicateRecords = new List<MethodModel>();
             listOfEditedRecords = new List<MethodModel>();
-            
+
 
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
             //var objContext = ((IObjectContextAdapter)context).ObjectContext;
             var maxCount = itemList.Count;
             var count = 0;
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));    
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));
 
 
             foreach (var item in itemList)
             {
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));
                     count++;
- 
+
                     var listOfErrors = new List<ErrorModel>();
                     var listOfUpdates = new List<UpdateFieldsModel>();
 
@@ -2773,9 +2793,9 @@ namespace HydroServerToolsRepository.Repository
                     //MethodCode
                     if (!string.IsNullOrWhiteSpace(item.MethodCode))
                     {
-                        if (RepositoryUtils.containsNotOnlyAllowedCaracters(item.MethodCode))
+                        if (RepositoryUtils.containsNotOnlyAllowedCharacters(item.MethodCode))
                         {
-                            var err = new ErrorModel("AddMethod", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "MethodCode")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddMethod", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "MethodCode")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -2785,15 +2805,15 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddMethod", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "MethodCode")); listOfErrors.Add(err); isRejected = true;
-                    }	
+                        var err = new ErrorModel("AddMethod", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "MethodCode")); listOfErrors.Add(err); isRejected = true;
+                    }
 
                     //MethodDescription
                     if (!string.IsNullOrWhiteSpace(item.MethodDescription))
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.MethodDescription))
                         {
-                            var err = new ErrorModel("AddMethods", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "MethodDescription")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddMethods", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "MethodDescription")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -2802,14 +2822,14 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddMethods", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "MethodDescription")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddMethods", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "MethodDescription")); listOfErrors.Add(err); isRejected = true;
                     }
                     //MethodLink
                     if (!string.IsNullOrWhiteSpace(item.MethodLink))
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.MethodLink))
                         {
-                            var err = new ErrorModel("AddMethods", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "MethodLink")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddMethods", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "MethodLink")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -2829,7 +2849,7 @@ namespace HydroServerToolsRepository.Repository
                         listOfIncorrectRecords.Add(item);
                         continue;
                     }
-                
+
 
                     //var existingItem = context.Methods.Where(a => a.MethodDescription == model.MethodDescription &&
                     //                                                a.MethodLink == model.MethodLink
@@ -2848,7 +2868,7 @@ namespace HydroServerToolsRepository.Repository
                         }
                         else
                         {
-                            var err = new ErrorModel("AddMethod", string.Format(Ressources.IMPORT_VALUE_ISDUPLICATE, "MethodCode")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddMethod", string.Format(Resources.IMPORT_VALUE_ISDUPLICATE, "MethodCode")); listOfErrors.Add(err); isRejected = true;
                             listOfIncorrectRecords.Add(item);
                             item.Errors += err.ErrorMessage + ";";
                         }
@@ -2865,7 +2885,7 @@ namespace HydroServerToolsRepository.Repository
                             var sb = new StringBuilder();
                             foreach (var u in listOfUpdates)
                             {
-                                sb.Append(string.Format(Ressources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue + ";"));
+                                sb.Append(string.Format(Resources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue + ";"));
                             }
                             item.Errors = sb.ToString();
 
@@ -2881,8 +2901,6 @@ namespace HydroServerToolsRepository.Repository
                 catch (Exception ex)
                 {
                     listOfIncorrectRecords.Add(item);
-
-
                 }
 
             }
@@ -2942,9 +2960,10 @@ namespace HydroServerToolsRepository.Repository
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(connectionString);
             var result = new List<LabMethodModel>();
 
-            if (context.LabMethods.Count() != null)
+            //if (context.LabMethods.Count() != null)
+            if ( 0 < context.LabMethods.Count())
             {
-                totalRecordCount = context.LabMethods.Count();
+                    totalRecordCount = context.LabMethods.Count();
                 searchRecordCount = totalRecordCount;
             }
             else
@@ -3051,14 +3070,14 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));    
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));    
 
             foreach (var item in itemList)
             {
 
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));
                     count++;
 
                     var model = new LabMethod();
@@ -3078,7 +3097,7 @@ namespace HydroServerToolsRepository.Repository
                     //{
                     //    if (RepositoryUtils.containsNotOnlyAllowedCaracters(item.LabMethodCode))
                     //    {
-                    //        var err = new ErrorModel("AddLabMethod", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "LabMethodCode")); listOfErrors.Add(err); isRejected = true;
+                    //        var err = new ErrorModel("AddLabMethod", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "LabMethodCode")); listOfErrors.Add(err); isRejected = true;
                     //    }
                     //    else
                     //    {
@@ -3088,7 +3107,7 @@ namespace HydroServerToolsRepository.Repository
                     //}
                     //else
                     //{
-                    //    var err = new ErrorModel("AddLabMethod", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "LabMethodCode")); listOfErrors.Add(err); isRejected = true;
+                    //    var err = new ErrorModel("AddLabMethod", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "LabMethodCode")); listOfErrors.Add(err); isRejected = true;
                     //}	
 
                     //LabName
@@ -3096,7 +3115,7 @@ namespace HydroServerToolsRepository.Repository
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.LabName))
                         {
-                            var err = new ErrorModel("AddLabMethods", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "LabName")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddLabMethods", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "LabName")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -3112,7 +3131,7 @@ namespace HydroServerToolsRepository.Repository
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.LabOrganization))
                         {
-                            var err = new ErrorModel("AddLabMethods", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "LabOrganization")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddLabMethods", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "LabOrganization")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -3128,7 +3147,7 @@ namespace HydroServerToolsRepository.Repository
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.LabMethodName))
                         {
-                            var err = new ErrorModel("AddLabMethods", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "LabMethodName")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddLabMethods", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "LabMethodName")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -3144,7 +3163,7 @@ namespace HydroServerToolsRepository.Repository
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.LabMethodDescription))
                         {
-                            var err = new ErrorModel("AddLabMethods", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "LabMethodDescription")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddLabMethods", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "LabMethodDescription")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -3160,7 +3179,7 @@ namespace HydroServerToolsRepository.Repository
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.LabMethodLink))
                         {
-                            var err = new ErrorModel("AddLabMethods", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "LabMethodLink")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddLabMethods", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "LabMethodLink")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -3197,7 +3216,7 @@ namespace HydroServerToolsRepository.Repository
                         }
                         else
                         {
-                            var err = new ErrorModel("AddLabMethods", string.Format(Ressources.IMPORT_VALUE_ISDUPLICATE, "LabMethodName")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddLabMethods", string.Format(Resources.IMPORT_VALUE_ISDUPLICATE, "LabMethodName")); listOfErrors.Add(err); isRejected = true;
                             listOfIncorrectRecords.Add(item);
                             item.Errors += err.ErrorMessage + ";";
                         }
@@ -3218,7 +3237,7 @@ namespace HydroServerToolsRepository.Repository
                             var sb = new StringBuilder();
                             foreach (var u in listOfUpdates)
                             {
-                                sb.Append(string.Format(Ressources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue + ";"));
+                                sb.Append(string.Format(Resources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue + ";"));
                             }
                             item.Errors = sb.ToString();
 
@@ -3231,7 +3250,8 @@ namespace HydroServerToolsRepository.Repository
                     }
 
                 }
-                catch (Exception ex)
+                //catch (Exception ex)
+                catch (Exception)
                 {
                     listOfIncorrectRecords.Add(item);
                 }
@@ -3258,7 +3278,7 @@ namespace HydroServerToolsRepository.Repository
             }
             catch (DbUpdateException ex)
             {
-                throw;
+                throw ex;
             }
 
         }
@@ -3299,7 +3319,8 @@ namespace HydroServerToolsRepository.Repository
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(connectionString);
             var result = new List<SampleModel>();
 
-            if (context.Samples.Count() != null)
+            //if (context.Samples.Count() != null)
+            if (0 < context.Samples.Count())
             {
                 totalRecordCount = context.Samples.Count();
                 searchRecordCount = totalRecordCount;
@@ -3425,14 +3446,14 @@ namespace HydroServerToolsRepository.Repository
             var labMethods = context.LabMethods.ToDictionary(p => p.LabMethodName, p => p.LabMethodID);
             var maxCount = itemList.Count;
             var count = 0;
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));    
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));    
 
             foreach (var item in itemList)
             {
 
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));
                     count++;
 
                     var listOfErrors = new List<ErrorModel>();
@@ -3454,7 +3475,7 @@ namespace HydroServerToolsRepository.Repository
                                .Exists(a => a.Term.ToString() == item.SampleType);
                         if (!sampleType)
                         {
-                            var err = new ErrorModel("AddSamples", string.Format(Ressources.IMPORT_VALUE_NOT_IN_CV, item.SampleType, "SampleType"));
+                            var err = new ErrorModel("AddSamples", string.Format(Resources.IMPORT_VALUE_NOT_IN_CV, item.SampleType, "SampleType"));
                             listOfErrors.Add(err);
                             isRejected = true;
                         }
@@ -3465,7 +3486,7 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddSamples", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "SampleType")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddSamples", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "SampleType")); listOfErrors.Add(err); isRejected = true;
                     }
 
                     //LabSampleCode
@@ -3473,7 +3494,7 @@ namespace HydroServerToolsRepository.Repository
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.LabSampleCode))
                         {
-                            var err = new ErrorModel("AddSamples", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "LabSampleCode")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSamples", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "LabSampleCode")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {                          
@@ -3482,7 +3503,7 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddSamples", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "LabSampleCode")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddSamples", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "LabSampleCode")); listOfErrors.Add(err); isRejected = true;
                     }
 
                     //LabMethodID
@@ -3490,7 +3511,7 @@ namespace HydroServerToolsRepository.Repository
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.LabMethodName))
                         {
-                            var err = new ErrorModel("AddSamples", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "LabMethodName")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSamples", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "LabMethodName")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -3503,7 +3524,7 @@ namespace HydroServerToolsRepository.Repository
                                     }
                                     else
                                     {
-                                        var err = new ErrorModel("AddSamples", string.Format(Ressources.IMPORT_VALUE_NOT_IN_DATABASE, item.LabMethodName, "LabMethodName")); listOfErrors.Add(err); isRejected = true;
+                                        var err = new ErrorModel("AddSamples", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.LabMethodName, "LabMethodName")); listOfErrors.Add(err); isRejected = true;
                                     }
                                 }                               
                                                            
@@ -3511,7 +3532,7 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddSamples", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "LabMethodName")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddSamples", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "LabMethodName")); listOfErrors.Add(err); isRejected = true;
                     }                    
                     
                     if (isRejected)
@@ -3579,7 +3600,7 @@ namespace HydroServerToolsRepository.Repository
                         }
                         else
                         {
-                            var err = new ErrorModel("AddSample", string.Format(Ressources.IMPORT_VALUE_ISDUPLICATE, "LabSampleCode")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddSample", string.Format(Resources.IMPORT_VALUE_ISDUPLICATE, "LabSampleCode")); listOfErrors.Add(err); isRejected = true;
                             listOfIncorrectRecords.Add(item);
                             item.Errors += err.ErrorMessage + ";";
                         }
@@ -3588,7 +3609,7 @@ namespace HydroServerToolsRepository.Repository
                     {
                         //if (existingItem.LabSampleCode != model.LabSampleCode) { listOfUpdates.Add(new UpdateFieldsModel("Sample", "LabSampleCode", existingItem.LabSampleCode.ToString(), item.LabSampleCode.ToString())); }
                         if (model.SampleType != null && existingItem.SampleType != model.SampleType) { listOfUpdates.Add(new UpdateFieldsModel("Sample", "SampleType", existingItem.SampleType.ToString(), item.SampleType.ToString())); }
-                        if (model.LabMethodID != null && existingItem.LabMethodID != model.LabMethodID) { listOfUpdates.Add(new UpdateFieldsModel("Sample", "LabMethodID", existingItem.LabMethodID.ToString(), item.LabMethodID.ToString())); }
+                        if (existingItem.LabMethodID != model.LabMethodID) { listOfUpdates.Add(new UpdateFieldsModel("Sample", "LabMethodID", existingItem.LabMethodID.ToString(), item.LabMethodID.ToString())); }
 
                         if (listOfUpdates.Count() > 0)
                         {
@@ -3596,7 +3617,7 @@ namespace HydroServerToolsRepository.Repository
                             var sb = new StringBuilder();
                             foreach (var u in listOfUpdates)
                             {
-                                sb.Append(string.Format(Ressources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue + ";"));
+                                sb.Append(string.Format(Resources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue + ";"));
                             }
                             item.Errors = sb.ToString();
 
@@ -3609,7 +3630,8 @@ namespace HydroServerToolsRepository.Repository
                     }
 
                 }
-                catch (Exception ex)
+                //catch (Exception ex)
+                catch (Exception)
                 {
                     listOfIncorrectRecords.Add(item);
                 }
@@ -3635,7 +3657,7 @@ namespace HydroServerToolsRepository.Repository
             }
             catch (DbUpdateException ex)
             {
-                throw;
+                throw ex;
             }
 
         }
@@ -3669,7 +3691,8 @@ namespace HydroServerToolsRepository.Repository
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(connectionString);
             var result = new List<QualifiersModel>();
 
-            if (context.Qualifiers.Count() != null)
+            //if (context.Qualifiers.Count() != null)
+            if ( 0 < context.Qualifiers.Count())
             {
                 totalRecordCount = context.Qualifiers.Count();
                 searchRecordCount = totalRecordCount;
@@ -3756,14 +3779,14 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));    
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));    
 
             foreach (var item in itemList)
             {
 
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));
                     count++;
 
                     var model = new Qualifier();
@@ -3778,9 +3801,9 @@ namespace HydroServerToolsRepository.Repository
                     //QualifierCode
                     if (!string.IsNullOrWhiteSpace(item.QualifierCode))
                     {
-                        if (RepositoryUtils.containsNotOnlyAllowedCaracters(item.QualifierCode))
+                        if (RepositoryUtils.containsNotOnlyAllowedCharacters(item.QualifierCode))
                         {
-                            var err = new ErrorModel("AddQualifiers", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "QualifierCode")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddQualifiers", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "QualifierCode")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -3794,7 +3817,7 @@ namespace HydroServerToolsRepository.Repository
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.QualifierDescription))
                         {
-                            var err = new ErrorModel("AddQualifiers", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "QualifierDescription")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddQualifiers", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "QualifierDescription")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -3803,7 +3826,7 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddQualifiers", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "QualifierDescription")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddQualifiers", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "QualifierDescription")); listOfErrors.Add(err); isRejected = true;
                     }
 
 
@@ -3833,7 +3856,7 @@ namespace HydroServerToolsRepository.Repository
                         }
                         else
                         {
-                            var err = new ErrorModel("AddQualifiers", string.Format(Ressources.IMPORT_VALUE_ISDUPLICATE, "QualifierCode")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddQualifiers", string.Format(Resources.IMPORT_VALUE_ISDUPLICATE, "QualifierCode")); listOfErrors.Add(err); isRejected = true;
                             listOfIncorrectRecords.Add(item);
                             item.Errors += err.ErrorMessage + ";";
                         }     
@@ -3851,7 +3874,7 @@ namespace HydroServerToolsRepository.Repository
                             var sb = new StringBuilder();
                             foreach (var u in listOfUpdates)
                             {
-                                sb.Append(string.Format(Ressources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue + ";"));
+                                sb.Append(string.Format(Resources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue + ";"));
                             }
                             item.Errors = sb.ToString();
 
@@ -3864,7 +3887,8 @@ namespace HydroServerToolsRepository.Repository
                     }
 
                 }
-                catch (Exception ex)
+                //catch (Exception ex)
+                catch (Exception)
                 {
                     listOfIncorrectRecords.Add(item);
                 }
@@ -3890,7 +3914,7 @@ namespace HydroServerToolsRepository.Repository
             }
             catch (DbUpdateException ex)
             {
-                throw;
+                throw ex;
             }
 
         }
@@ -3923,7 +3947,8 @@ namespace HydroServerToolsRepository.Repository
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(connectionString);
             var result = new List<QualityControlLevelModel>();
 
-            if (context.QualityControlLevels.Count() != null)
+            //if (context.QualityControlLevels.Count() != null)
+            if (0 < context.QualityControlLevels.Count())
             {
                 totalRecordCount = context.QualityControlLevels.Count();
                 searchRecordCount = totalRecordCount;
@@ -3955,7 +3980,6 @@ namespace HydroServerToolsRepository.Repository
                     result.Add(model);
                 }
             }
-
             else
             {
                 List<QualityControlLevel> sortedItems = null;
@@ -4011,13 +4035,13 @@ namespace HydroServerToolsRepository.Repository
             var maxCount = itemList.Count;
             var count = 0;
 
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));    
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));    
 
             foreach (var item in itemList)
             {
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));
                     count++;
                     
                     var model = new QualityControlLevel();
@@ -4032,7 +4056,7 @@ namespace HydroServerToolsRepository.Repository
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.QualityControlLevelCode))
                         {
-                            var err = new ErrorModel("AddQualityControlLevel", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "QualityControlLevelCode")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddQualityControlLevel", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "QualityControlLevelCode")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -4042,14 +4066,14 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddQualityControlLevel", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "QualityControlLevelCode")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddQualityControlLevel", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "QualityControlLevelCode")); listOfErrors.Add(err); isRejected = true;
                     }
                     //Definition
                     if (!string.IsNullOrWhiteSpace(item.Definition))
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.Definition))
                         {
-                            var err = new ErrorModel("AddQualityControlLevel", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "Definition")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddQualityControlLevel", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "Definition")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -4059,14 +4083,14 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddQualityControlLevel", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "Definition")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddQualityControlLevel", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "Definition")); listOfErrors.Add(err); isRejected = true;
                     }
                     //Explanation
                     if (!string.IsNullOrWhiteSpace(item.Explanation))
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.Explanation))
                         {
-                            var err = new ErrorModel("AddQualityControlLevel", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "Explanation")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddQualityControlLevel", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "Explanation")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -4076,7 +4100,7 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddQualityControlLevel", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "Explanation")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddQualityControlLevel", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "Explanation")); listOfErrors.Add(err); isRejected = true;
                     }
 
 
@@ -4109,7 +4133,7 @@ namespace HydroServerToolsRepository.Repository
                         }
                         else
                         {
-                            var err = new ErrorModel("AddQualityControlLevel", string.Format(Ressources.IMPORT_VALUE_ISDUPLICATE, "QualityControlLevelCode")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddQualityControlLevel", string.Format(Resources.IMPORT_VALUE_ISDUPLICATE, "QualityControlLevelCode")); listOfErrors.Add(err); isRejected = true;
                             listOfIncorrectRecords.Add(item);
                             item.Errors += err.ErrorMessage + ";";
                         }       
@@ -4126,7 +4150,7 @@ namespace HydroServerToolsRepository.Repository
                             var sb = new StringBuilder();
                             foreach (var u in listOfUpdates)
                             {
-                                sb.Append(string.Format(Ressources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue + ";"));
+                                sb.Append(string.Format(Resources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue + ";"));
                             }
                             item.Errors = sb.ToString();
 
@@ -4139,7 +4163,8 @@ namespace HydroServerToolsRepository.Repository
                     }
 
                 }
-                catch (Exception ex)
+                //catch (Exception ex)
+                catch (Exception)
                 {
                     listOfIncorrectRecords.Add(item);
                 }
@@ -4173,7 +4198,7 @@ namespace HydroServerToolsRepository.Repository
             }
             catch (DbUpdateException ex)
             {
-                throw;
+                throw ex;
             }
 
         }
@@ -4207,7 +4232,8 @@ namespace HydroServerToolsRepository.Repository
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(connectionString);
             var result = new List<DataValuesModel>();
 
-            if (context.DataValues.Count() != null)
+            //if (context.DataValues.Count() != null)
+            if (0 < context.DataValues.Count())
             {
                 totalRecordCount = context.DataValues.Count();
                 searchRecordCount = totalRecordCount;
@@ -4222,12 +4248,12 @@ namespace HydroServerToolsRepository.Repository
                 var rst = context.DataValues.
                     Where(c =>
                                 c.ValueID.ToString().ToLower().Contains(searchString.ToLower())
-                             || c.DataValue1 != null && c.DataValue1.ToString().ToLower().Contains(searchString.ToLower())
+                             || c.DataValue1.ToString().ToLower().Contains(searchString.ToLower())
                              || c.Site.SiteCode != null && c.Site.SiteName.ToLower().Contains(searchString.ToLower())
                              || c.Variable.VariableCode != null && c.Variable.VariableName.ToString().ToLower().Contains(searchString.ToLower())
                              || c.ValueAccuracy != null && c.ValueAccuracy.ToString().ToLower().Contains(searchString.ToLower())
                              || c.LocalDateTime != null && c.LocalDateTime.ToString().Contains(searchString.ToLower())
-                             || c.UTCOffset != null && c.UTCOffset.ToString().ToLower().Contains(searchString.ToLower())
+                             || c.UTCOffset.ToString().ToLower().Contains(searchString.ToLower())
                              || c.DateTimeUTC != null && c.DateTimeUTC.ToString().ToLower().Contains(searchString.ToLower())
                              || c.Site.SiteCode != null && c.Site.SiteCode.ToLower().Contains(searchString.ToLower())
                              || c.Variable.VariableCode != null && c.Variable.VariableCode.ToString().ToLower().Contains(searchString.ToLower())
@@ -4618,7 +4644,7 @@ namespace HydroServerToolsRepository.Repository
                     timeToFindDatavalues.Add(span);
                     Debug.WriteLine("timeToRetrieve " + currentSiteId + ": " + span);
 
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING_DATAVALUES, count, maxCount, listOfCorrectRecords.Count(), listOfIncorrectRecords.Count(), listOfDuplicateRecords.Count()));
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING_DATAVALUES, count, maxCount, listOfCorrectRecords.Count(), listOfIncorrectRecords.Count(), listOfDuplicateRecords.Count()));
                     #region loop through series
                     var filteredList = (from i in itemList
                                         where i.SiteCode == sv.SiteCode && i.VariableCode == sv.VariableCode
@@ -4635,15 +4661,15 @@ namespace HydroServerToolsRepository.Repository
                     {
                         try
                         {
-                            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING_DATAVALUES, count, maxCount, listOfCorrectRecords.Count(), listOfIncorrectRecords.Count(), listOfDuplicateRecords.Count()));
+                            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING_DATAVALUES, count, maxCount, listOfCorrectRecords.Count(), listOfIncorrectRecords.Count(), listOfDuplicateRecords.Count()));
                             count++;
                             #region data matching
                             bool isRejected = false;
                             var model = new DataValue();
                             var listOfErrors = new List<ErrorModel>();
 
-                            //set default values
-                            string unk = "Unknown";
+                            ////set default values
+                            //string unk = "Unknown";
 
                             model.ValueAccuracy = null;
                             model.OffsetValue = null;
@@ -4666,7 +4692,7 @@ namespace HydroServerToolsRepository.Repository
                                 //NaN can be converted properly ino a double sql field is a float and will not accept this so we need to test separately for NaN and reject
                                 if (!canConvert || Double.IsNaN(result))
                                 {
-                                    var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "DataValue")); listOfErrors.Add(err); isRejected = true;
+                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "DataValue")); listOfErrors.Add(err); isRejected = true;
                                 }
                                 else
                                 {
@@ -4675,7 +4701,7 @@ namespace HydroServerToolsRepository.Repository
                             }
                             else
                             {
-                                var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "DataValue")); listOfErrors.Add(err); isRejected = true;
+                                var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "DataValue")); listOfErrors.Add(err); isRejected = true;
                             }
                             //ValueAccuracy
                             if (!string.IsNullOrWhiteSpace(item.ValueAccuracy))
@@ -4685,7 +4711,7 @@ namespace HydroServerToolsRepository.Repository
 
                                 if (!canConvert)
                                 {
-                                    var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "ValueAccuracy")); listOfErrors.Add(err); isRejected = true;
+                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "ValueAccuracy")); listOfErrors.Add(err); isRejected = true;
                                 }
                                 else
                                 {
@@ -4701,7 +4727,7 @@ namespace HydroServerToolsRepository.Repository
 
                                 if (!canConvert)
                                 {
-                                    var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "LocalDateTime")); listOfErrors.Add(err); isRejected = true;
+                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "LocalDateTime")); listOfErrors.Add(err); isRejected = true;
                                 }
                                 else
                                 {
@@ -4710,7 +4736,7 @@ namespace HydroServerToolsRepository.Repository
                             }
                             else
                             {
-                                var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "LocalDateTime")); listOfErrors.Add(err); isRejected = true;
+                                var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "LocalDateTime")); listOfErrors.Add(err); isRejected = true;
                             }
                             //UTCOffset
                             if (!string.IsNullOrWhiteSpace(item.UTCOffset))
@@ -4720,7 +4746,7 @@ namespace HydroServerToolsRepository.Repository
 
                                 if (!canConvert)
                                 {
-                                    var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "UTCOffset")); listOfErrors.Add(err); isRejected = true;
+                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "UTCOffset")); listOfErrors.Add(err); isRejected = true;
                                 }
                                 else
                                 {
@@ -4729,7 +4755,7 @@ namespace HydroServerToolsRepository.Repository
                             }
                             else
                             {
-                                var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "UTCOffset")); listOfErrors.Add(err); isRejected = true;
+                                var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "UTCOffset")); listOfErrors.Add(err); isRejected = true;
                             }
                             //DateTimeUTC
                             if (!string.IsNullOrWhiteSpace(item.DateTimeUTC))
@@ -4739,7 +4765,7 @@ namespace HydroServerToolsRepository.Repository
 
                                 if (!canConvert)
                                 {
-                                    var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "DateTimeUTC")); listOfErrors.Add(err); isRejected = true;
+                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "DateTimeUTC")); listOfErrors.Add(err); isRejected = true;
                                 }
                                 else
                                 {
@@ -4748,14 +4774,14 @@ namespace HydroServerToolsRepository.Repository
                             }
                             else
                             {
-                                var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "DateTimeUTC")); listOfErrors.Add(err); isRejected = true;
+                                var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "DateTimeUTC")); listOfErrors.Add(err); isRejected = true;
                             }
                             //SiteCode
                             if (!string.IsNullOrWhiteSpace(item.SiteCode))
                             {
                                 if (RepositoryUtils.containsSpecialCharacters(item.SiteCode))
                                 {
-                                    var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "SiteCode")); listOfErrors.Add(err); isRejected = true;
+                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "SiteCode")); listOfErrors.Add(err); isRejected = true;
                                 }
                                 else
                                 {
@@ -4768,7 +4794,7 @@ namespace HydroServerToolsRepository.Repository
                                     }
                                     else
                                     {
-                                        var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_NOT_IN_DATABASE, item.SiteCode, "SiteCode")); listOfErrors.Add(err); isRejected = true;
+                                        var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.SiteCode, "SiteCode")); listOfErrors.Add(err); isRejected = true;
 
                                         //continue;
 
@@ -4778,7 +4804,7 @@ namespace HydroServerToolsRepository.Repository
                             }
                             else
                             {
-                                var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "SiteCode")); listOfErrors.Add(err); isRejected = true;
+                                var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "SiteCode")); listOfErrors.Add(err); isRejected = true;
                             }
                             //VariableID
                             //VariableCode
@@ -4786,7 +4812,7 @@ namespace HydroServerToolsRepository.Repository
                             {
                                 if (RepositoryUtils.containsSpecialCharacters(item.VariableCode))
                                 {
-                                    var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "VariableCode")); listOfErrors.Add(err); isRejected = true;
+                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "VariableCode")); listOfErrors.Add(err); isRejected = true;
                                 }
                                 else
                                 {
@@ -4799,7 +4825,7 @@ namespace HydroServerToolsRepository.Repository
                                     }
                                     else
                                     {
-                                        var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_NOT_IN_DATABASE, item.VariableCode, "VariableCode")); listOfErrors.Add(err); isRejected = true;
+                                        var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.VariableCode, "VariableCode")); listOfErrors.Add(err); isRejected = true;
 
                                         //continue;
 
@@ -4809,7 +4835,7 @@ namespace HydroServerToolsRepository.Repository
                             }
                             else
                             {
-                                var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "VariableCode")); listOfErrors.Add(err); isRejected = true;
+                                var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "VariableCode")); listOfErrors.Add(err); isRejected = true;
                             }
                             //OffsetValue
                             if (!string.IsNullOrWhiteSpace(item.OffsetValue))
@@ -4819,7 +4845,7 @@ namespace HydroServerToolsRepository.Repository
 
                                 if (!canConvert)
                                 {
-                                    var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "OffsetValue")); listOfErrors.Add(err); isRejected = true;
+                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "OffsetValue")); listOfErrors.Add(err); isRejected = true;
                                 }
                                 else
                                 {
@@ -4833,7 +4859,7 @@ namespace HydroServerToolsRepository.Repository
 
                                 if (RepositoryUtils.containsSpecialCharacters(item.OffsetTypeCode))
                                 {
-                                    var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "OffsetTypeCode")); listOfErrors.Add(err); isRejected = true;
+                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "OffsetTypeCode")); listOfErrors.Add(err); isRejected = true;
                                 }
                                 else
                                 {
@@ -4846,7 +4872,7 @@ namespace HydroServerToolsRepository.Repository
                                     }
                                     else
                                     {
-                                        var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_NOT_IN_DATABASE, item.OffsetTypeID, "OffsetType")); listOfErrors.Add(err); isRejected = true;
+                                        var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.OffsetTypeID, "OffsetType")); listOfErrors.Add(err); isRejected = true;
                                     }
 
                                 }
@@ -4856,7 +4882,7 @@ namespace HydroServerToolsRepository.Repository
                             {
                                 if (RepositoryUtils.containsSpecialCharacters(item.CensorCode))
                                 {
-                                    var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "CensorCode")); listOfErrors.Add(err); isRejected = true;
+                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "CensorCode")); listOfErrors.Add(err); isRejected = true;
                                 }
                                 else
                                 {
@@ -4869,13 +4895,13 @@ namespace HydroServerToolsRepository.Repository
                                     }
                                     else
                                     {
-                                        var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_NOT_IN_CV, item.CensorCode, "CensorCode")); listOfErrors.Add(err); isRejected = true;
+                                        var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_CV, item.CensorCode, "CensorCode")); listOfErrors.Add(err); isRejected = true;
                                     }
                                 }
                             }
                             else
                             {
-                                var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "CensorCode")); listOfErrors.Add(err); isRejected = true;
+                                var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "CensorCode")); listOfErrors.Add(err); isRejected = true;
                             }
 
                             //QualifierID
@@ -4884,7 +4910,7 @@ namespace HydroServerToolsRepository.Repository
 
                                 if (RepositoryUtils.containsSpecialCharacters(item.QualifierCode))
                                 {
-                                    var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "QualifierCode")); listOfErrors.Add(err); isRejected = true;
+                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "QualifierCode")); listOfErrors.Add(err); isRejected = true;
                                 }
                                 else
                                 {
@@ -4897,7 +4923,7 @@ namespace HydroServerToolsRepository.Repository
                                     }
                                     else
                                     {
-                                        var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_NOT_IN_DATABASE, item.QualifierID, "QualifierCode")); listOfErrors.Add(err); isRejected = true;
+                                        var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.QualifierID, "QualifierCode")); listOfErrors.Add(err); isRejected = true;
                                     }
 
                                 }
@@ -4908,7 +4934,7 @@ namespace HydroServerToolsRepository.Repository
                             {
                                 if (RepositoryUtils.containsSpecialCharacters(item.MethodCode))
                                 {
-                                    var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "MethodCode")); listOfErrors.Add(err); isRejected = true;
+                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "MethodCode")); listOfErrors.Add(err); isRejected = true;
                                 }
                                 else
                                 {
@@ -4921,21 +4947,21 @@ namespace HydroServerToolsRepository.Repository
                                     }
                                     else
                                     {
-                                        var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_NOT_IN_DATABASE, item.MethodID, "MethodCode")); listOfErrors.Add(err); isRejected = true;
+                                        var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.MethodID, "MethodCode")); listOfErrors.Add(err); isRejected = true;
                                     }
 
                                 }
                             }
                             else
                             {
-                                var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "MethodCode")); listOfErrors.Add(err); isRejected = true;
+                                var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "MethodCode")); listOfErrors.Add(err); isRejected = true;
                             }
                             //SourceID
                             if (!string.IsNullOrWhiteSpace(item.SourceCode))
                             {
                                 if (RepositoryUtils.containsSpecialCharacters(item.SourceCode))
                                 {
-                                    var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "SourceCode")); listOfErrors.Add(err); isRejected = true;
+                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "SourceCode")); listOfErrors.Add(err); isRejected = true;
                                 }
                                 else
                                 {
@@ -4948,14 +4974,14 @@ namespace HydroServerToolsRepository.Repository
                                     }
                                     else
                                     {
-                                        var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_NOT_IN_DATABASE, item.SourceID, "SourceCode")); listOfErrors.Add(err); isRejected = true;
+                                        var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.SourceID, "SourceCode")); listOfErrors.Add(err); isRejected = true;
                                     }
 
                                 }
                             }
                             else
                             {
-                                var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "SourceCode")); listOfErrors.Add(err); isRejected = true;
+                                var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "SourceCode")); listOfErrors.Add(err); isRejected = true;
                             }
                             //SampleID- labsamplecode is unique identifier
                             if (!string.IsNullOrWhiteSpace(item.LabSampleCode)|| !string.IsNullOrWhiteSpace(item.SampleCode))
@@ -4966,7 +4992,7 @@ namespace HydroServerToolsRepository.Repository
 
                                 if (RepositoryUtils.containsSpecialCharacters(item.LabSampleCode))
                                 {
-                                    var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "LabSampleCode")); listOfErrors.Add(err); isRejected = true;
+                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "LabSampleCode")); listOfErrors.Add(err); isRejected = true;
                                 }
                                 else
                                 {
@@ -4979,7 +5005,7 @@ namespace HydroServerToolsRepository.Repository
                                     }
                                     else
                                     {
-                                        var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_NOT_IN_DATABASE, item.SampleID, "LabSampleCode")); listOfErrors.Add(err); isRejected = true;
+                                        var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.SampleID, "LabSampleCode")); listOfErrors.Add(err); isRejected = true;
                                     }
 
                                 }
@@ -4993,7 +5019,7 @@ namespace HydroServerToolsRepository.Repository
 
                                 if (!canConvert)
                                 {
-                                    var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "DerivedFromID")); listOfErrors.Add(err); isRejected = true;
+                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "DerivedFromID")); listOfErrors.Add(err); isRejected = true;
                                 }
                                 else
                                 {
@@ -5012,13 +5038,13 @@ namespace HydroServerToolsRepository.Repository
                                 }
                                 else
                                 {
-                                    var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_NOT_IN_CV, item.QualityControlLevelCode, "QualityControlLevelCode")); listOfErrors.Add(err); isRejected = true;
+                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_CV, item.QualityControlLevelCode, "QualityControlLevelCode")); listOfErrors.Add(err); isRejected = true;
 
                                 }
                             }
                             else
                             {
-                                var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "QualityControlLevelCode")); listOfErrors.Add(err); isRejected = true;
+                                var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "QualityControlLevelCode")); listOfErrors.Add(err); isRejected = true;
                             }
                             //lookup siteid
 
@@ -5031,14 +5057,14 @@ namespace HydroServerToolsRepository.Repository
                             //}
                             //else
                             //{
-                            //    var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_NOT_IN_CV, item.VariableCode, "AddDataValues")); listOfErrors.Add(err); isRejected = true;
+                            //    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_CV, item.VariableCode, "AddDataValues")); listOfErrors.Add(err); isRejected = true;
 
                             //}
                             //if (model.OffsetTypeID != null)
                             //{
                             //    var offsetTyperID = OffsetTypeIds
                             //                            .Exists(a => a == model.OffsetTypeID);
-                            //    var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_NOT_IN_DATABASE, item.OffsetTypeID.ToString(), "OffsetTypes:")); listOfErrors.Add(err); isRejected = true;
+                            //    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.OffsetTypeID.ToString(), "OffsetTypes:")); listOfErrors.Add(err); isRejected = true;
 
                             //}
 
@@ -5046,7 +5072,7 @@ namespace HydroServerToolsRepository.Repository
                             //{
                             //    var censorCode = censorCodeCV
                             //                            .Exists(a => a.Term == item.CensorCode);
-                            //    if (!censorCode) { var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_NOT_IN_CV, item.OffsetTypeID, "AddDataValues")); listOfErrors.Add(err); isRejected = true; };
+                            //    if (!censorCode) { var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_CV, item.OffsetTypeID, "AddDataValues")); listOfErrors.Add(err); isRejected = true; };
 
                             //}
 
@@ -5054,7 +5080,7 @@ namespace HydroServerToolsRepository.Repository
                             //{
                             //    var censorCode = censorCodeCV
                             //                            .Exists(a => a.Term == item.CensorCode);
-                            //    if (!censorCode) { var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_NOT_IN_DATABASE, item.QualifierID, "Qualifiers")); listOfErrors.Add(err); isRejected = true; };
+                            //    if (!censorCode) { var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.QualifierID, "Qualifiers")); listOfErrors.Add(err); isRejected = true; };
 
                             //}
 
@@ -5062,7 +5088,7 @@ namespace HydroServerToolsRepository.Repository
                             //{
                             //    var methodId = methodIds
                             //                            .Exists(a => a.MethodID == model.MethodID);
-                            //    if (!methodId) { var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_NOT_IN_DATABASE, item.MethodID, "Methods")); listOfErrors.Add(err); isRejected = true; };
+                            //    if (!methodId) { var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.MethodID, "Methods")); listOfErrors.Add(err); isRejected = true; };
 
                             //}
 
@@ -5070,7 +5096,7 @@ namespace HydroServerToolsRepository.Repository
                             //{
                             //    var sourceId = sourceIds
                             //                            .Exists(a => a.SourceID == model.SourceID);
-                            //    if (!sourceId) { var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_NOT_IN_DATABASE, item.SourceID, "Sources")); listOfErrors.Add(err); isRejected = true; };
+                            //    if (!sourceId) { var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.SourceID, "Sources")); listOfErrors.Add(err); isRejected = true; };
 
                             //}
 
@@ -5078,7 +5104,7 @@ namespace HydroServerToolsRepository.Repository
                             //{
                             //    var sampleId = sampleIds
                             //                            .Exists(a => a.SampleID == model.SampleID);
-                            //    if (!sampleId) { var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_NOT_IN_DATABASE, item.SampleID, "Samples")); listOfErrors.Add(err); isRejected = true; };
+                            //    if (!sampleId) { var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.SampleID, "Samples")); listOfErrors.Add(err); isRejected = true; };
 
                             //}
 
@@ -5090,7 +5116,7 @@ namespace HydroServerToolsRepository.Repository
                             //}
                             //else
                             //{
-                            //    var err = new ErrorModel("AddDataValues", string.Format(Ressources.IMPORT_VALUE_NOT_IN_CV, item.VariableCode, "AddDataValues")); listOfErrors.Add(err); isRejected = true;
+                            //    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_CV, item.VariableCode, "AddDataValues")); listOfErrors.Add(err); isRejected = true;
 
                             //}
                             // var dataType = dataTypeCV
@@ -5198,9 +5224,10 @@ namespace HydroServerToolsRepository.Repository
                         }
                         catch (OperationCanceledException ex)
                         {
-                            throw;
+                            throw ex;
                         }
-                        catch (Exception ex)
+                        //catch (Exception ex)
+                        catch (Exception)
                         {
                             listOfIncorrectRecords.Add(item);
                         }
@@ -5212,11 +5239,11 @@ namespace HydroServerToolsRepository.Repository
             }
             catch (OperationCanceledException ex)
             {
-                throw;
+                throw ex;
             }
             catch (Exception ex)
             {
-                throw;
+                throw ex;
             }
             //context.SaveChanges();
             //Pass in cnx, tablename, and list of imports
@@ -5229,7 +5256,7 @@ namespace HydroServerToolsRepository.Repository
             Debug.WriteLine("timeExistInUpload: " + timeExistInUpload);           
             timeTocomplete = DateTime.Now - startTime;
             Debug.WriteLine("timeTocomplete: " + timeTocomplete);
-            //BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING_DONE, count, maxCount));
+            //BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING_DONE, count, maxCount));
 
             return;
         }
@@ -5268,7 +5295,7 @@ namespace HydroServerToolsRepository.Repository
             }
             catch (DbUpdateException ex)
             {
-                throw;
+                throw ex;
             }
             return;          
         }
@@ -5304,7 +5331,8 @@ namespace HydroServerToolsRepository.Repository
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(connectionString);
             var result = new List<GroupDescriptionModel>();
 
-            if (context.GroupDescriptions.Count() != null)
+            //if (context.GroupDescriptions.Count() != null)
+            if (0 < context.GroupDescriptions.Count())
             {
                 totalRecordCount = context.GroupDescriptions.Count();
                 searchRecordCount = totalRecordCount;
@@ -5386,13 +5414,13 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));    
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));    
 
             foreach (var item in itemList)
             {
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));
                     count++;
           
                     var model = new GroupDescription();
@@ -5403,7 +5431,7 @@ namespace HydroServerToolsRepository.Repository
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.GroupDescription))
                         {
-                            var err = new ErrorModel("AddGroupDescriptions", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "GroupDescription")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddGroupDescriptions", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "GroupDescription")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -5412,7 +5440,7 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddGroupDescriptions", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "GroupDescription")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddGroupDescriptions", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "GroupDescription")); listOfErrors.Add(err); isRejected = true;
                     }
 
                     if (isRejected)
@@ -5444,7 +5472,9 @@ namespace HydroServerToolsRepository.Repository
                     }
 
                 }
-                catch (Exception ex)
+                //catch (Exception ex)
+                //catch (Exception ex)
+                catch (Exception)
                 {
                     listOfIncorrectRecords.Add(item);
                 }
@@ -5470,7 +5500,7 @@ namespace HydroServerToolsRepository.Repository
             }
             catch (DbUpdateException ex)
             {
-                throw;
+                throw ex;
             }
 
         }
@@ -5503,7 +5533,8 @@ namespace HydroServerToolsRepository.Repository
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(connectionString);
             var result = new List<GroupsModel>();
 
-            if (context.Groups.Count() != null)
+            //if (context.Groups.Count() != null)
+            if (0 < context.Groups.Count())
             {
                 totalRecordCount = context.Groups.Count();
                 searchRecordCount = totalRecordCount;
@@ -5518,8 +5549,8 @@ namespace HydroServerToolsRepository.Repository
                 var allItems = context.Groups.ToList();
                 var rst = allItems.
                     Where(c =>
-                                    c.GroupID != null && c.GroupID.ToString().ToLower().Contains(searchString.ToLower())
-                                 || c.ValueID != null && c.ValueID.ToString().ToLower().Contains(searchString.ToLower())
+                                    c.GroupID.ToString().ToLower().Contains(searchString.ToLower())
+                                 || c.ValueID.ToString().ToLower().Contains(searchString.ToLower())
                          );
 
                 if (rst == null) return result;
@@ -5591,7 +5622,7 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));    
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));    
 
 
             foreach (var item in itemList)
@@ -5599,7 +5630,7 @@ namespace HydroServerToolsRepository.Repository
 
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));
                     count++;
 
                     var model = new Group();
@@ -5618,7 +5649,7 @@ namespace HydroServerToolsRepository.Repository
 
                              if (!groupId)
                              {
-                                 var err = new ErrorModel("AddGroups", string.Format(Ressources.IMPORT_VALUE_NOT_IN_DATABASE, item.GroupID, "Groups"));
+                                 var err = new ErrorModel("AddGroups", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.GroupID, "Groups"));
                                  listOfErrors.Add(err);
                                  isRejected = true;
                              }
@@ -5629,12 +5660,12 @@ namespace HydroServerToolsRepository.Repository
                          }
                          else
                          {
-                             var err = new ErrorModel("AddGroups", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "GroupID")); listOfErrors.Add(err); isRejected = true;
+                             var err = new ErrorModel("AddGroups", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "GroupID")); listOfErrors.Add(err); isRejected = true;
                          }  
                     }
                     else
                     {
-                        var err = new ErrorModel("AddGroups", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "GroupID")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddGroups", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "GroupID")); listOfErrors.Add(err); isRejected = true;
                     }
 
                     //ValuerID                    
@@ -5653,19 +5684,19 @@ namespace HydroServerToolsRepository.Repository
                             }
                             else
                             {                                
-                                var err = new ErrorModel("AddGroups", string.Format(Ressources.IMPORT_VALUE_NOT_IN_DATABASE, item.ValueID, "ValueID"));
+                                var err = new ErrorModel("AddGroups", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.ValueID, "ValueID"));
                                 listOfErrors.Add(err);
                                 isRejected = true;
                             }
                         }
                         else
                         {
-                            var err = new ErrorModel("AddGroups", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "ValueID")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddGroups", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "ValueID")); listOfErrors.Add(err); isRejected = true;
                         }
                     }
                     else
                     {
-                        var err = new ErrorModel("AddGroups", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "ValueID")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddGroups", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "ValueID")); listOfErrors.Add(err); isRejected = true;
                     }
                     
                     if (isRejected)
@@ -5699,7 +5730,8 @@ namespace HydroServerToolsRepository.Repository
                     }
 
                 }
-                catch (Exception ex)
+                //catch (Exception ex)
+                catch (Exception)
                 {
                     listOfIncorrectRecords.Add(item);
                 }
@@ -5725,7 +5757,7 @@ namespace HydroServerToolsRepository.Repository
             }
             catch (DbUpdateException ex)
             {
-                throw;
+                throw ex;
             }
 
         }
@@ -5844,14 +5876,14 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));    
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));    
 
             foreach (var item in itemList)
             {
 
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));
                     count++;
 
                     var model = new DerivedFrom();
@@ -5870,7 +5902,7 @@ namespace HydroServerToolsRepository.Repository
 
                             if (!derivedFromID)
                             {
-                                var err = new ErrorModel("AddDerivedFrom", string.Format(Ressources.IMPORT_VALUE_NOT_IN_DATABASE, item.DerivedFromId, "Datavalues"));
+                                var err = new ErrorModel("AddDerivedFrom", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.DerivedFromId, "Datavalues"));
                                 listOfErrors.Add(err);
                                 isRejected = true;
                             }
@@ -5881,12 +5913,12 @@ namespace HydroServerToolsRepository.Repository
                         }
                         else
                         {
-                            var err = new ErrorModel("AddDerivedFrom", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "DerivedFromID")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddDerivedFrom", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "DerivedFromID")); listOfErrors.Add(err); isRejected = true;
                         }
                     }
                     else
                     {
-                        var err = new ErrorModel("AddDerivedFrom", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "DerivedFromID")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddDerivedFrom", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "DerivedFromID")); listOfErrors.Add(err); isRejected = true;
                     }
 
                     //ValuerID                    
@@ -5901,7 +5933,7 @@ namespace HydroServerToolsRepository.Repository
 
                             if (valueID == null)
                             {
-                                var err = new ErrorModel("AddDerivedFrom", string.Format(Ressources.IMPORT_VALUE_NOT_IN_DATABASE, item.ValueID, "ValueID"));
+                                var err = new ErrorModel("AddDerivedFrom", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.ValueID, "ValueID"));
                                 listOfErrors.Add(err);
                                 isRejected = true;
                             }
@@ -5912,12 +5944,12 @@ namespace HydroServerToolsRepository.Repository
                         }
                         else
                         {
-                            var err = new ErrorModel("AddDerivedFrom", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "ValueID")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddDerivedFrom", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "ValueID")); listOfErrors.Add(err); isRejected = true;
                         }
                     }
                     else
                     {
-                        var err = new ErrorModel("AddDerivedFrom", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "ValueID")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddDerivedFrom", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "ValueID")); listOfErrors.Add(err); isRejected = true;
                     }
 
                     if (isRejected)
@@ -5951,7 +5983,8 @@ namespace HydroServerToolsRepository.Repository
                     }
 
                 }
-                catch (Exception ex)
+                //catch (Exception ex)
+                catch (Exception)
                 {
                     listOfIncorrectRecords.Add(item);
                 }
@@ -5978,7 +6011,7 @@ namespace HydroServerToolsRepository.Repository
             }
             catch (DbUpdateException ex)
             {
-                throw;
+                throw ex;
             }
 
         }
@@ -6012,7 +6045,8 @@ namespace HydroServerToolsRepository.Repository
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(connectionString);
             var result = new List<CategoriesModel>();
 
-            if (context.Categories.Count() != null)
+            //if (context.Categories.Count() != null)
+            if (0 < context.Categories.Count())
             {
                 totalRecordCount = context.Categories.Count();
                 searchRecordCount = totalRecordCount;
@@ -6105,7 +6139,7 @@ namespace HydroServerToolsRepository.Repository
           
             var maxCount = itemList.Count;
             var count = 0;
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));    
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));    
 
             foreach (var item in itemList)
             {
@@ -6113,7 +6147,7 @@ namespace HydroServerToolsRepository.Repository
                 try
                 {
                     //Updating status
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, "default", Ressources.IMPORT_STATUS_EXTRACTNG);      
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, "default", Resources.IMPORT_STATUS_EXTRACTNG);      
                     
                     var model = new Category();
                     var listOfErrors = new List<ErrorModel>();
@@ -6122,9 +6156,9 @@ namespace HydroServerToolsRepository.Repository
                     //Categories                    
                     if (!string.IsNullOrWhiteSpace(item.VariableCode))
                     {
-                        if (RepositoryUtils.containsNotOnlyAllowedCaracters(item.VariableCode))
+                        if (RepositoryUtils.containsNotOnlyAllowedCharacters(item.VariableCode))
                         {
-                            var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "VariableCode")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "VariableCode")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -6137,7 +6171,7 @@ namespace HydroServerToolsRepository.Repository
                             }
                             else
                             {
-                                var err = new ErrorModel("AddVariables", string.Format(Ressources.IMPORT_VALUE_NOT_IN_DATABASE, item.VariableCode, "Sites")); listOfErrors.Add(err); isRejected = true;
+                                var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.VariableCode, "Sites")); listOfErrors.Add(err); isRejected = true;
 
                                 //continue;
 
@@ -6146,7 +6180,7 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddCategories", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "VariableCode")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddCategories", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "VariableCode")); listOfErrors.Add(err); isRejected = true;
                     }
                     //DataValue
                     if (!string.IsNullOrWhiteSpace(item.DataValue))
@@ -6156,7 +6190,7 @@ namespace HydroServerToolsRepository.Repository
 
                         if (!canConvert)
                         {
-                            var err = new ErrorModel("AddCategories", string.Format(Ressources.IMPORT_VALUE_INVALIDVALUE, "DataValue")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddCategories", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "DataValue")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -6165,14 +6199,14 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddCategories", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "DataValue")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddCategories", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "DataValue")); listOfErrors.Add(err); isRejected = true;
                     }
                     //CategoryDescription
                     if (!string.IsNullOrWhiteSpace(item.CategoryDescription))
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.CategoryDescription))
                         {
-                            var err = new ErrorModel("AddCategories", string.Format(Ressources.IMPORT_VALUE_INVALIDCHARACTERS, "CategoryDescription")); listOfErrors.Add(err); isRejected = true;
+                            var err = new ErrorModel("AddCategories", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "CategoryDescription")); listOfErrors.Add(err); isRejected = true;
                         }
                         else
                         {
@@ -6181,7 +6215,7 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        var err = new ErrorModel("AddCategories", string.Format(Ressources.IMPORT_VALUE_CANNOTBEEMPTY, "CategoryDescription")); listOfErrors.Add(err); isRejected = true;
+                        var err = new ErrorModel("AddCategories", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "CategoryDescription")); listOfErrors.Add(err); isRejected = true;
                     }
 
                     //var variablesID = variables
@@ -6190,7 +6224,7 @@ namespace HydroServerToolsRepository.Repository
                     //                  .SingleOrDefault();
                     //if (variablesID == 0)
                     //{
-                    //    var err = new ErrorModel("AddCategories", string.Format(Ressources.IMPORT_VALUE_NOT_IN_CV, item.VariableCode, "Variables")); listOfErrors.Add(err); isRejected = true;
+                    //    var err = new ErrorModel("AddCategories", string.Format(Resources.IMPORT_VALUE_NOT_IN_CV, item.VariableCode, "Variables")); listOfErrors.Add(err); isRejected = true;
                     //}
                     //else
                     //{
@@ -6227,7 +6261,8 @@ namespace HydroServerToolsRepository.Repository
                     }
 
                 }
-                catch (Exception ex)
+                //catch (Exception ex)
+                catch (Exception)
                 {
                     listOfIncorrectRecords.Add(item);
                 }
@@ -6254,7 +6289,7 @@ namespace HydroServerToolsRepository.Repository
             }
             catch (DbUpdateException ex)
             {
-                throw;
+                throw ex;
             }
 
         }
@@ -6498,18 +6533,18 @@ namespace HydroServerToolsRepository.Repository
             }
             catch (DbUpdateException ex)
             {
-                throw;
+                throw ex;
             }
 
         }
 
         public void UpdateSeriesCatalog(string instanceIdentifier, string entityConnectionstring)
         {
-            //var s = Ressources.EFMODELDEF_IN_CONNECTIONSTRING;
+            //var s = Resources.EFMODELDEF_IN_CONNECTIONSTRING;
             //var constring = "metadata=res://*/ODM_1_1_1EFModel.csdl|res://*/ODM_1_1_1EFModel.ssdl|res://*/ODM_1_1_1EFModel.msl;provider=System.Data.SqlClient;provider connection string=&quot; Data Source=tcp:bhi5g2ajst.database.windows.net,1433;Initial Catalog=HydroServertest2;User ID=HisCentralAdmin@bhi5g2ajst; Password=f3deratedResearch; Persist Security Info=true; MultipleActiveResultSets=True;App=EntityFramework";
             //var constring = "metadata=res://*/ODM_1_1_1EFModel.csdl|res://*/ODM_1_1_1EFModel.ssdl|res://*/ODM_1_1_1EFModel.msl;provider=System.Data.SqlClient;provider connection string=&quot;data source=mseul-cuahsi;initial catalog=HydroSample2;integrated security=true; MultipleActiveResultSets=True;App=EntityFramework";
             //var cleanedConnectionString = entityConnectionstring.Replace(s, string.Empty);
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, Ressources.IMPORT_STATUS_TIMESERIES);    
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, Resources.IMPORT_STATUS_TIMESERIES);    
 
             var ec = new EntityConnectionStringBuilder(entityConnectionstring);
             //clear SeriesCatolog table
@@ -6588,7 +6623,7 @@ namespace HydroServerToolsRepository.Repository
 
         public void UpdateSeriesCatalog2(string instanceIdentifier, List<DataValuesModel> listOfRecords, string entityConnectionstring)
         {
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, Ressources.IMPORT_STATUS_TIMESERIES);
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, Resources.IMPORT_STATUS_TIMESERIES);
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionstring);
 
            IEnumerable<string> uniqueSiteIds = listOfRecords.GroupBy(item => item.SiteID).Select(i => i.Key).ToList();
@@ -6604,7 +6639,7 @@ namespace HydroServerToolsRepository.Repository
                 if (Int32.TryParse(uniqueSiteId, out siteId))
                 {
                     count++;
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING_TIMESERIES, count, maxCount));
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING_TIMESERIES, count, maxCount));
 
                     getTimeseries(siteId, listOfRecords, context, instanceIdentifier, entityConnectionstring);
                 }
@@ -6613,11 +6648,11 @@ namespace HydroServerToolsRepository.Repository
 
         public void UpdateSeriesCatalog3(string instanceIdentifier, List<DataValuesModel> listOfRecords, string entityConnectionstring)
         {
-            //var s = Ressources.EFMODELDEF_IN_CONNECTIONSTRING;
+            //var s = Resources.EFMODELDEF_IN_CONNECTIONSTRING;
             //var constring = "metadata=res://*/ODM_1_1_1EFModel.csdl|res://*/ODM_1_1_1EFModel.ssdl|res://*/ODM_1_1_1EFModel.msl;provider=System.Data.SqlClient;provider connection string=&quot; Data Source=tcp:bhi5g2ajst.database.windows.net,1433;Initial Catalog=HydroServertest2;User ID=HisCentralAdmin@bhi5g2ajst; Password=f3deratedResearch; Persist Security Info=true; MultipleActiveResultSets=True;App=EntityFramework";
             //var constring = "metadata=res://*/ODM_1_1_1EFModel.csdl|res://*/ODM_1_1_1EFModel.ssdl|res://*/ODM_1_1_1EFModel.msl;provider=System.Data.SqlClient;provider connection string=&quot;data source=mseul-cuahsi;initial catalog=HydroSample2;integrated security=true; MultipleActiveResultSets=True;App=EntityFramework";
             //var cleanedConnectionString = entityConnectionstring.Replace(s, string.Empty);
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, Ressources.IMPORT_STATUS_TIMESERIES);
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, Resources.IMPORT_STATUS_TIMESERIES);
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionstring);
 
             var uniqueSiteCodes = listOfRecords.GroupBy(item => item.SiteID).Select(i => i.Key).ToList();
@@ -6639,7 +6674,7 @@ namespace HydroServerToolsRepository.Repository
             foreach (var item in list)
             {
                 count++;
-                BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));
 
                 var siteID = Convert.ToInt32(item.ElementAt(0).SiteID);
                 var variableID = Convert.ToInt32(item.ElementAt(0).VariableID);
@@ -6678,7 +6713,7 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        throw new Exception(String.Format(Ressources.IMPORT_CREATE_SERIESCATALOG,"Site"));
+                        throw new Exception(String.Format(Resources.IMPORT_CREATE_SERIESCATALOG,"Site"));
                     }
                     //Variable information
                     var variable = context.Variables.Where(p=> p.VariableID == variableID).FirstOrDefault();
@@ -6700,7 +6735,7 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {                        
-                        throw new Exception(String.Format(Ressources.IMPORT_CREATE_SERIESCATALOG,"Variable"));                        
+                        throw new Exception(String.Format(Resources.IMPORT_CREATE_SERIESCATALOG,"Variable"));                        
                     }
                     //Method information
                     var method = context.Methods.Where(p=> p.MethodID == methodID).FirstOrDefault();
@@ -6711,7 +6746,7 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {                        
-                         throw new Exception(String.Format(Ressources.IMPORT_CREATE_SERIESCATALOG,"Method"));                        
+                         throw new Exception(String.Format(Resources.IMPORT_CREATE_SERIESCATALOG,"Method"));                        
                     }
                     //Sources information
                     var source = context.Sources.Where(p=> p.SourceID == sourceID).FirstOrDefault();
@@ -6724,7 +6759,7 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {                        
-                         throw new Exception(String.Format(Ressources.IMPORT_CREATE_SERIESCATALOG,"Source"));                        
+                         throw new Exception(String.Format(Resources.IMPORT_CREATE_SERIESCATALOG,"Source"));                        
                     }
                     //Qualitycontrollevel information
                     var qualitycontrollevel = context.QualityControlLevels.Where(p=> p.QualityControlLevelID == qualityControlLevelID).FirstOrDefault();
@@ -6735,7 +6770,7 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {                        
-                         throw new Exception(String.Format(Ressources.IMPORT_CREATE_SERIESCATALOG,"Qualitycontrollevel"));                        
+                         throw new Exception(String.Format(Resources.IMPORT_CREATE_SERIESCATALOG,"Qualitycontrollevel"));                        
                     }
                     //cummulative information
                     timeseries.BeginDateTime = tsd.BeginDateTime;
@@ -6808,7 +6843,7 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        throw new Exception(String.Format(Ressources.IMPORT_CREATE_SERIESCATALOG, "Site"));
+                        throw new Exception(String.Format(Resources.IMPORT_CREATE_SERIESCATALOG, "Site"));
                     }
                     //Variable information
                     var variable = context.Variables.Where(p => p.VariableID == variableID).FirstOrDefault();
@@ -6830,7 +6865,7 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        throw new Exception(String.Format(Ressources.IMPORT_CREATE_SERIESCATALOG, "Variable"));
+                        throw new Exception(String.Format(Resources.IMPORT_CREATE_SERIESCATALOG, "Variable"));
                     }
                     //Method information
                     var method = context.Methods.Where(p => p.MethodID == methodID).FirstOrDefault();
@@ -6841,7 +6876,7 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        throw new Exception(String.Format(Ressources.IMPORT_CREATE_SERIESCATALOG, "Method"));
+                        throw new Exception(String.Format(Resources.IMPORT_CREATE_SERIESCATALOG, "Method"));
                     }
                     //Sources information
                     var source = context.Sources.Where(p => p.SourceID == sourceID).FirstOrDefault();
@@ -6854,7 +6889,7 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        throw new Exception(String.Format(Ressources.IMPORT_CREATE_SERIESCATALOG, "Source"));
+                        throw new Exception(String.Format(Resources.IMPORT_CREATE_SERIESCATALOG, "Source"));
                     }
                     //Qualitycontrollevel information
                     var qualitycontrollevel = context.QualityControlLevels.Where(p => p.QualityControlLevelID == qualityControlLevelID).FirstOrDefault();
@@ -6865,7 +6900,7 @@ namespace HydroServerToolsRepository.Repository
                     }
                     else
                     {
-                        throw new Exception(String.Format(Ressources.IMPORT_CREATE_SERIESCATALOG, "Qualitycontrollevel"));
+                        throw new Exception(String.Format(Resources.IMPORT_CREATE_SERIESCATALOG, "Qualitycontrollevel"));
                     }
                     //cummulative information
                     timeseries.BeginDateTime = tsd.BeginDateTime;

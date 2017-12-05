@@ -24,6 +24,10 @@ using System.Web.Script.Serialization;
 using System.Web.UI.WebControls;
 using System.Threading.Tasks;
 
+using ODM_1_1_1EFModel;
+
+using HydroServerToolsEFDerivedObjects;
+
 namespace HydroServerTools.Controllers
 {
     [Authorize]
@@ -40,9 +44,9 @@ namespace HydroServerTools.Controllers
             //get connection name
             string connectionName = HydroServerToolsUtils.getConnectionName(HttpContext.User.Identity.Name.ToString());
 
-            if (connectionName == Ressources.NOT_LINKED_TO_DATABASE)
+            if (connectionName == Resources.NOT_LINKED_TO_DATABASE)
             {
-                TempData["message"] = Ressources.USERACCOUNT_NOT_LINKED;
+                TempData["message"] = Resources.USERACCOUNT_NOT_LINKED;
                 return RedirectToAction("Login","Account");
             }
             string entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name.ToString());
@@ -93,7 +97,7 @@ namespace HydroServerTools.Controllers
         }
         public ActionResult NoDBForm()
         {
-            ViewBag.Message = Ressources.HYDROSERVER_USERLOOKUP_FAILED;
+            ViewBag.Message = Resources.HYDROSERVER_USERLOOKUP_FAILED;
             //var user = User.Identity.Name;
             return View();
         }
@@ -226,16 +230,21 @@ namespace HydroServerTools.Controllers
                     if (collection.AllKeys.Contains("qualifiers")) { var repo = new QualifiersRepository(); repo.deleteAll(entityConnectionString); }
                     if (collection.AllKeys.Contains("samples")) { var repo = new SamplesRepository(); repo.deleteAll(entityConnectionString); }
                     if (collection.AllKeys.Contains("labmethods")) { var repo = new LabMethodsRepository(); repo.deleteAll(entityConnectionString); }
-                    if (collection.AllKeys.Contains("methods")) { var repo = new MethodsRepository(); repo.deleteAll(entityConnectionString); }
+                    //BC - 01-Nov-2017 - Replace MethodsRepository call with GenericRepository call... 
+                    //if (collection.AllKeys.Contains("methods")) { var repo = new MethodsRepository(); repo.deleteAll(entityConnectionString); }
+                    if (collection.AllKeys.Contains("methods"))
+                    {
+                        var repo = new GenericRepository<EFD_Method, Method>(entityConnectionString);
+                        repo.DeleteAll();
+                    }
                     if (collection.AllKeys.Contains("sources")) { var repo = new SourcesRepository(); repo.deleteAll(entityConnectionString); }
                     if (collection.AllKeys.Contains("offsettypes")) { var repo = new OffsetTypesRepository(); repo.deleteAll(entityConnectionString); }
                     if (collection.AllKeys.Contains("variables")) { var repo = new VariablesRepository(); repo.deleteAll(entityConnectionString); }
                     if (collection.AllKeys.Contains("sites")) { var repo = new SitesRepository(); repo.deleteAll(entityConnectionString); }
-
-                    
                 }
             }
-            catch (DbUpdateException ex)
+            //catch (DbUpdateException ex)
+            catch (DbUpdateException)
             {
                 //HttpContext.Response.ContentType = "text/plain";
                 Response.StatusCode = (int)HttpStatusCode.BadRequest; 

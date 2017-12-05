@@ -1,15 +1,15 @@
-﻿using HydroserverToolsBusinessObjects.Models;
-using ODM_1_1_1EFModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿//using HydroserverToolsBusinessObjects.Models;
+//using ODM_1_1_1EFModel;
+//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Text;
+//using System.Threading.Tasks;
 
-namespace HydroServerToolsRepository
-{
-    class DatatablesHelper
-    {
+//namespace HydroServerToolsRepository
+//{
+//    class DatatablesHelper
+//    {
     //    public static List<SiteModel> FilterSitesTable(ODM_1_1_1EFModel.ODM_1_1_1Entities context, string searchString, int pageSize)
     //    {
     //        var result = new List<SiteModel>();
@@ -147,5 +147,5 @@ namespace HydroServerToolsRepository
 
     //        return  sortedItems;
     //}
-    }
-}
+//    }
+//}

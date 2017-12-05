@@ -55,10 +55,16 @@ namespace HydroServerToolsRepository.Repository
 
             BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format("test"));
 
-         
+            //Convert input id to lowercase...
+            string idLower = String.Empty;
+            if (null != id)
+            {
+                idLower = id.ToLower();
+            }
+
             try 
             { 
-                if (id == "sites")
+                if (idLower == "sites")
                 {
                     var recordsToInsert = new List<Site>();
                     foreach (T item in list)
@@ -66,11 +72,11 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map< T,Site>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<Site>(providerConnectionString, id, recordsToInsert, instanceIdentifier, CacheName);                   
+                    BulkInsert<Site>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName);                   
                 }
 
                
-                if (id == "variables")
+                if (idLower == "variables")
                 {
                     var recordsToInsert = new List<Variable>();
                     foreach (T item in list)
@@ -78,9 +84,9 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, Variable>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<Variable>(providerConnectionString, id, recordsToInsert, instanceIdentifier, CacheName);
+                    BulkInsert<Variable>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName);
                 }
-                if (id == "offsettypes")
+                if (idLower == "offsettypes")
                 {
                     var recordsToInsert = new List<OffsetType>();
                     foreach (T item in list)
@@ -88,9 +94,9 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, OffsetType>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<OffsetType>(providerConnectionString, id, recordsToInsert, instanceIdentifier, CacheName);
+                    BulkInsert<OffsetType>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName);
                 }
-                if (id == "sources")
+                if (idLower == "sources")
                 {
                     var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
                     var objContext = ((IObjectContextAdapter)context).ObjectContext;
@@ -151,10 +157,10 @@ namespace HydroServerToolsRepository.Repository
                             context.Sources.Add(source);
                             objContext.SaveChanges(SaveOptions.AcceptAllChangesAfterSave);
                         }
-                        //BulkInsert<ISOMetadata>(providerConnectionString, id, isometadatarecordsToInsert);
+                        //BulkInsert<ISOMetadata>(providerConnectionString, idLower, isometadatarecordsToInsert);
 
                    
-                        //BulkInsert<Source>(providerConnectionString, id, sourcerecordsToInsert);
+                        //BulkInsert<Source>(providerConnectionString, idLower, sourcerecordsToInsert);
                         
                         //if we get here things are looking good.
                         scope.Complete();
@@ -162,7 +168,7 @@ namespace HydroServerToolsRepository.Repository
                     }                    
                 }
 
-                if (id == "methods")
+                if (idLower == "methods")
                 {
                     var recordsToInsert = new List<Method>();
                     foreach (T item in list)
@@ -170,11 +176,11 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, Method>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<Method>(providerConnectionString, id, recordsToInsert, instanceIdentifier, CacheName);
+                    BulkInsert<Method>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName);
 
                 }
 
-                if (id == "labmethods")
+                if (idLower == "labmethods")
                 {
                     var recordsToInsert = new List<LabMethod>();
                     foreach (T item in list)
@@ -182,11 +188,11 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, LabMethod>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<LabMethod>(providerConnectionString, id, recordsToInsert, instanceIdentifier, CacheName);
+                    BulkInsert<LabMethod>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName);
 
                 }
 
-                if (id == "samples")
+                if (idLower == "samples")
                 {
                     var recordsToInsert = new List<Sample>();
                     foreach (T item in list)
@@ -194,11 +200,11 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, Sample>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<Sample>(providerConnectionString, id, recordsToInsert, instanceIdentifier, CacheName);
+                    BulkInsert<Sample>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName);
 
                 }
 
-                if (id == "qualifiers")
+                if (idLower == "qualifiers")
                 {
                     var recordsToInsert = new List<Qualifier>();
                     foreach (T item in list)
@@ -206,11 +212,11 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, Qualifier>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<Qualifier>(providerConnectionString, id, recordsToInsert, instanceIdentifier, CacheName);
+                    BulkInsert<Qualifier>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName);
 
                 }
 
-                if (id == "qualitycontrollevels")
+                if (idLower == "qualitycontrollevels")
                 {
                     var recordsToInsert = new List<QualityControlLevel>();
                     foreach (T item in list)
@@ -218,11 +224,11 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, QualityControlLevel>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<QualityControlLevel>(providerConnectionString, id, recordsToInsert, instanceIdentifier, CacheName);
+                    BulkInsert<QualityControlLevel>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName);
 
                 }
 
-                if (id == "datavalues")
+                if (idLower == "datavalues")
                 {
                     var recordsToInsert = new List<DataValue>();
                     foreach (T item in list)
@@ -230,12 +236,12 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, DataValue>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<DataValue>(providerConnectionString, id, recordsToInsert, instanceIdentifier, CacheName);
+                    BulkInsert<DataValue>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName);
                  
 
                 }
 
-                if (id == "groupdescriptions")
+                if (idLower == "groupdescriptions")
                 {
                     var recordsToInsert = new List<GroupDescription>();
                     foreach (T item in list)
@@ -243,11 +249,11 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, GroupDescription>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<GroupDescription>(providerConnectionString, id, recordsToInsert, instanceIdentifier, CacheName);
+                    BulkInsert<GroupDescription>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName);
 
                 }
 
-                if (id == "groups")
+                if (idLower == "groups")
                 {
                     var recordsToInsert = new List<Group>();
                     foreach (T item in list)
@@ -255,10 +261,10 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, Group>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<Group>(providerConnectionString, id, recordsToInsert, instanceIdentifier, CacheName);
+                    BulkInsert<Group>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName);
                 }
 
-                if (id == "derivedfrom")
+                if (idLower == "derivedfrom")
                 {
                     var recordsToInsert = new List<DerivedFrom>();
                     foreach (T item in list)
@@ -266,10 +272,10 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, DerivedFrom>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<DerivedFrom>(providerConnectionString, id, recordsToInsert, instanceIdentifier, CacheName);
+                    BulkInsert<DerivedFrom>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName);
                 }
 
-                if (id == "categories")
+                if (idLower == "categories")
                 {
                     var recordsToInsert = new List<Category>();
                     foreach (T item in list)
@@ -277,12 +283,12 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, Category>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<Category>(providerConnectionString, id, recordsToInsert, instanceIdentifier, CacheName);
+                    BulkInsert<Category>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName);
                 }
            }
             catch (Exception ex)
             {
-                throw;
+                throw ex;
             }
           
         }
@@ -290,10 +296,16 @@ namespace HydroServerToolsRepository.Repository
         public static void CommitUpdateRecords<T>(string entityConnectionString, string id, IList<T> list)
         {
 
-          
+            //Convert input id to lowercase...
+            string idLower = String.Empty;
+            if (null != id)
+            {
+                idLower = id.ToLower();
+            }
+
             try
             {
-                if (id == "sites")
+                if (idLower == "sites")
                 {
                     var recordsToInsert = new List<Site>();
                     var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
@@ -330,7 +342,7 @@ namespace HydroServerToolsRepository.Repository
                 }
 
 
-                if (id == "variables")
+                if (idLower == "variables")
                 {
                     var recordsToInsert = new List<Variable>();
                     var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
@@ -360,7 +372,7 @@ namespace HydroServerToolsRepository.Repository
                     }
                     context.SaveChanges();
                 }
-                if (id == "offsettypes")
+                if (idLower == "offsettypes")
                 {
                     var recordsToInsert = new List<OffsetType>();
                     var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
@@ -382,7 +394,7 @@ namespace HydroServerToolsRepository.Repository
                     }
                     context.SaveChanges();
                 }
-                if (id == "sources")
+                if (idLower == "sources")
                 {
                     var recordsToInsert = new List<Source>();
                     var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
@@ -430,7 +442,7 @@ namespace HydroServerToolsRepository.Repository
                     objContext.SaveChanges(SaveOptions.AcceptAllChangesAfterSave);
                 }
 
-                if (id == "methods")
+                if (idLower == "methods")
                 {
                     var recordsToInsert = new List<Method>();
                     var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
@@ -453,7 +465,7 @@ namespace HydroServerToolsRepository.Repository
                     context.SaveChanges();
                 }
 
-                if (id == "labmethods")
+                if (idLower == "labmethods")
                 {
                     var recordsToInsert = new List<LabMethod>();
                     var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
@@ -479,7 +491,7 @@ namespace HydroServerToolsRepository.Repository
 
                 }
 
-                if (id == "samples")
+                if (idLower == "samples")
                 {
                     var recordsToInsert = new List<Sample>();
                     var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
@@ -501,7 +513,7 @@ namespace HydroServerToolsRepository.Repository
 
                 }
 
-                if (id == "qualifiers")
+                if (idLower == "qualifiers")
                 {
                     var recordsToInsert = new List<Qualifier>();
                     var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
@@ -523,7 +535,7 @@ namespace HydroServerToolsRepository.Repository
 
                 }
 
-                if (id == "qualitycontrollevels")
+                if (idLower == "qualitycontrollevels")
                 {
                     var recordsToInsert = new List<QualityControlLevel>();
                     var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
@@ -545,41 +557,41 @@ namespace HydroServerToolsRepository.Repository
 
                 }
 
-                if (id == "datavalues")
+                if (idLower == "datavalues")
                 {
                     
 
                 }
 
-                if (id == "groupdescriptions")
+                if (idLower == "groupdescriptions")
                 {
                     
 
                 }
 
-                if (id == "groups")
+                if (idLower == "groups")
                 {
                     
                 }
 
-                if (id == "derivedfrom")
+                if (idLower == "derivedfrom")
                 {
                     
                 }
 
-                if (id == "categories")
+                if (idLower == "categories")
                 {
                     
                 }
             }
             catch (Exception ex)
             {
-                throw;
+                throw ex;
             }
 
         }
 
-        public static void BulkInsert<T>(string connection, string tableName, IList<T> list, string instanceIdentifier, string CacheName)
+        public static void BulkInsert<targetType>(string connection, string tableName, IList<targetType> list, string instanceIdentifier, string CacheName)
         {
             try 
             { 
@@ -592,7 +604,7 @@ namespace HydroServerToolsRepository.Repository
 
 
             var table = new DataTable();
-            var props = TypeDescriptor.GetProperties(typeof(T))
+            var props = TypeDescriptor.GetProperties(typeof(targetType))
                 //Dirty hack to make sure we only have system data types 
                 //i.e. filter out the relationships/collections
                                        .Cast<PropertyDescriptor>()
@@ -639,7 +651,7 @@ namespace HydroServerToolsRepository.Repository
                         bulkCopy.SqlRowsCopied += (s, e) =>
                         {
                             Console.WriteLine(e.RowsCopied + " loaded");
-                            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_COMMIT_PROGRESS, e.RowsCopied.ToString(), table.Rows.Count.ToString()));
+                            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_COMMIT_PROGRESS, e.RowsCopied.ToString(), table.Rows.Count.ToString()));
 
                         };
                         //bulkCopy.SqlRowsCopied += (sender, e) => { = instanceIdentifier, CacheName};
@@ -661,7 +673,7 @@ namespace HydroServerToolsRepository.Repository
             }
             finally
             {
-                BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_COMMIT_COMPLETE));
+                BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_COMMIT_COMPLETE));
 
             }
             //bulkCopy.WriteToServer(table);
@@ -687,26 +699,33 @@ namespace HydroServerToolsRepository.Repository
             //var c = (System.Text.RegularExpressions.Regex.Matches(value, @"[\:\\/\=]").Count != 0);
             //var d = (System.Text.RegularExpressions.Regex.Matches(value, @"[\t\r\v\f\n]").Count != 0);
 
-            bool hasInvalidCharacters;
-            hasInvalidCharacters = ((System.Text.RegularExpressions.Regex.Matches(value, @"[\040]").Count != 0) ||
-                                        (System.Text.RegularExpressions.Regex.Matches(value, @"[\,\+]").Count != 0) ||
-                                        (System.Text.RegularExpressions.Regex.Matches(value, @"[\:\\/\=]").Count != 0) ||
-                                        (System.Text.RegularExpressions.Regex.Matches(value, @"[\t\r\v\f\n]").Count != 0));
-            return hasInvalidCharacters;
+            //bool hasInvalidCharacters;
+            //hasInvalidCharacters = ((System.Text.RegularExpressions.Regex.Matches(value, @"[\040]").Count != 0) ||
+            //                            (System.Text.RegularExpressions.Regex.Matches(value, @"[\,\+]").Count != 0) ||
+            //                            (System.Text.RegularExpressions.Regex.Matches(value, @"[\:\\/\=]").Count != 0) ||
+            //                            (System.Text.RegularExpressions.Regex.Matches(value, @"[\t\r\v\f\n]").Count != 0));
+            //return hasInvalidCharacters;
+
+            return (BusinessObjectsUtils.containsInvalidCharacters(value));
         }
 
         public static bool containsSpecialCharacters(string value)
         {
-            bool hasSpecialCharacters;
-            hasSpecialCharacters = (System.Text.RegularExpressions.Regex.Matches(value, "[\t\r\v\f\n]").Count != 0);
-            return hasSpecialCharacters;
+            //bool hasSpecialCharacters;
+            //hasSpecialCharacters = (System.Text.RegularExpressions.Regex.Matches(value, "[\t\r\v\f\n]").Count != 0);
+            //return hasSpecialCharacters;
+
+            return (BusinessObjectsUtils.containsSpecialCharacters(value));
         }
+
         //Allows only characters in the range of A-Z (case insensitive), 0-9, and “.”, “-“, and “_”.
-        public static bool containsNotOnlyAllowedCaracters(string value)
+        public static bool containsNotOnlyAllowedCharacters(string value)
         {
-            bool containsNotAllowedCharacters;
-            containsNotAllowedCharacters = (System.Text.RegularExpressions.Regex.Matches(value, @"[^0-9a-zA-Z\.\-_]").Count != 0);
-            return containsNotAllowedCharacters;
+            //bool containsNotAllowedCharacters;
+            //containsNotAllowedCharacters = (System.Text.RegularExpressions.Regex.Matches(value, @"[^0-9a-zA-Z\.\-_]").Count != 0);
+            //return containsNotAllowedCharacters;
+
+            return (BusinessObjectsUtils.containsNotOnlyAllowedCharacters(value));
         }
 
         public static UpdateFieldsModel validateUpdateRecord(string tableName, string columnName, string currentValue, string updatedValue)

@@ -186,7 +186,7 @@ namespace HydroServerTools.Controllers
         }
         public ActionResult DownloadFile(string id)
         {
-            bool fileNotFound = false;
+            //bool fileNotFound = false;
 
             
             try

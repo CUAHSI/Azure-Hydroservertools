@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace HydroserverToolsBusinessObjects.Models
 {
+    [Serializable()]
     public class VariablesModel
     {
         //public string VariableID { get; set; }

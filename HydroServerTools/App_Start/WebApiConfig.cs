@@ -24,6 +24,24 @@ namespace HydroServerTools
             //    defaults: new { id = RouteParameter.Optional }
             //);
 
+            //Define custom routes for Get and Put taking a parameter 
+            //that is not named 'Id' (thus different from the DefaultApi)
+            config.Routes.MapHttpRoute(
+                name: "RevisedUploadApiGet",
+                routeTemplate: "api/revisedupload/get/{uploadId}",
+                defaults: new { controller = "RevisedUpload", action = "Get" });
+
+            config.Routes.MapHttpRoute(
+                name: "RevisedUploadApiPut",
+                routeTemplate: "api/revisedupload/put/{uploadId}",
+                defaults: new { controller = "RevisedUpload", action = "Put" });
+
+            //Not sure if this route is strictly necessary...
+            config.Routes.MapHttpRoute(
+                name: "RevisedUploadApiPost",
+                routeTemplate: "api/revisedupload/post",
+                defaults: new { controller = "RevisedUpload", action = "Post" });
+
             RouteTable.Routes.MapHttpRoute(
                name: "DefaultApi",
                routeTemplate: "api/{controller}/{action}/{id}",

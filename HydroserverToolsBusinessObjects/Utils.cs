@@ -187,8 +187,31 @@ namespace HydroserverToolsBusinessObjects
             return uploadStatisticsModel;
         }
     
+        //Transfer some character checking methods from HydroServerToolsRepository...
 
-    
+        public static bool containsInvalidCharacters(string value)
+        {
+            bool hasInvalidCharacters;
+            hasInvalidCharacters = ((System.Text.RegularExpressions.Regex.Matches(value, @"[\040]").Count != 0) ||
+                                        (System.Text.RegularExpressions.Regex.Matches(value, @"[\,\+]").Count != 0) ||
+                                        (System.Text.RegularExpressions.Regex.Matches(value, @"[\:\\/\=]").Count != 0) ||
+                                        (System.Text.RegularExpressions.Regex.Matches(value, @"[\t\r\v\f\n]").Count != 0));
+            return hasInvalidCharacters;
+        }
+
+        public static bool containsSpecialCharacters(string value)
+        {
+            bool hasSpecialCharacters;
+            hasSpecialCharacters = (System.Text.RegularExpressions.Regex.Matches(value, "[\t\r\v\f\n]").Count != 0);
+            return hasSpecialCharacters;
+        }
+
+        public static bool containsNotOnlyAllowedCharacters(string value)
+        {
+            bool containsNotAllowedCharacters;
+            containsNotAllowedCharacters = (System.Text.RegularExpressions.Regex.Matches(value, @"[^0-9a-zA-Z\.\-_]").Count != 0);
+            return containsNotAllowedCharacters;
+        }
 
     }
 }

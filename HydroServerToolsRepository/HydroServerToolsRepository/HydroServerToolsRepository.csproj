@@ -34,17 +34,16 @@
   <ItemGroup>
     <Reference Include="AutoMapper, Version=3.1.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\AutoMapper.3.1.1\lib\net40\AutoMapper.dll</HintPath>
-    </Reference>
-    <Reference Include="AutoMapper.Net4, Version=3.1.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\AutoMapper.3.1.1\lib\net40\AutoMapper.Net4.dll</HintPath>
+      <HintPath>..\..\packages\AutoMapper.6.2.1\lib\net45\AutoMapper.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework">
       <HintPath>..\..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.Extended">
       <HintPath>..\..\packages\EntityFramework.Extended.6.1.0.168\lib\net45\EntityFramework.Extended.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.Metadata">
+      <HintPath>..\..\packages\EntityFramework.Metadata.1.0.2.0\lib\net45\EntityFramework.Metadata.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.SqlServer">
       <HintPath>..\..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
@@ -74,6 +73,7 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.Linq" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -88,6 +88,11 @@
     <Compile Include="AutoMapperConfiguration.cs" />
     <Compile Include="CustomExceptions.cs" />
     <Compile Include="DatatablesHelper.cs" />
+    <Compile Include="GenericRepository.cs" />
+    <Compile Include="HISWebClient\Util\LinqPredicateBuilder.cs" />
+    <Compile Include="HISWebClient\Util\SearchStringComparer.cs" />
+    <Compile Include="HISWebClient\Util\StringContext.cs" />
+    <Compile Include="IGenericRepository.cs" />
     <Compile Include="ISitesRepository.cs" />
     <Compile Include="IRepository.cs" />
     <Compile Include="Models.cs" />
@@ -101,6 +106,10 @@
     <ProjectReference Include="..\..\HydroserverToolsBusinessObjects\HydroserverToolsBusinessObjects.csproj">
       <Project>{7cab9a1b-dedf-4c2f-801e-05cc8f136455}</Project>
       <Name>HydroserverToolsBusinessObjects</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\HydroServerToolsEFDerivedObjects\HydroServerToolsEFDerivedObjects.csproj">
+      <Project>{e81e4631-680a-4928-926c-6b217918ba94}</Project>
+      <Name>HydroServerToolsEFDerivedObjects</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\jQuery.DataTables.Mvc\jQuery.DataTables.Mvc.csproj">
       <Project>{3383d0e2-c499-4f02-9d29-f744741aa999}</Project>

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace HydroserverToolsBusinessObjects.Models
 {
+    [Serializable()]
     public class GroupDescriptionModel
     {
         public string GroupID { get; set; }

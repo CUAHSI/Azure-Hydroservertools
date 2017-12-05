@@ -1,0 +1,745 @@
+"site","state","reservoir","flag","notes","clean_manual","start","end","area_km2","reservoir_impact_p"
+66171500,"MT",0,0,"ok, DMC outlier, DMC",NA,1999-11-10,2013-12-31,1370.44010860432,0
+26015000,"MT",0,0,"gaps, DMC",NA,1984-04-23,2005-03-20,10950.1449998777,0
+66240000,"MT",1,NA,"downstream of reservoir (active since 1987)",NA,1972-07-23,1979-08-19,NA,NA
+17120000,"MT",0,0,"small gaps, DMC",NA,1973-09-14,2007-12-31,37303.6659381123,0
+66015000,"MT",0,0,"small gaps, DMC",NA,1971-05-11,2007-12-31,12441.3489384569,0
+66470000,"MT",0,0,"gap at 1990, increasing, potentially inconsistent before 1980, DMC",NA,1968-10-18,2007-12-31,24509.723019642,0
+66255000,"MT",0,0,"gaps, higher min values after 2000, (far) downstream from a reservoir, DMC",NA,1965-12-27,2013-12-31,19848.9772167432,0.0389732106464611
+66076000,"MT",0,0,"increasing, DMC",NA,1966-01-13,1988-10-31,8936.52632400096,0
+18423000,"MT",NA,1,"weird, small date range, < 10 years",NA,1997-09-23,2008-11-30,NA,NA
+17092950,"MT",0,0,"small date range, gaps, decreasing, with gaps < 5 years",NA,1995-02-15,2003-07-31,6629.52456723455,0
+18422000,"MT",0,0,"small date range, gap at 2009, < 5 years",NA,2004-10-29,2009-09-30,11549.7601927707,0
+26040000,"MT",0,0,"gaps, decreasing, DMC",NA,1976-04-14,2007-12-31,5327.26347690651,0
+66650000,"MT",0,0,"gaps at 1990 and throughout, potentially inconsistent before 1975, (far) downstream of reservoir, DMC",NA,1969-01-18,2007-12-31,29781.2715685234,0
+17280000,"MT",0,0,"gaps, cut/clean",1,1975-11-17,2010-04-16,34865.1412395914,0
+17095000,"MT",0,0,"gaps, DMC",NA,1984-09-01,2013-02-28,24908.8310355157,0
+66200000,"MT",1,NA,"in a reservoir (active since 1987)",NA,1972-07-26,1999-09-30,NA,NA
+18409000,"MT",0,0,"gaps",NA,1994-01-01,2009-02-28,523.353692251916,0
+66050000,"MT",0,0,"large date range, gaps, DMC outlier, DMC",NA,1971-07-24,2007-12-31,5270.74051531576,0
+66465000,"MT",0,0,"small date range, increasing, < 10 years, DMC",NA,1971-09-04,1981-03-31,24083.0891895639,0
+17360000,"MT",0,1,"small date range, < 5 years, gaps, weird",NA,1976-04-23,1990-06-20,NA,NA
+66150000,"MT",0,0,"small date range, < 5 years, DMC",NA,1967-11-09,1971-12-31,275.243255086537,0
+66005000,"MT",0,0,"ok, DMC",NA,1966-04-28,1980-05-31,605.921397559831,0
+24150000,"MT",0,0,"small date range, gaps, with gaps < 5 years, DMC",NA,1967-10-20,1971-12-31,1200.86616990863,0
+17130000,"MT",0,0,"gaps, small date range, < 10 years, cut/clean after 1995",1,1986-11-22,1994-12-31,183633.902851628,0
+17230000,"MT",0,0,"gaps, DMC outlier, DMC",NA,1973-08-15,2011-08-31,5477.99774353312,0
+66170000,"MT",0,0,"small date range, low flow, < 5 years, DMC",NA,1965-04-01,1968-09-30,288.548147757909,0
+66120000,"MT",0,0,"gaps, DMC",NA,1967-12-18,2005-12-31,64584.282511095,0.0270982231868917
+26045000,"MT",0,0,"small date range, decreasing, < 10 years, DMC",NA,1979-02-13,1985-04-20,373.95925463077,0
+66600000,"MT",0,0,"gaps, DMC",NA,1967-12-25,2007-12-31,22482.6108762144,0
+66280000,"MT",0,0,"gaps, large date range, higher min values after 2001, (far) downstream from a reservoir, DMC",NA,1966-12-01,2013-12-31,29002.4435669349,0.0266728687325809
+66070004,"MT",0,0,"huge gap 1980-1995, increasing, DMC",NA,1965-12-14,2013-07-31,31599.2397548167,0.05538485468101
+17340000,"MT",0,0,"gaps, DMC",NA,1975-10-28,2013-02-28,52578.7594546149,0
+15050000,"MT",0,0,"gaps, low value in 2002 ok",NA,1971-06-26,2007-12-31,3005.81461404933,0
+66250001,"MT",0,0,"gaps, higher min values after 2001, (far) downstream from a reservoir, DMC",NA,1966-01-01,2013-12-31,16052.4128880263,0.0481907844995666
+17410000,"MT",0,0,"gaps throughout",NA,1982-08-23,2009-12-31,132119.615948111,0
+66360000,"MT",0,0,"gaps, large date range, (far) downstream from a reservoir, higher min values at end ok - not qc related, DMC",NA,1970-05-01,2006-06-30,39798.5023574178,0.0194373738799937
+66400000,"MT",0,0,"large gaps, cut/clean, DMC",1,1965-04-11,2003-04-30,6990.65446139859,0
+66380000,"MT",0,0,"gaps, large date range, DMC",NA,1966-06-28,2007-12-31,3222.24403037068,0
+66065000,"MT",0,0,"gap at 1990 and throughout, increasing, DMC",NA,1969-08-16,2007-12-31,3528.47051299544,0
+66430000,"MT",0,1,"weird",NA,1987-10-24,2006-10-31,NA,NA
+15825000,"MT",0,0,"small date range, gaps, < 2 years",NA,1984-07-01,1989-01-31,NA,NA
+66175000,"MT",1,NA,"in a reservoir - just upstream (active since 1987)",NA,1982-08-12,1999-12-31,NA,NA
+66455000,"MT",0,0,"upstream of ROR, large gaps, DMC",NA,1979-07-06,2006-07-31,1712.570155023,0
+18435000,"MT",0,0,"small date range, gap in 2003, with gaps < 10 years",NA,1999-10-29,2009-04-30,5380.62839557703,0
+17122000,"MT",0,0,"gaps, DMC outlier, DMC",NA,2000-03-29,2013-02-28,14481.3374441064,0
+66055000,"MT",0,0,"gap at 1990 and throughout, increasing",NA,1969-09-28,2007-12-31,8004.79639369608,0.218633830990276
+17210000,"MT",0,0,"gaps, cut/clean blocks in 1992 and after 2010",1,1976-04-19,2010-04-11,14076.5402265192,0
+17092800,"MT",0,1,"weird",NA,2004-10-19,2013-05-31,NA,NA
+24180000,"MT",0,0,"gaps, DMC",NA,1973-09-17,1989-09-30,10918.7917880704,0
+15820000,"MT",0,0,"gaps throughout",NA,1976-08-17,2000-11-30,24333.7688338903,0
+66071300,"MT",1,NA,"downstream (and upstream) of reservoir",NA,1984-02-01,1994-12-31,NA,NA
+17100000,"MT",0,0,"small date range, < 5 years",NA,1973-09-17,1977-10-21,14907.9079766328,0
+66370000,"MT",0,0,"gaps, DMC",NA,1992-11-01,2006-06-30,39798.5023574178,0.0194373738799937
+66072001,"MT",0,0,"small date range, < 2 years, DMC",NA,1977-01-01,1977-12-31,5516.25744632173,0
+66040000,"MT",0,0,"small date range, gaps, < 5 years, DMC",NA,1979-07-01,1986-01-31,4179.39275334309,0
+17121000,"MT",0,0,"gaps, cut/clean before 1987",1,1986-08-30,1997-06-30,9782.42560361776,0
+17380000,"MT",0,0,"gaps throughout",NA,1980-09-18,2013-02-28,82205.3215685988,0
+66006000,"MT",0,0,"small gaps, DMC",NA,1967-11-10,2007-12-31,1601.80128083479,0
+18415000,"MT",0,0,"gaps, < 10 years",NA,2000-08-11,2008-11-30,11489.1078334764,0
+66174000,"MT",0,0,"big gap, DMC outlier, DMC",NA,1987-02-18,2013-12-31,566.802898977679,0
+66010000,"MT",0,0,"gaps, DMC",NA,1966-01-01,2013-04-30,9511.39536673169,0
+17343000,"MT",1,0,"gaps, small date range, with gaps < 10 years",NA,2003-09-19,2013-02-28,NA,NA
+66074000,"MT",NA,1,"weird, gaps, small date range, with gaps < 2 years",NA,1965-12-10,1969-05-13,NA,NA
+18436000,"MT",0,0,"small date range, gaps, with gaps < 10 years",NA,2000-07-26,2009-04-30,12080.8022563539,0
+17355000,"MT",1,0,"gaps before 1991",NA,1983-09-16,2007-12-31,NA,NA
+26350000,"MT",0,0,"gaps, especially at tail, DMC",NA,1973-08-30,2013-03-31,195066.622601247,0
+26050000,"MT",0,0,"gaps, large date range, DMC",NA,1967-12-15,2012-11-30,17914.08882812,0
+24050000,"MT",0,0,"potentially filtered (non-daily) data, DMC",NA,1965-01-01,2013-02-28,2067.85238798587,0
+66173000,"MT",1,NA,"in a reservoir - just upstream (active since 1987)",NA,1982-08-13,1999-12-31,NA,NA
+17123000,"MT",0,0,"gaps, DMC",NA,2000-09-26,2013-02-28,57422.2310683764,0
+26100000,"MT",0,0,"gaps, especially at tail, DMC",NA,1969-01-01,2013-03-31,25437.829206702,0
+17350000,"MT",0,0,"good example site, DMC outlier, DMC",NA,1979-03-17,2013-02-28,1010.873754116,0
+66260001,"MT",0,0,"gaps, large date range, higher min values after 2001, (far) downstream from a reservoir, DMC",NA,1933-01-01,2013-12-31,23650.3218062486,0.0327089997557901
+66490000,"MT",1,1,"weird",NA,1969-06-09,2006-12-31,NA,NA
+66525000,"MT",1,NA,"upstream of ROR, downstream of small reservoir",NA,1969-08-14,1981-12-31,NA,NA
+66520000,"MT",0,0,"max value ok, DMC",NA,1971-06-01,2007-12-31,2905.94860433578,0
+66390000,"MT",0,1,"couldn't find the river on the map matching the name of the waterway for this gauge",NA,1966-06-27,1971-11-30,NA,NA
+18430000,"MT",0,0,"gaps, small date range, with gaps < 5 years data",NA,1975-10-25,1978-08-15,NA,NA
+18408900,"MT",0,0,"gaps, cut/clean after 1989, small date range, < 10 years",1,1980-05-01,1989-03-31,523.353692251916,0
+66163000,"MT",1,NA,"in a reservoir - just upstream (active since 1987)",NA,1982-09-01,1990-12-22,NA,NA
+66155000,"MT",0,0,"small date range, < 5 years, DMC",NA,1968-04-26,1971-12-31,526.143751075966,0
+66350000,"MT",0,0,"far downstream of reservoir (active since 1987), data prior to reservoir construction, DMC",NA,1967-11-29,1984-09-30,37665.5750286055,0.0205380740795126
+24500000,"MT",0,0,"gaps, especially at tail, DMC",NA,1966-07-27,2013-03-31,5227.91372385581,0
+26200000,"MT",0,0,"gaps, large date range, DMC",NA,1980-11-23,2013-03-31,41173.7878435489,0
+66071400,"MT",0,1,"weird, large gaps and inconsistent",NA,1979-06-22,2011-12-31,NA,NA
+66231000,"MT",1,1,"weird after 2000, downstream from a reservoir",NA,1981-07-12,2007-12-31,NA,NA
+66201000,"MT",1,NA,"in a reservoir (active since 1987)",NA,1972-07-26,1990-12-31,NA,NA
+66140000,"MT",0,0,"gap at 1990 and throughout, DMC outlier, DMC",NA,1979-07-09,2007-12-31,2115.95646330777,0
+15120001,"MT",0,0,"small gaps",NA,1976-06-30,2007-12-31,22621.8669581903,0
+17200000,"MT",0,0,"gaps, cut/clean before 1975 and after 2010",1,1974-04-02,2009-12-28,10723.3482058177,0
+66710000,"MT",0,0,"small date range, gap at 2004, < 5 years, DMC",NA,1997-06-23,2006-06-30,107697.223250535,0.00718289986349389
+66450001,"MT",0,0,"gaps at 1990 and throughout, DMC",NA,1965-11-24,2007-12-31,12420.2867404073,0
+17092900,"MT",0,1,"weird, small date range, < 5 years",NA,1983-04-01,1986-12-31,NA,NA
+66260002,"MT",1,NA,"far downstream of reservoir (active since 1987)",NA,1977-01-01,1992-03-31,NA,NA
+18420000,"MT",0,0,"gaps",NA,1977-05-01,2009-10-31,3809.04082669821,0
+17091000,"MT",0,1,"weird",NA,1993-04-19,2013-03-31,NA,NA
+17098000,"MT",0,0,"gaps, small date range, with gaps < 5 years, cut/clean after 1979",1,1975-11-01,1978-03-25,94322.8080064394,0
+17097000,"MT",NA,1,"gaps, small date range ~ no data, < 2 years",NA,1976-08-24,1978-09-30,NA,NA
+66210000,"MT",1,0,"small date range, < 10 years",NA,1982-08-07,1990-12-31,NA,NA
+66090000,"MT",0,0,"gaps, increasing, DMC",NA,1967-12-21,2006-07-09,48006.9529371439,0.0364555380997076
+24650000,"MT",0,0,"gaps, large date range, decreasing, DMC",NA,1967-10-18,2007-12-31,1947.24034313406,0
+26700000,"MT",0,0,"gap at 1990",NA,1980-08-27,1993-12-31,223343.85491936,0
+26400000,"MT",0,0,"small date range, < 5 years",NA,1969-08-27,1972-02-28,196769.449455895,0
+66245000,"MT",0,0,"small date range, gap, < 5 years, DMC",NA,1967-11-08,1972-01-17,334.331180277862,0
+66440000,"MT",0,0,"gaps, cut/clean 1988-1993, max values ok, DMC outlier, DMC",1,1979-06-26,2006-11-30,2163.32045364961,0
+66110000,"MT",0,0,"gap at 1990 and throughout, DMC",NA,1969-11-28,2005-08-29,2996.78021512452,0
+66160000,"MT",0,0,"gap 2010, DMC",NA,1972-08-07,2013-12-31,4284.66502433065,0
+17420000,"MT",0,0,"large gap after 1990, DMC",NA,1975-11-25,2009-12-31,139355.808829883,0
+66460000,"MT",0,0,"gaps at 1990 and throughout, DMC",NA,1969-10-23,2007-12-31,23144.3828354363,0
+24850000,"MT",0,0,"gaps, especially at tail, DMC",NA,1974-04-21,2013-02-26,50226.7949702918,0
+17125000,"MT",NA,1,"no data",NA,2008-01-01,2012-11-30,NA,NA
+66162000,"MT",0,0,"gaps, DMC outlier, DMC",NA,2000-01-01,2013-12-31,2588.21510762472,0
+17300000,"MT",0,0,"gaps, DMC",NA,1990-09-01,2010-02-24,41082.5406933393,0
+17093000,"MT",0,0,"gaps, DMC outlier, DMC",NA,1978-01-26,2013-03-31,56181.8546190742,0
+15750000,"MT",0,0,"upstream of ROR",NA,1979-05-24,2007-12-31,15324.9359326364,0
+66008000,"MT",0,0,"gaps, DMC outlier, DMC",NA,1967-11-12,2007-12-31,1444.25063012899,0
+66340000,"MT",0,0,"gaps, large date range, higher min values after 2001, (far) downstream from a reservoir, DMC",NA,1969-11-24,2007-12-31,35487.612181103,0.0217985466657255
+66072000,"MT",0,0,"large date range, gaps, increasing, DMC",NA,1965-11-30,2007-12-31,5516.25744632173,0
+26150000,"MT",0,0,"gaps, DMC",NA,1999-10-18,2013-03-31,9114.05231894105,0
+18428000,"MT",0,0,"small date range, gap in 2008, < 5 years",NA,2004-10-16,2009-04-30,3466.31309976297,0
+26300000,"MT",0,0,"gaps, large date range, DMC",NA,1969-09-04,2013-03-31,59042.0868596051,0
+24200000,"MT",0,0,"gaps, large date range, DMC",NA,1971-05-28,2013-02-28,18434.0582820454,0
+20090000,"GO",0,0,"small date range, < 5 years",NA,1995-05-01,1998-08-31,NA,NA
+20090010,"GO",0,0,"small date range, < 10 years, DMC",NA,2006-11-23,2013-05-08,13887.4035630789,0
+60940000,"GO",0,0,"gaps, large date range, potentially filtered (not daily) data, DMC",NA,1972-07-27,2013-02-28,2981.32699244649,0
+60200000,"GO",0,0,"large gaps at 1991, 2002-2007, upstream of a reservoir, DMC",NA,1969-06-01,2010-04-30,3552.49204762181,0
+60798000,"GO",0,0,"small gaps, large date range, DMC",NA,1974-06-26,2013-03-31,12853.8069421461,0
+25100000,"GO",0,0,"gap 1970-1980, DMC outlier, DMC",NA,1965-02-03,2013-02-28,227.430000935193,0
+60765000,"GO",0,0,"gaps, large date range, increasing, DMC",NA,1971-11-18,2013-03-31,7890.31354770429,0
+25140000,"GO",0,0,"small gaps, DMC",NA,2000-07-25,2012-11-30,3262.53065379342,0
+60772000,"GO",0,0,"gaps, large date range, min values at start ok, DMC",NA,1975-11-25,2013-03-31,17271.5096568502,0
+60645000,"GO",0,0,"small date range, gap at 1968, (far) downstream of a reservoir, < 10 years",NA,1964-12-01,1970-06-30,NA,NA
+60544990,"GO",0,0,"gaps",NA,1992-03-17,2013-12-31,20802.6477393663,0.428297962685147
+60545000,"GO",0,0,"gap at 1999 and 2002, upstream and (far) downstream of a reservoir",NA,1971-09-17,2005-09-30,20802.6477393663,0.428297962685147
+60790000,"GO",0,0,"gap at 1990, DMC",NA,1962-08-16,2013-03-31,8768.00003046386,0
+20000900,"GO",0,0,"small date range, < 5 years, DMC",NA,2009-05-19,2011-12-02,376.627893750505,0
+60443000,"GO",0,0,"gap at 1992, gradually decreasing, upstream of a reservoir",NA,1978-01-01,1995-12-31,NA,NA
+20250000,"GO",0,0,"gaps, good example site, DMC",NA,1965-01-01,2013-12-31,10587.9836073093,0
+60795000,"GO",NA,1,"weird, small date range, < 2 years",NA,1969-05-15,1972-01-15,NA,NA
+60715000,"GO",0,0,"small gaps, large date range, increasing, DMC",NA,1954-05-21,2013-03-31,4605.97040642844,0
+60778000,"GO",0,0,"large date range, small gaps, DMC",NA,1974-06-21,2013-02-28,602.63458053467,0
+25090000,"GO",0,0,"small date range, < 5 years, DMC",NA,2002-10-05,2006-09-30,117.662360150756,0
+60970000,"GO",1,0,"large date range",NA,1972-07-23,2013-02-28,NA,NA
+60653000,"GO",0,1,"gaps, low flow, decreasing, middle of headwater basin",NA,1978-01-01,2013-03-26,NA,NA
+24030000,"GO",0,0,"small date range, < 2 years",NA,1988-06-18,1989-05-31,NA,NA
+60030000,"GO",0,0,"small gaps, upstream of a reservoir, DMC",NA,1972-04-29,2007-12-08,8337.54933059584,0
+25080000,"GO",0,1,"weird, small date range, < 5 years",NA,2002-10-07,2006-09-30,NA,NA
+60920000,"GO",1,0,"gaps, in (at head of) a reservoir",NA,1971-08-16,1987-12-31,NA,NA
+60540000,"GO",0,0,"gap around 2010, DMC",NA,1972-04-14,2013-12-31,3677.29559957976,0
+20699000,"GO",0,0,"huge gap, DMC",NA,1994-08-09,2013-12-31,1623.92873116466,0
+20001400,"GO",0,1,"small date range, low flow, < 5 years, middle of headwater basin",NA,2009-05-22,2011-12-03,NA,NA
+60885000,"GO",0,0,"gaps between 1961-1972 and at 1989",NA,1956-08-25,1989-05-15,NA,NA
+60020000,"GO",0,0,"gaps before 1972, 1998-2000, DMC",NA,1966-07-22,2007-07-31,4417.67134443737,0
+60436300,"GO",1,0,"small date range, < 5 years",NA,2009-05-26,2011-11-30,NA,NA
+25200000,"GO",0,0,"gaps, large date range, DMC",NA,1969-11-16,2013-01-31,76676.7059916397,0
+24700000,"GO",0,0,"gaps, large date range, DMC",NA,1970-01-01,2013-02-28,36964.5041234476,0
+25120000,"GO",0,0,"gaps, especially at tail, DMC",NA,1984-03-04,2012-11-30,165.317390918078,0
+20490000,"GO",0,0,"upstream of reservoir, gap at 1990",NA,1973-09-18,1998-02-20,NA,NA
+24060000,"GO",0,0,"small date range, gaps, < 2 years",NA,1988-06-22,1989-05-31,NA,NA
+60510000,"GO",1,1,"small date range, gaps, gradually increasing; potentially inconsistent 1978-79 (less noisy), downstream of a reservoir, < 10 years",NA,1975-01-01,1983-12-31,NA,NA
+60805050,"GO",1,1,"inconsistent after 2009, (far) downstream of a reservoir",NA,1999-11-18,2013-03-31,NA,NA
+60907000,"GO",1,1,"gaps, min value error at 1977, in (at head of) a reservoir and downstream from others",NA,1972-01-01,2006-03-31,NA,NA
+24090000,"GO",0,0,"small date range, gaps, < 2 years",NA,1988-07-06,1989-05-31,NA,NA
+60591000,"GO",0,0,"big gap, with gaps < 10 years, DMC",NA,2000-01-01,2013-12-31,2360.56418260635,0
+60564000,"GO",0,0,"gaps, DMC",NA,1996-12-01,2013-12-31,3226.51691393314,0
+60785005,"GO",0,0,"gap at 1990, DMC",NA,1974-07-17,2013-02-28,1179.89242309,0
+60040000,"GO",1,0,"small gaps, downstream of a reservoir",NA,1969-06-13,2007-12-06,NA,NA
+25950000,"GO",0,0,"gaps, especially at tail, DMC",NA,1973-08-15,2013-02-28,117525.539910017,0
+60774000,"GO",0,0,"large date range, gaps, DMC",NA,1974-06-24,2013-02-28,821.256251375351,0
+25850000,"GO",0,1,"weird, small date range, < 5 years",NA,1983-01-24,1984-12-31,NA,NA
+60870000,"GO",1,0,"large date range, gap at 1991",NA,1971-08-11,2013-02-28,NA,NA
+20008000,"GO",0,0,"small date range, < 5 years, DMC outlier, DMC",NA,2009-05-22,2011-11-08,161.802930934185,0
+24080000,"GO",0,0,"small date range, gaps, < 2 years",NA,1988-06-20,1989-05-31,NA,NA
+60961000,"GO",NA,1,"no data",NA,2008-01-01,2009-02-28,NA,NA
+20050000,"GO",0,0,"big gaps in 1990 and 2009-2011, DMC",NA,1966-01-01,2012-12-31,11260.980184193,0
+60665000,"GO",0,0,"small gaps, DMC",NA,1978-02-22,2013-03-31,1207.63046039444,0
+60019000,"GO",1,0,"small date range, low flow, gap, < 5 years",NA,2009-05-23,2011-12-17,NA,NA
+21050020,"GO",1,1,"weird after 1996, in a reservoir, downstream of another reservoir",NA,1980-09-22,2001-12-31,NA,NA
+60478480,"GO",NA,1,"no data",NA,2008-01-01,2013-02-28,NA,NA
+60600000,"GO",1,1,"small date range, gap at 1978, in a reservoir, < 10 years",NA,1972-04-23,1979-07-31,NA,NA
+60445000,"GO",1,1,"small gaps; potentially inconsistent data in 1980-1984 (less noisy), upstream and downstream of a reservoir",NA,1973-07-25,1996-05-31,NA,NA
+22130000,"GO",0,0,"gaps, small date range, < 5 years",NA,1984-04-01,1989-07-31,NA,NA
+21220000,"GO",0,0,"gaps, DMC",NA,1975-06-17,2007-12-31,7290.20845056077,0
+60635000,"GO",0,0,"gaps, very large date range, cut/clean before 1950, good example site, DMC",1,1950-06-02,2013-03-31,525.703450173596,0
+20100010,"GO",0,0,"small date range, < 10 years",NA,1992-10-14,1998-02-28,NA,NA
+24070000,"GO",0,0,"gaps, especially at tail, DMC",NA,1997-09-20,2013-02-28,4410.23626402146,0
+24800000,"GO",0,0,"gaps, especially at tail, DMC",NA,1971-11-24,2013-02-11,11982.5178750237,0
+60125000,"GO",1,1,"small date range, small gap, in a reservoir, < 10 years",NA,1972-04-25,1981-08-31,NA,NA
+21300000,"GO",0,0,"gaps, DMC",NA,1974-10-15,2007-12-31,3881.47600244484,0
+60018000,"GO",0,0,"small date range, < 5 years",NA,1978-01-01,1980-12-31,NA,NA
+20489100,"GO",0,0,"huge gaps, < 10 years, DMC",NA,1997-01-01,2012-08-31,17036.4812018671,0
+60654000,"GO",0,0,"small gaps, DMC",NA,1979-11-30,2013-03-31,1189.22027488373,0
+24900000,"GO",0,0,"small gaps, DMC",NA,1975-06-28,2013-02-28,2021.04531930514,0
+24950000,"GO",0,0,"gaps, large date range, DMC",NA,1983-04-01,2013-02-28,10133.7907754798,0
+60900000,"GO",0,0,"gaps, (far) downstream of a reservoir, min value ok",NA,1972-07-26,1994-08-31,NA,NA
+60895000,"GO",0,0,"gaps, cut/clean before 1970 & qc = 1 (after 2008) & min value errors, DMC",1,1972-05-25,2007-03-31,1224.83661412745,0
+25500000,"GO",0,0,"large gap before 1981, small gaps elsewhere",NA,1974-06-17,1989-12-31,NA,NA
+60781000,"GO",1,0,"small gaps, large date range",NA,1971-10-20,2013-03-31,NA,NA
+60805000,"GO",0,0,"gap at start",NA,1967-01-20,1997-05-30,NA,NA
+60432000,"GO",0,0,"large gaps, decreasing, DMC",NA,1978-03-01,2013-03-31,225.320415891092,0
+21580000,"GO",0,0,"gap around 1990, DMC",NA,1974-10-19,2007-12-31,386.886208260753,0
+60655000,"GO",0,0,"gap at 1996-97, (far) downstream of a reservoir",NA,1956-08-30,1999-04-30,NA,NA
+60930000,"GO",0,0,"small gaps, large date range, DMC",NA,1979-01-18,2013-02-28,913.572568984417,0
+25070000,"GO",0,1,"gaps, low flow, < 5 years, middle of headwater basin",NA,2002-10-09,2006-09-30,NA,NA
+60664800,"GO",0,1,"gaps, low flow river, middle of headwater basin",NA,1994-01-01,2006-12-16,NA,NA
+60650000,"GO",0,0,"gaps, DMC",NA,1978-02-17,2007-12-31,2798.98817690192,0
+42450100,"GO",0,0,"small date range, low flow, < 2 years, DMC",NA,2006-02-06,2007-12-31,103.263836825114,0
+24196000,"GO",0,0,"gaps, DMC outlier, DMC",NA,2000-06-21,2013-02-28,1617.52803472663,0
+21550000,"GO",1,1,"weird, appears not to be daily, in (head of) a reservoir",NA,1974-10-16,1984-12-31,NA,NA
+60544000,"GO",0,1,"small date range, < 10 years, middle of headwater basin",NA,1999-11-18,2007-10-10,NA,NA
+25130000,"GO",0,0,"large date range, DMC",NA,1974-06-17,2013-02-28,5362.32473790952,0
+60492200,"GO",0,1,"small date range, many gaps, weird, < 5 years",NA,2009-05-17,2011-11-30,NA,NA
+60590000,"GO",0,0,"potentially filtered, less noisy after 1990",NA,1967-06-08,1995-12-31,NA,NA
+60544100,"GO",NA,1,"no data",NA,2008-01-01,2013-03-31,NA,NA
+60640000,"GO",0,0,"large date range, DMC",NA,1975-06-13,2013-08-31,1745.76623744157,0
+21500000,"GO",0,0,"gaps, DMC",NA,1970-10-14,2007-12-31,22625.8272726075,0
+24780000,"GO",0,0,"gaps, especially at tail, DMC",NA,1974-10-23,2013-02-10,1210.50765885164,0
+60495000,"GO",0,0,"small gaps, DMC",NA,1999-11-27,2013-03-31,282.27898508097,0
+20899000,"GO",0,0,"gaps, DMC",NA,1994-09-01,2010-11-30,4417.75962467069,0
+21620000,"GO",0,1,"small date range, gaps, weird, < 2 years",NA,1973-09-04,1975-03-21,NA,NA
+60750000,"GO",0,0,"small gaps, large date range, DMC",NA,1957-02-10,2013-03-31,2647.65693372937,0
+60680000,"GO",0,0,"cut/clean before 1966, large date range, good example site, DMC",1,1966-10-27,2012-10-31,11545.9151703916,0
+21600000,"GO",0,0,"gaps, DMC",NA,1968-12-17,2006-09-30,29679.5571237081,0
+60945000,"GO",0,0,"small date range, (far) downstream of a reservoir, < 10 years, min values ok, DMC",NA,2000-04-10,2007-12-31,7188.49523279652,0
+20500000,"GO",1,0,"small gaps, in (head of) a reservoir",NA,1966-07-01,1996-09-30,NA,NA
+20200000,"GO",0,0,"gaps, DMC",NA,1964-12-14,2012-12-31,3678.62597513978,0
+20489000,"GO",0,0,"small date range, < 5 years, gap at 1996",NA,1994-08-18,1997-11-20,NA,NA
+60700000,"GO",1,1,"site in small reservoir; inconsistency at 1975",NA,1956-09-01,2005-11-23,NA,NA
+24100000,"GO",0,1,"weird (cut) before 1973; inconsistent",NA,1963-11-15,1991-10-31,NA,NA
+60950000,"GO",0,0,"large date range, cut/clean after 2010, min values ok, DMC",1,1972-07-20,2011-12-01,6817.57970719126,0
+60050000,"GO",0,0,"good example site, DMC",NA,1974-06-26,2006-09-30,841.362192360298,0
+60785000,"GO",0,0,"small date range, < 2 years",NA,1971-10-22,1972-12-31,NA,NA
+60430000,"GO",1,1,"medium gaps throughout, in (head of) a reservoir",NA,1964-12-21,2005-06-25,NA,NA
+60500000,"GO",0,0,"small gaps, large date range, DMC",NA,1966-07-23,2013-12-31,3582.30632412479,0
+60565000,"GO",0,0,"large gaps after 1986",NA,1972-04-18,1993-12-31,NA,NA
+24750000,"GO",0,0,"gaps, especially at tail, DMC",NA,1974-06-17,2013-01-27,6431.70057644053,0
+60675000,"GO",0,0,"(far) downstream of a reservoir",NA,1975-06-23,1995-12-31,NA,NA
+60510010,"GO",1,1,"gaps; weird and large gap after 2007, downstream of a reservoir",NA,1995-01-01,2012-12-31,NA,NA
+21560000,"GO",0,0,"gaps, DMC",NA,1976-04-23,2007-12-31,2909.0205952072,0
+60910000,"GO",0,0,"large date range, gaps, min value ok, DMC",NA,1965-08-23,2012-11-30,639.194473045436,0
+20700000,"GO",1,0,"in (head of) a reservoir",NA,1970-03-01,1996-09-30,NA,NA
+25750000,"GO",0,0,"gaps, especially at tail, DMC",NA,1999-11-06,2012-11-30,8768.24105155558,0
+60670000,"GO",1,1,"small date range, gaps, downstream of a reservoir, < 5 years",NA,1966-10-26,1971-12-31,NA,NA
+60965000,"GO",0,0,"gaps, min value ok, increasing, (far) downstream of a reservoir, DMC",NA,1972-05-28,2007-12-31,4056.32551021383,0
+25700000,"GO",0,0,"gaps, especially at tail, DMC",NA,1974-07-01,2011-06-13,92843.052342743,0
+60642000,"GO",1,1,"noisy, gaps, potentially inconsistent",NA,1974-11-07,2012-05-22,NA,NA
+20150000,"GO",0,0,"small date range, < 10 years, gap at 1970-1971",NA,1965-02-03,1972-02-21,NA,NA
+25800000,"GO",0,0,"gap around 1993, DMC",NA,1980-09-19,2012-11-30,18427.1186327505,0
+60911000,"GO",NA,1,"no data",NA,2008-01-01,2009-06-30,NA,NA
+20950000,"GO",0,0,"gap at 1990, small gaps elsewhere, DMC",NA,1979-04-17,2006-09-30,771.579762520362,0
+20900000,"GO",0,0,"upstream of a reservoir",NA,1971-11-25,1996-09-30,NA,NA
+60905000,"GO",1,0,"gaps near end, downstream of two reservoirs",NA,1972-07-15,1988-06-30,NA,NA
+60436400,"GO",0,0,"small date range, cut/clean max value error, DMC",1,2009-05-25,2011-12-10,73.3337648828063,0
+60810000,"GO",1,0,"large date range, small gaps",NA,1969-05-17,2013-03-31,NA,NA
+20100000,"GO",0,0,"gaps, DMC",NA,1964-11-25,2012-12-31,1989.5570668906,0
+21510000,"GO",0,1,"weird before 1979, gaps at 1990-1993",NA,1974-10-21,2006-09-30,NA,NA
+15320002,"RO",0,0,"gap around 2000",NA,1976-02-17,2013-12-31,925794.248856774,0
+15430000,"RO",0,0,"small gaps, DMC",NA,1970-07-15,2006-12-31,8116.53008066219,0
+15552300,"RO",1,1,"small date range, gap in 1982, downstream of reservoir, < 2 years",NA,1981-01-26,1982-08-31,NA,NA
+15246000,"RO",0,0,"gaps, cut/clean after 2003, DMC",1,1983-04-04,2002-01-23,5441.39453554738,0
+15248010,"RO",0,0,"gaps at 1985 - 1993 and throughout, DMC",NA,1982-07-15,2006-12-31,4390.31461431007,0
+15571500,"RO",0,0,"gap in 1985, small date range, < 5 years",NA,1984-12-01,1989-03-31,NA,NA
+15124009,"RO",0,1,"gaps, weird",NA,1988-03-23,2006-10-31,NA,NA
+15460000,"RO",1,NA,"downstream of reservoir",NA,1970-07-13,1982-09-04,NA,NA
+15460008,"RO",1,NA,"downstream of reservoir",NA,1977-07-07,1986-01-31,NA,NA
+15170000,"RO",1,0,"gaps, increasing",NA,1988-06-01,2006-10-31,NA,NA
+15460012,"RO",1,NA,"downstream of reservoir",NA,1981-05-30,1989-07-31,NA,NA
+15556000,"RO",1,1,"small date range, gap in 1983, downstream of reservoir, < 5 years",NA,1982-08-01,1985-10-31,NA,NA
+15571100,"RO",0,0,"small date range, < 5 years",NA,1985-08-29,1987-12-31,NA,NA
+15553500,"RO",0,0,"gap in 1990 and 1997",NA,1983-04-01,1998-04-30,NA,NA
+15552600,"RO",0,0,"gap at 1990, DMC",NA,1982-12-14,2006-10-31,4340.15064232142,0
+15431000,"RO",0,0,"small gaps, DMC",NA,1979-01-18,2006-10-31,1009.85209280172,0
+15250000,"RO",0,0,"gaps, cut/clean after 2009, DMC",1,1970-08-08,2006-12-31,616197.171274749,0
+15565000,"RO",0,0,"gap at 1990 and 2001, DMC",NA,1981-05-19,2006-10-31,3931.3990128675,0
+15560000,"RO",0,0,"gap at 1990",NA,1977-12-13,2006-12-31,33013.6109732717,0
+15590000,"RO",0,0,"gaps past 1995, DMC",NA,1983-03-01,2006-09-30,1138.09565187472,0
+15432000,"RO",0,0,"small gaps, DMC",NA,1980-07-07,2006-12-31,836.960294445069,0
+15325000,"RO",0,0,"small date range, Bolivian basin, < 10 years",NA,1981-07-18,1986-05-31,NA,NA
+15326000,"RO",0,0,"gaps",NA,1988-02-13,2006-12-31,31099.8889654579,0
+15340000,"RO",0,0,"small date range, Bolivian basin, < 10 years",NA,1978-02-08,1986-08-31,NA,NA
+15160000,"RO",1,0,"small date range, gaps, with gaps < 5 years",NA,1984-01-21,1991-05-28,NA,NA
+15556010,"RO",1,1,"big gap in 1990, smaller gaps elsewhere, downstream of reservoir",NA,1988-03-31,2006-10-31,NA,NA
+15150000,"RO",0,0,"small gaps",NA,1980-12-15,2006-10-31,110888.711176706,0
+15558000,"RO",0,0,"gap at 1990, DMC",NA,1980-05-29,2006-12-31,10165.7157916902,0
+15130000,"RO",0,0,"small gaps",NA,1983-03-22,2006-10-31,52059.302947565,0
+15575000,"RO",0,0,"gap around 1990",NA,1984-03-03,2006-05-31,4685.56524334954,0
+15552700,"RO",0,0,"big gap in 1990, smaller gaps elsewhere, DMC",NA,1985-01-01,2006-12-31,5639.42966880776,0
+15470000,"RO",0,0,"gaps, DMC outlier, DMC",NA,1992-06-01,2006-12-31,218.966469912616,0
+15445000,"RO",0,0,"small gap, with gaps < 10 years, DMC",NA,1997-04-01,2006-12-31,1112.65180370811,0
+15400000,"RO",0,0,"gaps, large date range, cut/clean after 2011, DMC",1,1967-04-10,2011-05-31,981496.534181186,0
+15200000,"RO",0,0,"small date range with gaps, < 2 years",NA,1988-09-01,1991-10-31,NA,NA
+15500000,"RO",0,0,"small date range, < 2 years",NA,1983-03-14,1984-01-01,NA,NA
+15550000,"RO",0,0,"gaps, DMC",NA,1976-03-06,2006-12-31,12693.5079027629,0
+15440000,"RO",0,0,"gap at 1984-85",NA,1977-06-13,1989-09-30,NA,NA
+15571000,"RO",0,0,"small date range, gaps, gradually decreasing, < 5 years",NA,1985-01-01,1988-12-19,NA,NA
+15450000,"RO",1,NA,"in reservoir area",NA,1977-06-17,1988-03-18,NA,NA
+15245000,"RO",0,0,"small gaps",NA,1973-04-25,1988-04-30,NA,NA
+15559000,"RO",0,0,"gap at 1990, DMC",NA,1984-12-01,2006-10-31,10165.7157916902,0
+15580000,"RO",0,0,"gap at 1990",NA,1977-12-12,2006-10-31,60583.5973885304,0
+15318000,"RO",0,0,"small date range, Bolivian basin, < 5 years",NA,2010-04-09,2013-02-28,922559.879206996,0
+15572000,"RO",0,0,"small date range, < 5 years",NA,1983-08-01,1988-10-31,NA,NA
+28850000,"TO",0,0,"gaps, large date range, DMC",NA,1974-08-26,2013-02-28,383989.142276652,0
+27550000,"TO",0,0,"small gaps, large date range, DMC",NA,1985-05-29,2007-12-31,929.70428975201,0
+21890000,"TO",0,0,"gaps, upstream of a reservoir, cut/clean final year, DMC",1,1971-12-04,2006-01-31,17919.6675708032,0
+26800000,"TO",0,0,"gaps, decreasing",NA,1977-12-13,2012-11-30,35772.5554163937,0
+26710000,"TO",0,0,"gaps, DMC outlier, DMC",NA,1986-04-16,2013-01-31,8070.77911318864,0
+27530000,"TO",0,0,"small gaps, DMC",NA,2000-05-28,2013-02-28,1801.49922992842,0
+23220000,"TO",0,0,"small gaps, DMC",NA,1984-01-20,2013-02-28,2906.02296180862,0
+27100000,"TO",0,0,"gaps, small date range, with gaps < 2 years",NA,1980-09-26,1984-03-31,NA,NA
+27540000,"TO",NA,1,"no data",NA,2013-02-01,2013-08-31,NA,NA
+22100000,"TO",0,0,"gaps, DMC",NA,1974-08-26,2006-09-30,8767.69990064962,0
+23700000,"TO",0,0,"small gaps, large date range, decreasing, DMC",NA,1973-05-22,2013-02-28,299071.74240114,0
+22850000,"TO",0,0,"large gaps at 1977-79, 1993-94, and small gaps elsewhere, DMC",NA,1973-07-13,2007-12-31,9532.5240044035,0
+22040000,"TO",1,1,"gap at 1990, weird after 1997 (noisy flow), in a reservoir",NA,1974-08-01,2005-11-10,NA,NA
+21080000,"TO",0,1,"gaps, weird after 1997",NA,1977-11-21,2006-03-10,NA,NA
+27370000,"TO",0,1,"small gaps, middle of headwater basin",NA,2000-05-13,2012-10-31,NA,NA
+22250000,"TO",0,0,"small gaps, good example site, DMC",NA,1969-08-05,2006-09-30,14513.227498444,0
+26030000,"TO",0,0,"gap at 1989 - 1991 and elsewhere",NA,1969-08-24,1996-02-13,NA,NA
+23250000,"TO",0,0,"gap around 1990, DMC",NA,1971-11-20,2013-01-31,10126.8299776453,0
+22280000,"TO",0,0,"small date range, < 10 years, DMC outlier, DMC",NA,2001-02-08,2007-12-31,1854.54776706255,0
+23150000,"TO",0,0,"gaps, especially at tail, DMC",NA,1973-08-29,2013-02-28,2411.35399142686,0
+23710000,"TO",0,0,"small date range, with gaps < 5 years",NA,1969-09-27,1973-05-31,NA,NA
+23230000,"TO",0,0,"good example site, DMC",NA,1984-01-18,2013-01-31,4111.68505824802,0
+22150000,"TO",0,0,"gaps, DMC",NA,1971-12-01,2006-09-30,13925.7959554685,0
+22680000,"TO",0,0,"gaps, especially at tail, DMC",NA,1973-06-15,2012-03-21,17074.9767122655,0
+21750000,"TO",0,0,"decreasing, DMC outlier, DMC",NA,1974-10-14,2007-12-31,1036.44008452147,0
+22500000,"TO",0,0,"gaps, noisier at tail, decreasing, DMC",NA,1969-07-28,2013-02-28,185942.993973932,0
+21650000,"TO",0,0,"gaps, upstream of a reservoir, cut/clean final year, decreasing, DMC",1,1977-11-25,2006-01-31,17919.6675708032,0
+28840000,"TO",0,0,"gaps, DMC",NA,2000-10-10,2013-02-28,1389.04395308707,0
+28150000,"TO",0,0,"gaps, large date range, DMC",NA,1974-08-23,2013-02-28,1472.95500859664,0
+22700000,"TO",0,0,"small gaps, good example site, DMC",NA,1971-12-09,2013-01-31,18165.7104798695,0
+21900000,"TO",0,0,"gaps in 1990 - 1997 and elsewhere, upstream of a reservoir, DMC",NA,1970-10-19,2005-12-31,17919.6675708032,0
+23200000,"TO",0,0,"small date range, small gaps, (far) downstream of large reservoir complex, < 10 years",NA,1974-07-25,1979-12-31,NA,NA
+22050001,"TO",1,1,"weird after 1998, downstream of a reservoir",NA,1970-12-01,2013-10-31,NA,NA
+28240000,"TO",0,0,"gaps, large date range, DMC",NA,1974-08-26,2013-02-28,3484.22512995964,0
+28100000,"TO",NA,1,"no data",NA,2008-01-01,2010-02-28,NA,NA
+28320000,"TO",0,1,"weird",NA,1988-01-01,1989-12-31,NA,NA
+26790000,"TO",0,0,"gaps",NA,2000-09-23,2013-01-31,1289.50828445274,0
+28200000,"TO",0,0,"many gaps, DMC",NA,2000-04-07,2013-02-28,1340.03569840803,0
+27380000,"TO",0,0,"gap at 1990",NA,1980-08-29,2013-02-28,1459.8333513996,0
+22190000,"TO",0,0,"gaps, good example site, DMC outlier, DMC",NA,1975-10-11,2013-06-30,1771.44703871832,0
+22730000,"TO",0,0,"upstream of a reservoir",NA,1969-07-28,1981-12-31,NA,NA
+22220000,"TO",0,0,"gaps, DMC",NA,1974-08-21,2013-09-30,10401.0731619137,0
+22350000,"TO",1,1,"huge gap at 1940-1950 and small gaps elsewhere, in (head of) a reservoir",NA,1931-01-01,2001-12-31,NA,NA
+22900000,"TO",0,0,"gaps, especially at tail, DMC",NA,1969-08-16,2013-02-28,44173.5739536146,0
+26720000,"TO",0,0,"gaps, DMC",NA,1986-04-20,2013-02-28,6621.28012133141,0
+26730000,"TO",NA,1,"no data",NA,2008-01-01,2013-02-28,NA,NA
+26750000,"TO",0,1,"gaps, weird",NA,1980-12-06,1995-05-31,NA,NA
+23130000,"TO",0,0,"gap at 1991 and elsewhere",NA,1984-02-05,1999-04-27,NA,NA
+27300000,"TO",0,0,"small date range, < 2 years, gaps",NA,1973-09-25,1977-09-27,NA,NA
+21850000,"TO",0,0,"gaps, good example site, DMC",NA,1973-01-01,2006-09-30,13001.791898021,0
+22750000,"TO",0,0,"gap at 1992-1993",NA,1975-08-23,1994-12-10,NA,NA
+27110000,"TO",0,0,"gaps, small date range, < 5 years",NA,1999-08-24,2004-02-21,6195.17064204054,0
+21050000,"TO",1,0,"in a reservoir, downstream of another reservoir",NA,1971-01-01,1996-09-30,NA,NA
+23600000,"TO",0,0,"large date range, decreasing, cut/clean before 1958, DMC",1,1958-10-01,2013-09-30,290993.115440619,0
+23100000,"TO",0,0,"gaps, large date range, noisier at tail, decreasing",NA,1969-08-24,2013-02-28,243717.013852376,0
+28300000,"TO",0,0,"small gaps, large date range, DMC",NA,1969-09-01,2013-02-28,372582.43485189,0
+60444035,"DF",0,1,"small date range, gaps, low flow, < 5 years, middle of headwater basin",NA,2009-05-24,2011-12-10,NA,NA
+60433000,"DF",0,0,"gaps, DMC",NA,1995-08-17,2007-02-28,1103.84623124034,0
+60477600,"DF",0,1,"gaps, decreasing, middle of headwater basin",NA,1970-06-01,2007-02-24,NA,NA
+42450380,"DF",0,0,"gaps, small date range, < 5 years, DMC",NA,2009-06-01,2011-12-27,54.1150702281087,0
+60476170,"DF",1,0,"small date range, downstream of reservoir, weird, < 5 years",NA,2009-05-12,2011-12-16,NA,NA
+60476155,"DF",1,0,"small date range, small gaps, < 5 years",NA,2009-05-13,2011-11-11,NA,NA
+60491000,"DF",0,0,"small date range, < 5 years, DMC",NA,2009-07-01,2011-12-17,101.541592321371,0
+60435300,"DF",0,0,"low flow, large date range, DMC",NA,1978-05-17,2007-02-26,99.861854106483,0
+60434000,"DF",0,1,"small date range, low flow, gaps, < 5 years, middle of headwater basin",NA,1982-12-15,1987-06-30,NA,NA
+60434500,"DF",0,1,"weird, middle of headwater basin",NA,1992-11-12,2006-04-30,NA,NA
+42450760,"DF",0,0,"small date range, low flow, < 5 years, DMC",NA,2009-05-07,2011-11-30,103.718286223716,0
+60435100,"DF",0,1,"low flow, large date range, decreasing, middle of headwater basin",NA,1978-05-23,2007-02-28,NA,NA
+20001130,"DF",0,1,"small date range, low flow, weird, < 5 years, middle of headwater basin",NA,2009-06-01,2011-12-02,NA,NA
+20001200,"DF",0,0,"small date range, < 5 years, DMC",NA,2009-05-21,2011-12-02,146.240259466227,0
+60470000,"DF",0,1,"low flow, downstream of lagoon, potentially (far) downstream of a reservoir",NA,1978-05-18,1992-10-18,NA,NA
+42450780,"DF",0,1,"small date range, low flow, < 2 years, middle of headwater basin",NA,2006-03-13,2007-12-31,NA,NA
+60472100,"DF",NA,1,"weird, small date range, < 5 years, middle of headwater basin",NA,1992-02-24,1996-10-31,NA,NA
+60472000,"DF",0,1,"weird, decreasing, small date range, < 10 years, middle of headwater basin",NA,1992-02-19,1996-10-31,NA,NA
+60435000,"DF",0,1,"low flow, large date range, middle of headwater basin",NA,1978-05-01,2007-02-28,NA,NA
+60436000,"DF",1,1,"weird, min flows appear truncated",NA,1978-07-25,2007-02-28,NA,NA
+60476000,"DF",0,0,"gaps, small date range, with gaps < 5 years",NA,1971-01-01,1975-12-31,NA,NA
+60476100,"DF",0,0,"gaps, cut/clean qc = 1 (after 2006), DMC",1,1978-01-01,2006-04-30,692.870937904383,0
+60490000,"DF",0,0,"large date range, gaps, DMC",NA,1970-08-01,2007-02-28,2131.38860237309,0
+60478600,"DF",0,0,"large date range, gaps, DMC",NA,1970-11-25,2007-02-28,101.134961494112,0
+42450510,"DF",0,0,"small date range, low flow, < 5 years, DMC",NA,2009-05-06,2011-12-23,233.657121047329,0
+42450390,"DF",0,0,"small date range, low flow, < 5 years, DMC",NA,2009-05-05,2011-12-27,107.338508454035,0
+60480200,"DF",1,1,"small date range, low flow, unclear location (potentially downstream of a reservoir), < 5 years",NA,1989-02-10,1992-10-20,NA,NA
+60478500,"DF",0,0,"cut/clean before 1984 (inconsistent) and after 2006, DMC",1,1984-05-02,2006-04-30,101.134961494112,0
+60478485,"DF",1,0,"small date range, low flow, < 5 years",NA,2009-05-16,2011-11-30,NA,NA
+60478150,"DF",0,0,"small date range, low flow, upstream of reservoir, < 10 years",NA,1988-04-08,1992-10-20,NA,NA
+60478100,"DF",0,1,"small date range, low flow, weird, upstream of reservoir, < 10 years",NA,1978-06-01,1988-04-07,NA,NA
+42450740,"DF",0,0,"small date range, low flow, < 5 years, DMC",NA,2009-05-07,2011-12-22,105.88600022058,0
+42450730,"DF",0,0,"small date range, low flow, gap, < 5 years, DMC",NA,2009-05-29,2011-11-30,105.88600022058,0
+42450770,"DF",0,0,"small date range, low flow, < 5 years, min values ok, DMC",NA,2009-05-10,2011-12-23,346.665579150662,0
+42450710,"DF",0,1,"small date range, low flow, < 5 years, middle of headwater basin",NA,2009-05-11,2011-12-21,NA,NA
+60477500,"DF",1,1,"weird, small date range, < 5 years",NA,1978-05-13,1981-05-11,NA,NA
+42450160,"DF",0,0,"small date range, low flow, < 5 years, min values ok, DMC",NA,2009-05-01,2011-11-30,76.1558404971291,0
+42450370,"DF",0,0,"small date range, low flow, < 5 years, DMC",NA,2009-05-09,2011-12-26,23.6137085551753,0
+60436185,"DF",0,0,"small date range, small gap, < 5 years, DMC",NA,2009-05-23,2011-12-10,208.291656035013,0
+60471185,"DF",0,0,"small date range, low flow, < 5 years, min values ok, gaps, DMC",NA,2009-05-13,2011-11-30,108.919447942331,0
+60471200,"DF",0,0,"gaps, especially at tail, DMC",NA,1989-09-01,2007-02-28,203.273255550122,0
+60478200,"DF",0,0," gaps, especially at tail, DMC",NA,1978-05-22,2007-02-28,162.992972227459,0
+60435150,"DF",0,1,"gaps, low flow, cut/clean qc = 1 (after 2006), middle of headwater basin",1,1985-10-10,2006-04-30,NA,NA
+60480550,"DF",0,0,"small date range, < 5 years, DMC",NA,2009-08-01,2011-12-16,72.3940872573557,0
+60480500,"DF",0,1,"small date range, low flow, < 5 years, middle of headwater basin",NA,1989-02-10,1992-10-18,NA,NA
+60480000,"DF",1,1,"many gaps, weird",NA,1971-01-10,1999-01-31,NA,NA
+60479200,"DF",1,1,"weird, in a reservoir",NA,1998-01-01,2004-11-15,NA,NA
+60472235,"DF",NA,1,"no data, middle of headwater basin",NA,2009-09-01,2013-03-31,NA,NA
+60472230,"DF",0,1,"small date range, low flow, < 10 years, middle of headwater basin",NA,2005-07-01,2013-12-31,NA,NA
+60473000,"DF",0,0,"gaps, large date range, DMC",NA,1971-01-01,2013-12-31,237.082165039709,0
+60472240,"DF",1,1,"decreasing, small gaps, middle of headwater basin",NA,2001-11-09,2013-12-31,NA,NA
+60472300,"DF",0,1,"gaps, cut/clean before 2001, middle of headwater basin",1,2000-07-01,2013-12-31,NA,NA
+60478400,"DF",0,0,"decreasing, DMC",NA,1988-02-22,2002-09-30,162.992972227459,0
+60443830,"DF",0,0,"small date range, < 5 years, DMC",NA,2009-05-25,2011-11-30,125.904078760095,0
+60443850,"DF",0,0,"small date range, < 10 years",NA,1970-11-25,1976-04-30,NA,NA
+42450600,"DF",0,0,"small date range, low flow, < 5 years, DMC",NA,2009-10-03,2011-11-30,1045.95687311504,0
+42450130,"DF",0,1,"small date range, low flow, min values ok, < 5 years, middle of headwater basin",NA,2009-05-01,2011-11-30,NA,NA
+60435400,"DF",0,0,"large date range, gap at tail, DMC",NA,1978-05-17,2007-02-28,99.861854106483,0
+42450400,"DF",0,0,"gap, small date range, < 5 years, DMC",NA,2006-02-20,2007-12-31,107.338508454035,0
+42450300,"DF",0,0,"small date range, low flow, < 5 years, DMC",NA,2006-03-31,2007-12-31,76.1558404971291,0
+60471000,"DF",0,1,"low flow, gap at 1980, downstream of lagoon",NA,1978-05-18,1992-10-18,NA,NA
+20000950,"DF",0,0,"small date range, low flow, < 5 years",NA,2009-05-20,2011-12-02,93.0948470655197,0
+60474000,"DF",0,0,"gaps, low flow",NA,1978-10-17,1995-10-31,NA,NA
+42450750,"DF",0,1,"weird, small date range, < 2 years",NA,2006-03-06,2006-09-30,NA,NA
+42450350,"DF",0,0,"small date range, low flow, < 10 years, DMC",NA,2003-01-29,2007-12-31,485.355579620598,0
+42450360,"DF",0,0,"small date range, small gaps, < 5 years, DMC",NA,2009-08-01,2011-12-23,485.355579620598,0
+42454000,"DF",0,1,"small date range, low flow, < 2 years, middle of headwater basin",NA,2006-03-20,2007-12-31,NA,NA
+60435200,"DF",0,0,"gaps, large date range, DMC",NA,1978-06-01,2007-02-28,103.347882633166,0
+60436195,"DF",0,0,"small date range, < 5 years, DMC",NA,2009-05-23,2011-11-30,42.2372357853057,0
+60492000,"DF",0,1,"small date range, < 5 years, middle of headwater basin",NA,2009-05-14,2011-12-17,NA,NA
+60476150,"DF",0,0,"small date range, decreasing, < 10 years",NA,1992-10-23,1999-01-31,NA,NA
+42450330,"DF",0,0,"small date range, low flow, < 5 years, DMC",NA,2009-05-03,2011-12-26,485.355579620598,0
+60474100,"DF",0,0,"gaps, especially at tail, DMC",NA,1994-06-23,2007-02-28,147.960547888806,0
+20001050,"DF",0,0,"small date range, < 5 years, DMC",NA,2009-05-20,2011-12-02,38.5299225791751,0
+60480310,"DF",0,0,"small date range, < 5 years, DMC",NA,2009-05-13,2011-12-16,54.8260400408627,0
+60436145,"DF",0,1,"weird",NA,2009-06-13,2011-12-09,NA,NA
+60472200,"DF",0,1,"gap 1997-2001, low flow, middle of headwater basin",NA,1992-02-19,2013-12-31,NA,NA
+42450720,"DF",0,0,"small date range, low flow, < 5 years, DMC",NA,2009-05-12,2011-12-22,50.7127874086997,0
+60477300,"DF",1,1,"many gaps, noisy",NA,1971-01-01,2007-02-21,NA,NA
+60477400,"DF",1,0,"gaps, decreasing",NA,1978-09-01,2007-02-28,NA,NA
+60477200,"DF",1,0,"max values ok",NA,1978-07-01,1999-02-28,NA,NA
+60477800,"DF",0,0,"small date range, < 5 years, DMC",NA,2009-05-18,2011-11-30,87.2820078737389,0
+60477700,"DF",0,1,"small date range, low flow, < 5 years, middle of headwater basin",NA,2009-07-01,2011-11-30,NA,NA
+60478300,"DF",0,0,"small date range, low flow, upstream of reservoir, < 10 years",NA,1971-01-12,1975-03-31,NA,NA
+17650002,"PA",0,0,"gaps",NA,1996-01-01,2009-01-19,392287.734247569,0
+18870000,"PA",0,0,"gaps",NA,1976-07-24,1999-06-30,NA,NA
+18640000,"PA",0,0,"gaps, (far) downstream of a (small) reservoir",NA,1981-09-03,1994-11-30,NA,NA
+16480000,"PA",NA,NA,NA,NA,1986-01-01,2013-02-28,NA,NA
+18850000,"PA",0,0,"in/downstream of reservoir (belo monte), cut/clean after dam licensed late 2010 (therefore no reservoir impact)",1,1971-01-01,2010-12-31,450355.362738526,0
+32620000,"PA",0,0,"gaps, DMC",NA,1972-01-01,2013-12-31,33002.1397212437,0
+18280000,"PA",NA,NA,NA,NA,1980-07-24,2012-09-30,NA,NA
+18200000,"PA",NA,NA,NA,NA,1972-06-01,2013-12-31,NA,NA
+32300000,"PA",0,0,"small date range, < 10 years",NA,1965-01-01,1972-01-31,NA,NA
+31700000,"PA",0,0,"gaps",NA,1971-05-13,2013-12-31,33349.9795673051,0
+16820000,"PA",NA,NA,NA,NA,1987-01-01,1988-12-31,NA,NA
+18121006,"PA",1,NA,"downstream of reservoir",NA,1974-02-20,2003-07-31,NA,NA
+17345000,"PA",0,0,"gaps",NA,1980-06-21,2010-01-31,570.320710812708,0
+18520000,"PA",0,0,"gaps, upstream/downstream of reservoir (belo monte), dam licensed late 2010 (therefore no reservoir impact)",NA,1976-05-01,1998-02-27,NA,NA
+18500000,"PA",0,0,"gaps, good example site",NA,1976-01-01,2009-04-30,42717.2765603839,0
+18460000,"PA",0,0,"gaps",NA,1977-01-23,2009-04-30,211642.843309875,0
+17090000,"PA",NA,NA,NA,NA,1973-03-26,2013-12-31,NA,NA
+31520000,"PA",0,0,"gaps, DMC",NA,1965-01-01,2013-12-31,4994.82643532439,0
+16450000,"PA",NA,NA,NA,NA,1987-01-01,1987-12-31,NA,NA
+18620000,"PA",NA,1,"downstream of reservoir",NA,1981-09-23,1986-04-10,NA,NA
+31020000,"PA",0,0,"gaps, cut/clean qc = 1 (after 2006)",1,1982-09-22,2007-03-21,4673.55321094138,0
+31500000,"PA",0,1,"weird, small date range, < 10 years",NA,1965-08-16,1970-09-15,NA,NA
+32550000,"PA",0,0,"gaps",NA,1985-02-26,2013-12-31,4830.06602041391,0
+18650000,"PA",0,0,"gaps",NA,1975-11-19,2006-12-31,35734.6291460096,0
+32600000,"PA",0,0,"gaps, small date range, < 2 years",NA,1972-06-01,1974-03-31,NA,NA
+32580000,"PA",0,0,"small date range, < 2 years, gaps",NA,1983-01-01,1985-01-31,NA,NA
+16460000,"PA",NA,NA,NA,NA,1986-01-01,2013-12-31,NA,NA
+16810080,"PA",NA,NA,NA,NA,1988-02-11,1988-12-31,NA,NA
+27500000,"PA",0,0,"gaps, DMC",NA,1969-10-01,2012-11-30,327031.107199543,0
+17610000,"PA",0,0,"gaps",NA,1987-08-01,2009-03-31,6278.5894965387,0
+16470002,"PA",NA,NA,NA,NA,1987-01-01,1987-12-31,NA,NA
+16430003,"PA",NA,NA,NA,NA,1987-01-01,1987-12-31,NA,NA
+16500000,"PA",NA,NA,NA,NA,1970-11-21,1998-12-31,NA,NA
+29100000,"PA",0,0,"gaps, DMC",NA,1969-08-01,2013-12-31,37680.6807512728,0
+18940000,"PA",0,0,"gaps, small date range, with gaps < 5 years",NA,1981-09-28,1985-01-23,NA,NA
+18880000,"PA",0,0,"gaps",NA,1977-11-01,2009-02-28,24909.2601553325,0
+31680000,"PA",0,0,"gaps",NA,1982-10-24,2013-12-31,26514.2879229904,0
+18300000,"PA",NA,NA,NA,NA,1973-01-01,1989-04-30,NA,NA
+29080000,"PA",0,0,"gaps, small date range, with gaps < 10 years",NA,1985-04-06,1995-08-31,NA,NA
+18480000,"PA",0,0,"gaps, small date range, < 5 years",NA,2005-05-01,2009-04-30,6838.23529333427,0
+32540000,"PA",0,0,"gaps",NA,1980-12-16,2013-12-31,16394.2891303832,0
+19950000,"PA",0,0,"small date range, < 2 years, gaps",NA,1981-05-23,1983-01-01,NA,NA
+17500000,"PA",0,0,"gaps",NA,1983-01-21,2009-04-30,365668.453583662,0
+16430000,"PA",NA,NA,NA,NA,1986-01-01,2013-12-31,NA,NA
+17672000,"PA",0,0,"small date range, < 2 years",NA,1987-09-01,1988-12-31,NA,NA
+16660000,"PA",NA,NA,NA,NA,1987-01-01,1987-12-31,NA,NA
+17730000,"PA",NA,1,"weird, gaps",NA,1968-02-12,2013-06-30,NA,NA
+29200000,"PA",0,0,"just upstream of reservoir (dam finished 1984), DMC",NA,1977-01-01,2013-12-31,744492.997488269,0
+17680000,"PA",0,1,"gaps, small date range, < 5 years with gaps",NA,1986-02-18,2009-03-31,NA,NA
+17675000,"PA",0,0,"gaps",NA,1987-08-15,2009-03-31,37701.1698013728,0
+18121002,"PA",1,0,"small date range, < 5 years, downstream of reservoir",NA,1970-09-22,1973-12-31,NA,NA
+18150000,"PA",NA,NA,NA,NA,1980-06-20,1983-04-30,NA,NA
+18600000,"PA",0,0,"gaps",NA,1976-01-01,2007-04-30,58910.529390206,0
+16620000,"PA",NA,NA,NA,NA,1987-01-01,1987-12-31,NA,NA
+16430005,"PA",NA,NA,NA,NA,1987-01-01,1987-12-31,NA,NA
+16430004,"PA",NA,NA,NA,NA,1987-01-01,1987-12-31,NA,NA
+16365000,"PA",0,0,"small date range, < 2 years",NA,1981-06-25,1983-09-26,NA,NA
+18590000,"PA",0,0,"gaps, small date range, < 10 years",NA,1999-09-23,2009-02-28,56803.3743655734,0
+16560000,"PA",NA,NA,NA,NA,1987-01-01,1988-12-31,NA,NA
+29050000,"PA",0,0,"upstream of reservoir, gaps, DMC",NA,1971-10-01,2013-12-31,700995.039137204,0
+31600000,"PA",0,1,"low flow, gaps, middle of headwater basin",NA,1964-11-29,2013-12-31,NA,NA
+17450000,"PA",0,0,"gaps",NA,1979-03-16,1988-05-31,NA,NA
+32350000,"PA",0,0,"gaps, DMC",NA,1964-11-01,2013-12-31,1179.97993483819,0
+17660000,"PA",0,0,"small date range, < 5 years",NA,1987-08-28,1990-09-30,NA,NA
+17050001,"PA",NA,NA,NA,NA,1968-01-01,2013-12-31,NA,NA
+17050000,"PA",NA,NA,NA,NA,1927-12-11,1998-04-30,NA,NA
+16900000,"PA",NA,NA,NA,NA,1987-01-01,1987-12-31,NA,NA
+19985000,"PA",0,0,"gaps",NA,1981-03-26,2013-12-31,6413.44088067425,0
+18700000,"PA",0,0,"gaps, cut/clean after 2009",1,1976-09-01,2009-02-28,122890.203543753,0
+16370000,"PA",NA,NA,NA,NA,1987-01-14,1996-11-24,NA,NA
+31850000,"PA",0,0,"small date range, < 5 years, low flow",NA,1965-07-27,1968-05-15,NA,NA
+18960000,"PA",0,0,"small date range, < 10 years",NA,1979-01-28,1987-02-20,NA,NA
+16600000,"PA",NA,NA,NA,NA,1987-01-01,1987-12-31,NA,NA
+16670000,"PA",NA,NA,NA,NA,1987-01-01,1987-12-31,NA,NA
+18510000,"PA",0,0,"gaps",NA,1975-06-16,1998-02-28,NA,NA
+32400000,"PA",0,0,"gaps, DMC",NA,1977-06-24,2012-09-30,1490.07841833761,0
+17070000,"PA",NA,NA,NA,NA,1980-06-22,1982-09-30,NA,NA
+32450000,"PA",0,0,"gaps",NA,1965-12-01,1979-10-31,NA,NA
+32450002,"PA",0,0,"gaps, DMC",NA,1975-08-01,2013-12-31,2416.90522363092,0
+31650000,"PA",0,0,"gaps",NA,1977-06-19,1988-04-05,NA,NA
+32320000,"PA",0,0,"small date range, < 5 years",NA,1964-11-01,1969-01-31,NA,NA
+16700000,"PA",NA,NA,NA,NA,1979-02-21,2013-01-31,NA,NA
+17670000,"PA",0,0,"small date range, < 2 years",NA,1981-08-01,1982-12-31,NA,NA
+29700000,"PA",1,0,"gaps, downstream of reservoir",NA,1978-01-01,2013-12-31,NA,NA
+29690000,"PA",1,0,"small date range, < 2 years, downstream of reservoir",NA,1978-01-01,1979-12-31,NA,NA
+18849100,"PA",0,1,"weird, in/downstream of reservoir (belo monte), dam licensed late 2010 (therefore no reservoir impact)",NA,1976-01-01,2005-12-31,NA,NA
+18901080,"PA",0,1,"weird, in/downstream of reservoir (belo monte), dam licensed late 2010 (therefore no reservoir impact)",NA,1976-01-01,2005-12-31,NA,NA
+18119000,"PA",1,NA,"downstream of reservoir",NA,2000-01-06,2013-07-16,NA,NA
+18514000,"PA",0,1,"weird, upstream of reservoir complex (belo monte)",NA,1976-01-01,2005-12-31,NA,NA
+18470000,"PA",0,1,"weird, upstream of reservoir complex (belo monte)",NA,1976-01-01,2005-12-31,NA,NA
+18250000,"PA",0,0,"gaps",NA,1978-01-01,2009-03-31,2962.39810842535,0
+31490000,"PA",0,0,"gaps, DMC",NA,1977-01-18,2013-12-31,3460.60713941821,0
+16800002,"PA",NA,NA,NA,NA,1988-01-01,1988-12-31,NA,NA
+12860000,"AM",NA,NA,NA,NA,1973-07-04,1998-03-31,NA,NA
+12850000,"AM",NA,NA,NA,NA,1973-07-08,2007-12-31,NA,NA
+15930000,"AM",0,0,"gaps",NA,1984-11-12,2013-12-31,5035.04380131532,0
+13962000,"AM",0,0,"gaps, small date range, < 10 years, (part) Peruvian basin",NA,2007-05-01,2013-12-31,368767.405557666,0
+13886000,"AM",0,0,"gaps",NA,1979-12-12,2013-12-31,38025.4436036929,0
+16080000,"AM",NA,NA,NA,NA,1977-03-22,1987-09-30,NA,NA
+17430000,"AM",0,0,"gaps, high dry season 1982",NA,1975-11-01,2009-04-30,335079.156117151,0
+12200000,"AM",0,0,"gaps",NA,1980-11-01,2008-09-20,35683.2782843937,0
+12230000,"AM",0,0,"gaps, cut/clean after 2000",1,1985-09-23,1995-02-28,NA,NA
+12870000,"AM",NA,NA,NA,NA,1982-06-19,2013-04-30,NA,NA
+16200000,"AM",NA,NA,NA,NA,1970-09-13,2001-07-31,NA,NA
+16205000,"AM",NA,NA,NA,NA,2001-08-01,2013-12-31,NA,NA
+13950000,"AM",0,0,"small date range, < 5 years, (part) Peruvian basin",NA,1972-01-01,1975-12-31,NA,NA
+15903000,"AM",0,0,"small date range, gaps, with gaps < 2 years",NA,1985-07-01,2001-09-30,3639.24278093358,0
+15800000,"AM",0,0,"gaps, good example data",NA,1977-12-11,2013-12-31,70621.5331721559,0.21700089539657
+15905000,"AM",0,0,"gaps, small date range, with gaps < 10 years, cut/clean after 1991",1,1982-09-01,1990-02-28,NA,NA
+15790000,"AM",0,0,"gaps, small date range, < 10 years",NA,1982-07-03,1989-09-30,NA,NA
+14425000,"AM",NA,NA,NA,NA,1982-06-01,1987-07-28,NA,NA
+13845000,"AM",0,0,"small date range, < 10 years",NA,1980-07-24,1987-05-31,NA,NA
+13840000,"AM",0,0,"small date range, < 5 years, gaps",NA,1978-01-01,1982-07-31,NA,NA
+13840001,"AM",0,0,"small date range, < 10 years, gaps",NA,1984-08-27,1996-02-28,NA,NA
+16100000,"AM",NA,NA,NA,NA,1973-03-16,2013-12-31,NA,NA
+13880000,"AM",0,0,"Bolivian basin (headwaters), gaps, cut/clean after 2013, DMC",1,1973-01-01,2012-12-31,237371.346095327,0
+15040000,"AM",0,1,"a fork of the Amazon (do not use), small date range, < 10 years",NA,2006-01-01,2013-12-31,NA,NA
+13900000,"AM",0,0,"small date range, < 5 years, (part) in Peruvian basin",NA,1972-06-10,1975-09-19,NA,NA
+12100000,"AM",0,0,"gaps, cut/clean after 2010",1,1982-07-15,2010-03-14,10677.0175268724,0
+12150000,"AM",0,0,"gaps, DMC",NA,1999-05-01,2013-12-31,17529.1953088001,0
+13885000,"AM",0,0,"gaps",NA,1975-07-04,2013-12-31,7115.09793352906,0
+14110000,"AM",NA,NA,NA,NA,1980-07-22,2013-12-31,NA,NA
+14310000,"AM",NA,NA,NA,NA,1982-08-14,2013-12-31,NA,NA
+14330000,"AM",NA,NA,NA,NA,1977-11-27,2013-12-31,NA,NA
+12550000,"AM",0,0,"gaps, (part) in Peruvian basin",NA,1979-02-22,2013-12-31,77354.9736887725,0
+12680000,"AM",0,0,"gaps, (part) in Peruvian basin, DMC",NA,1978-01-20,2012-05-31,50015.4031129209,0
+12880000,"AM",0,0,"gaps",NA,1981-02-10,2013-12-31,13688.610762637,0
+10500000,"AM",0,0,"gaps, (part) in Peruvian basin, noisy, DMC",NA,1980-09-22,2013-12-31,61683.2637714506,0
+15680000,"AM",0,0,"gaps, small date range, < 10 years, DMC",NA,2007-01-01,2013-12-31,1527.27509557338,0
+12875000,"AM",0,0,"gaps",NA,1982-06-18,1997-03-10,NA,NA
+15828000,"AM",0,0,"gaps, cut/clean before 1993, DMC",1,1993-11-01,2011-08-31,59722.085959309,0
+13885500,"AM",0,0,"gaps, small date range, < 2 years",NA,1982-09-01,1983-06-30,NA,NA
+13740000,"AM",0,0,"gaps",NA,1984-12-12,2013-12-31,23468.4865675328,0
+16360000,"AM",0,0,"gaps, small date range, < 5 years",NA,1980-05-31,1983-09-30,NA,NA
+15860000,"AM",0,0,"gaps, small date range, < 10 years, far downstream of reservoir, (part) Bolivian and Peruvian basin",NA,2006-01-01,2013-12-31,1317932.70172893,0.0116280109845764
+13650000,"AM",0,0,"gaps, (part) Peruvian and Bolivian basin",NA,1967-07-25,2013-10-21,34751.6095138312,0
+13848000,"AM",0,0,"small date range, < 10 years",NA,1980-07-26,1987-08-29,NA,NA
+12840000,"AM",0,0,"gaps, cut/clean after 2012, (part) Peruvian basin",1,1972-06-22,2012-04-02,164320.474702091,0
+15630000,"AM",1,0,"gaps, downstream of reservoir complex",NA,1967-04-18,2013-12-31,NA,NA
+11444900,"AM",NA,NA,NA,NA,1993-04-01,2007-12-31,NA,NA
+11450000,"AM",NA,NA,NA,NA,1979-02-10,2011-10-31,NA,NA
+12520000,"AM",0,0,"gaps, (part) Peruvian basin",NA,1981-10-10,2012-04-30,56180.4237234423,0
+13150000,"AM",NA,NA,NA,NA,1971-04-04,2012-09-30,NA,NA
+14450000,"AM",NA,NA,NA,NA,1980-08-23,1996-10-31,NA,NA
+15030000,"AM",NA,NA,NA,NA,1977-08-26,2013-12-31,NA,NA
+13849000,"AM",0,0,"gaps",NA,1991-10-10,2013-03-31,17309.8505386023,0
+14350000,"AM",NA,NA,NA,NA,1982-06-01,2013-12-31,NA,NA
+16150000,"AM",NA,NA,NA,NA,1978-04-05,1985-07-31,NA,NA
+13870000,"AM",0,0,"large date range, gaps, cut/clean before 1967, (part) Peruvian basin, good example site, DMC",1,1967-06-21,2013-12-31,227760.120803156,0
+10900000,"AM",0,0,"gaps",NA,1979-02-04,1994-06-07,NA,NA
+10910000,"AM",0,0,"gaps",NA,1997-06-21,2013-12-31,36843.4110864889,0
+15795000,"AM",0,0,"gaps, DMC",NA,1984-11-09,2012-06-30,16284.6647216627,0
+14220000,"AM",NA,NA,NA,NA,1982-08-01,2008-10-31,NA,NA
+15660000,"AM",0,0,"gaps",NA,1997-01-16,2013-12-31,600.242416907621,0
+15650000,"AM",0,0,"gaps, DMC outlier, DMC",NA,1977-12-04,2013-12-31,3428.68168324735,0
+14100000,"AM",NA,NA,NA,NA,1972-01-01,2013-07-31,NA,NA
+15700000,"AM",1,0,"gaps, (far) downstream of reservoir complex, (part) Bolivian and Peruvian basin",NA,1967-04-24,2013-12-31,NA,NA
+16368000,"AM",NA,NA,NA,NA,1981-07-04,2013-12-31,NA,NA
+14230000,"AM",NA,NA,NA,NA,1980-07-16,2013-12-31,NA,NA
+14380000,"AM",NA,NA,NA,NA,2000-01-01,2013-04-30,NA,NA
+15670000,"AM",0,0,"small date range, < 10 years",NA,2006-01-01,2013-12-31,26293.3120880818,0
+10200000,"AM",0,0,"(part) in Peruvian basin",NA,1982-11-22,2013-12-31,16439.7347493834,0
+14300000,"AM",NA,NA,NA,NA,1980-07-07,2013-12-31,NA,NA
+12240000,"AM",0,0,"gaps",NA,1997-05-16,2013-12-31,64905.3385036406,0
+14440000,"AM",NA,NA,NA,NA,1982-05-28,2013-12-31,NA,NA
+15830000,"AM",0,0,"gaps, small date range, , with gaps < 10 years, far downstream of ROR/reservoir",NA,2005-01-01,2013-12-31,131607.184796257,0.116444523574918
+15042000,"AM",NA,NA,NA,NA,1994-02-14,2013-12-31,NA,NA
+16010000,"AM",NA,NA,NA,NA,2010-10-01,2013-08-31,NA,NA
+10300000,"AM",0,0,"gaps",NA,1980-09-24,2013-12-31,25360.0508423701,0
+15910000,"AM",0,0,"gaps, good example site",NA,1975-05-01,2013-12-31,12774.7074438301,0
+11500000,"AM",NA,NA,NA,NA,1973-07-14,2013-12-31,NA,NA
+12700000,"AM",0,0,"gaps",NA,1981-04-16,2013-12-31,144274.324555515,0
+14250000,"AM",NA,NA,NA,NA,1977-12-08,2013-12-31,NA,NA
+13850000,"AM",0,0,"small date range, < 5 years, (part) Peruvian basin",NA,1967-06-27,1974-12-26,NA,NA
+11400000,"AM",NA,NA,NA,NA,1973-07-18,2013-12-31,NA,NA
+13410000,"AM",0,0,"gaps, (part) Peruvian basin, good example site, DMC",NA,1967-08-01,2013-12-31,63351.8447202268,0
+10800000,"AM",0,0,"gaps",NA,1980-09-28,1992-02-06,NA,NA
+13750000,"AM",0,0,"gaps, (part) Peruvian basin, good example site",NA,1967-07-15,2013-12-31,154755.478312998,0
+13100000,"AM",0,0,"gaps",NA,1980-12-01,2013-12-31,8193.68897458477,0
+13200000,"AM",0,0,"gaps, (part) Peruvian basin",NA,1975-05-07,1983-04-20,NA,NA
+12540000,"AM",0,0,"gaps, DMC",NA,1997-12-05,2013-12-31,7396.283578425,0
+13730000,"AM",0,0,"small date range, < 5 years",NA,1980-09-01,1984-05-31,NA,NA
+14420000,"AM",NA,NA,NA,NA,1977-08-10,2013-12-31,NA,NA
+10100000,"AM",NA,NA,NA,NA,1995-01-01,2013-04-30,NA,NA
+12180000,"AM",0,0,"gaps, small date range, with gaps < 10 years",NA,2004-02-01,2013-12-31,12919.5828541676,0
+14280001,"AM",NA,NA,NA,NA,1977-05-22,2013-12-31,NA,NA
+11200000,"AM",NA,NA,NA,NA,1977-12-14,1997-10-31,NA,NA
+14325000,"AM",NA,NA,NA,NA,2000-01-01,2013-12-31,NA,NA
+14260000,"AM",NA,NA,NA,NA,1977-12-01,2013-12-31,NA,NA
+13710000,"AM",0,0,"(part) Peruvian basin",NA,1975-02-28,1986-12-31,NA,NA
+13710001,"AM",0,0,"gaps, (part) Peruvian basin",NA,1975-02-26,2013-12-31,105083.526274479,0
+12845000,"AM",NA,NA,NA,NA,1980-01-26,2013-12-31,NA,NA
+14430000,"AM",NA,NA,NA,NA,1981-03-28,2000-09-20,NA,NA
+14428000,"AM",NA,NA,NA,NA,2000-09-22,2013-12-31,NA,NA
+63350100,"MS",NA,NA,NA,NA,1976-04-22,2006-08-31,NA,NA
+63250000,"MS",0,0,"gaps",NA,1983-01-25,2005-07-31,2940.26664838121,0
+63001500,"MS",0,0,"gaps, upstream of reservoir, DMC",NA,1983-01-17,2005-07-31,7161.86777949303,0
+66800000,"MS",0,0,"gaps, (part) Bolivian basin, downstream of pantanal, cut/clean before 1974, DMC",1,1974-01-02,2006-12-31,239447.792669663,0.00730898072744125
+66945000,"MS",NA,NA,NA,NA,1968-01-13,2007-12-31,NA,NA
+64613000,"MS",NA,NA,NA,NA,1972-05-01,2007-12-31,NA,NA
+67175000,"MS",NA,NA,NA,NA,1972-08-01,1995-12-31,NA,NA
+67006000,"MS",NA,NA,NA,NA,1976-09-01,1996-12-31,NA,NA
+60960000,"MS",0,0,"low flow, DMC",NA,1984-08-19,2013-03-31,1145.4680271691,0
+67030000,"MS",NA,NA,NA,NA,1965-06-01,1978-12-31,NA,NA
+64601000,"MS",NA,NA,NA,NA,1988-01-01,2006-11-30,NA,NA
+63930000,"MS",NA,NA,NA,NA,1984-07-15,2005-07-31,NA,NA
+60968000,"MS",0,0,"gaps, min value ok, DMC",NA,1984-01-01,2013-03-31,4717.51017682739,0
+64720000,"MS",NA,NA,NA,NA,1984-03-01,2005-06-30,NA,NA
+66849000,"MS",0,0,"gaps, max value ok, DMC",NA,1994-02-01,2007-12-31,7407.51143071542,0
+66850000,"MS",0,0,"gaps, DMC",NA,1970-10-29,2007-12-31,6335.13496535923,0
+66870000,"MS",0,0,"gaps, DMC",NA,1966-01-01,2007-12-31,27748.7464854639,0
+63955000,"MS",NA,NA,NA,NA,1976-05-01,2007-12-31,NA,NA
+64609000,"MS",NA,NA,NA,NA,1972-05-06,2006-08-31,NA,NA
+64703000,"MS",NA,NA,NA,NA,1986-05-25,1991-09-30,NA,NA
+66480000,"MS",0,0,"gaps, cut/clean after 1990",1,1969-06-01,1988-12-31,NA,NA
+64725000,"MS",NA,NA,NA,NA,1972-05-14,1987-01-31,NA,NA
+66900000,"MS",NA,NA,NA,NA,1969-11-05,2012-09-30,NA,NA
+63390000,"MS",NA,NA,NA,NA,1983-01-18,1998-12-31,NA,NA
+63950280,"MS",NA,NA,NA,NA,1995-02-24,2005-07-31,NA,NA
+63970000,"MS",NA,NA,NA,NA,1984-01-19,2007-12-31,NA,NA
+64702000,"MS",NA,NA,NA,NA,1997-07-05,2006-12-31,NA,NA
+63950250,"MS",NA,NA,NA,NA,1984-01-22,2005-07-31,NA,NA
+67176000,"MS",NA,NA,NA,NA,1996-09-06,2006-12-31,NA,NA
+64614000,"MS",NA,NA,NA,NA,1983-07-01,2013-12-31,NA,NA
+64618000,"MS",NA,NA,NA,NA,1984-03-22,2006-08-31,NA,NA
+63950100,"MS",NA,NA,NA,NA,1984-02-17,2005-07-31,NA,NA
+62010000,"MS",NA,NA,NA,NA,1985-02-21,1995-12-31,NA,NA
+66890000,"MS",0,1,"weird",NA,1968-11-26,1986-01-21,NA,NA
+63950150,"MS",NA,NA,NA,NA,1984-02-19,2005-07-31,NA,NA
+64613800,"MS",NA,NA,NA,NA,1983-07-01,2006-11-30,NA,NA
+67050000,"MS",NA,NA,NA,NA,1965-11-03,1985-02-28,NA,NA
+64715001,"MS",NA,NA,NA,NA,1972-06-25,2011-03-31,NA,NA
+66855000,"MS",0,0,"gaps, DMC",NA,1984-08-26,2007-12-31,6335.13496535923,0
+63001600,"MS",0,0,"min value ok, DMC",NA,1996-03-21,2005-07-31,726.151156941038,0
+64617000,"MS",NA,NA,NA,NA,1972-07-10,2011-03-31,NA,NA
+63280000,"MS",NA,NA,NA,NA,1984-01-20,1989-12-31,NA,NA
+66825000,"MS",0,0,"small date range, < 10 years",NA,1966-01-01,1973-12-31,NA,NA
+66910000,"MS",NA,NA,NA,NA,1965-10-27,2006-12-20,NA,NA
+63001750,"MS",0,0,"ok, DMC",NA,1995-06-25,2005-07-31,1051.63656485772,0
+64717000,"MS",NA,NA,NA,NA,1984-02-29,2005-12-31,NA,NA
+66941000,"MS",NA,NA,NA,NA,1965-04-13,2007-12-31,NA,NA
+63950300,"MS",NA,NA,NA,NA,1997-01-01,2005-07-31,NA,NA
+66861000,"MS",0,0,"small date range, < 2 years, low flow",NA,2009-04-17,2010-05-31,603.596719282056,0
+66845000,"MS",0,0,"gaps, max value ok, DMC",NA,1984-01-01,2007-12-31,9793.75226927292,0
+66886000,"MS",0,0,"gaps, small date range, with gaps < 5 years, cut/clean after 1985",1,1979-06-16,1983-12-31,NA,NA
+66126000,"MS",0,1,"lagoon",NA,1968-10-10,1972-12-31,NA,NA
+66840000,"MS",0,0,"gaps, cut/clean after 1985",1,1969-05-07,1982-11-30,NA,NA
+66475000,"MS",0,1,"weird",NA,1971-08-15,1977-05-14,NA,NA
+66926000,"MS",NA,NA,NA,NA,1982-01-01,2006-12-31,NA,NA
+64700000,"MS",NA,NA,NA,NA,1984-04-22,2005-12-31,NA,NA
+66950000,"MS",NA,NA,NA,NA,1968-11-07,2013-12-31,NA,NA
+66895000,"MS",0,0,"gaps, (part) Bolivian basin, cut/clean before 1974 & 1987-1996",1,1974-01-02,2007-12-31,329803.608500089,0.00530654988831162
+63001200,"MS",0,0,"gaps, DMC",NA,1984-01-22,2005-07-31,3738.13238705785,0
+66750000,"MS",0,0,"gaps, far downstream of reservoir, DMC",NA,1967-11-20,2007-12-31,108018.818165119,0.00716151484829653
+66960008,"MS",0,1,"weird",NA,1963-12-19,1981-12-31,NA,NA
+63003100,"MS",NA,NA,NA,NA,1984-01-25,2005-07-31,NA,NA
+67100000,"MS",NA,NA,NA,NA,1939-01-01,2013-12-31,NA,NA
+64605000,"MS",NA,NA,NA,NA,1972-06-18,1994-03-31,NA,NA
+66885000,"MS",0,1,"weird",NA,1968-08-22,1993-12-31,NA,NA
+64723000,"MS",NA,NA,NA,NA,1984-04-25,2005-06-30,NA,NA
+63979000,"MS",NA,NA,NA,NA,1984-01-17,1998-03-31,NA,NA
+64610000,"MS",NA,NA,NA,NA,1983-07-01,2007-12-31,NA,NA
+63001000,"MS",0,0,"gaps",NA,1983-01-30,1998-08-31,NA,NA
+66888200,"MS",0,0,"gaps, small date range, with gaps < 10 years, max values ok",NA,1983-01-25,1995-03-31,NA,NA
+66865000,"MS",0,0,"gaps, DMC",NA,1984-01-16,2007-06-30,495.174844396834,0
+67025000,"MS",NA,NA,NA,NA,1970-10-14,1996-12-31,NA,NA
+64611000,"MS",NA,NA,NA,NA,1983-07-03,1999-12-06,NA,NA
+63900001,"MS",NA,NA,NA,NA,1974-11-09,2005-07-31,NA,NA
+67170000,"MS",NA,NA,NA,NA,1971-09-11,2013-08-31,NA,NA
+66810000,"MS",0,0,"gaps, (part) Bolivian basin, cut/clean before 1974 & 1991-1993, DMC",1,1974-01-02,2007-12-31,244158.42305907,0.00716796610955956
+66860000,"MS",NA,1,"weird",NA,1983-01-01,1993-09-30,NA,NA
+66880000,"MS",0,0,"small date range, < 10 years",NA,1969-10-28,1978-12-31,NA,NA
+63002000,"MS",NA,NA,NA,NA,1983-01-17,2005-07-31,NA,NA
+66920000,"MS",NA,NA,NA,NA,1968-10-01,1988-09-06,NA,NA
+64608000,"MS",NA,NA,NA,NA,1984-09-01,2006-11-30,NA,NA
+63950010,"MS",NA,NA,NA,NA,1984-03-30,2005-07-31,NA,NA
+13450000,"AC",0,0,"gaps, (part) Peruvian basin",NA,1983-01-01,2013-12-31,3781.38074380209,0
+12420000,"AC",NA,1,"weird",NA,2005-09-08,2012-04-30,NA,NA
+13400000,"AC",0,0,"small date range, < 5 years, (part) Peruvian basin",NA,1972-07-01,1975-01-08,NA,NA
+13470000,"AC",0,0,"gaps, (part) Bolivian and Peruvian basin, DMC outlier, DMC",NA,1982-07-22,2013-12-31,184.731814460214,0
+15323000,"AC",0,0,"gaps, small date range, < 10 years, (part) Bolivian basin",NA,1982-08-01,1991-01-31,NA,NA
+12500000,"AC",0,0,"gaps, (part) Peruvian basin, DMC",NA,1967-08-23,2012-04-30,38069.9524190377,0
+13175000,"AC",0,0,"gaps, small date range, < 10 years, (part) Peruvian basin",NA,1982-07-30,1989-02-14,NA,NA
+12530000,"AC",0,0,"gaps, DMC",NA,1996-06-16,2012-05-31,1969.88067710146,0
+13560000,"AC",0,0,"gaps, small date range, < 2 years, (part) Bolivian and Peruvian basin",NA,1996-10-13,1997-01-19,NA,NA
+13580000,"AC",0,0,"gaps, DMC",NA,1998-06-01,2010-05-18,6304.70800824216,0
+12650000,"AC",0,0,"gaps, (part) Peruvian basin, DMC",NA,1980-09-25,2012-04-30,17084.8841017556,0
+12360000,"AC",0,0,"gaps, (part) Peruvian basin",NA,1982-06-20,2012-04-30,7702.99686245368,0
+13180000,"AC",0,0,"gaps, (part) Peruvian basin, DMC",NA,1981-10-01,2013-12-31,32944.2353180048,0
+15324000,"AC",0,0,"gaps, cut/clean before 1997, (part) Peruvian and Bolivian basin, DMC",1,1996-07-01,2013-12-31,7778.53117335001,0
+12390000,"AC",0,0,"gaps, (part) Peruvian basin, DMC",NA,1997-05-17,2012-04-30,21055.3767927227,0
+13600002,"AC",0,0,"large date range, gaps, (part) Peruvian and Bolivian basin, cut/clean after 2013, DMC",1,1967-08-08,2013-03-31,23530.3808441725,0
+13170000,"AC",0,0,"small date range, < 10 years, (part) Peruvian and Bolivian basin",NA,1982-12-01,1988-07-31,NA,NA
+13310000,"AC",0,0,"small date range, < 10 years, (part) Peruvian basin, DMC",NA,2007-05-01,2013-12-31,17989.0386089921,0
+12510000,"AC",0,0,"ok, DMC",NA,1997-08-29,2011-07-31,3134.5566730991,0
+13405000,"AC",0,0,"gaps, DMC",NA,1983-01-18,2012-10-31,6147.4743117107,0
+12640000,"AC",0,0,"gaps, (part) Peruvian basin, DMC",NA,1997-02-08,2012-04-30,12807.183497572,0
+13300000,"AC",0,0,"gaps, (part) Peruvian basin, cut/clean qc = 1 (after 2010), DMC",1,1981-09-24,2010-07-31,11143.6747587899,0
+12560000,"AC",0,0,"ok",NA,1997-02-14,2012-01-31,5352.73146987084,0
+12400000,"AC",0,0,"gaps, (part) Peruvian basin,cut/clean max values",1,1973-05-08,2012-04-30,1049.1535921158,0
+12600001,"AC",0,0,"gaps, cut/clean qc = 1 (after 2010) & 1990-1995, DMC",1,1981-04-24,2011-04-27,15671.8890298513,0
+12370000,"AC",0,0,"gaps, (part) Peruvian basin, DMC",NA,1981-04-13,2012-01-31,16159.1992248738,0
+13550000,"AC",0,0,"gaps, (part) Peruvian and Bolivian basin, cut/clean 1985-1986, DMC",1,1967-09-01,2013-12-31,8330.65262833806,0

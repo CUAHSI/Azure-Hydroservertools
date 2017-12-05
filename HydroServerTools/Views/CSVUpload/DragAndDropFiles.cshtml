@@ -1,0 +1,361 @@
+﻿
+@{
+    ViewBag.Title = "DragAndDropFiles";
+    ViewBag.Name = "dragAndDropFiles";
+}
+<link rel="stylesheet" href="~/Content/mvcfileupload/blueimp/jquery.fileupload.css" />
+
+
+<h2>Select Metadata Files for Upload</h2>
+
+<div class="container">
+
+    <!-- List of 'to-be-uploaded' file references -->
+    <div class="row">
+        <div class="col-md-12">
+            <div id="divFilesForUpload" class="uploader">
+                <div><span class="glyphicon glyphicon-cloud-upload"></span>&nbsp; Drag &amp Drop Template Files Here</div>
+                <ul id="lstFilesForUpload" class="list-group" style="">
+                    <!--NOTE: The list items added here should look like...
+                        <li class="list-group-item">Dapibus ac facilisis in</li>
+                    -->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="btn-group col-md-12" style="position: relative;">
+            <div class="fileinput-button pull-left">
+                <button type="button" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span>&nbsp;Add Files</button>
+                <input id="inpFilesForUpload" type="file" multiple="multiple" class="required" name="fileupload" accept=".csv,.zip" />
+            </div>
+            <div id="alertFileUpload" class="alert alert-info fade in hidden col-md-5 col-md-offset-3" role="alert">
+                <span class="glyphicon glyphicon-refresh spin"></span>
+                <span>File upload in progress.  Please do not close the current page!!</span>
+            </div>
+            <div class="pull-right">
+                @*<button type="reset" class="btn btn-warning cancel">Cancel</button>*@
+                <a href="/home/index" class="btn btn-warning cancel">Cancel</a>
+                <!-- Need a button here - not a link - to keep the current page in place so to ensure all file 'chunks' make it to the server... 0-->
+                @*@Html.ActionLink("Continue", "RevisedUploadData", "CSVUpload", new { id = "ValidateFiles" }, new { @class = "btn btn-success", id = "anchorFilesForUploadContinue" })*@
+                <button type="button" id="btnFilesForUploadContinue" class="btn btn-success" style="margin-left: 0.5em;">Continue</button>
+                <a id="btnValidationSummary" class="btn btn-primary hidden" href="/CSVUpload/RevisedUploadData/ValidateFiles" style="margin-left: 0.5em;">Validation Summary</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/mvcfileupload/blueimp/jquery.fileupload.js"></script>
+<script src="~/Scripts/mvcfileupload/blueimp/jquery.fileupload-ui.js"></script>
+<script src="~/Scripts/mvcfileupload/blueimp/jquery.iframe-transport.js"></script>
+<script src="~/Scripts/mvcfileupload/blueimp/jquery.fileupload-process.js"></script>
+<script src="~/Scripts/custom/RandomId.js"></script>
+
+<style type="text/css">
+    .bar {
+        background-color: #4298c8;
+    }
+
+</style>
+
+<script type="text/javascript">
+    var fileObjectsForUpload = [];
+    var currentUploadId = null;
+    var randomId = null;
+
+    //Add unique input candidate file objects to the input collection and (name) to markup list...
+    function addFileObjects( candidateFileObjs, collectionFileObjs, lstMarkup) {
+        if ('undefined' !== typeof candidateFileObjs && null !== candidateFileObjs &&
+            'undefined' !== typeof collectionFileObjs && null !== collectionFileObjs &&
+            'undefined' !== typeof lstMarkup && null !== lstMarkup) {
+
+            //For each input candidate...
+            $.each(candidateFileObjs, function (index, file) {
+                //Check for presence in collection...
+                var bFound = false;
+                $.each(collectionFileObjs, function (indexCol, fileCol) {
+                    if (file.name.toLowerCase() === fileCol.name.toLowerCase() &&
+                        file.size === fileCol.size) {
+                        bFound = true;  //Found - set indicator, return early...
+                        return false;
+                    }
+                });
+
+                if (!bFound) {
+                    //Candidate not found - add to collection...
+                    collectionFileObjs.push(file);
+                    //lstMarkup.append('<li class="list-group-item">' + file.name + '</li>');
+
+                    //lstMarkup.append('<li class="list-group-item" data-file="' + file.name + '" >' + 
+                    //                    '<span>' + file.name + '</span>' +
+                    //                    '<span class="progress"> ' +
+                    //                        '<span class="bar"></span>' +
+                    //                        '<span class="percent" style="margin-left: 1.0em;">0%</span>' +
+                    //                        '<span class="status" style="margin-left: 1.0em;">Not started...</span>' +
+                    //                    '</span>' +
+                    //                 '</li>');
+
+                    lstMarkup.append('<li class="list-group-item" data-file="' + file.name + '" >' +
+                        '<span style="width: 30%; position: relative; float: left">' + file.name + '</span>' +
+
+                        '<div class="progress" style="width: 50%; display: inline-block; vertical-align: -webkit-baseline-middle;">' +
+                            '<div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%; display:inline-block;">' +
+                                '0%' +
+                            '</div>' +
+                        '</div>' + 
+
+                        '<span class="status" style="width: 20%; position: relative; float: right">Not started...</span>' +
+
+                        //'<span class="progress"> ' +
+                        //  '<span class="bar"></span>' +
+                        //  '<span class="percent" style="margin-left: 1.0em;">0%</span>' +
+
+                        //  '<span class="status" style="margin-left: 1.0em;">Not started...</span>' +
+                        //'</span>' +
+
+                        '</li>');
+
+                }
+            });
+        }
+    }
+
+    $(document).ready(function () {
+
+        //Hide the upload file alert...
+        $('#' + 'alertFileUpload').removeClass('hidden').hide();
+
+        //Initialization code for jQuery-File-Upload...
+        var dropDiv = $('#' + 'divFilesForUpload');
+        dropDiv.fileupload(
+            {
+                //Identifiers/operating values...
+                "dataType": "json",
+                "dropZone": dropDiv,
+                "maxChunkSize": 10000,              //Relatively small value for testing purposes...
+                //Upload-related...
+                "autoUpload": false,
+                "multipart": true,                  //Send uploads as multipart/form-data 
+                "type": "POST",
+                "url": "/api/revisedupload/post",
+                "singleFileUploads": true,          //Upload each file in a separate XHR request
+                //"sequentialUploads": true,          //Issue file upload requests in a sequential order
+                "sequentialUploads": false,          //Issue file upload requests simultaneously
+                "limitConcurrentUploads": 20,         //Limit the number of concurrent uploads      
+                //Callbacks...
+                "add": function(event, data) {
+                    //File(s) added for upload - check event type...
+                    if ('undefined' !== typeof event.originalEvent && null !== event.originalEvent) {
+                        if ('add' === event.originalEvent.type.toLowerCase() && 
+                            (!event.originalEvent.delegatedEvent)) {
+                            //Event is a call to jquery-file-upload 'add' method (NOT a file 'drop' or 'browse')
+
+                            //Submit current data to server...
+                            data.submit();
+                        }
+                    }
+                },
+                "submit": function (event, data) {
+                    //Include file names as 'form' data...
+                    var fileNames = [];
+                    if (0 < fileObjectsForUpload.length) {
+                        //List entries exist - retrieve file names as 'form' data...
+                        $.each(fileObjectsForUpload, function (index, file) {
+                            fileNames.push(file.name);
+                        });
+                    }
+
+                    //Send current data to server (start the upload manually)...
+                    data.formData = { "fileNames": fileNames,
+                                      "currentUploadId": currentUploadId
+                                    };
+
+                    var dropDiv = $('#' + 'divFilesForUpload');
+                    dropDiv.fileupload('send', data);
+
+                    //Return false to stop the submit call from starting the upload....
+                    return false;
+                },
+                ////File 'chunk' callbacks...
+                //"chunkalways": function(event, data) {
+                //    console.log('jquery-file-upload - chunkalways called!!');
+                //    var n = 5;
+
+                //    ++n;
+                //},
+                //"chunkdone": function(event, data) {
+                //    console.log('jquery-file-upload - chunkdone called!!');
+                //    var n = 5;
+
+                //    ++n;
+                //},
+                "chunkfail": function(event, data) {
+                    console.log('jquery-file-upload - chunkfail called!!');
+                    var n = 5;
+
+                    ++n;
+                },
+                //"chunksend": function(event, data) {
+                //    console.log('jquery-file-upload - chunksend called!!');
+                //    var n = 5;
+
+                //    ++n;
+                //},
+                //File upload callbacks...
+                "always": function (event, data) {
+                    console.log('jquery-file-upload - always called!!');
+
+                    //Check for final status ('completed' or 'error') on all list items...
+                    var final = true;   //Assume all statuses are final
+                    var listItems = '#' + 'lstFilesForUpload' + ' li';
+
+                    $(listItems).each(function (index) {
+                        //var divProgress = $(this).children('span.progress');
+                        //var divStatus = $(divProgress).children('span.status');
+                        var divStatus = $(this).children('span.status');
+                        var statusText = divStatus.text().toLowerCase();
+
+                        if ((-1 === statusText.indexOf('complete')) &&
+                            (-1 === statusText.indexOf('error'))) {
+                            final = false; 
+                        }
+                    });
+
+                    if (final) {
+                        //Final status for all list items - show Validation Summary button...
+                        //NOTE: Controller may not yet be done with file processing - 
+                        //      user must keep current page open until all controller processing is done 
+                        var url = '/api/revisedupload/get/' + currentUploadId + '/';
+                        var interval = setInterval(function () {
+                            $.ajax({
+                                "url": url,
+                                "type": "GET",
+                                "async": true,
+                                "dataType": "json",
+                                "cache": false, //So IE does not cache when calling the same URL - source: http://stackoverflow.com/questions/7846707/ie9-jquery-ajax-call-first-time-doing-well-second-time-not
+                                "success": function (data, textStatus, jqXHR) {
+                                    console.log('RevisedUpload GET success: "' + textStatus + '" (' + jqXHR.status.toString() + ')');
+                                    if (200 === jqXHR.status || 206 === jqXHR.status) {
+                                        //Controller file processing complete - show Validation Summary button...
+                                        $('#' + 'alertFileUpload').fadeOut({
+                                            "duration": 1500,
+                                            "complete": function () {
+                                                $('#' + 'btnValidationSummary').removeClass('hidden');
+                                                ////BC - TEST - Click button as soon as shown to test possible timing issue...
+                                                //$('#' + 'btnValidationSummary')[0].click();
+                                            }
+                                        });
+                                        clearInterval(interval);
+                                    }
+                                },
+                                "error": function (xmlhttprequest, textStatus, message) {
+                                    //Failure - Log messsage received from server...
+                                    console.log('RevisedUpload GET reports error: ' + xmlhttprequest.status + ' (' + message + ')');
+                                    clearInterval(interval);
+                                }
+                            });
+
+                        }, 5000);
+                    }
+                },
+                "done": function (event, data) {
+                    console.log('jquery-file-upload - done called!!');
+                    var n = 5;
+
+                    ++n;
+                },
+                "fail": function (event, data) {
+                    console.log('jquery-file-upload - fail called!!');
+
+                    //Update status for associated list entry...
+                    var fileName = data.files[0].name;
+                    var listItem = '#' + 'lstFilesForUpload' + ' li[data-file="' + fileName + '"]';
+
+                    var divBar = $(listItem + ' .bar');
+                    var divPercent = $(listItem + ' .percent');
+                    var divStatus = $(listItem + ' .status');
+
+                    divBar.width('100%');
+                    divPercent.html('0%');
+                    divStatus.html('Error...');
+                },
+                //"send": function (event, data) {
+                //    console.log('jquery-file-upload - send called!!');
+                //    var n = 5;
+
+                //    ++n;
+                //},
+                "progress": function (event, data) {
+                    var fileName = data.files[0].name;
+                    //var percentage = (parseInt((data.loaded / data.total) * 100, 10)).toLocaleString();  //Rounds to the nearest whole number...
+                    var percentage = Math.round((data.loaded / data.total) * 100);                         //Rounds to the nearest whole number...
+
+                    //console.log('jquery-file-upload - progress called for: ' + fileName + ' at ' + percentage.toString() + '% !!');
+
+                    //Update list item...
+                    var listItem = '#' + 'lstFilesForUpload' + ' li[data-file="' + fileName + '"]';
+
+                    //var divBar = $(listItem + ' .bar');
+                    //var divPercent = $(listItem + ' .percent');
+                    var divStatus = $(listItem + ' .status');
+                    var progressBar = $(listItem + ' .progress-bar');
+
+                    //divBar.width(percentage + '%');
+                    //divPercent.html(percentage + '%');
+                    progressBar.width(percentage.toString() + '%');
+                    progressBar.text(percentage.toString()  + '%');
+
+                    var status = "Complete!!!";     //Assume completed...
+                    if ( 100 > percentage) {
+                        status = "in progress...";  //Not yet completed...
+                    }
+
+                    divStatus.html(status);
+                },
+                "drop": function (event, data) {
+                    //console.log('Dropped files:');
+                    //Add dropped files...
+                    addFileObjects(data.files, fileObjectsForUpload, $('#' + 'lstFilesForUpload'))
+                }
+            });
+
+        //'Change' handler for multiple file input...
+        $('#' + 'inpFilesForUpload').on('change', function (event) {
+            //Check for file selections...
+            var files = this.files;
+            addFileObjects(files, fileObjectsForUpload, $('#' + 'lstFilesForUpload'))
+        });
+
+        //'Click' handler for Files for Upload, Continue 
+        $('#' + 'btnFilesForUploadContinue').on('click', function (event) {
+            //Retrieve list of files for upload
+            if (0 < fileObjectsForUpload.length) {
+                //List entries exist - generate upload Id...
+                currentUploadId = randomId.generateId();
+                //Retain in session storage...
+                sessionStorage.currentUploadId = currentUploadId;
+                sessionStorage.fileUploadCount = fileObjectsForUpload.length.toString();
+
+                //Invoke jQuery File Uploader 'add' method...
+                var dropDiv = $('#' + 'divFilesForUpload');
+                dropDiv.fileupload('add', { "files": fileObjectsForUpload });
+
+                //Disable button...
+                $('#' + 'btnFilesForUploadContinue').addClass('disabled');
+
+                //Display 'file upload' alert...
+                //Source: http://www.java2s.com/Tutorials/HTML_CSS/Bootstrap_Example/Alert/Show_alert_block_with_fade_in.htm
+                $('#' + 'alertFileUpload').fadeIn({"duration": 1000});
+            }
+        });
+
+        //Create Random Id instance...
+        randomId = new RandomId({
+            'iterationCount': 10,
+            'characterSets': ['alpha', 'numeric']
+        });
+       
+    });
+
+</script>

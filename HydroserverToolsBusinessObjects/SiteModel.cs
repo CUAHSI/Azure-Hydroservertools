@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HydroserverToolsBusinessObjects.Models
 {
+    [Serializable()]
     public class SiteModel
     {
         //public string SiteID { get; set; }

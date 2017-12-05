@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.9
+VisualStudioVersion = 15.0.26730.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C75875B3-07C9-4B04-BD04-876BCBC67B6B}"
 EndProject
@@ -24,7 +24,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ODM_1_1_1EFModel", "ODM_1_1
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "jQuery.DataTables.Mvc", "jQuery.DataTables.Mvc\jQuery.DataTables.Mvc.csproj", "{3383D0E2-C499-4F02-9D29-F744741AA999}"
 EndProject
-Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "HydroServerToolsAzure", "HydroServerToolsAzure\HydroServerToolsAzure.ccproj", "{E394C94A-27B6-4E0F-A8E1-5C59AB98CC13}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HydroServerToolsEFDerivedObjects", "HydroServerToolsEFDerivedObjects\HydroServerToolsEFDerivedObjects.csproj", "{E81E4631-680A-4928-926C-6B217918BA94}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -56,12 +56,15 @@ Global
 		{3383D0E2-C499-4F02-9D29-F744741AA999}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3383D0E2-C499-4F02-9D29-F744741AA999}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3383D0E2-C499-4F02-9D29-F744741AA999}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E394C94A-27B6-4E0F-A8E1-5C59AB98CC13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E394C94A-27B6-4E0F-A8E1-5C59AB98CC13}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E394C94A-27B6-4E0F-A8E1-5C59AB98CC13}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E394C94A-27B6-4E0F-A8E1-5C59AB98CC13}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E81E4631-680A-4928-926C-6B217918BA94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E81E4631-680A-4928-926C-6B217918BA94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E81E4631-680A-4928-926C-6B217918BA94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E81E4631-680A-4928-926C-6B217918BA94}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6976EC9F-73EE-493D-802C-F306657A408A}
 	EndGlobalSection
 EndGlobal

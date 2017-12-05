@@ -221,3 +221,65 @@ table
     bottom:0;
     right:0;
 }
+/* Source: Daniel Uy - jQuery Drag and Drop Files -  http://danielm.herokuapp.com/demos/dnd/ */
+.uploader {
+    border: 2px dotted #A5A5C7;
+    width: 100%;
+    color: #92AAB0;
+    text-align: center;
+    vertical-align: middle;
+    padding: 30px 0px;
+    margin-bottom: 10px;
+    font-size: 200%;
+    cursor: default;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* CSS for rotating glyphicons...
+	Source: http://stackoverflow.com/questions/19364726/issue-making-bootstrap3-icon-spin - answer 28
+*/
+
+.spin {
+    -webkit-animation: spin 1.5s infinite linear;
+    -moz-animation: spin 1.5s infinite linear;
+    -o-animation: spin 1.5s infinite linear;
+    animation: spin 1.5s infinite linear;
+    -webkit-transform-origin: 50% 58%;
+    transform-origin: 50% 58%;
+    -ms-transform-origin: 50% 58%; /* IE 9 */
+}
+
+@-moz-keyframes spin {
+    from {
+        -moz-transform: rotate(0deg);
+    }
+
+    to {
+        -moz-transform: rotate(360deg);
+    }
+}
+
+@-webkit-keyframes spin {
+    from {
+        -webkit-transform: rotate(0deg);
+    }
+
+    to {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}

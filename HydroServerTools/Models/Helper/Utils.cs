@@ -84,7 +84,7 @@ namespace HydroServerTools
             }
             catch (DirectoryNotFoundException ex) 
             {
-                throw;// return ex.Message;
+                throw ex;// return ex.Message;
             }
            
           
@@ -114,15 +114,16 @@ namespace HydroServerTools
             }
             catch (DirectoryNotFoundException ex)
             {
-                throw;// return ex.Message;
+                throw ex;// return ex.Message;
             }
-            catch (NullReferenceException ex)
+            //catch (NullReferenceException ex)
+            catch (NullReferenceException)
             {
                 return string.Empty;
             }
             catch (Exception ex)
             { 
-                throw;
+                throw ex;
             }
 
             return result;
@@ -177,7 +178,7 @@ namespace HydroServerTools
 
         public static string getConnectionName(string userName)
         {
-            string connectionName = Ressources.NOT_LINKED_TO_DATABASE; 
+            string connectionName = Resources.NOT_LINKED_TO_DATABASE; 
             ApplicationDbContext context = new ApplicationDbContext();
 
             var p = (from c in context.ConnectionParametersUser

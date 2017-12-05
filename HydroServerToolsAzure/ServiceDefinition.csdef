@@ -3,6 +3,10 @@
   <WorkerRole name="CacheWorkerRole1" vmsize="Small">
     <ConfigurationSettings>
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.Caching.NamedCaches" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.Caching.DiagnosticLevel" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.Caching.CacheSizePercentage" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.Caching.ConfigStoreConnectionString" />
     </ConfigurationSettings>
     <Imports>
       <Import moduleName="Caching" />

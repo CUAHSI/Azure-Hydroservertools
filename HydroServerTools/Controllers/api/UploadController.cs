@@ -24,6 +24,9 @@ using System.Web;
 using System.Web.Http;
 using System.Web.UI.WebControls;
 
+using HydroServerToolsEFDerivedObjects;
+
+
 namespace HydroServerTools.Controllers.WebApi
 {
     public class UploadController : ApiController
@@ -42,14 +45,14 @@ namespace HydroServerTools.Controllers.WebApi
         {
             try
             {
-                BusinessObjectsUtils.RemoveItemFromCache(instanceIdentifier, Ressources.IMPORT_STATUS_UPLOAD);
+                BusinessObjectsUtils.RemoveItemFromCache(instanceIdentifier, Resources.IMPORT_STATUS_UPLOAD);
 
                 // Get a reference to the file that our jQuery sent.  Even with multiple files, they will all be their own request and be the 0 index
                 HttpPostedFile file = HttpContext.Current.Request.Files[0];
                 string message = string.Empty;
                 if ((file.FileName.ToLower().EndsWith(".csv") || file.FileName.ToLower().EndsWith(".zip")) == false)
                 {
-                    message = Ressources.FILETYPE_NOT_CSV_ZIP;
+                    message = Resources.FILETYPE_NOT_CSV_ZIP;
                     return new HttpResponseMessage(HttpStatusCode.BadRequest); ;
                 }
 
@@ -65,9 +68,9 @@ namespace HydroServerTools.Controllers.WebApi
                     if (file.FileName.ToLower().EndsWith(".zip"))
                     {
                         //Updating status
-                        //BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, Ressources.IMPORT_STATUS_EXTRACTNG);
+                        //BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, Resources.IMPORT_STATUS_EXTRACTNG);
 
-                        BusinessObjectsUtils.RemoveItemFromCache(instanceIdentifier, Ressources.IMPORT_STATUS_EXTRACTNG);
+                        BusinessObjectsUtils.RemoveItemFromCache(instanceIdentifier, Resources.IMPORT_STATUS_EXTRACTNG);
 
 
                         
@@ -114,7 +117,7 @@ namespace HydroServerTools.Controllers.WebApi
                     
                     else
                     {
-                        BusinessObjectsUtils.RemoveItemFromCache(instanceIdentifier, Ressources.IMPORT_STATUS_PROCESSING);
+                        BusinessObjectsUtils.RemoveItemFromCache(instanceIdentifier, Resources.IMPORT_STATUS_PROCESSING);
                         reader = new StreamReader(file.InputStream, Encoding.GetEncoding("iso-8859-1"));
                     }
                     //required to make sure there are no duplicates in upload by removing them!
@@ -177,7 +180,7 @@ namespace HydroServerTools.Controllers.WebApi
                 BusinessObjectsUtils.RemoveItemFromSession(instanceIdentifier,  "listOfIncorrectRecords");
                 BusinessObjectsUtils.RemoveItemFromSession(instanceIdentifier,  "listOfEditedRecords");
                 BusinessObjectsUtils.RemoveItemFromSession(instanceIdentifier,  "listOfDuplicateRecords");
-                BusinessObjectsUtils.RemoveItemFromSession(instanceIdentifier,  Ressources.IMPORT_STATUS_UPLOAD);
+                BusinessObjectsUtils.RemoveItemFromSession(instanceIdentifier,  Resources.IMPORT_STATUS_UPLOAD);
 
                  if (file != null)
 
@@ -245,12 +248,12 @@ namespace HydroServerTools.Controllers.WebApi
             BusinessObjectsUtils.RemoveItemFromCache(instanceIdentifier, "listOfEditedRecords");
             BusinessObjectsUtils.RemoveItemFromCache(instanceIdentifier, "listOfDuplicateRecords");
 
-            BusinessObjectsUtils.RemoveItemFromCache(instanceIdentifier, Ressources.IMPORT_STATUS_UPLOAD);
+            BusinessObjectsUtils.RemoveItemFromCache(instanceIdentifier, Resources.IMPORT_STATUS_UPLOAD);
 
             if (session["Uploadedfile"] != null)
             {
                 var textReader = (TextReader)session["Uploadedfile"];
-                BusinessObjectsUtils.UpdateCachedprocessStatusMessage(userName, "Default", Ressources.STATUS_PROCESSING);
+                BusinessObjectsUtils.UpdateCachedprocessStatusMessage(userName, "Default", Resources.STATUS_PROCESSING);
 
 
                 Task.Run(async () =>
@@ -261,7 +264,7 @@ namespace HydroServerTools.Controllers.WebApi
                     //for (int n = 0; n > 10; n++)
                     //{
 
-                    //    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(userName, "Default", String.Format(Ressources.IMPORT_STATUS_PROCESSING, n, maxn));
+                    //    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(userName, "Default", String.Format(Resources.IMPORT_STATUS_PROCESSING, n, maxn));
                     //    await Task.Delay(3000);
                     //}
                 }).ConfigureAwait(false);
@@ -299,7 +302,7 @@ namespace HydroServerTools.Controllers.WebApi
             BusinessObjectsUtils.RemoveItemFromSession(instanceIdentifier, "listOfIncorrectRecords");
             BusinessObjectsUtils.RemoveItemFromSession(instanceIdentifier, "listOfEditedRecords");
             BusinessObjectsUtils.RemoveItemFromSession(instanceIdentifier, "listOfDuplicateRecords");
-            BusinessObjectsUtils.RemoveItemFromSession(instanceIdentifier, Ressources.IMPORT_STATUS_UPLOAD);
+            BusinessObjectsUtils.RemoveItemFromSession(instanceIdentifier, Resources.IMPORT_STATUS_UPLOAD);
 
            
 
@@ -332,13 +335,13 @@ namespace HydroServerTools.Controllers.WebApi
                     //entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
                     //if (string.IsNullOrEmpty(entityConnectionString))
                     //{
-                    message = Ressources.HYDROSERVER_USERLOOKUP_FAILED;
+                    message = Resources.HYDROSERVER_USERLOOKUP_FAILED;
                     return;
                     //}
                 }
                 //else
                 //{
-                //    message = Ressources.HYDROSERVER_USERLOOKUP_FAILED;
+                //    message = Resources.HYDROSERVER_USERLOOKUP_FAILED;
 
                 //    return;
 
@@ -346,7 +349,7 @@ namespace HydroServerTools.Controllers.WebApi
             }
             else
             {
-                message = Ressources.HYDROSERVER_USERLOOKUP_FAILED;
+                message = Resources.HYDROSERVER_USERLOOKUP_FAILED;
                 return;
 
                 //entityConnectionString = Utils.GetDBConnectionStringByName("Hydroservertest2");
@@ -395,7 +398,7 @@ namespace HydroServerTools.Controllers.WebApi
                         else
                         {
 
-                            //throw new ArgumentException(String.Format(Ressources.IMPORT_FAILED_NOVALIDDATA, file.FileName));
+                            //throw new ArgumentException(String.Format(Resources.IMPORT_FAILED_NOVALIDDATA, file.FileName));
 
                         }
                     }
@@ -513,35 +516,45 @@ namespace HydroServerTools.Controllers.WebApi
                 #region Methods
                 if (viewName.ToLower() == "methods")
                 {
-                    List<MethodModel> values = null;
+                    //List<MethodModel> values = null;
+                    List<EFD_Method> values = null;
 
 
-                    // var siteViewModel = new SitesViewModel();
-                    // Type t = typeof(SiteModel);
+                    //// var siteViewModel = new SitesViewModel();
+                    //// Type t = typeof(SiteModel);
 
-                    var listOfIncorrectRecords = new List<MethodModel>();
-                    var listOfCorrectRecords = new List<MethodModel>();
-                    var listOfDuplicateRecords = new List<MethodModel>();
-                    var listOfEditedRecords = new List<MethodModel>();
+                    //var listOfIncorrectRecords = new List<MethodModel>();
+                    //var listOfCorrectRecords = new List<MethodModel>();
+                    //var listOfDuplicateRecords = new List<MethodModel>();
+                    //var listOfEditedRecords = new List<MethodModel>();
+                    var listOfIncorrectRecords = new List<EFD_Method>();
+                    var listOfCorrectRecords = new List<EFD_Method>();
+                    var listOfDuplicateRecords = new List<EFD_Method>();
+                    var listOfEditedRecords = new List<EFD_Method>();
 
 
-                    // Verify that the user selected a file
-                    //if (file != null && file.ContentLength > 0)
-                    //{
+                    //// Verify that the user selected a file
+                    ////if (file != null && file.ContentLength > 0)
+                    ////{
 
-                        values = parseCSV<MethodModel>(file, viewName);
-                    //}
+                    //values = parseCSV<MethodModel>(file, viewName);
+                    values = parseCSV<EFD_Method>(file, viewName);
+                    ////}
 
 
                     if (values != null)
                     {
-                        var repository = new MethodsRepository();
+                        //BC - 01-Nov-2017 - Replace MethodsRepository call with GenericRepository call... 
+                        //var repository = new MethodsRepository();
+                        //repository.AddMethods(values, entityConnectionString, instanceIdentifier, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
 
-                        repository.AddMethods(values, entityConnectionString, instanceIdentifier, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
+                        var genericRepository = new GenericRepository<EFD_Method, ODM_1_1_1EFModel.Method>(entityConnectionString);
+                        genericRepository.AddInstances(values, instanceIdentifier, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
                     }
 
-                    //PutRecordsInSession<MethodModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords);
-                    PutRecordsInCache<MethodModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords, instanceIdentifier);
+                    ////PutRecordsInSession<MethodModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords);
+                    //PutRecordsInCache<MethodModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords, instanceIdentifier);
+                    PutRecordsInCache<EFD_Method>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords, instanceIdentifier);
 
                 }
                 #endregion
@@ -867,7 +880,7 @@ namespace HydroServerTools.Controllers.WebApi
 
                 }
                 //setting process to complete IMPORTANT to trigger redirect
-                BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING_DONE));
+                BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING_DONE));
 
                 #endregion
             }
@@ -964,7 +977,7 @@ namespace HydroServerTools.Controllers.WebApi
             
             //var outFolder = "";
 
-            string instanceIdentifier = "";// MvcApplication.InstanceGuid + HttpContext.Current.User.Identity.Name;
+            //string instanceIdentifier = "";// MvcApplication.InstanceGuid + HttpContext.Current.User.Identity.Name;
 
             
             //remove illegal characters
@@ -992,9 +1005,11 @@ namespace HydroServerTools.Controllers.WebApi
             //while (csvReader.Read())
             //{
             //var intField = csvReader.GetField<int>(0);
-            csvReader.Configuration.IsHeaderCaseSensitive = false;
-            csvReader.Configuration.WillThrowOnMissingField = false;
-            csvReader.Configuration.SkipEmptyRecords = true;
+            //csvReader.Configuration.IsHeaderCaseSensitive = false;    //Not available in CsvHelper v6.0
+            //csvReader.Configuration.WillThrowOnMissingField = false;  //Not available in CsvHelper v6.0
+            csvReader.Configuration.MissingFieldFound = null;           //Suppress throw of MissingFieldException in CsvHelper v6.0   
+            //csvReader.Configuration.SkipEmptyRecords = true;          //Not available in CsvHelper v6.0
+            csvReader.Configuration.IgnoreBlankLines = true;            //Skip blank lines in CsvHelper v6.0
 
             //while (csvReader.Read())
             //{
@@ -1004,9 +1019,16 @@ namespace HydroServerTools.Controllers.WebApi
 
             try
             {
+                //CsvHelper v6.0 read the header...
+                csvReader.Read();
+                csvReader.ReadHeader();
+
                 s = csvReader.GetRecords<T>().ToList();
 
-                var missingMandatoryFields = HydroServerToolsUtils.ValidateFields<T>(csvReader.FieldHeaders.ToList());
+                //Revise for CsvHelper v6.0
+                //var missingMandatoryFields = HydroServerToolsUtils.ValidateFields<T>(csvReader.FieldHeaders.ToList());
+                var missingMandatoryFields = HydroServerToolsUtils.ValidateFields<T>(csvReader.Context.HeaderRecord.ToList());
+
                 if (missingMandatoryFields.Count > 0)
                 {
                     StringBuilder sb = new StringBuilder();
@@ -1016,21 +1038,23 @@ namespace HydroServerTools.Controllers.WebApi
                         sb.Append(",");
                     }
                     var f = sb.ToString().TrimEnd(',');
-                    throw new System.ArgumentException(String.Format(Ressources.IMPORT_FAILED_MISSINGMANDATORYFIELDS, f));
+                    throw new System.ArgumentException(String.Format(Resources.IMPORT_FAILED_MISSINGMANDATORYFIELDS, f));
                 }
 
             }
-            catch (CsvMissingFieldException ex)
+            //catch (CsvMissingFieldException ex)
+            catch (CsvHelper.MissingFieldException ex)
             {
-                throw;
+                throw ex;
             }
-            catch (CsvReaderException ex)
+            //catch (CsvHelper.ReaderException ex)
+            catch (CsvHelper.ReaderException)
             {
-                throw new System.ArgumentException(String.Format(Ressources.IMPORT_FAILED_NOMATCHINGFIELDS));
+                throw new System.ArgumentException(String.Format(Resources.IMPORT_FAILED_NOMATCHINGFIELDS));
             }
             catch (Exception ex)
             {
-                throw;
+                throw ex;
             }
             
 
@@ -1066,7 +1090,8 @@ namespace HydroServerTools.Controllers.WebApi
                         //Debug.WriteLine(current.Count());
                     }
                 }
-                catch (OutOfMemoryException ex) //Hashset throws an Exception by ca 12,000,000 elements
+                //catch (OutOfMemoryException ex) //Hashset throws an Exception by ca 12,000,000 elements
+                catch (OutOfMemoryException) //Hashset throws an Exception by ca 12,000,000 elements
                 {
                     current = new HashSet<string>() { line }; //The line could not added before, add the line to the new hashset
                     lines.Add(current); //add the current hashset to the List of hashsets

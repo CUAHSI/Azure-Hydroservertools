@@ -139,6 +139,39 @@ namespace HydroServerTools.Controllers
             ViewBag.name = id;
             return View();
         }
+
+        public ActionResult RevisedUploadData(string id)
+        {
+            if (!String.IsNullOrEmpty(id))
+            {
+                var viewName = String.Empty;
+                switch (id.ToLowerInvariant())
+                {
+                    case "draganddropfiles":
+                    {
+                            viewName = "DragAndDropFiles";
+                            break;
+                    }
+                    case "validatefiles":
+                    {
+                            viewName = "ValidateFiles";
+                            break;
+                    }
+                    default:
+                        throw new ArgumentException("CSVUploadController.RevisedUploadData(...) - Unknown input id!!");
+                }
+
+                if (!String.IsNullOrEmpty(viewName))
+                {
+                    //Known view name - return associated view... 
+                    return View(viewName);
+                }
+            }
+
+            //Unknown view name - return error view...
+            return View("Error");
+        }
+
         [HttpGet]
         public ContentResult _Breadcrumb(string id)
         {
@@ -260,8 +293,9 @@ namespace HydroServerTools.Controllers
             //while (csvReader.Read())
             //{
             //var intField = csvReader.GetField<int>(0);
-            csvReader.Configuration.IsHeaderCaseSensitive = false;
-            csvReader.Configuration.WillThrowOnMissingField = false;
+            //csvReader.Configuration.IsHeaderCaseSensitive = false;    //Not available in CsvHelper v6.0
+            //csvReader.Configuration.WillThrowOnMissingField = false;  //Not available in CsvHelper v6.0
+            csvReader.Configuration.MissingFieldFound = null;           //Suppress throw of MissingFieldException in CsvHelper v6.0   
 
             //while (csvReader.Read())
             //{
@@ -269,13 +303,13 @@ namespace HydroServerTools.Controllers
             {
                 s = csvReader.GetRecords<T>().ToList();
             }
-            catch (CsvMissingFieldException ex)
+            catch (CsvHelper.MissingFieldException ex)
             {
-                throw;
+                throw ex;
             }
             catch (Exception ex)
             {
-                throw;
+                throw ex;
             }
             finally
             {
@@ -297,7 +331,7 @@ namespace HydroServerTools.Controllers
 
             //Sites
             //reset 
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(identifier, CacheName, Ressources.STATUS_PROCESSING);
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(identifier, CacheName, Resources.STATUS_PROCESSING);
             try
             {
                 if (id != null)
@@ -655,14 +689,13 @@ namespace HydroServerTools.Controllers
                 //return Json(new { Success = false, Message = "Error timeout" });
                 return new HttpStatusCodeResult(HttpStatusCode.Gone, "The data has been removed due to inactivity. Please re-upload the file ");
                 //return Content("Error");
-            }           
-            
-            
-            catch (Exception ex)
+            }
+            //catch (Exception ex)
+            catch (Exception)
             {
                 // Now we need to wire up a response so that the calling script understands what happened
 
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, Ressources.IMPORT_UNSPECIFIED_ERROR);
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, Resources.IMPORT_UNSPECIFIED_ERROR);
             }
         }       
 
@@ -680,7 +713,8 @@ namespace HydroServerTools.Controllers
 
                 return Json(new { success = true });
             }
-            catch (Exception ex)
+            //catch (Exception ex)
+            catch (Exception)
             {
                 // Now we need to wire up a response so that the calling script understands what happened
 

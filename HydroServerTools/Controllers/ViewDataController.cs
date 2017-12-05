@@ -10,6 +10,10 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
+using ODM_1_1_1EFModel;
+
+using HydroServerToolsEFDerivedObjects;
+
 namespace HydroServerTools.Controllers
 {
     [Authorize]
@@ -65,7 +69,7 @@ namespace HydroServerTools.Controllers
 
             if (String.IsNullOrEmpty(entityConnectionString))
             {
-                ModelState.AddModelError(String.Empty, Ressources.HYDROSERVER_USERLOOKUP_FAILED);
+                ModelState.AddModelError(String.Empty, Resources.HYDROSERVER_USERLOOKUP_FAILED);
 
             }
 
@@ -112,7 +116,7 @@ namespace HydroServerTools.Controllers
 
             if (String.IsNullOrEmpty(entityConnectionString))
             {
-                ModelState.AddModelError(String.Empty, Ressources.HYDROSERVER_USERLOOKUP_FAILED);
+                ModelState.AddModelError(String.Empty, Resources.HYDROSERVER_USERLOOKUP_FAILED);
 
             }
 
@@ -157,7 +161,7 @@ namespace HydroServerTools.Controllers
 
             if (String.IsNullOrEmpty(entityConnectionString))
             {
-                ModelState.AddModelError(String.Empty, Ressources.HYDROSERVER_USERLOOKUP_FAILED);
+                ModelState.AddModelError(String.Empty, Resources.HYDROSERVER_USERLOOKUP_FAILED);
 
             }
 
@@ -193,7 +197,7 @@ namespace HydroServerTools.Controllers
 
             if (String.IsNullOrEmpty(entityConnectionString))
             {
-                ModelState.AddModelError(String.Empty, Ressources.HYDROSERVER_USERLOOKUP_FAILED);
+                ModelState.AddModelError(String.Empty, Resources.HYDROSERVER_USERLOOKUP_FAILED);
 
             }
 
@@ -242,7 +246,7 @@ namespace HydroServerTools.Controllers
 
             if (String.IsNullOrEmpty(entityConnectionString))
             {
-                ModelState.AddModelError(String.Empty, Ressources.HYDROSERVER_USERLOOKUP_FAILED);
+                ModelState.AddModelError(String.Empty, Resources.HYDROSERVER_USERLOOKUP_FAILED);
 
             }
 
@@ -279,15 +283,22 @@ namespace HydroServerTools.Controllers
 
             if (String.IsNullOrEmpty(entityConnectionString))
             {
-                ModelState.AddModelError(String.Empty, Ressources.HYDROSERVER_USERLOOKUP_FAILED);
+                ModelState.AddModelError(String.Empty, Resources.HYDROSERVER_USERLOOKUP_FAILED);
 
             }
 
-
+            //BC - 01-Nov-2017 - Replace MethodsRepository call with GenericRepository call... 
             var repository = new MethodsRepository();
             var items = repository.GetMethods(entityConnectionString, startIndex: jQueryDataTablesModel.iDisplayStart,
                 pageSize: jQueryDataTablesModel.iDisplayLength, sortedColumns: jQueryDataTablesModel.GetSortedColumns(),
                 totalRecordCount: out totalRecordCount, searchRecordCount: out searchRecordCount, searchString: jQueryDataTablesModel.sSearch);
+            //var repository = new GenericRepository<EFD_Method, Method>(entityConnectionString);
+            //var items = repository.GetInstances(startIndex: jQueryDataTablesModel.iDisplayStart,
+            //                                    pageSize: jQueryDataTablesModel.iDisplayLength, 
+            //                                    sortedColumns: jQueryDataTablesModel.GetSortedColumns(),
+            //                                    totalRecordCount: out totalRecordCount, 
+            //                                    searchRecordCount: out searchRecordCount, 
+            //                                    searchString: jQueryDataTablesModel.sSearch);
 
             var result = from c in items
                          select new[] { 
@@ -314,7 +325,7 @@ namespace HydroServerTools.Controllers
 
             if (String.IsNullOrEmpty(entityConnectionString))
             {
-                ModelState.AddModelError(String.Empty, Ressources.HYDROSERVER_USERLOOKUP_FAILED);
+                ModelState.AddModelError(String.Empty, Resources.HYDROSERVER_USERLOOKUP_FAILED);
 
             }
 
@@ -351,7 +362,7 @@ namespace HydroServerTools.Controllers
 
             if (String.IsNullOrEmpty(entityConnectionString))
             {
-                ModelState.AddModelError(String.Empty, Ressources.HYDROSERVER_USERLOOKUP_FAILED);
+                ModelState.AddModelError(String.Empty, Resources.HYDROSERVER_USERLOOKUP_FAILED);
 
             }
 
@@ -385,9 +396,14 @@ namespace HydroServerTools.Controllers
 
             if (String.IsNullOrEmpty(entityConnectionString))
             {
-                ModelState.AddModelError(String.Empty, Ressources.HYDROSERVER_USERLOOKUP_FAILED);
+                ModelState.AddModelError(String.Empty, Resources.HYDROSERVER_USERLOOKUP_FAILED);
 
             }
+
+            ////BC - Test - 27-Oct-2017 - Test GenericRepository.GetAll(...) 
+            //var genRepository = new GenericRepository<QualityControlLevelModel, ODM_1_1_1EFModel.QualityControlLevel>(entityConnectionString);
+
+            //var listRepository = genRepository.GetAll();
 
 
             var repository = new QualityControlLevelsRepository();
@@ -420,7 +436,7 @@ namespace HydroServerTools.Controllers
 
             if (String.IsNullOrEmpty(entityConnectionString))
             {
-                ModelState.AddModelError(String.Empty, Ressources.HYDROSERVER_USERLOOKUP_FAILED);
+                ModelState.AddModelError(String.Empty, Resources.HYDROSERVER_USERLOOKUP_FAILED);
 
             }
 
@@ -454,7 +470,7 @@ namespace HydroServerTools.Controllers
 
             if (String.IsNullOrEmpty(entityConnectionString))
             {
-                ModelState.AddModelError(String.Empty, Ressources.HYDROSERVER_USERLOOKUP_FAILED);
+                ModelState.AddModelError(String.Empty, Resources.HYDROSERVER_USERLOOKUP_FAILED);
 
             }
 
@@ -487,7 +503,7 @@ namespace HydroServerTools.Controllers
 
             if (String.IsNullOrEmpty(entityConnectionString))
             {
-                ModelState.AddModelError(String.Empty, Ressources.HYDROSERVER_USERLOOKUP_FAILED);
+                ModelState.AddModelError(String.Empty, Resources.HYDROSERVER_USERLOOKUP_FAILED);
 
             }
 
@@ -520,7 +536,7 @@ namespace HydroServerTools.Controllers
 
             if (String.IsNullOrEmpty(entityConnectionString))
             {
-                ModelState.AddModelError(String.Empty, Ressources.HYDROSERVER_USERLOOKUP_FAILED);
+                ModelState.AddModelError(String.Empty, Resources.HYDROSERVER_USERLOOKUP_FAILED);
 
             }
 
@@ -556,7 +572,7 @@ namespace HydroServerTools.Controllers
 
             if (String.IsNullOrEmpty(entityConnectionString))
             {
-                ModelState.AddModelError(String.Empty, Ressources.HYDROSERVER_USERLOOKUP_FAILED);
+                ModelState.AddModelError(String.Empty, Resources.HYDROSERVER_USERLOOKUP_FAILED);
 
             }
 
@@ -605,7 +621,7 @@ namespace HydroServerTools.Controllers
 
             if (String.IsNullOrEmpty(entityConnectionString))
             {
-                ModelState.AddModelError(String.Empty, Ressources.HYDROSERVER_USERLOOKUP_FAILED);
+                ModelState.AddModelError(String.Empty, Resources.HYDROSERVER_USERLOOKUP_FAILED);
 
             }
 
@@ -666,7 +682,7 @@ namespace HydroServerTools.Controllers
 
             if (String.IsNullOrEmpty(entityConnectionString))
             {
-                ViewBag.Message = Ressources.HYDROSERVER_USERLOOKUP_FAILED;
+                ViewBag.Message = Resources.HYDROSERVER_USERLOOKUP_FAILED;
                 return View("NoDBForm");
             }
 

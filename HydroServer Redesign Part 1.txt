@@ -1,0 +1,224 @@
+
+HydroServer Redesign Part 1
+
+**** Summary ****
+
+ - Initial checkins in the following areas:
+   - Re-factor meta-data and data upload as a (mainly) stateless REST process
+   - Utilize the 'chunking' facilities of jQuery File Upload to support simultaneous uploads of files of any size
+   - Integrate new REST code with existing database insert/update logic 
+
+
+**** HydroserverRedesign ****
+ - HydroServerTools.sln
+   -- Add project: HydroServerToolsEFDerivedObjects
+
+
+**** HydroServerTools ****
+ - Global.asax.cs
+   - Add ConcurrentDictionary instances to runtime cache at startup
+ - HydroServerTools.csproj
+   - Update various package versions 
+   - Add EntityFramework.Metadata package
+   - Add references to new code files / directories
+ - packages.config
+   - Update various package versions 
+ - Web.config
+   - Update/add package references 
+   - Update miscellaneous parameter values for file upload
+   - Disable web client caching
+
+
+**** HydroServerTools/App_Start ****
+ - WebApiConfig.cs 
+    - Add RevisedUploadController routes: Get, Put and Post
+
+
+**** HydroServerTools/Content ****
+ - Site.css
+   - Add styling for uploader and rotating glyphicon classes
+
+
+**** HydroServerTools/Controllers ****
+ - CSVUploadController.cs 
+   - New method RevisedUploadData(...)
+   - Revise csvReader settings for new version
+   - Correct 'Ressources' spelling
+   - Use anonymous catch blocks where indicated
+ - ExportController.cs
+   - comment out 'never referenced' variable
+ - HomeController.cs
+   - Correct 'Ressources' spelling
+   - ClearTableHandler - generic repository test call for 'methods'
+ - ViewDataController.cs
+   - Correct 'Ressources' spelling
+   - MethodsSearch - commented out generic repository test call for 'methods'
+   - QualityControlLevelsSearch - commented out generic repository test call for 'quality control levels'
+
+
+**** HydroServerTools/Controllers/api ****
+ - RevisedUploadController.cs 
+   - New file for REST-based upload logic
+ - UploadController.cs 
+   - Correct 'Ressources' spelling
+   - StartProcess(...) - generic repository test call for 'methods' 
+   - Revise csvReader settings/calls for new version
+   - Use anonymous catch blocks where indicated
+
+
+**** HydroServerTools/Models/Helper ****
+ - Utils.cs
+   - Correct 'Ressources' spelling
+   - Use anonymous catch blocks where indicated
+   - Revise throw statements for clarity
+
+
+**** HydroServerTools/Scripts/Custom ****
+ - RandomId.js - re-use of HydroClient code
+
+
+**** HydroServerTools/Uploads ****
+ - NEVER-DELETE-THIS_FILE.txt - placeholder for run-time directory
+
+
+**** HydroServerTools/Utilities ****
+ - New code for file upload/validation
+   - FileContext.cs - 
+   - RepositoryContext.cs
+   - SemaphoreSlimExtensions.cs
+   - ValidationContext.cs
+
+
+**** HydroServerTools/Validated ****
+ - NEVER-DELETE-THIS_FILE.txt - placeholder for run-time directory
+ 
+
+**** HydroServerTools/Validators ****
+ - New code for file upload/validation
+   - CsvValidator.cs
+   - ValidationResult.cs
+ 
+
+**** HydroServerTools/Views/CSVUpload ****
+ - New view files 
+   - DragAndDropFiles.cshtml
+   - ValidateFiles.cshtml
+ 
+
+**** HydroServerTools/Views/Home ****
+ - Index.cshtml
+   - Add ActionLink to revised  upload page
+ - Manage.cshtml
+   - add script tag for bootbox.js
+
+
+**** HydroServerTools.Tests **** 
+ - Update various package versions 
+
+
+**** HydroServerToolsAzure **** 
+ - Miscellaneous configuration changes
+
+
+**** HydroServerToolsBusinessObjects **** 
+ - Various 'model' classes - add 'Serializable' attribute
+ - HydroServerToolsBusinessObjects.csproj
+   - update package references
+   - add ModelMap class references
+   - add EntityFramework project reference
+ - Correct 'Ressources' spelling
+ - Utils.cs - new utility methods...
+ 
+
+**** HydroServerToolsBusinessObjects/ModelMaps **** 
+ - Add ModelMap classes
+
+
+
+**** HydroServerToolsEFDerivedObjects **** 
+ - New Class Library project - files/definitions referenced by the generic repository
+
+
+
+**** HydroServerToolsRepository/HydroServerToolsRepository **** 
+ - New files for generic repository
+ - Update AutoMapper configuration for new version
+ - Comment out unusued classes
+ - Utils.cs 
+   - Update New and Update methods to reference lowercase id values 
+
+
+
+**** ModelMaps ****
+ - new ModelMap files 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

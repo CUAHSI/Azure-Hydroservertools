@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace HydroserverToolsBusinessObjects.Models
 {
+    [Serializable()]
     public class QualityControlLevelModel
     {
         //public string QualityControlLevelID { get; set; }
