@@ -21,7 +21,7 @@ namespace HydroServerTools.Utilities
             ValidationResultSemaphore = new SemaphoreSlim(1, 1);
         }
 
-        //Initializing constructor...
+        //Initializing...
         public ValidationContext( List<ValidationResult<TValidator>> validationResults) : this()
         {
 #if (DEBUG)
@@ -32,7 +32,7 @@ namespace HydroServerTools.Utilities
                 throw new ArgumentException("Invalid input parameter...", paramName);
             }
 #endif
-            //Update instance member(s)...
+            //Set instance member(s)...
             ValidationResults = validationResults;
         }
 

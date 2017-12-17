@@ -20,6 +20,9 @@ using System.Web;
 using TB.ComponentModel;
 
 //using System.Data.Entity;
+using System.Threading.Tasks;
+
+using HydroServerToolsUtilities;
 
 using EntityFramework.Metadata.Extensions; 
 
@@ -239,13 +242,27 @@ namespace HydroServerToolsRepository.Repository
             return result;
         }
 
-        public void AddSites(List<SiteModel> itemList, string entityConnectionString, string instanceIdentifier, out List<SiteModel> listOfIncorrectRecords, out List<SiteModel> listOfCorrectRecords, out List<SiteModel> listOfDuplicateRecords, out List<SiteModel> listOfEditedRecords)
+        public async Task AddSites(List<SiteModel> itemList, string entityConnectionString, string instanceIdentifier, List<SiteModel> listOfIncorrectRecords, List<SiteModel> listOfCorrectRecords, List<SiteModel> listOfDuplicateRecords, List<SiteModel> listOfEditedRecords, StatusContext statusContext)
         {
-            listOfIncorrectRecords = new List<SiteModel>();
-            listOfCorrectRecords = new List<SiteModel>();
-            listOfDuplicateRecords = new List<SiteModel>();
-            listOfEditedRecords = new List<SiteModel>();
-
+#if (DEBUG)
+            //Validate/initialize input parameters...
+            if (null == itemList ||
+                String.IsNullOrWhiteSpace(entityConnectionString) ||
+                String.IsNullOrWhiteSpace(instanceIdentifier) ||
+                null == listOfIncorrectRecords ||
+                null == listOfCorrectRecords ||
+                null == listOfDuplicateRecords ||
+                null == listOfEditedRecords )
+            {
+                ArgumentNullException ex = new ArgumentNullException("SitesRepository.AddSites(...) invalid parameter...");
+                throw ex;
+            }
+#endif
+            //Reset input lists...
+            listOfIncorrectRecords.Clear();
+            listOfCorrectRecords.Clear();
+            listOfDuplicateRecords.Clear();
+            listOfEditedRecords.Clear();
 
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
             //var objContext = ((IObjectContextAdapter)context).ObjectContext;
@@ -261,9 +278,16 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-           
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));
 
+            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+            if (null == statusContext)
+            {
+                BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
+            }
+            else
+            {
+                await statusContext.AddStatusMessage(typeof (SiteModel).Name, statusMessage);
+            }
 
             foreach (var item in itemList)
             {
@@ -271,7 +295,15 @@ namespace HydroServerToolsRepository.Repository
 
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+                    if (null == statusContext)
+                    {
+                        BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
+                    }
+                    else
+                    {
+                        await statusContext.AddStatusMessage(typeof (SiteModel).Name, statusMessage);
+                    }
                     count++;                    
                     //var model = Mapper.Map<SiteModel, Site>(item);
 
@@ -707,6 +739,10 @@ namespace HydroServerToolsRepository.Repository
                         foreach (var er in listOfErrors)
                         {
                             sb.Append(er.ErrorMessage + ";");
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddStatusMessage(typeof (SiteModel).Name, er.ErrorMessage);
+                            }
                         }
                         item.Errors = sb.ToString();
                         listOfIncorrectRecords.Add(item);
@@ -736,7 +772,10 @@ namespace HydroServerToolsRepository.Repository
                             var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_ISDUPLICATE,"SiteCode")); listOfErrors.Add(err); isRejected = true;
                             listOfIncorrectRecords.Add(item);
                             item.Errors += err.ErrorMessage + ";";
-
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddStatusMessage(typeof(SiteModel).Name, err.ErrorMessage);
+                            }
                         }
                     }
                     else
@@ -768,9 +807,14 @@ namespace HydroServerToolsRepository.Repository
                             var sb = new StringBuilder();
                             foreach (var u in listOfUpdates)
                             {
-                                sb.Append(string.Format(Resources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue + ";"));
+                                var erMessage = string.Format(Resources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue);
+                                sb.Append(erMessage + ";");
+                                if (null != statusContext)
+                                {
+                                    await statusContext.AddStatusMessage(typeof(SiteModel).Name, erMessage);
+                                }
                             }
-                            item.Errors = sb.ToString();
+                            item.Errors += sb.ToString();
                            
                             continue;
                         }
@@ -1064,15 +1108,27 @@ namespace HydroServerToolsRepository.Repository
         }
 
 
-        public void AddVariables(List<VariablesModel> itemList, string entityConnectionString, string instanceIdentifier, out List<VariablesModel> listOfIncorrectRecords, out List<VariablesModel> listOfCorrectRecords, out List<VariablesModel> listOfDuplicateRecords, out List<VariablesModel> listOfEditedRecords)
+        public async Task AddVariables(List<VariablesModel> itemList, string entityConnectionString, string instanceIdentifier, List<VariablesModel> listOfIncorrectRecords, List<VariablesModel> listOfCorrectRecords, List<VariablesModel> listOfDuplicateRecords, List<VariablesModel> listOfEditedRecords, StatusContext statusContext)
         {
-            listOfIncorrectRecords = new List<VariablesModel>();
-            listOfCorrectRecords = new List<VariablesModel>();
-            listOfDuplicateRecords = new List<VariablesModel>();
-            listOfEditedRecords = new List<VariablesModel>();
-           
-            //var errorModel = new ErrorModel(); 
-
+#if (DEBUG)
+            //Validate/initialize input parameters...
+            if (null == itemList ||
+                String.IsNullOrWhiteSpace(entityConnectionString) ||
+                String.IsNullOrWhiteSpace(instanceIdentifier) ||
+                null == listOfIncorrectRecords ||
+                null == listOfCorrectRecords ||
+                null == listOfDuplicateRecords ||
+                null == listOfEditedRecords)
+            {
+                ArgumentNullException ex = new ArgumentNullException("VariablesRepository.AddVariables(...) invalid parameter...");
+                throw ex;
+            }
+#endif
+            //Reset input lists...
+            listOfIncorrectRecords.Clear();
+            listOfCorrectRecords.Clear();
+            listOfDuplicateRecords.Clear();
+            listOfEditedRecords.Clear();
 
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
             var objContext = ((IObjectContextAdapter)context).ObjectContext;
@@ -1091,13 +1147,30 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount)); 
-            
+            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+            if (null == statusContext)
+            {
+                BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
+            }
+            else
+            {
+                await statusContext.AddStatusMessage(typeof (VariablesModel).Name, statusMessage);
+            }
+
             foreach (var item in itemList)
             {
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+                    if ( null == statusContext)
+                    {
+                        BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
+                    }
+                    else
+                    {
+                        await statusContext.AddStatusMessage(typeof (VariablesModel).Name, statusMessage);
+                    }
+
                     count++;
 
                     //var model = Mapper.Map<VariablesModel, Variable>(item);
@@ -1430,6 +1503,10 @@ namespace HydroServerToolsRepository.Repository
                         foreach (var er in listOfErrors)
                         {
                             sb.Append(er.ErrorMessage + ";");
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddStatusMessage(typeof(VariablesModel).Name, er.ErrorMessage);
+                            }
                         }
                         item.Errors = sb.ToString();
                         listOfIncorrectRecords.Add(item);
@@ -1456,6 +1533,10 @@ namespace HydroServerToolsRepository.Repository
                             var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_ISDUPLICATE, "VariableCode")); listOfErrors.Add(err); isRejected = true;
                             listOfIncorrectRecords.Add(item);
                             item.Errors += err.ErrorMessage + ";";
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddStatusMessage(typeof(VariablesModel).Name, err.ErrorMessage);
+                            }
                         }
                     }
                     else
@@ -1482,7 +1563,12 @@ namespace HydroServerToolsRepository.Repository
                             var sb = new StringBuilder();
                             foreach (var u in listOfUpdates)
                             {
-                                sb.Append(string.Format(Resources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue + ";"));
+                                var erMessage = string.Format(Resources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue);
+                                sb.Append(erMessage + ";");
+                                if (null != statusContext)
+                                {
+                                    await statusContext.AddStatusMessage(typeof(VariablesModel).Name, erMessage);
+                                }
                             }
                             item.Errors = sb.ToString();
 
@@ -1655,13 +1741,27 @@ namespace HydroServerToolsRepository.Repository
             return result;
         }
 
-        public void AddOffsetTypes(List<OffsetTypesModel> itemList, string entityConnectionString, string instanceIdentifier, out List<OffsetTypesModel> listOfIncorrectRecords, out List<OffsetTypesModel> listOfCorrectRecords, out List<OffsetTypesModel> listOfDuplicateRecords, out List<OffsetTypesModel> listOfEditedRecords)
+        public async Task AddOffsetTypes(List<OffsetTypesModel> itemList, string entityConnectionString, string instanceIdentifier, List<OffsetTypesModel> listOfIncorrectRecords, List<OffsetTypesModel> listOfCorrectRecords, List<OffsetTypesModel> listOfDuplicateRecords, List<OffsetTypesModel> listOfEditedRecords, StatusContext statusContext)
         {
-            listOfIncorrectRecords = new List<OffsetTypesModel>();
-            listOfCorrectRecords = new List<OffsetTypesModel>();
-            listOfDuplicateRecords = new List<OffsetTypesModel>();
-            listOfEditedRecords = new List<OffsetTypesModel>();
-            
+#if (DEBUG)
+            //Validate/initialize input parameters...
+            if (null == itemList ||
+                String.IsNullOrWhiteSpace(entityConnectionString) ||
+                String.IsNullOrWhiteSpace(instanceIdentifier) ||
+                null == listOfIncorrectRecords ||
+                null == listOfCorrectRecords ||
+                null == listOfDuplicateRecords ||
+                null == listOfEditedRecords)
+            {
+                ArgumentNullException ex = new ArgumentNullException("OffsetTypesRepository.AddOffsetTypes(...) invalid parameter...");
+                throw ex;
+            }
+#endif
+            //Reset input lists...
+            listOfIncorrectRecords.Clear();
+            listOfCorrectRecords.Clear();
+            listOfDuplicateRecords.Clear();
+            listOfEditedRecords.Clear();
 
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
             //prefetch Units for quick lookup
@@ -1669,14 +1769,31 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount)); 
+            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+            if (null == statusContext)
+            {
+                BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
+            }
+            else
+            {
+                await statusContext.AddStatusMessage(typeof (OffsetTypesModel).Name, statusMessage);
+            }
 
             foreach (var item in itemList)
             {
 
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+                    if (null == statusContext)
+                    {
+                        BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
+                    }
+                    else
+                    {
+                        await statusContext.AddStatusMessage(typeof(OffsetTypesModel).Name, statusMessage);
+                    }
+
                     count++;
                     
                     var listOfErrors = new List<ErrorModel>();
@@ -1684,95 +1801,102 @@ namespace HydroServerToolsRepository.Repository
                     bool isRejected = false;
                     var model = new OffsetType(); 
 
-                                //OffsetUnitsID
-                                if (!string.IsNullOrWhiteSpace(item.OffsetUnitsName))
+                    //OffsetUnitsID
+                    if (!string.IsNullOrWhiteSpace(item.OffsetUnitsName))
                                 
+                    {
+                        if (RepositoryUtils.containsSpecialCharacters(item.OffsetUnitsName))
+                        {
+                            var err = new ErrorModel("AddOffsetTypes", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "OffsetUnitsName")); listOfErrors.Add(err); isRejected = true;
+                        }
+                        else
+                        {
+
+                            int result;
+                            bool canConvert = UniversalTypeConverter.TryConvertTo<int>(item.OffsetUnitsName, out result);
+                            if (canConvert)//user used id
+                            {
+
+                                if (result != 0) model.OffsetUnitsID = result;
+                                else
                                 {
-                                    if (RepositoryUtils.containsSpecialCharacters(item.OffsetUnitsName))
-                                    {
-                                        var err = new ErrorModel("AddOffsetTypes", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "OffsetUnitsName")); listOfErrors.Add(err); isRejected = true;
-                                    }
-                                    else
-                                    {
-
-                                        int result;
-                                        bool canConvert = UniversalTypeConverter.TryConvertTo<int>(item.OffsetUnitsName, out result);
-                                        if (canConvert)//user used id
-                                        {
-
-                                            if (result != 0) model.OffsetUnitsID = result;
-                                            else
-                                            {
-                                                var err = new ErrorModel("AddOffsetTypes", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "OffsetUnitsName")); listOfErrors.Add(err); isRejected = true;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            var unitsID = units
-                                               .Where(a => a.Key == item.OffsetUnitsName)
-                                               .Select(a => a.Value)
-                                               .SingleOrDefault();
-                                            if (unitsID != 0)
-                                            {
-                                                model.OffsetUnitsID = unitsID;
-                                                item.OffsetUnitsID = unitsID.ToString();
-                                            }
-                                            else
-                                            {
-                                                var err = new ErrorModel("AddOffsetTypes", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "OffsetUnitsName")); listOfErrors.Add(err); isRejected = true;
-                                            }
-                                        }
-                                    }
+                                    var err = new ErrorModel("AddOffsetTypes", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "OffsetUnitsName")); listOfErrors.Add(err); isRejected = true;
+                                }
+                            }
+                            else
+                            {
+                                var unitsID = units
+                                    .Where(a => a.Key == item.OffsetUnitsName)
+                                    .Select(a => a.Value)
+                                    .SingleOrDefault();
+                                if (unitsID != 0)
+                                {
+                                    model.OffsetUnitsID = unitsID;
+                                    item.OffsetUnitsID = unitsID.ToString();
                                 }
                                 else
                                 {
-                                    var err = new ErrorModel("AddOffsetTypes", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "OffsetUnitsName")); listOfErrors.Add(err); isRejected = true;
+                                    var err = new ErrorModel("AddOffsetTypes", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "OffsetUnitsName")); listOfErrors.Add(err); isRejected = true;
                                 }
-                                //OffsetDescription
-                                if (!string.IsNullOrWhiteSpace(item.OffsetDescription))
-                                {
-                                    if (RepositoryUtils.containsSpecialCharacters(item.OffsetDescription))
-                                    {
-                                        var err = new ErrorModel("AddOffsetTypes", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "OffsetDescription")); listOfErrors.Add(err); isRejected = true;
-                                    }
-                                    else
-                                    {
-                                        model.OffsetDescription = item.OffsetDescription;
-                                    }
-                                }
-                                else
-                                {
-                                    model.OffsetDescription = null;
-                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var err = new ErrorModel("AddOffsetTypes", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "OffsetUnitsName")); listOfErrors.Add(err); isRejected = true;
+                    }
 
-                                if (isRejected)
-                                {
-                                    var sb = new StringBuilder();
-                                    foreach (var er in listOfErrors)
-                                    {
-                                        sb.Append(er.ErrorMessage + ";");
-                                    }
-                                    item.Errors = sb.ToString();
-                                    listOfIncorrectRecords.Add(item);
-                                    continue;
-                                }
-                                //OffsetTypeCode
-                                if (!string.IsNullOrWhiteSpace(item.OffsetTypeCode))
-                                {
-                                    if (RepositoryUtils.containsNotOnlyAllowedCharacters(item.OffsetTypeCode))
-                                    {
-                                        var err = new ErrorModel("AddOffsetType", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "OffsetTypeCode")); listOfErrors.Add(err); isRejected = true;
-                                    }
-                                    else
-                                    {
-                                        model.OffsetTypeCode = item.OffsetTypeCode;
-                                    }
+                    //OffsetDescription
+                    if (!string.IsNullOrWhiteSpace(item.OffsetDescription))
+                    {
+                        if (RepositoryUtils.containsSpecialCharacters(item.OffsetDescription))
+                        {
+                            var err = new ErrorModel("AddOffsetTypes", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "OffsetDescription")); listOfErrors.Add(err); isRejected = true;
+                        }
+                        else
+                        {
+                            model.OffsetDescription = item.OffsetDescription;
+                        }
+                    }
+                    else
+                    {
+                        model.OffsetDescription = null;
+                    }
 
-                                }
-                                else
-                                {
-                                    var err = new ErrorModel("AddOffsetType", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "OffsetTypeCode")); listOfErrors.Add(err); isRejected = true;
-                                }
+                    //OffsetTypeCode
+                    if (!string.IsNullOrWhiteSpace(item.OffsetTypeCode))
+                    {
+                        if (RepositoryUtils.containsNotOnlyAllowedCharacters(item.OffsetTypeCode))
+                        {
+                            var err = new ErrorModel("AddOffsetType", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "OffsetTypeCode")); listOfErrors.Add(err); isRejected = true;
+                        }
+                        else
+                        {
+                            model.OffsetTypeCode = item.OffsetTypeCode;
+                        }
+
+                    }
+                    else
+                    {
+                        var err = new ErrorModel("AddOffsetType", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "OffsetTypeCode")); listOfErrors.Add(err); isRejected = true;
+                    }
+
+                    if (isRejected)
+                    {
+                        var sb = new StringBuilder();
+                        foreach (var er in listOfErrors)
+                        {
+                            sb.Append(er.ErrorMessage + ";");
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddStatusMessage(typeof(OffsetTypesModel).Name, er.ErrorMessage);
+                            }
+                        }
+                        item.Errors = sb.ToString();
+                        listOfIncorrectRecords.Add(item);
+                        continue;
+                    }
+
                     //lookup duplicates
                     //check if item with this variablecode exists in the database
                     var existingItem = context.OffsetTypes.Where(a => a.OffsetTypeCode == item.OffsetTypeCode).FirstOrDefault();
@@ -1791,14 +1915,16 @@ namespace HydroServerToolsRepository.Repository
                             var err = new ErrorModel("AddOffsetType", string.Format(Resources.IMPORT_VALUE_ISDUPLICATE, "OffsetTypeCode")); listOfErrors.Add(err); isRejected = true;
                             listOfIncorrectRecords.Add(item);
                             item.Errors += err.ErrorMessage + ";";
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddStatusMessage(typeof(OffsetTypesModel).Name, err.ErrorMessage);
+                            }
                         }
                     }
                     else
                     {
 
-                        //if (existingItem.OffsetTypeCode != model.OffsetTypeCode) { listOfUpdates.Add(new UpdateFieldsModel("OffsetType", "OffsetTypeCode", existingItem.OffsetTypeCode.ToString(), item.OffsetTypeCode.ToString())); }
                         if (model.OffsetDescription != null && existingItem.OffsetDescription != model.OffsetTypeCode) { listOfUpdates.Add(new UpdateFieldsModel("OffsetType", "OffsetDescription", existingItem.OffsetDescription.ToString(), item.OffsetDescription.ToString())); }
-                        //if (model.OffsetUnitsID != null && existingItem.OffsetUnitsID != model.OffsetUnitsID) { listOfUpdates.Add(new UpdateFieldsModel("OffsetType", "OffsetUnitsID", existingItem.OffsetUnitsID.ToString(), item.OffsetUnitsName.ToString())); }
                         if (existingItem.OffsetUnitsID != model.OffsetUnitsID) { listOfUpdates.Add(new UpdateFieldsModel("OffsetType", "OffsetUnitsID", existingItem.OffsetUnitsID.ToString(), item.OffsetUnitsName.ToString())); }
 
                         if (listOfUpdates.Count() > 0)
@@ -1807,7 +1933,12 @@ namespace HydroServerToolsRepository.Repository
                             var sb = new StringBuilder();
                             foreach (var u in listOfUpdates)
                             {
-                                sb.Append(string.Format(Resources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue + ";"));
+                                var erMessage = string.Format(Resources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue);
+                                sb.Append(erMessage + ";");
+                                if (null != statusContext)
+                                {
+                                    await statusContext.AddStatusMessage(typeof(OffsetTypesModel).Name, erMessage);
+                                }
                             }
                             item.Errors = sb.ToString();
 
@@ -2156,14 +2287,27 @@ namespace HydroServerToolsRepository.Repository
             return result;
         }
 
-        public void AddSources(List<SourcesModel> itemList, string entityConnectionString, string instanceIdentifier, out List<SourcesModel> listOfIncorrectRecords, out List<SourcesModel> listOfCorrectRecords, out List<SourcesModel> listOfDuplicateRecords, out List<SourcesModel> listOfEditedRecords)
+        public async Task AddSources(List<SourcesModel> itemList, string entityConnectionString, string instanceIdentifier, List<SourcesModel> listOfIncorrectRecords, List<SourcesModel> listOfCorrectRecords, List<SourcesModel> listOfDuplicateRecords, List<SourcesModel> listOfEditedRecords, StatusContext statusContext)
         {
-            listOfIncorrectRecords = new List<SourcesModel>();
-            listOfCorrectRecords = new List<SourcesModel>();
-            listOfDuplicateRecords = new List<SourcesModel>();
-            listOfEditedRecords = new List<SourcesModel>();
-            
-
+#if (DEBUG)
+            //Validate/initialize input parameters...
+            if (null == itemList ||
+                String.IsNullOrWhiteSpace(entityConnectionString) ||
+                String.IsNullOrWhiteSpace(instanceIdentifier) ||
+                null == listOfIncorrectRecords ||
+                null == listOfCorrectRecords ||
+                null == listOfDuplicateRecords ||
+                null == listOfEditedRecords)
+            {
+                ArgumentNullException ex = new ArgumentNullException("SourcesRepository.AddSources(...) invalid parameter...");
+                throw ex;
+            }
+#endif
+            //Reset input lists...
+            listOfIncorrectRecords.Clear();
+            listOfCorrectRecords.Clear();
+            listOfDuplicateRecords.Clear();
+            listOfEditedRecords.Clear();
 
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
            // var objContext = ((IObjectContextAdapter)context).ObjectContext;
@@ -2173,13 +2317,29 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));    
+            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+
+            if ( null == statusContext)
+            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);    
+            else
+            {
+                await statusContext.AddStatusMessage(typeof (SourcesModel).Name, statusMessage);
+            }
 
             foreach (var item in itemList)
             {
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+                    if (null == statusContext)
+                    {
+                        BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
+                    }
+                    else
+                    {
+                        await statusContext.AddStatusMessage(typeof(SourcesModel).Name, statusMessage);
+                    }
+
                     count++;
  
                     var listOfErrors = new List<ErrorModel>();
@@ -2487,6 +2647,10 @@ namespace HydroServerToolsRepository.Repository
                         foreach (var er in listOfErrors)
                         {
                             sb.Append(er.ErrorMessage + ";");
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddStatusMessage(typeof(SourcesModel).Name, er.ErrorMessage);
+                            }
                         }
                         item.Errors = sb.ToString();
                         listOfIncorrectRecords.Add(item);
@@ -2561,9 +2725,13 @@ namespace HydroServerToolsRepository.Repository
                             var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_ISDUPLICATE, "SourceCode")); listOfErrors.Add(err); isRejected = true;
                             listOfIncorrectRecords.Add(item);
                             item.Errors += err.ErrorMessage + ";";
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddStatusMessage(typeof(SourcesModel).Name, err.ErrorMessage);
+                            }
                         }
-                        
-                        
+
+
                     }
                     else
                     {
@@ -2591,9 +2759,14 @@ namespace HydroServerToolsRepository.Repository
                             var sb = new StringBuilder();
                             foreach (var u in listOfUpdates)
                             {
-                                sb.Append(string.Format(Resources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue + ";"));
+                                var erMessage = string.Format(Resources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue);
+                                sb.Append(erMessage + ";");
+                                if (null != statusContext)
+                                {
+                                    await statusContext.AddStatusMessage(typeof(SourcesModel).Name, erMessage);
+                                }
                             }
-                            item.Errors = sb.ToString();
+                            item.Errors += sb.ToString();
 
                             continue;
                         }
@@ -2676,7 +2849,7 @@ namespace HydroServerToolsRepository.Repository
 
             var tableName = methodData.TableName;
 
-            if (context.Methods.Count() != null)
+            if (0 < context.Methods.Count())
             {
                 totalRecordCount = context.Methods.Count();
                 searchRecordCount = totalRecordCount;
@@ -2760,27 +2933,58 @@ namespace HydroServerToolsRepository.Repository
             return result;
         }
 
-
-        public void AddMethods(List<MethodModel> itemList, string entityConnectionString, string instanceIdentifier, out List<MethodModel> listOfIncorrectRecords, out List<MethodModel> listOfCorrectRecords, out List<MethodModel> listOfDuplicateRecords, out List<MethodModel> listOfEditedRecords)
+        public async Task AddMethods(List<MethodModel> itemList, string entityConnectionString, string instanceIdentifier, List<MethodModel> listOfIncorrectRecords, List<MethodModel> listOfCorrectRecords, List<MethodModel> listOfDuplicateRecords, List<MethodModel> listOfEditedRecords, StatusContext statusContext)
         {
-            listOfIncorrectRecords = new List<MethodModel>();
-            listOfCorrectRecords = new List<MethodModel>();
-            listOfDuplicateRecords = new List<MethodModel>();
-            listOfEditedRecords = new List<MethodModel>();
-
+#if (DEBUG)
+            //Validate/initialize input parameters...
+            if (null == itemList ||
+                String.IsNullOrWhiteSpace(entityConnectionString) ||
+                String.IsNullOrWhiteSpace(instanceIdentifier) ||
+                null == listOfIncorrectRecords ||
+                null == listOfCorrectRecords ||
+                null == listOfDuplicateRecords ||
+                null == listOfEditedRecords)
+            {
+                ArgumentNullException ex = new ArgumentNullException("MethodsRepository.AddMethods(...) invalid parameter...");
+                throw ex;
+            }
+#endif
+            //Reset input lists...
+            listOfIncorrectRecords.Clear();
+            listOfCorrectRecords.Clear();
+            listOfDuplicateRecords.Clear();
+            listOfEditedRecords.Clear();
 
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
             //var objContext = ((IObjectContextAdapter)context).ObjectContext;
             var maxCount = itemList.Count;
             var count = 0;
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));
+            //var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING_RECORDS, maxCount, "Method");
 
+            if (null == statusContext)
+            {
+                BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
+            }
+            else
+            {
+                await statusContext.AddStatusMessage(typeof (MethodModel).Name, statusMessage);
+            }
 
             foreach (var item in itemList)
             {
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+                    if (null == statusContext)
+                    {
+                        BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
+                    }
+                    else
+                    {
+                        await statusContext.AddStatusMessage(typeof (MethodModel).Name, statusMessage);
+                    }
+
                     count++;
 
                     var listOfErrors = new List<ErrorModel>();
@@ -2801,7 +3005,6 @@ namespace HydroServerToolsRepository.Repository
                         {
                             model.MethodCode = item.MethodCode;
                         }
-
                     }
                     else
                     {
@@ -2837,19 +3040,21 @@ namespace HydroServerToolsRepository.Repository
                         }
                     }
 
-
                     if (isRejected)
                     {
                         var sb = new StringBuilder();
                         foreach (var er in listOfErrors)
                         {
                             sb.Append(er.ErrorMessage + ";");
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddStatusMessage(typeof (MethodModel).Name, er.ErrorMessage);
+                            }
                         }
                         item.Errors = sb.ToString();
                         listOfIncorrectRecords.Add(item);
                         continue;
                     }
-
 
                     //var existingItem = context.Methods.Where(a => a.MethodDescription == model.MethodDescription &&
                     //                                                a.MethodLink == model.MethodLink
@@ -2871,6 +3076,10 @@ namespace HydroServerToolsRepository.Repository
                             var err = new ErrorModel("AddMethod", string.Format(Resources.IMPORT_VALUE_ISDUPLICATE, "MethodCode")); listOfErrors.Add(err); isRejected = true;
                             listOfIncorrectRecords.Add(item);
                             item.Errors += err.ErrorMessage + ";";
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddStatusMessage(typeof(MethodModel).Name, err.ErrorMessage);
+                            }
                         }
                     }
                     else
@@ -2885,9 +3094,14 @@ namespace HydroServerToolsRepository.Repository
                             var sb = new StringBuilder();
                             foreach (var u in listOfUpdates)
                             {
-                                sb.Append(string.Format(Resources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue + ";"));
+                                var errorMessage = string.Format(Resources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue);
+                                sb.Append(errorMessage + ";");
+                                if (null != statusContext)
+                                {
+                                    await statusContext.AddStatusMessage(typeof(MethodModel).Name, errorMessage);
+                                }
                             }
-                            item.Errors = sb.ToString();
+                            item.Errors += sb.ToString();
 
                             continue;
                         }
@@ -2898,7 +3112,7 @@ namespace HydroServerToolsRepository.Repository
                     }
 
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     listOfIncorrectRecords.Add(item);
                 }
@@ -2926,7 +3140,7 @@ namespace HydroServerToolsRepository.Repository
             }
             catch (DbUpdateException ex)
             {
-                throw;
+                throw ex;
             }
 
         }
@@ -3056,13 +3270,27 @@ namespace HydroServerToolsRepository.Repository
             return result;
         }
 
-        public void AddLabMethods(List<LabMethodModel> itemList, string entityConnectionString, string instanceIdentifier, out List<LabMethodModel> listOfIncorrectRecords, out List<LabMethodModel> listOfCorrectRecords, out List<LabMethodModel> listOfDuplicateRecords, out List<LabMethodModel> listOfEditedRecords)
+        public async Task AddLabMethods(List<LabMethodModel> itemList, string entityConnectionString, string instanceIdentifier, List<LabMethodModel> listOfIncorrectRecords, List<LabMethodModel> listOfCorrectRecords, List<LabMethodModel> listOfDuplicateRecords, List<LabMethodModel> listOfEditedRecords, StatusContext statusContext)
         {
-            listOfIncorrectRecords = new List<LabMethodModel>();
-            listOfCorrectRecords = new List<LabMethodModel>();
-            listOfDuplicateRecords = new List<LabMethodModel>();
-            listOfEditedRecords = new List<LabMethodModel>();
-            
+#if (DEBUG)
+            //Validate/initialize input parameters...
+            if (null == itemList ||
+                String.IsNullOrWhiteSpace(entityConnectionString) ||
+                String.IsNullOrWhiteSpace(instanceIdentifier) ||
+                null == listOfIncorrectRecords ||
+                null == listOfCorrectRecords ||
+                null == listOfDuplicateRecords ||
+                null == listOfEditedRecords)
+            {
+                ArgumentNullException ex = new ArgumentNullException("LabMethodsRepository.AddLabMethods(...) invalid parameter...");
+                throw ex;
+            }
+#endif
+            //Reset input lists...
+            listOfIncorrectRecords.Clear();
+            listOfCorrectRecords.Clear();
+            listOfDuplicateRecords.Clear();
+            listOfEditedRecords.Clear();
 
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
             //prefetch Units for quick lookup
@@ -3070,14 +3298,32 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));    
+            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+
+            if (null == statusContext)
+            {
+                BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
+            }
+            else
+            {
+                await statusContext.AddStatusMessage(typeof (LabMethodModel).Name, statusMessage);
+            }
 
             foreach (var item in itemList)
             {
 
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+                    if (null == statusContext)
+                    {
+                        BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
+                    }
+                    else
+                    {
+                        await statusContext.AddStatusMessage(typeof(LabMethodModel).Name, statusMessage);
+                    }
+
                     count++;
 
                     var model = new LabMethod();
@@ -3193,6 +3439,10 @@ namespace HydroServerToolsRepository.Repository
                         foreach (var er in listOfErrors)
                         {
                             sb.Append(er.ErrorMessage + ";");
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddStatusMessage(typeof(LabMethodModel).Name, er.ErrorMessage);
+                            }
                         }
                         item.Errors = sb.ToString();
                         listOfIncorrectRecords.Add(item);
@@ -3219,6 +3469,10 @@ namespace HydroServerToolsRepository.Repository
                             var err = new ErrorModel("AddLabMethods", string.Format(Resources.IMPORT_VALUE_ISDUPLICATE, "LabMethodName")); listOfErrors.Add(err); isRejected = true;
                             listOfIncorrectRecords.Add(item);
                             item.Errors += err.ErrorMessage + ";";
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddStatusMessage(typeof(LabMethodModel).Name, err.ErrorMessage);
+                            }
                         }
                     }
                     else
@@ -3237,7 +3491,12 @@ namespace HydroServerToolsRepository.Repository
                             var sb = new StringBuilder();
                             foreach (var u in listOfUpdates)
                             {
-                                sb.Append(string.Format(Resources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue + ";"));
+                                var erMessage = string.Format(Resources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue);
+                                sb.Append(erMessage + ";");
+                                if (null != statusContext)
+                                {
+                                    await statusContext.AddStatusMessage(typeof(LabMethodModel).Name, erMessage);
+                                }
                             }
                             item.Errors = sb.ToString();
 
@@ -3431,13 +3690,27 @@ namespace HydroServerToolsRepository.Repository
             return result;
         }
 
-        public void AddSamples(List<SampleModel> itemList, string entityConnectionString, string instanceIdentifier, out List<SampleModel> listOfIncorrectRecords, out List<SampleModel> listOfCorrectRecords, out List<SampleModel> listOfDuplicateRecords, out List<SampleModel> listOfEditedRecords)
+        public async Task AddSamples(List<SampleModel> itemList, string entityConnectionString, string instanceIdentifier, List<SampleModel> listOfIncorrectRecords, List<SampleModel> listOfCorrectRecords, List<SampleModel> listOfDuplicateRecords, List<SampleModel> listOfEditedRecords, StatusContext statusContext)
         {
-            listOfIncorrectRecords = new List<SampleModel>();
-            listOfCorrectRecords = new List<SampleModel>();
-            listOfDuplicateRecords = new List<SampleModel>();
-            listOfEditedRecords = new List<SampleModel>();
-            
+#if (DEBUG)
+            //Validate/initialize input parameters...
+            if (null == itemList ||
+                String.IsNullOrWhiteSpace(entityConnectionString) ||
+                String.IsNullOrWhiteSpace(instanceIdentifier) ||
+                null == listOfIncorrectRecords ||
+                null == listOfCorrectRecords ||
+                null == listOfDuplicateRecords ||
+                null == listOfEditedRecords)
+            {
+                ArgumentNullException ex = new ArgumentNullException("SamplesRepository.AddSamples(...) invalid parameter...");
+                throw ex;
+            }
+#endif
+            //Reset input lists...
+            listOfIncorrectRecords.Clear();
+            listOfCorrectRecords.Clear();
+            listOfDuplicateRecords.Clear();
+            listOfEditedRecords.Clear();
 
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
             //prefetch Units for quick lookup
@@ -3446,14 +3719,31 @@ namespace HydroServerToolsRepository.Repository
             var labMethods = context.LabMethods.ToDictionary(p => p.LabMethodName, p => p.LabMethodID);
             var maxCount = itemList.Count;
             var count = 0;
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));    
+            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+            if (null == statusContext)
+            {
+                BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
+            }
+            else
+            {
+                await statusContext.AddStatusMessage(typeof(SampleModel).Name, statusMessage);
+            }
 
             foreach (var item in itemList)
             {
 
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+                    if (null == statusContext)
+                    {
+                        BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
+                    }
+                    else
+                    {
+                        await statusContext.AddStatusMessage(typeof(SampleModel).Name, statusMessage);
+                    }
+
                     count++;
 
                     var listOfErrors = new List<ErrorModel>();
@@ -3541,6 +3831,10 @@ namespace HydroServerToolsRepository.Repository
                         foreach (var er in listOfErrors)
                         {
                             sb.Append(er.ErrorMessage + ";");
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddStatusMessage(typeof(SampleModel).Name, er.ErrorMessage);
+                            }
                         }
                         item.Errors = sb.ToString();
                         listOfIncorrectRecords.Add(item);
@@ -3603,6 +3897,10 @@ namespace HydroServerToolsRepository.Repository
                             var err = new ErrorModel("AddSample", string.Format(Resources.IMPORT_VALUE_ISDUPLICATE, "LabSampleCode")); listOfErrors.Add(err); isRejected = true;
                             listOfIncorrectRecords.Add(item);
                             item.Errors += err.ErrorMessage + ";";
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddStatusMessage(typeof(SampleModel).Name, err.ErrorMessage);
+                            }
                         }
                     }
                     else
@@ -3617,7 +3915,12 @@ namespace HydroServerToolsRepository.Repository
                             var sb = new StringBuilder();
                             foreach (var u in listOfUpdates)
                             {
-                                sb.Append(string.Format(Resources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue + ";"));
+                                var erMessage = string.Format(Resources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue);
+                                sb.Append(erMessage + ";");
+                                if (null != statusContext)
+                                {
+                                    await statusContext.AddStatusMessage(typeof(SampleModel).Name, erMessage);
+                                }
                             }
                             item.Errors = sb.ToString();
 
@@ -3767,26 +4070,57 @@ namespace HydroServerToolsRepository.Repository
             return result;
         }
 
-        public void AddQualifiers(List<QualifiersModel> itemList, string entityConnectionString, string instanceIdentifier, out List<QualifiersModel> listOfIncorrectRecords, out List<QualifiersModel> listOfCorrectRecords, out List<QualifiersModel> listOfDuplicateRecords, out List<QualifiersModel> listOfEditedRecords)
+        public async Task AddQualifiers(List<QualifiersModel> itemList, string entityConnectionString, string instanceIdentifier, List<QualifiersModel> listOfIncorrectRecords, List<QualifiersModel> listOfCorrectRecords, List<QualifiersModel> listOfDuplicateRecords, List<QualifiersModel> listOfEditedRecords, StatusContext statusContext)
         {
-            listOfIncorrectRecords = new List<QualifiersModel>();
-            listOfCorrectRecords = new List<QualifiersModel>();
-            listOfDuplicateRecords = new List<QualifiersModel>();
-            listOfEditedRecords = new List<QualifiersModel>();
-            
+#if (DEBUG)
+            //Validate/initialize input parameters...
+            if (null == itemList ||
+                String.IsNullOrWhiteSpace(entityConnectionString) ||
+                String.IsNullOrWhiteSpace(instanceIdentifier) ||
+                null == listOfIncorrectRecords ||
+                null == listOfCorrectRecords ||
+                null == listOfDuplicateRecords ||
+                null == listOfEditedRecords)
+            {
+                ArgumentNullException ex = new ArgumentNullException("QualifiersRepository.AddQualifiers(...) invalid parameter...");
+                throw ex;
+            }
+#endif
+            //Reset input lists...
+            listOfIncorrectRecords.Clear();
+            listOfCorrectRecords.Clear();
+            listOfDuplicateRecords.Clear();
+            listOfEditedRecords.Clear();
 
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
 
             var maxCount = itemList.Count;
             var count = 0;
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));    
+            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+            if ( null == statusContext)
+            {
+                BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
+            }
+            else
+            {
+                await statusContext.AddStatusMessage(typeof (QualifiersModel).Name, statusMessage);
+            }
 
             foreach (var item in itemList)
             {
 
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+                    if (null == statusContext)
+                    {
+                        BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
+                    }
+                    else
+                    {
+                        await statusContext.AddStatusMessage(typeof(QualifiersModel).Name, statusMessage);
+                    }
+
                     count++;
 
                     var model = new Qualifier();
@@ -3836,6 +4170,10 @@ namespace HydroServerToolsRepository.Repository
                         foreach (var er in listOfErrors)
                         {
                             sb.Append(er.ErrorMessage + ";");
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddStatusMessage(typeof(QualifiersModel).Name, er.ErrorMessage);
+                            }
                         }
                         item.Errors = sb.ToString();
                         listOfIncorrectRecords.Add(item);
@@ -3859,9 +4197,13 @@ namespace HydroServerToolsRepository.Repository
                             var err = new ErrorModel("AddQualifiers", string.Format(Resources.IMPORT_VALUE_ISDUPLICATE, "QualifierCode")); listOfErrors.Add(err); isRejected = true;
                             listOfIncorrectRecords.Add(item);
                             item.Errors += err.ErrorMessage + ";";
-                        }     
-                        
-                        
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddStatusMessage(typeof(QualifiersModel).Name, err.ErrorMessage);
+                            }
+                        }
+
+
                     }
                     else
                     {
@@ -3874,9 +4216,14 @@ namespace HydroServerToolsRepository.Repository
                             var sb = new StringBuilder();
                             foreach (var u in listOfUpdates)
                             {
-                                sb.Append(string.Format(Resources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue + ";"));
+                                var erMessage = string.Format(Resources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue);
+                                sb.Append(erMessage + ";");
+                                if (null != statusContext)
+                                {
+                                    await statusContext.AddStatusMessage(typeof(QualifiersModel).Name, erMessage);
+                                }
                             }
-                            item.Errors = sb.ToString();
+                            item.Errors += sb.ToString();
 
                             continue;
                         }
@@ -3920,7 +4267,7 @@ namespace HydroServerToolsRepository.Repository
         }
     }
     //  QualityControlLevels
-    public class QualityControlLevelsRepository : IQualityControlLevelRepository
+    public class QualityControlLevelsRepository : IQualityControlLevelsRepository
     {
         public const string CacheName = "default";
 
@@ -4024,24 +4371,56 @@ namespace HydroServerToolsRepository.Repository
             return result;
         }
 
-        public void AddQualityControlLevel(List<QualityControlLevelModel> itemList, string entityConnectionString, string instanceIdentifier, out List<QualityControlLevelModel> listOfIncorrectRecords, out List<QualityControlLevelModel> listOfCorrectRecords, out List<QualityControlLevelModel> listOfDuplicateRecords, out List<QualityControlLevelModel> listOfEditedRecords)
+        public async Task AddQualityControlLevels(List<QualityControlLevelModel> itemList, string entityConnectionString, string instanceIdentifier, List<QualityControlLevelModel> listOfIncorrectRecords, List<QualityControlLevelModel> listOfCorrectRecords, List<QualityControlLevelModel> listOfDuplicateRecords, List<QualityControlLevelModel> listOfEditedRecords, StatusContext statusContext)
         {
-            listOfIncorrectRecords = new List<QualityControlLevelModel>();
-            listOfCorrectRecords = new List<QualityControlLevelModel>();
-            listOfDuplicateRecords = new List<QualityControlLevelModel>();
-            listOfEditedRecords = new List<QualityControlLevelModel>();
-           
+#if (DEBUG)
+            //Validate/initialize input parameters...
+            if (null == itemList ||
+                String.IsNullOrWhiteSpace(entityConnectionString) ||
+                String.IsNullOrWhiteSpace(instanceIdentifier) ||
+                null == listOfIncorrectRecords ||
+                null == listOfCorrectRecords ||
+                null == listOfDuplicateRecords ||
+                null == listOfEditedRecords)
+            {
+                ArgumentNullException ex = new ArgumentNullException("QualityControlLevelsRepository.AddQualityControlLevels(...) invalid parameter...");
+                throw ex;
+            }
+#endif
+            //Reset input lists...
+            listOfIncorrectRecords.Clear();
+            listOfCorrectRecords.Clear();
+            listOfDuplicateRecords.Clear();
+            listOfEditedRecords.Clear();
+
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
             var maxCount = itemList.Count;
             var count = 0;
+            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
 
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));    
+            if (null == statusContext)
+            {
+                BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
+            }
+            else
+            {
+                await statusContext.AddStatusMessage(typeof (QualityControlLevelModel).Name, statusMessage);
+            }
 
             foreach (var item in itemList)
             {
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+                    if ( null == statusContext)
+                    {
+                        BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
+                    }
+                    else
+                    {
+                        await statusContext.AddStatusMessage(typeof (QualityControlLevelModel).Name, statusMessage);
+                    }
+
                     count++;
                     
                     var model = new QualityControlLevel();
@@ -4110,6 +4489,10 @@ namespace HydroServerToolsRepository.Repository
                         foreach (var er in listOfErrors)
                         {
                             sb.Append(er.ErrorMessage + ";");
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddStatusMessage(typeof(QualityControlLevelModel).Name, er.ErrorMessage);
+                            }
                         }
                         item.Errors = sb.ToString();
                         listOfIncorrectRecords.Add(item);
@@ -4136,7 +4519,11 @@ namespace HydroServerToolsRepository.Repository
                             var err = new ErrorModel("AddQualityControlLevel", string.Format(Resources.IMPORT_VALUE_ISDUPLICATE, "QualityControlLevelCode")); listOfErrors.Add(err); isRejected = true;
                             listOfIncorrectRecords.Add(item);
                             item.Errors += err.ErrorMessage + ";";
-                        }       
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddStatusMessage(typeof(QualityControlLevelModel).Name, err.ErrorMessage);
+                            }
+                        }
                     }
                     else
                     {
@@ -4150,7 +4537,12 @@ namespace HydroServerToolsRepository.Repository
                             var sb = new StringBuilder();
                             foreach (var u in listOfUpdates)
                             {
-                                sb.Append(string.Format(Resources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue + ";"));
+                                var erMessage = string.Format(Resources.IMPORT_VALUE_UPDATED, u.ColumnName, u.CurrentValue, u.UpdatedValue);
+                                sb.Append(erMessage + ";");
+                                if (null != statusContext)
+                                {
+                                    await statusContext.AddStatusMessage(typeof(QualityControlLevelModel).Name, erMessage);
+                                }
                             }
                             item.Errors = sb.ToString();
 
@@ -4483,13 +4875,28 @@ namespace HydroServerToolsRepository.Repository
             return result;
         }
 
-        public void AddDataValues(List<DataValuesModel> itemList, string entityConnectionString, string instanceIdentifier, out List<DataValuesModel> listOfIncorrectRecords, out List<DataValuesModel> listOfCorrectRecords, out List<DataValuesModel> listOfDuplicateRecords, out List<DataValuesModel> listOfEditedRecords)
+        public async Task AddDataValues(List<DataValuesModel> itemList, string entityConnectionString, string instanceIdentifier, List<DataValuesModel> listOfIncorrectRecords, List<DataValuesModel> listOfCorrectRecords, List<DataValuesModel> listOfDuplicateRecords, List<DataValuesModel> listOfEditedRecords, StatusContext statusContext)
         {
-            listOfIncorrectRecords = new List<DataValuesModel>();
-            listOfCorrectRecords = new List<DataValuesModel>();
-            listOfDuplicateRecords = new List<DataValuesModel>();
-            listOfEditedRecords = new List<DataValuesModel>();
-            
+#if (DEBUG)
+            //Validate/initialize input parameters...
+            if (null == itemList ||
+                String.IsNullOrWhiteSpace(entityConnectionString) ||
+                String.IsNullOrWhiteSpace(instanceIdentifier) ||
+                null == listOfIncorrectRecords ||
+                null == listOfCorrectRecords ||
+                null == listOfDuplicateRecords ||
+                null == listOfEditedRecords)
+            {
+                ArgumentNullException ex = new ArgumentNullException("DataValuesRepository.AddDataValues(...) invalid parameter...");
+                throw ex;
+            }
+#endif
+            //Reset input lists...
+            listOfIncorrectRecords.Clear();
+            listOfCorrectRecords.Clear();
+            listOfDuplicateRecords.Clear();
+            listOfEditedRecords.Clear();
+
             //debug
             var timeTocomplete = new TimeSpan();
             var timeToRetrieveVars = new TimeSpan();
@@ -4644,7 +5051,16 @@ namespace HydroServerToolsRepository.Repository
                     timeToFindDatavalues.Add(span);
                     Debug.WriteLine("timeToRetrieve " + currentSiteId + ": " + span);
 
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING_DATAVALUES, count, maxCount, listOfCorrectRecords.Count(), listOfIncorrectRecords.Count(), listOfDuplicateRecords.Count()));
+                    var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING_DATAVALUES, count, maxCount, listOfCorrectRecords.Count(), listOfIncorrectRecords.Count(), listOfDuplicateRecords.Count());
+                    if (null != statusContext)
+                    {
+                        BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
+                    }
+                    else
+                    {
+                        await statusContext.AddStatusMessage(typeof (DataValuesModel).Name, statusMessage);
+                    }
+
                     #region loop through series
                     var filteredList = (from i in itemList
                                         where i.SiteCode == sv.SiteCode && i.VariableCode == sv.VariableCode
@@ -4661,7 +5077,16 @@ namespace HydroServerToolsRepository.Repository
                     {
                         try
                         {
-                            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING_DATAVALUES, count, maxCount, listOfCorrectRecords.Count(), listOfIncorrectRecords.Count(), listOfDuplicateRecords.Count()));
+                            statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING_DATAVALUES, count, maxCount, listOfCorrectRecords.Count(), listOfIncorrectRecords.Count(), listOfDuplicateRecords.Count());
+                            if (null == statusContext)
+                            {
+                                BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
+                            }
+                            else
+                            {
+                                await statusContext.AddStatusMessage(typeof(DataValuesModel).Name, statusMessage);
+                            }
+
                             count++;
                             #region data matching
                             bool isRejected = false;
@@ -4680,9 +5105,6 @@ namespace HydroServerToolsRepository.Repository
                             model.SampleID = null;
                             model.DerivedFromID = null;
                             model.QualityControlLevelID = -9999;
-
-
-                          
 
                             //DataValue
                             if (!string.IsNullOrWhiteSpace(item.DataValue))
@@ -5130,6 +5552,10 @@ namespace HydroServerToolsRepository.Repository
                                 foreach (var er in listOfErrors)
                                 {
                                     sb.Append(er.ErrorMessage + ";");
+                                    if (null != statusContext)
+                                    {
+                                        await statusContext.AddStatusMessage(typeof(DataValuesModel).Name, er.ErrorMessage);
+                                    }
                                 }
                                 item.Errors = sb.ToString();
                                 listOfIncorrectRecords.Add(item);
@@ -5403,24 +5829,57 @@ namespace HydroServerToolsRepository.Repository
             return result;
         }
 
-        public void AddGroupDescriptions(List<GroupDescriptionModel> itemList, string entityConnectionString, string instanceIdentifier, out List<GroupDescriptionModel> listOfIncorrectRecords, out List<GroupDescriptionModel> listOfCorrectRecords, out List<GroupDescriptionModel> listOfDuplicateRecords, out List<GroupDescriptionModel> listOfEditedRecords)
+        public async Task AddGroupDescriptions(List<GroupDescriptionModel> itemList, string entityConnectionString, string instanceIdentifier, List<GroupDescriptionModel> listOfIncorrectRecords, List<GroupDescriptionModel> listOfCorrectRecords, List<GroupDescriptionModel> listOfDuplicateRecords, List<GroupDescriptionModel> listOfEditedRecords, StatusContext statusContext)
         {
-            listOfIncorrectRecords = new List<GroupDescriptionModel>();
-            listOfCorrectRecords = new List<GroupDescriptionModel>();
-            listOfDuplicateRecords = new List<GroupDescriptionModel>();
-            listOfEditedRecords = new List<GroupDescriptionModel>();
-            
+#if (DEBUG)
+            //Validate/initialize input parameters...
+            if (null == itemList ||
+                String.IsNullOrWhiteSpace(entityConnectionString) ||
+                String.IsNullOrWhiteSpace(instanceIdentifier) ||
+                null == listOfIncorrectRecords ||
+                null == listOfCorrectRecords ||
+                null == listOfDuplicateRecords ||
+                null == listOfEditedRecords)
+            {
+                ArgumentNullException ex = new ArgumentNullException("GroupDescriptionsRepository.AddGroupDescriptions(...) invalid parameter...");
+                throw ex;
+            }
+#endif
+            //Reset input lists...
+            listOfIncorrectRecords.Clear();
+            listOfCorrectRecords.Clear();
+            listOfDuplicateRecords.Clear();
+            listOfEditedRecords.Clear();
+
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
 
             var maxCount = itemList.Count;
             var count = 0;
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));    
+            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+
+            if (null == statusContext)
+            {
+                BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
+            }
+            else
+            {
+                await statusContext.AddStatusMessage(typeof (GroupDescriptionModel).Name, statusMessage);
+            }
 
             foreach (var item in itemList)
             {
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+                    if (null == statusContext)
+                    {
+                        BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage );
+                    }
+                    else
+                    {
+                        await statusContext.AddStatusMessage(typeof(GroupDescriptionModel).Name, statusMessage);
+                    }
+
                     count++;
           
                     var model = new GroupDescription();
@@ -5449,6 +5908,10 @@ namespace HydroServerToolsRepository.Repository
                         foreach (var er in listOfErrors)
                         {
                             sb.Append(er.ErrorMessage + ";");
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddStatusMessage(typeof(GroupDescriptionModel).Name, er.ErrorMessage);
+                            }
                         }
                         item.Errors = sb.ToString();
                         listOfIncorrectRecords.Add(item);
@@ -5607,30 +6070,61 @@ namespace HydroServerToolsRepository.Repository
             return result;
         }
 
-        public void AddGroups(List<GroupsModel> itemList, string entityConnectionString, string instanceIdentifier, out List<GroupsModel> listOfIncorrectRecords, out List<GroupsModel> listOfCorrectRecords, out List<GroupsModel> listOfDuplicateRecords, out List<GroupsModel> listOfEditedRecords)
+        public async Task AddGroups(List<GroupsModel> itemList, string entityConnectionString, string instanceIdentifier, List<GroupsModel> listOfIncorrectRecords, List<GroupsModel> listOfCorrectRecords, List<GroupsModel> listOfDuplicateRecords, List<GroupsModel> listOfEditedRecords, StatusContext statusContext)
         {
-           
-            
-            listOfIncorrectRecords = new List<GroupsModel>();
-            listOfCorrectRecords = new List<GroupsModel>();
-            listOfDuplicateRecords = new List<GroupsModel>();
-            listOfEditedRecords = new List<GroupsModel>();
-            
+#if (DEBUG)
+            //Validate/initialize input parameters...
+            if (null == itemList ||
+                String.IsNullOrWhiteSpace(entityConnectionString) ||
+                String.IsNullOrWhiteSpace(instanceIdentifier) ||
+                null == listOfIncorrectRecords ||
+                null == listOfCorrectRecords ||
+                null == listOfDuplicateRecords ||
+                null == listOfEditedRecords)
+            {
+                ArgumentNullException ex = new ArgumentNullException("GroupsRepository.AddGroups(...) invalid parameter...");
+                throw ex;
+            }
+#endif
+            //Reset input lists...
+            listOfIncorrectRecords.Clear();
+            listOfCorrectRecords.Clear();
+            listOfDuplicateRecords.Clear();
+            listOfEditedRecords.Clear();
+
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
 
             var groupDescriptions = context.GroupDescriptions.ToList();
 
             var maxCount = itemList.Count;
             var count = 0;
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));    
+            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
 
+            if (null == statusContext)
+            {
+                BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
+            }
+            else
+            {
+                await statusContext.AddStatusMessage(typeof (GroupsModel).Name, statusMessage);
+            }
 
             foreach (var item in itemList)
             {
 
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+
+                    if (null == statusContext)
+                    {
+                        BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
+                    }
+                    else
+                    {
+                        await statusContext.AddStatusMessage(typeof(GroupsModel).Name, statusMessage);
+                    }
+
                     count++;
 
                     var model = new Group();
@@ -5705,6 +6199,10 @@ namespace HydroServerToolsRepository.Repository
                         foreach (var er in listOfErrors)
                         {
                             sb.Append(er.ErrorMessage + ";");
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddStatusMessage(typeof(GroupsModel).Name, er.ErrorMessage);
+                            }
                         }
                         item.Errors = sb.ToString();
                         listOfIncorrectRecords.Add(item);
@@ -5863,7 +6361,7 @@ namespace HydroServerToolsRepository.Repository
             return result;
         }
 
-        public void AddDerivedFrom(List<DerivedFromModel> itemList, string entityConnectionString, string instanceIdentifier, out List<DerivedFromModel> listOfIncorrectRecords, out List<DerivedFromModel> listOfCorrectRecords, out List<DerivedFromModel> listOfDuplicateRecords, out List<DerivedFromModel> listOfEditedRecords)
+        public async Task AddDerivedFrom(List<DerivedFromModel> itemList, string entityConnectionString, string instanceIdentifier, List<DerivedFromModel> listOfIncorrectRecords, List<DerivedFromModel> listOfCorrectRecords, List<DerivedFromModel> listOfDuplicateRecords, List<DerivedFromModel> listOfEditedRecords, StatusContext statusContext)
         {
             listOfIncorrectRecords = new List<DerivedFromModel>();
             listOfCorrectRecords = new List<DerivedFromModel>();
@@ -5876,14 +6374,32 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));    
+            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+
+            if (null == statusContext)
+            {
+                BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
+            }
+            else
+            {
+                await statusContext.AddStatusMessage(typeof(DerivedFromModel).Name, statusMessage);
+            }
 
             foreach (var item in itemList)
             {
 
                 try
                 {
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));
+                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+                    if (null == statusContext)
+                    {
+                        BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
+                    }
+                    else
+                    {
+                        await statusContext.AddStatusMessage(typeof(DerivedFromModel).Name, statusMessage);
+                    }
+
                     count++;
 
                     var model = new DerivedFrom();
@@ -5921,7 +6437,7 @@ namespace HydroServerToolsRepository.Repository
                         var err = new ErrorModel("AddDerivedFrom", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "DerivedFromID")); listOfErrors.Add(err); isRejected = true;
                     }
 
-                    //ValuerID                    
+                    //ValueID                    
                     if (!string.IsNullOrWhiteSpace(item.ValueID))
                     {
                         int result;
@@ -5958,6 +6474,10 @@ namespace HydroServerToolsRepository.Repository
                         foreach (var er in listOfErrors)
                         {
                             sb.Append(er.ErrorMessage + ";");
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddStatusMessage(typeof(DerivedFromModel).Name, er.ErrorMessage);
+                            }
                         }
                         item.Errors = sb.ToString();
                         listOfIncorrectRecords.Add(item);
@@ -6124,13 +6644,27 @@ namespace HydroServerToolsRepository.Repository
             return result;
         }
 
-        public void AddCategories(List<CategoriesModel> itemList, string entityConnectionString, string instanceIdentifier, out List<CategoriesModel> listOfIncorrectRecords, out List<CategoriesModel> listOfCorrectRecords, out List<CategoriesModel> listOfDuplicateRecords, out List<CategoriesModel> listOfEditedRecords)
+        public async Task AddCategories(List<CategoriesModel> itemList, string entityConnectionString, string instanceIdentifier, List<CategoriesModel> listOfIncorrectRecords, List<CategoriesModel> listOfCorrectRecords, List<CategoriesModel> listOfDuplicateRecords, List<CategoriesModel> listOfEditedRecords, StatusContext statusContext)
         {
-            listOfIncorrectRecords = new List<CategoriesModel>();
-            listOfCorrectRecords = new List<CategoriesModel>();
-            listOfDuplicateRecords = new List<CategoriesModel>();
-            listOfEditedRecords = new List<CategoriesModel>();
-            
+#if (DEBUG)
+            //Validate/initialize input parameters...
+            if (null == itemList ||
+                String.IsNullOrWhiteSpace(entityConnectionString) ||
+                String.IsNullOrWhiteSpace(instanceIdentifier) ||
+                null == listOfIncorrectRecords ||
+                null == listOfCorrectRecords ||
+                null == listOfDuplicateRecords ||
+                null == listOfEditedRecords)
+            {
+                ArgumentNullException ex = new ArgumentNullException("CategoriesRepository.AddCategories(...) invalid parameter...");
+                throw ex;
+            }
+#endif
+            //Reset input lists...
+            listOfIncorrectRecords.Clear();
+            listOfCorrectRecords.Clear();
+            listOfDuplicateRecords.Clear();
+            listOfEditedRecords.Clear();
 
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
             //var objContext = ((IObjectContextAdapter)context).ObjectContext;
@@ -6139,7 +6673,16 @@ namespace HydroServerToolsRepository.Repository
           
             var maxCount = itemList.Count;
             var count = 0;
-            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount));    
+            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+
+            if (null == statusContext)
+            {
+                BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
+            }
+            else
+            {
+                await statusContext.AddStatusMessage(typeof(CategoriesModel).Name, statusMessage);
+            }
 
             foreach (var item in itemList)
             {
@@ -6147,8 +6690,16 @@ namespace HydroServerToolsRepository.Repository
                 try
                 {
                     //Updating status
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, "default", Resources.IMPORT_STATUS_EXTRACTNG);      
-                    
+                    statusMessage = Resources.IMPORT_STATUS_EXTRACTNG;
+                    if (null == statusContext)
+                    {
+                        BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, "default", statusMessage);
+                    }
+                    else
+                    {
+                        await statusContext.AddStatusMessage(typeof(CategoriesModel).Name, statusMessage);
+                    }
+
                     var model = new Category();
                     var listOfErrors = new List<ErrorModel>();
                     bool isRejected = false;
@@ -6236,6 +6787,10 @@ namespace HydroServerToolsRepository.Repository
                         foreach (var er in listOfErrors)
                         {
                             sb.Append(er.ErrorMessage + ";");
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddStatusMessage(typeof(CategoriesModel).Name, er.ErrorMessage);
+                            }
                         }
                         item.Errors = sb.ToString();
                         listOfIncorrectRecords.Add(item);

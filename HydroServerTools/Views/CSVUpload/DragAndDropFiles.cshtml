@@ -35,12 +35,10 @@
                 <span>File upload in progress.  Please do not close the current page!!</span>
             </div>
             <div class="pull-right">
-                @*<button type="reset" class="btn btn-warning cancel">Cancel</button>*@
                 <a href="/home/index" class="btn btn-warning cancel">Cancel</a>
-                <!-- Need a button here - not a link - to keep the current page in place so to ensure all file 'chunks' make it to the server... 0-->
-                @*@Html.ActionLink("Continue", "RevisedUploadData", "CSVUpload", new { id = "ValidateFiles" }, new { @class = "btn btn-success", id = "anchorFilesForUploadContinue" })*@
-                <button type="button" id="btnFilesForUploadContinue" class="btn btn-success" style="margin-left: 0.5em;">Continue</button>
-                <a id="btnValidationSummary" class="btn btn-primary hidden" href="/CSVUpload/RevisedUploadData/ValidateFiles" style="margin-left: 0.5em;">Validation Summary</a>
+                <!-- Need a button here - not a link - to keep the current page in place so to ensure all file 'chunks' make it to the server... -->
+                <button type="button" id="btnFilesForUploadContinue" class="btn btn-success" style="margin-left: 0.5em;">Upload Files</button>
+                <a id="btnValidationSummary" class="btn btn-primary hidden" href="/CSVUpload/RevisedUploadData/ValidateFiles" style="margin-left: 0.5em;">Validation Summary...</a>
             </div>
         </div>
     </div>
@@ -64,6 +62,78 @@
     var currentUploadId = null;
     var randomId = null;
 
+    //Click handler for list item Delete button...
+    function deleteListItem(event) {
+        //Retrieve file name attribute - remove list element
+        var fileName = $(this).attr('data-file-name');
+        $(this).parent().remove();
+
+        //Remove/update associated sessionStorage items, if applicable..
+        if ('undefined' !== typeof sessionStorage.uploadedFileNames && null !== sessionStorage.uploadedFileNames) {
+            //Uploaded file names...
+            var uploadedFileNames = (sessionStorage.uploadedFileNames).split(',');
+
+            var index = uploadedFileNames.indexOf(fileName); 
+            if (-1 !== index) {
+                uploadedFileNames.splice(index, 1);
+                if (0 < uploadedFileNames.length) {
+                    //File names NOT empty - retain in session storage...
+                    sessionStorage.uploadedFileNames = uploadedFileNames.toString();
+                }
+                else {
+                    //File names empty - remove from session storage
+                    sessionStorage.removeItem('uploadedFileNames');
+                }
+
+                if ('undefined' !== typeof sessionStorage.fileUploadCount && null !== sessionStorage.fileUploadCount) {
+                    //File upload count
+                    var fileUploadCount = parseInt(sessionStorage.fileUploadCount);
+                    sessionStorage.fileUploadCount = (--fileUploadCount).toString();
+                }
+            }
+        }
+
+        //Remove the associated file object, if applicable...
+        var foLength = fileObjectsForUpload.length;
+        for (var foI = 0; foI < foLength; ++foI) {
+            var fo = fileObjectsForUpload[foI];
+            if (fileName === fo.name) {
+                fileObjectsForUpload.splice(foI, 1);
+                break;
+            }
+        }
+
+        //Forward delete request to server...
+        var url = '/api/revisedupload/deletefile/' + currentUploadId + '/' + fileName + '/';
+        $.ajax({
+            "url": url,
+            "type": "DELETE",
+            "async": true,
+            "dataType": "json",
+            "cache": false, //So IE does not cache when calling the same URL - source: http://stackoverflow.com/questions/7846707/ie9-jquery-ajax-call-first-time-doing-well-second-time-not
+            "success": function (data, textStatus, jqXHR) {
+                console.log('RevisedUpload DeleteFile success: "' + textStatus + '" (' + jqXHR.status.toString() + ')');
+                //if (200 === jqXHR.status || 206 === jqXHR.status) {
+                //    //Controller file processing complete - show Validation Summary button...
+                //    $('#' + 'alertFileUpload').fadeOut({
+                //        "duration": 1500,
+                //        "complete": function () {
+                //            $('#' + 'btnValidationSummary').removeClass('hidden');
+                //            ////BC - TEST - Click button as soon as shown to test possible timing issue...
+                //            //$('#' + 'btnValidationSummary')[0].click();
+                //        }
+                //    });
+                //    clearInterval(interval);
+                //}
+            },
+            "error": function (xmlhttprequest, textStatus, message) {
+                //Failure - Log messsage received from server...
+                console.log('RevisedUpload DeleteFile reports error: ' + xmlhttprequest.status + ' (' + message + ')');
+                //clearInterval(interval);
+            }
+        });
+    }
+
     //Add unique input candidate file objects to the input collection and (name) to markup list...
     function addFileObjects( candidateFileObjs, collectionFileObjs, lstMarkup) {
         if ('undefined' !== typeof candidateFileObjs && null !== candidateFileObjs &&
@@ -85,39 +155,63 @@
                 if (!bFound) {
                     //Candidate not found - add to collection...
                     collectionFileObjs.push(file);
-                    //lstMarkup.append('<li class="list-group-item">' + file.name + '</li>');
 
-                    //lstMarkup.append('<li class="list-group-item" data-file="' + file.name + '" >' + 
-                    //                    '<span>' + file.name + '</span>' +
-                    //                    '<span class="progress"> ' +
-                    //                        '<span class="bar"></span>' +
-                    //                        '<span class="percent" style="margin-left: 1.0em;">0%</span>' +
-                    //                        '<span class="status" style="margin-left: 1.0em;">Not started...</span>' +
-                    //                    '</span>' +
-                    //                 '</li>');
-
+                    //Append to markup...
                     lstMarkup.append('<li class="list-group-item" data-file="' + file.name + '" >' +
                         '<span style="width: 30%; position: relative; float: left">' + file.name + '</span>' +
 
-                        '<div class="progress" style="width: 50%; display: inline-block; vertical-align: -webkit-baseline-middle;">' +
+                        '<div class="progress" style="width: 40%; display: inline-block; vertical-align: -webkit-baseline-middle;">' +
                             '<div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%; display:inline-block;">' +
                                 '0%' +
                             '</div>' +
                         '</div>' + 
 
-                        '<span class="status" style="width: 20%; position: relative; float: right">Not started...</span>' +
+                        '<div class="status" style="width: 20%; display: inline-block; ">Not started...</div>' +
 
-                        //'<span class="progress"> ' +
-                        //  '<span class="bar"></span>' +
-                        //  '<span class="percent" style="margin-left: 1.0em;">0%</span>' +
-
-                        //  '<span class="status" style="margin-left: 1.0em;">Not started...</span>' +
-                        //'</span>' +
+                        '<button class="btn btn-warning delete" style=" width: 10%; position: relative; float: right;" data-file-name="' + file.name + '">Delete</button>' +
 
                         '</li>');
-
                 }
             });
+
+            //Set click handler for list item delete button(s)...
+            var deleteButtons = $('#' + 'lstFilesForUpload li button.delete');
+
+            deleteButtons.off('click', deleteListItem);
+            deleteButtons.on('click', deleteListItem);
+        }
+    }
+
+    //Scan input file names collection, add (names) to markup list...
+    //ASSUMPTION: all referenced files are currently loaded on the server...
+    function loadFileNames(collectionFileNames, lstMarkup) {
+        if ('undefined' !== typeof collectionFileNames && null !== collectionFileNames &&
+            'undefined' !== typeof lstMarkup && null !== lstMarkup) {
+
+            //For each input file object...
+            $.each(collectionFileNames, function (index, fileName) {
+                //Append to markup...
+                lstMarkup.append('<li class="list-group-item" data-file="' + fileName + '" >' +
+                    '<span style="width: 30%; position: relative; float: left">' + fileName + '</span>' +
+
+                    '<div class="progress" style="width: 40%; display: inline-block; vertical-align: -webkit-baseline-middle;">' +
+                        '<div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 100%; display:inline-block;">' +
+                            '100%' +
+                        '</div>' +
+                    '</div>' +
+
+                    '<div class="status" style="width: 20%; display: inline-block; ">Complete!!!</div>' +
+
+                    '<button class="btn btn-warning delete" style=" width: 10%; position: relative; float: right;" data-file-name="' + fileName + '">Delete</button>' +
+
+                    '</li>');
+            });
+
+            //Set click handler for list item delete button(s)...
+            var deleteButtons = $('#' + 'lstFilesForUpload li button.delete');
+
+            deleteButtons.off('click', deleteListItem);
+            deleteButtons.on('click', deleteListItem);
         }
     }
 
@@ -125,6 +219,19 @@
 
         //Hide the upload file alert...
         $('#' + 'alertFileUpload').removeClass('hidden').hide();
+
+        //Check session storage for existing items...
+        if ('undefined' !== typeof sessionStorage.currentUploadId && null != sessionStorage.currentUploadId) {
+            currentUploadId = sessionStorage.currentUploadId;   //Retrieve current upload Id...
+        }
+
+        if ('undefined' !== typeof sessionStorage.uploadedFileNames && null !== sessionStorage.uploadedFileNames) {
+            var uploadedFileNames = sessionStorage.uploadedFileNames;
+            loadFileNames(uploadedFileNames.split(','), $('#' + 'lstFilesForUpload'));  //Retrieve uploaded file names...
+
+            //Assumption - uploaded file names exist because file(s) were previously uploaded - show validation summary button...
+            $('#' + 'btnValidationSummary').removeClass('hidden');
+        }
 
         //Initialization code for jQuery-File-Upload...
         var dropDiv = $('#' + 'divFilesForUpload');
@@ -211,9 +318,7 @@
                     var listItems = '#' + 'lstFilesForUpload' + ' li';
 
                     $(listItems).each(function (index) {
-                        //var divProgress = $(this).children('span.progress');
-                        //var divStatus = $(divProgress).children('span.status');
-                        var divStatus = $(this).children('span.status');
+                        var divStatus = $(this).children('div.status');
                         var statusText = divStatus.text().toLowerCase();
 
                         if ((-1 === statusText.indexOf('complete')) &&
@@ -237,10 +342,11 @@
                                 "success": function (data, textStatus, jqXHR) {
                                     console.log('RevisedUpload GET success: "' + textStatus + '" (' + jqXHR.status.toString() + ')');
                                     if (200 === jqXHR.status || 206 === jqXHR.status) {
-                                        //Controller file processing complete - show Validation Summary button...
+                                        //Controller file processing complete - fade out file upload alert...
                                         $('#' + 'alertFileUpload').fadeOut({
-                                            "duration": 1500,
+                                            "duration": 1000,
                                             "complete": function () {
+                                                //Show Validation Summary button...
                                                 $('#' + 'btnValidationSummary').removeClass('hidden');
                                                 ////BC - TEST - Click button as soon as shown to test possible timing issue...
                                                 //$('#' + 'btnValidationSummary')[0].click();
@@ -256,7 +362,7 @@
                                 }
                             });
 
-                        }, 5000);
+                        }, 1000);
                     }
                 },
                 "done": function (event, data) {
@@ -310,13 +416,31 @@
                     if ( 100 > percentage) {
                         status = "in progress...";  //Not yet completed...
                     }
+                    else {
+                        //Upload complete - update session state variables...
+                        var fileUploadCount = 0;
+                        var uploadedFileNames = [];
+
+                        //Retrieve/update file upload count
+                        if ('undefined' !== typeof sessionStorage.fileUploadCount && null !== sessionStorage.fileUploadCount) {
+                            fileUploadCount = parseInt(sessionStorage.fileUploadCount);
+                        }
+                        sessionStorage.fileUploadCount = (++fileUploadCount).toString();
+
+                        //Retrieve/update file names array.. 
+                        if ('undefined' !== typeof sessionStorage.uploadedFileNames && null !== sessionStorage.uploadedFileNames) {
+                            uploadedFileNames = (sessionStorage.uploadedFileNames).split(',');
+                        }
+                        uploadedFileNames.push(fileName);
+                        sessionStorage.uploadedFileNames = uploadedFileNames.toString();
+                    }
 
                     divStatus.html(status);
                 },
                 "drop": function (event, data) {
                     //console.log('Dropped files:');
                     //Add dropped files...
-                    addFileObjects(data.files, fileObjectsForUpload, $('#' + 'lstFilesForUpload'))
+                    addFileObjects(data.files, fileObjectsForUpload, $('#' + 'lstFilesForUpload'));
                 }
             });
 
@@ -324,18 +448,20 @@
         $('#' + 'inpFilesForUpload').on('change', function (event) {
             //Check for file selections...
             var files = this.files;
-            addFileObjects(files, fileObjectsForUpload, $('#' + 'lstFilesForUpload'))
+            addFileObjects(files, fileObjectsForUpload, $('#' + 'lstFilesForUpload'));
         });
 
         //'Click' handler for Files for Upload, Continue 
         $('#' + 'btnFilesForUploadContinue').on('click', function (event) {
             //Retrieve list of files for upload
             if (0 < fileObjectsForUpload.length) {
-                //List entries exist - generate upload Id...
-                currentUploadId = randomId.generateId();
+                //List entries exist - generate upload Id, if indicated...
+                if (null == currentUploadId) {
+                    currentUploadId = randomId.generateId();
+                }
+
                 //Retain in session storage...
-                sessionStorage.currentUploadId = currentUploadId;
-                sessionStorage.fileUploadCount = fileObjectsForUpload.length.toString();
+                sessionStorage.currentUploadId = currentUploadId;                           //current upload Id
 
                 //Invoke jQuery File Uploader 'add' method...
                 var dropDiv = $('#' + 'divFilesForUpload');
@@ -346,8 +472,16 @@
 
                 //Display 'file upload' alert...
                 //Source: http://www.java2s.com/Tutorials/HTML_CSS/Bootstrap_Example/Alert/Show_alert_block_with_fade_in.htm
-                $('#' + 'alertFileUpload').fadeIn({"duration": 1000});
+                $('#' + 'alertFileUpload').fadeIn({"duration": 500});
             }
+        });
+
+        //'Click' handler for Cancel 'anchor' 
+        $('a.cancel').on('click', function(event) {
+            //Clear session storage items...
+            sessionStorage.removeItem('currentUploadId');
+            sessionStorage.removeItem('uploadedFileNames');
+            sessionStorage.removeItem('fileUploadCount');
         });
 
         //Create Random Id instance...

@@ -15,6 +15,7 @@ using HydroServerTools.Utilities;
 using HydroServerTools.Validators;
 
 using HydroserverToolsBusinessObjects;
+using HydroServerToolsUtilities;
 
 namespace HydroServerTools.Controllers.api
 {
@@ -75,6 +76,39 @@ namespace HydroServerTools.Controllers.api
             return repositorycontexts;
         }
 
+        private ConcurrentDictionary<string, StatusContext> getStatusContexts()
+        {
+            var key = "uploadIdsToStatusContexts";
+            var cache = HttpRuntime.Cache;
+
+            //Concurrent dictionary maps current uploadIds to current StatusContext instances... 
+            ConcurrentDictionary<string, StatusContext> statuscontexts = cache.Get(key) as ConcurrentDictionary<string, StatusContext>;
+#if (DEBUG)
+            if (null == statuscontexts)
+            {
+                //Cache creation expected at Application_Start() - thow an exception!!
+                throw new Exception("HttpRuntime.Cache object: " + key + " NOT found!!!");
+            }
+#endif
+            return statuscontexts;
+        }
+
+        private ConcurrentDictionary<string, DbLoadContext> getDbLoadContexts()
+        {
+            var key = "uploadIdsToDbLoadContexts";
+            var cache = HttpRuntime.Cache;
+
+            //Concurrent dictionary maps current uploadIds to current StatusContext instances... 
+            ConcurrentDictionary<string, DbLoadContext> dbloadcontexts = cache.Get(key) as ConcurrentDictionary<string, DbLoadContext>;
+#if (DEBUG)
+            if (null == dbloadcontexts)
+            {
+                //Cache creation expected at Application_Start() - thow an exception!!
+                throw new Exception("HttpRuntime.Cache object: " + key + " NOT found!!!");
+            }
+#endif
+            return dbloadcontexts;
+        }
 
         //Members...
 #if (DEBUG)
@@ -122,7 +156,7 @@ namespace HydroServerTools.Controllers.api
             var validationContexts = getValidationContexts();
             if ((!fileContexts.ContainsKey(uploadId)) || (!validationContexts.ContainsKey(uploadId)))
             {
-                response.StatusCode = HttpStatusCode.BadRequest;    //Missing/invalid parameter(s) - return early
+                response.StatusCode = HttpStatusCode.BadRequest;    //Unknown uploadId - return early
                 response.ReasonPhrase = "Unknown upload id...";
                 return response;
             }
@@ -191,6 +225,10 @@ namespace HydroServerTools.Controllers.api
             HttpResponseMessage response = new HttpResponseMessage();
             response.StatusCode = HttpStatusCode.OK;    //Assume success...
 
+            //Write an empty JSON object to the response
+            //  To avoid 'Unexpected end of JSON input' error in jQuery AJAX!!
+            response.Content = new StringContent("{}", System.Text.Encoding.UTF8, "application/json");
+
             //Validate/initialize input parameters
             if (String.IsNullOrWhiteSpace(uploadId))
             {
@@ -227,11 +265,11 @@ namespace HydroServerTools.Controllers.api
                 repositoryContexts.TryAdd(uploadId, repositoryContext);
 
                 //Get the instance again...
-                //IIS threading alert... Since the TryAdd(...) call occurs outside  
-                // the repositoryContext.RepositorySemaphore 'using' block it is not 
-                // thread-safe!!  Thus another IIS thread may have already added a 
-                // repository context for the uploadId.  Getting the instance again 
-                // ensures all IIS threads reference the ***same*** repository context...
+                // IIS threading alert... Since the TryAdd(...) call occurs outside  
+                // any Semaphore 'using' block it is not thread-safe!!  Thus another 
+                // IIS thread may have already added a context for the uploadId.  
+                // Getting the instance again ensures all IIS threads reference the 
+                // ***same*** context...
                 repositoryContexts.TryGetValue(uploadId, out repositoryContext);
             }
 
@@ -243,18 +281,77 @@ namespace HydroServerTools.Controllers.api
                 return response;
             }
 
-            using (await repositoryContext.RepositorySemaphore.UseWaitAsync())
+            var statusContexts = getStatusContexts();
+            StatusContext statusContext = null;
+
+            //Retrieve/create associated context instance...
+            if (!statusContexts.TryGetValue(uploadId, out statusContext))
             {
-                //Construct 'validated' path to binary files...
-                string pathValidated = System.Web.Hosting.HostingEnvironment.MapPath("~/Validated/");
+                //Not found - create new instance...
+                statusContext = new StatusContext();
+                statusContexts.TryAdd(uploadId, statusContext);
 
-                //Invoke DB load processing on validated binary files...
-                await repositoryContext.LoadDb(uploadId, pathValidated);
+                //Get the instance again...
+                // IIS threading alert... Since the TryAdd(...) call occurs outside  
+                // any Semaphore 'using' block it is not thread-safe!!  Thus another 
+                // IIS thread may have already added a context for the uploadId.  
+                // Getting the instance again ensures all IIS threads reference the 
+                // ***same*** context...
+                statusContexts.TryGetValue(uploadId, out statusContext);
+            }
 
-                //TO DO - Retrieve/retain information for Summary Report...
-                int n = 5;
+            //Check for status context...
+            if (null == statusContext)
+            {
+                response.StatusCode = HttpStatusCode.BadRequest;    //No repository context - return early
+                response.ReasonPhrase = "Cannot find/create status context for current upload Id... (from Put)";
+                return response;
+            }
 
-                ++n;
+            var dbLoadContexts = getDbLoadContexts();
+            DbLoadContext dbLoadContext = null;
+
+            //Retrieve/create associated context instance...
+            if (!dbLoadContexts.TryGetValue(uploadId, out dbLoadContext))
+            {
+                //Not found - create new instance...
+                dbLoadContext = new DbLoadContext();
+                dbLoadContexts.TryAdd(uploadId, dbLoadContext);
+
+                //Get the instance again...
+                // IIS threading alert... Since the TryAdd(...) call occurs outside  
+                // any Semaphore 'using' block it is not thread-safe!!  Thus another 
+                // IIS thread may have already added a context for the uploadId.  
+                // Getting the instance again ensures all IIS threads reference the 
+                // ***same*** context...
+                dbLoadContexts.TryGetValue(uploadId, out dbLoadContext);
+            }
+
+            //Check for db load context...
+            if (null == dbLoadContext)
+            {
+                response.StatusCode = HttpStatusCode.BadRequest;    //No repository context - return early
+                response.ReasonPhrase = "Cannot find/create db load context for current upload Id... (from Put)";
+                return response;
+            }
+
+            //Construct 'validated' path to binary files...
+            string pathValidated = System.Web.Hosting.HostingEnvironment.MapPath("~/Validated/");
+            string pathProcessed = System.Web.Hosting.HostingEnvironment.MapPath("~/Processed/");
+
+            //Invoke DB load processing on validated binary files...
+            //NOTE: Member semaphore is referenced periodically within the LoadDb(...) call...
+            await repositoryContext.LoadDb(uploadId, pathValidated, pathProcessed, statusContext, dbLoadContext);
+
+            //Retrieve db load results, if any - return to client in response data...
+            using (await dbLoadContext.DbLoadSemaphore.UseWaitAsync())
+            {
+                var dbLoadResults = dbLoadContext.DbLoadResults;
+                if (0 < dbLoadResults.Count) 
+                {
+                    string jsonData = Newtonsoft.Json.JsonConvert.SerializeObject(dbLoadResults);
+                    response.Content = new StringContent(jsonData, System.Text.Encoding.UTF8, "application/json");
+                }
             }
 
             //Processing complete - return response
@@ -313,13 +410,24 @@ namespace HydroServerTools.Controllers.api
             //Check for file context...
             if (null == fileContext)
             {
+                //File context not found...
                 response.StatusCode = HttpStatusCode.BadRequest;
-                response.ReasonPhrase = "No current upload Id found in request...(from POST)";
+                response.ReasonPhrase = "File context not created/found...(from POST)";
                 return response;
             }
 
             using (await fileContext.FileSemaphore.UseWaitAsync())
             {
+                //File context found - add file name(s), if indicated...
+                var contextFileNames = fileContext.FileNames;
+                foreach (var fileName in fileNames)
+                {
+                    if (-1 == contextFileNames.IndexOf(fileName))
+                    {
+                        contextFileNames.Add(fileName);
+                    }
+                }
+                
                 //Retrieve request content...
                 HttpContent httpContent = Request.Content;
                 if (httpContent.IsMimeMultipartContent())
@@ -466,6 +574,113 @@ namespace HydroServerTools.Controllers.api
             return response;
         }
 
+
+        //Delete the input file per the input uploadId...
+        //DELETE api/revisedupload/deletefile/{uploadId}/{fileName}
+        [HttpDelete]
+        public async Task<HttpResponseMessage> DeleteFile(string uploadId, string fileName)
+        {
+            HttpResponseMessage response = new HttpResponseMessage();
+            response.StatusCode = HttpStatusCode.OK;    //Assume success
+
+            //Write an empty JSON object to the response
+            //  To avoid 'Unexpected end of JSON input' error in jQuery file download!!
+            response.Content = new StringContent("{}", System.Text.Encoding.UTF8, "application/json");
+
+            //Validate/initialize input parameters
+            if (String.IsNullOrWhiteSpace(uploadId) || String.IsNullOrWhiteSpace(fileName))
+            {
+                response.StatusCode = HttpStatusCode.BadRequest;    //Missing/invalid parameter(s) - return early
+                response.ReasonPhrase = "Invalid parameter(s)";
+                return response;
+            }
+
+            //Retrieve file context..
+            var fileContexts = getFileContexts();
+            if (!fileContexts.ContainsKey(uploadId))
+            {
+                response.StatusCode = HttpStatusCode.BadRequest;    //Unknown uploadId - return early
+                response.ReasonPhrase = "Unknown upload id...";
+                return response;
+            }
+
+            //Input parameter(s) valid - retrieve file context...
+            FileContext fileContext = fileContexts[uploadId];
+            using (await fileContext.FileSemaphore.UseWaitAsync())
+            {
+                //Map file path...
+                string pathUploads = System.Web.Hosting.HostingEnvironment.MapPath("~/Uploads/");
+
+                //Construct file path and name, delete file...
+                var filePathAndName = pathUploads + fileContext.PrefixedFileName(fileName);
+                try
+                {
+                    File.Delete(filePathAndName);
+                }
+                catch (Exception ex)
+                {
+                    //File path invalid (or too long)? - For now take no action
+                    var msg = ex.Message;
+                }
+
+                //Remove entry from file names...
+                var contextFileNames = fileContext.FileNames;
+                contextFileNames.Remove(fileName);
+            }
+
+            //Retrieve validation context...
+            var validationContexts = getValidationContexts();
+            if (validationContexts.ContainsKey(uploadId))
+            {
+                //Validation context found - scan validation results...
+                ValidationContext<CsvValidator> validationContext = validationContexts[uploadId];
+                using (await validationContext.ValidationResultSemaphore.UseWaitAsync())
+                {
+                    ValidationResult<CsvValidator> validationResult = null;
+                    foreach (var validationRes in validationContext.ValidationResults)
+                    {
+                        if (fileName == validationRes.FileName)
+                        {
+                            validationResult = validationRes;
+                            break;
+                        }
+                    }
+
+                    if ( null != validationResult)
+                    {
+                        //Validation result found - map file path...
+                        string pathValidated = System.Web.Hosting.HostingEnvironment.MapPath("~/Validated/");
+                        var csvValidator = validationResult.FileValidator;
+
+                        var modeltype = csvValidator.ValidatedModelType;
+                        
+                        if (null != modeltype)
+                        {
+                            //File validated - construct file path and name, delete binary file...
+                            var binFilePathAndName = pathValidated + uploadId + "-" + modeltype.Name + "-validated.bin";
+                            try
+                            {
+                                File.Delete(binFilePathAndName);
+                            }
+                            catch (Exception ex)
+                            {
+                                //File path invalid (or too long)? - For now take no action
+                                var msg = ex.Message;
+                            }
+                        }
+
+                        //Remove entry from file names...
+                        var validationResults = validationContext.ValidationResults;
+                        validationResults.Remove(validationResult);
+                    }
+                }
+
+            }
+
+            //Processing complete - return
+            return response;
+        }
+
         //An asynchronous method for file content validation...
         //ASSUMPTION: Referenced file is available for read access
         //Source: https://www.dotnetperls.com/async
@@ -544,19 +759,10 @@ namespace HydroServerTools.Controllers.api
                                             //For the output file stream...
                                             using (var fileStream = new FileStream(binFilePathAndName, FileMode.Create))
                                             {
-                                                //For a memory stream...
-                                                using (var memoryStream = new MemoryStream())
-                                                {
-                                                    //Serialize validated records to binary...
-                                                    BinaryFormatter binFor = new BinaryFormatter();
-                                                    binFor.Serialize(memoryStream, validatedRecords);
+                                                //Serialize validated records to file stream as binary...
+                                                BinaryFormatter binFor = new BinaryFormatter();
 
-                                                    //Read stream contents into byte array...
-                                                    byte[] byteArray = memoryStream.ToArray();
-
-                                                    //Write byte array asynchronously to output file stream...
-                                                    await fileStream.WriteAsync(byteArray, 0, byteArray.Length);
-                                                }
+                                                binFor.Serialize(fileStream, validatedRecords);
                                             }
                                         }
                                         catch (Exception ex)

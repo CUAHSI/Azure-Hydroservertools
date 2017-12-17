@@ -26,6 +26,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "jQuery.DataTables.Mvc", "jQ
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HydroServerToolsEFDerivedObjects", "HydroServerToolsEFDerivedObjects\HydroServerToolsEFDerivedObjects.csproj", "{E81E4631-680A-4928-926C-6B217918BA94}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HydroServerToolsUtilities", "HydroServerToolsUtilities\HydroServerToolsUtilities.csproj", "{CFF64114-D63E-4015-A460-862F7F22D857}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,6 +62,10 @@ Global
 		{E81E4631-680A-4928-926C-6B217918BA94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E81E4631-680A-4928-926C-6B217918BA94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E81E4631-680A-4928-926C-6B217918BA94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CFF64114-D63E-4015-A460-862F7F22D857}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFF64114-D63E-4015-A460-862F7F22D857}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFF64114-D63E-4015-A460-862F7F22D857}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFF64114-D63E-4015-A460-862F7F22D857}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

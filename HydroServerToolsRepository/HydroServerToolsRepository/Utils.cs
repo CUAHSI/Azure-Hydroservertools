@@ -20,6 +20,8 @@ using HydroServerToolsRepository;
 using System.Data.Entity.Core.Objects;
 using System.Data.Entity;
 
+using HydroServerToolsUtilities;
+
 namespace HydroServerToolsRepository.Repository
 {
     
@@ -47,7 +49,7 @@ namespace HydroServerToolsRepository.Repository
             return table;
         }
 
-        public static void CommitNewRecords<T>(string entityConnectionString, string id, IList<T> list)
+        public static async Task CommitNewRecords<T>(string entityConnectionString, string id, IList<T> list, StatusContext statusContext)
         {
             string providerConnectionString = new EntityConnectionStringBuilder(entityConnectionString).ProviderConnectionString;
             string instanceIdentifier = "mseul@cuahsi.org";
@@ -72,7 +74,7 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map< T,Site>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<Site>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName);                   
+                    await BulkInsert<Site>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName, statusContext);                   
                 }
 
                
@@ -84,7 +86,7 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, Variable>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<Variable>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName);
+                    await BulkInsert<Variable>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName, statusContext);
                 }
                 if (idLower == "offsettypes")
                 {
@@ -94,7 +96,7 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, OffsetType>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<OffsetType>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName);
+                    await BulkInsert<OffsetType>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName, statusContext);
                 }
                 if (idLower == "sources")
                 {
@@ -176,7 +178,7 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, Method>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<Method>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName);
+                    await BulkInsert<Method>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName, statusContext);
 
                 }
 
@@ -188,7 +190,7 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, LabMethod>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<LabMethod>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName);
+                    await BulkInsert<LabMethod>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName, statusContext);
 
                 }
 
@@ -200,7 +202,7 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, Sample>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<Sample>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName);
+                    await BulkInsert<Sample>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName, statusContext);
 
                 }
 
@@ -212,7 +214,7 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, Qualifier>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<Qualifier>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName);
+                    await BulkInsert<Qualifier>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName, statusContext);
 
                 }
 
@@ -224,7 +226,7 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, QualityControlLevel>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<QualityControlLevel>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName);
+                    await BulkInsert<QualityControlLevel>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName, statusContext);
 
                 }
 
@@ -236,7 +238,7 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, DataValue>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<DataValue>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName);
+                    await BulkInsert<DataValue>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName, statusContext);
                  
 
                 }
@@ -249,7 +251,7 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, GroupDescription>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<GroupDescription>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName);
+                    await BulkInsert<GroupDescription>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName, statusContext);
 
                 }
 
@@ -261,7 +263,7 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, Group>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<Group>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName);
+                    await BulkInsert<Group>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName, statusContext);
                 }
 
                 if (idLower == "derivedfrom")
@@ -272,7 +274,7 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, DerivedFrom>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<DerivedFrom>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName);
+                    await BulkInsert<DerivedFrom>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName, statusContext);
                 }
 
                 if (idLower == "categories")
@@ -283,7 +285,7 @@ namespace HydroServerToolsRepository.Repository
                         var model = Mapper.Map<T, Category>(item);
                         recordsToInsert.Add(model);
                     }
-                    BulkInsert<Category>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName);
+                    await BulkInsert<Category>(providerConnectionString, idLower, recordsToInsert, instanceIdentifier, CacheName, statusContext);
                 }
            }
             catch (Exception ex)
@@ -591,7 +593,7 @@ namespace HydroServerToolsRepository.Repository
 
         }
 
-        public static void BulkInsert<targetType>(string connection, string tableName, IList<targetType> list, string instanceIdentifier, string CacheName)
+        public static async Task BulkInsert<targetType>(string connection, string tableName, IList<targetType> list, string instanceIdentifier, string CacheName, StatusContext statusContext)
         {
             try 
             { 
@@ -648,10 +650,18 @@ namespace HydroServerToolsRepository.Repository
                 {
 
                         //bulkCopy.SqlRowsCopied += new SqlRowsCopiedEventHandler(OnSqlRowsTransfer, instanceIdentifier, CacheName);
-                        bulkCopy.SqlRowsCopied += (s, e) =>
+                        bulkCopy.SqlRowsCopied += async (s, e) =>
                         {
                             Console.WriteLine(e.RowsCopied + " loaded");
-                            BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_COMMIT_PROGRESS, e.RowsCopied.ToString(), table.Rows.Count.ToString()));
+                            var statusMessage = String.Format(Resources.IMPORT_COMMIT_PROGRESS, e.RowsCopied.ToString(), table.Rows.Count.ToString());
+                            if (null == statusContext)
+                            {
+                                BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
+                            }
+                            else
+                            {
+                                await statusContext.AddStatusMessage(typeof (targetType).Name, statusMessage);
+                            }
 
                         };
                         //bulkCopy.SqlRowsCopied += (sender, e) => { = instanceIdentifier, CacheName};
@@ -673,8 +683,15 @@ namespace HydroServerToolsRepository.Repository
             }
             finally
             {
-                BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_COMMIT_COMPLETE));
-
+                var statusMessage = String.Format(Resources.IMPORT_COMMIT_COMPLETE);
+                if (null == statusContext)
+                {
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
+                }
+                else
+                {
+                    await statusContext.AddStatusMessage(typeof(targetType).Name, statusMessage);
+                }
             }
             //bulkCopy.WriteToServer(table);
 

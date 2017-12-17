@@ -12,17 +12,24 @@
 <!-- Dynamic panel template -->
 <div class="panel panel-default templatePanelClass hidden">
     <div class="panel-heading">
-        <h4 class="panel-title">
-            <a class="accordion-toggle" data-toggle="collapse" data-parent="#pnlgrpFiles" href="#collapseTemplate">
+        <h3 class="panel-title">
+            <a style="font-weight: bold; " class="accordion-toggle" data-toggle="collapse" data-parent="#pnlgrpFiles" href="#collapseTemplate">
                 Panel Template
             </a>
-        </h4>
+        </h3>
     </div>
     <div id="collapseTemplate" class="panel-collapse collapse">
         <div class="panel-body">
-            <ul class="listTemplate">
-                <!-- <li> markup goes here...</li> -->
-            </ul>
+            <div class="pull-left">
+                <h4>Headers <span class="badge spanHeaders hidden"></span></h4>
+                <ul class="headerListTemplate list-group">
+                    <!-- <li> header markup goes here...</li> -->
+                </ul>
+                <h4>Data <span class="badge spanData hidden"></span></h4>
+                <ul class="dataListTemplate list-group">
+                    <!-- <li> data markup goes here...</li> -->
+                </ul>
+            </div>
         </div>
     </div>
 </div>
@@ -32,17 +39,24 @@
     <!-- Dynamic collapse for validated files -->
     <div class="row">
         <div class="col_md_12">
-            <div class="panel-group" id="pnlgrpFiles">
-            </div>
+            @*<div class="panel-group uploader" id="pnlgrpFiles"></div>*@
+            <div  style="padding-left: 1.0em; padding-right: 1.0em;" class="panel-group uploader-border" id="pnlgrpFiles"></div>
         </div>
     </div>
 
     <div class="row">
         <div class="btn-group col-md-12" style="position: relative;">
+
+            <div id="alertDbLoad" class="alert alert-info fade in hidden col-md-5 col-md-offset-3" role="alert">
+                <span class="glyphicon glyphicon-refresh spin"></span>
+                <span>Database load in progress.  Please do not close the current page!!</span>
+            </div>
+
             <div class="pull-right">
                 <a href="/home/index" class="btn btn-warning cancel">Cancel</a>
-                <button type="button" id="btnValidationSummaryContinue" class="btn btn-success" style="margin-left: 0.5em;">Continue</button>
-                <a id="btnDbSummaryReport" class="btn btn-primary hidden" href="/CSVUpload/RevisedUploadData/DbSummaryReport" style="margin-left: 0.5em;">DB Summary Report</a>
+                <a href="/CSVUpload/RevisedUploadData/DragAndDropFiles" class="btn btn-info" style="margin-left: 0.5em;">Previous</a>
+                <button type="button" id="btnValidationSummaryContinue" class="btn btn-success" style="margin-left: 0.5em;">Load Database</button>
+                <a id="btnDbSummaryReport" class="btn btn-primary hidden" href="/CSVUpload/RevisedUploadData/DbSummaryReport" style="margin-left: 0.5em;">DB Summary Report...</a>
             </div>
         </div>
     </div>
@@ -65,6 +79,7 @@
             jqPanelGroup.empty();
 
             //For each validation result...
+            var openErrorPanel = true;
             var length = validationResults.length;
             for (var i = 0; i < length; ++i) {
                 var validationResult = validationResults[i];
@@ -85,31 +100,69 @@
 
                 var msg = 'File: ' + fileName;
 
-                msg += ' - Headers: ' + ((0 >= validation.InvalidHeaderNames.length) ? 'valid' : 'invalid');
-                msg += ' - Data: ' + ((0 >= validation.DataErrors.length) ? 'valid' : 'invalid'); 
+                msg += ' - Headers: ' + ((0 >= validation.InvalidHeaderNames.length) ? '<span class="btn-success">valid</span>' : '<span class="btn-danger">invalid</span>');
+                msg += ' - Data: ' + ((0 >= validation.DataErrors.length) ? '<span class="btn-success">valid</span>' : '<span class="btn-danger">invalid</span>'); 
                  
-                toggle.text(msg);
+                //toggle.text(msg);
+                toggle.html(msg);
 
                 //Update collapse id...
                 newPanel.find('.panel-collapse').attr('id', id);
 
-                //Add items to panel list...
-                var panelList = newPanel.find('.listTemplate');
+                //If panel contains errors, open, if indicated...
+                if (openErrorPanel &&
+                    ((0 < validation.InvalidHeaderNames.length) || (0 < validation.DataErrors.length))) {
+                    newPanel.find('.panel-collapse').addClass('in');
+                    openErrorPanel = false;
+                }
+
+                //Add items to panel headers list...
+                var panelList = newPanel.find('.headerListTemplate');
+                var headerErrors = validation.InvalidHeaderNames
+                var hLength = headerErrors.length;
+
+                if (0 < hLength) {
+                    //Header errors - show count...
+                    var spanHeaders = newPanel.find('.spanHeaders');
+                    spanHeaders.removeClass('hidden');
+                    spanHeaders.text(hLength);
+
+                    //Add to list...
+                    for (var hI = 0; hI < hLength; ++hI) {
+                        var headerError = headerErrors[hI];
+
+                        var hMsg = headerError;
+                        panelList.append('<li class="list-group-item"> ' + hMsg + '</li>');
+                    }
+                }
+                else {
+                        //No header errors - add headers OK message to list...
+                    panelList.append('<li class="list-group-item"> ' + 'No header validation errors reported...' + '</li>');
+                    }
+
+
+                //Add items to panel data list...
+                panelList = newPanel.find('.dataListTemplate');
                 var dataErrors = validation.DataErrors;
                 var dLength = dataErrors.length;
 
                 if (0 < dLength) {
-                    //Data errors - add to list...
+                    //Data errors - show count...
+                    var spanData = newPanel.find('.spanData');
+                    spanData.removeClass('hidden');
+                    spanData.text(dLength);
+
+                    //Add to list...
                     for (var dI = 0; dI < dLength; ++dI) {
                         var dataError = dataErrors[dI];
 
                         var dMsg = 'Row: ' + dataError.RowIndex + ', Column: ' + dataError.FieldIndex + ' - "' + dataError.Reason + '"';
-                        panelList.append('<li> ' + dMsg + '</li>');
+                        panelList.append('<li class="list-group-item"> ' + dMsg + '</li>');
                     }
                 }
                 else {
                     //No data errors - add data OK message to list...
-                    panelList.append('<li> ' + 'No data validation errors reported...' + '</li>');
+                    panelList.append('<li class="list-group-item"> ' + 'No data validation errors reported...' + '</li>');
                 }
 
                 //Append to panel group...
@@ -167,6 +220,18 @@
                 "success": function (data, textStatus, jqXHR) {
                     console.log('RevisedUpload PUT success!!');
                     var dbResults = data;
+
+                    //Controller db load process complete - fade out db load alert...
+                    $('#' + 'alertDbLoad').fadeOut({
+                        "duration": 1000,
+                        "complete": function () {
+                            //Show DB Summary Report button...
+                            $('#' + 'btnDbSummaryReport').removeClass('hidden');
+                        }
+                    });
+
+
+
                     //TO DO - disable continue button
                     //        show show DB Summary Report button...
                 },
@@ -179,7 +244,10 @@
     }
 
     $(document).ready(function () {
-        console.log('Validation Summary - document ready called!!');
+        //console.log('Validation Summary - document ready called!!');
+
+        //Hide the db load alert...
+        $('#' + 'alertDbLoad').removeClass('hidden').hide();
 
         //Retrieve current upload Id...
         var currentUploadId = sessionStorage.currentUploadId;
@@ -190,7 +258,24 @@
 
         //'Click' handler for Validation Summary, Continue
         $('#' + 'btnValidationSummaryContinue').on('click', function (event) {
+
+            //Disable button...
+            $('#' + 'btnValidationSummaryContinue').addClass('disabled');
+
+            //Display 'db load' alert...
+            //Source: http://www.java2s.com/Tutorials/HTML_CSS/Bootstrap_Example/Alert/Show_alert_block_with_fade_in.htm
+            $('#' + 'alertDbLoad').fadeIn({ "duration": 500 });
+
+            //Invoke db load process...
             startDbProcessing(currentUploadId);
+        });
+
+        //'Click' handler for Cancel 'anchor' 
+        $('a.cancel').on('click', function (event) {
+            //Clear session storage items...
+            sessionStorage.removeItem('currentUploadId');
+            sessionStorage.removeItem('uploadedFileNames');
+            sessionStorage.removeItem('fileUploadCount');
         });
 
         //Queue retrievel of validation results...

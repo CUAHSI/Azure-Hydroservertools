@@ -149,20 +149,35 @@ namespace HydroServerTools.Validators
 
         //Dictionary of model types used in validation to class maps...
         private static Dictionary<Type, Type> validationTypesToClassMaps = new Dictionary<Type, Type>
-                                                                                { {typeof(CategoriesModel), typeof(CategoriesModelMap)},
-                                                                                  {typeof(DataValuesModel), typeof(DataValuesModelMap)},
-                                                                                  {typeof(DerivedFromModel), typeof(DerivedFromModelMap)},
-                                                                                  {typeof(GroupDescriptionModel), typeof(GroupDescriptionModelMap)},
-                                                                                  {typeof(GroupsModel), typeof(GroupsModelMap)},
-                                                                                  {typeof(LabMethodModel), typeof(LabMethodModelMap)},
-                                                                                  {typeof(MethodModel), typeof(MethodModelMap)},
-                                                                                  {typeof(OffsetTypesModel), typeof(OffsetTypesModelMap)},
-                                                                                  {typeof(QualifiersModel), typeof(QualifiersModelMap)},
-                                                                                  {typeof(QualityControlLevelModel), typeof(QualityControlLevelModelMap)},
-                                                                                  {typeof(SampleModel), typeof(SampleModelMap)},
-                                                                                  {typeof(SiteModel), typeof(SiteModelMap)},
-                                                                                  {typeof(SourcesModel), typeof(SourcesModelMap)},
-                                                                                  {typeof(VariablesModel), typeof(VariablesModelMap)}
+                                                                                {
+                                                                                  //{typeof(CategoriesModel), typeof(CategoriesModelMap)},
+                                                                                  //{typeof(DataValuesModel), typeof(DataValuesModelMap)},
+                                                                                  //{typeof(DerivedFromModel), typeof(DerivedFromModelMap)},
+                                                                                  //{typeof(GroupDescriptionModel), typeof(GroupDescriptionModelMap)},
+                                                                                  //{typeof(GroupsModel), typeof(GroupsModelMap)},
+                                                                                  //{typeof(LabMethodModel), typeof(LabMethodModelMap)},
+                                                                                  //{typeof(MethodModel), typeof(MethodModelMap)},
+                                                                                  //{typeof(OffsetTypesModel), typeof(OffsetTypesModelMap)},
+                                                                                  //{typeof(QualifiersModel), typeof(QualifiersModelMap)},
+                                                                                  //{typeof(QualityControlLevelModel), typeof(QualityControlLevelModelMap)},
+                                                                                  //{typeof(SampleModel), typeof(SampleModelMap)},
+                                                                                  //{typeof(SiteModel), typeof(SiteModelMap)},
+                                                                                  //{typeof(SourcesModel), typeof(SourcesModelMap)},
+                                                                                  //{typeof(VariablesModel), typeof(VariablesModelMap)}
+                                                                                  {typeof(CategoriesModel), typeof(GenericMap<CategoriesModel>)},
+                                                                                  {typeof(DataValuesModel), typeof(GenericMap<DataValuesModel>)},
+                                                                                  {typeof(DerivedFromModel), typeof(GenericMap<DerivedFromModel>)},
+                                                                                  {typeof(GroupDescriptionModel), typeof(GenericMap<GroupDescriptionModel>)},
+                                                                                  {typeof(GroupsModel), typeof(GenericMap<GroupsModel>)},
+                                                                                  {typeof(LabMethodModel), typeof(GenericMap<LabMethodModel>)},
+                                                                                  {typeof(MethodModel), typeof(GenericMap<MethodModel>)},
+                                                                                  {typeof(OffsetTypesModel), typeof(GenericMap<OffsetTypesModel>)},
+                                                                                  {typeof(QualifiersModel), typeof(GenericMap<QualifiersModel>)},
+                                                                                  {typeof(QualityControlLevelModel), typeof(GenericMap<QualityControlLevelModel>)},
+                                                                                  {typeof(SampleModel), typeof(GenericMap<SampleModel>)},
+                                                                                  {typeof(SiteModel), typeof(GenericMap<SiteModel>)},
+                                                                                  {typeof(SourcesModel), typeof(GenericMap<SourcesModel>)},
+                                                                                  {typeof(VariablesModel), typeof(GenericMap<VariablesModel>)}
                                                                                 };
         //CSV file path and name...
         private string csvFilePathAndName;

@@ -317,9 +317,9 @@
     <Compile Include="Services\Job.cs" />
     <Compile Include="Services\JobManager.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="Utilities\DbLoadContext.cs" />
     <Compile Include="Utilities\FileContext.cs" />
     <Compile Include="Utilities\RepositoryContext.cs" />
-    <Compile Include="Utilities\SemaphoreSlimExtensions.cs" />
     <Compile Include="Utilities\ValidationContext.cs" />
     <Compile Include="Validators\CsvValidator.cs" />
     <Compile Include="Validators\ValidationResult.cs" />
@@ -487,6 +487,9 @@
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Images\request.png" />
+    <Content Include="Processed\NEVER-DELETE-THIS-FILE.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Properties\fonts\fontawesome-webfont.svg" />
     <Content Include="Properties\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -767,6 +770,7 @@
     <Content Include="Templates\ODMTemplates.zip" />
     <Content Include="Views\CSVUpload\DragAndDropFiles.cshtml" />
     <Content Include="Views\CSVUpload\ValidateFiles.cshtml" />
+    <Content Include="Views\CSVUpload\DbSummaryReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -796,6 +800,10 @@
     <ProjectReference Include="..\HydroServerToolsRepository\HydroServerToolsRepository\HydroServerToolsRepository.csproj">
       <Project>{2b8b6f28-fce4-4a9e-a016-1cb40918ffe7}</Project>
       <Name>HydroServerToolsRepository</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HydroServerToolsUtilities\HydroServerToolsUtilities.csproj">
+      <Project>{cff64114-d63e-4015-a460-862f7f22d857}</Project>
+      <Name>HydroServerToolsUtilities</Name>
     </ProjectReference>
     <ProjectReference Include="..\jQuery.DataTables.Mvc\jQuery.DataTables.Mvc.csproj">
       <Project>{3383d0e2-c499-4f02-9d29-f744741aa999}</Project>

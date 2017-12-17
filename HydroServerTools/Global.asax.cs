@@ -13,6 +13,8 @@ using System.Collections.Concurrent;
 using HydroServerTools.Utilities;
 using HydroServerTools.Validators;
 
+using HydroServerToolsUtilities;
+
 namespace HydroServerTools
 {
     public class MvcApplication : System.Web.HttpApplication
@@ -32,7 +34,13 @@ namespace HydroServerTools
             ModelBinders.Binders.Add(typeof(JQueryDataTablesModel), new JQueryDataTablesModelBinder());
             //InstanceGuid = Guid.NewGuid();
 
-            //At web application startup - add ConcurrentDictionary instances for file contexts, validation contexts and repository contexts to the runtime cache...
+            //At web application startup - add ConcurrentDictionary instances to the runtime cache for the following context types:
+            //  - file, 
+            //  - validation
+            //  - repository
+            //  - status
+            //  - db load
+            //
             //NOTE: One HttpRuntime.Cache instance exists for the Application Domain...
             //Sources: https://docs.microsoft.com/en-us/aspnet/web-forms/overview/data-access/caching-data/caching-data-at-application-startup-cs
             //         https://stackoverflow.com/questions/27575213/how-to-cache-in-asp-net
@@ -50,6 +58,13 @@ namespace HydroServerTools
             ConcurrentDictionary<string, RepositoryContext> repositorycontexts = new ConcurrentDictionary<string, RepositoryContext>();
             cache.Insert(key, repositorycontexts);
 
+            key = "uploadIdsToStatusContexts";
+            ConcurrentDictionary<string, StatusContext> statuscontexts = new ConcurrentDictionary<string, StatusContext>();
+            cache.Insert(key, statuscontexts);
+
+            key = "uploadIdsToDbLoadContexts";
+            ConcurrentDictionary<string, DbLoadContext> dbloadcontexts = new ConcurrentDictionary<string, DbLoadContext>();
+            cache.Insert(key, dbloadcontexts);
         }
 
         //Disable forms authentication redirect...

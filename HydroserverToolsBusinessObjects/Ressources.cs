@@ -42,6 +42,7 @@ namespace HydroserverToolsBusinessObjects
         public const string STATUS_PROCESSING = "Processing...";
         public const string IMPORT_STATUS_PROCESSING_DATAVALUES = "The Upload is being processed. Processing record {0} of {1}; (New {2} of {0}, Rej. {3} of {0}, Dupl. {4} of {0})";
         public const string IMPORT_STATUS_PROCESSING = "The Upload is being processed. Processing record {0} of {1};";
+        public const string IMPORT_STATUS_PROCESSING_RECORDS = "Processing {0} '{1}' records...";
 
         public const string IMPORT_STATUS_PROCESSING_TIMESERIES = "The timeseries are being processed. Processing site {0} of {1}";
         public const string IMPORT_STATUS_INSERTING = "The data is inserted";

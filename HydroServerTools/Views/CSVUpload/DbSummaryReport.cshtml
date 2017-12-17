@@ -1,0 +1,115 @@
+﻿
+@{
+    ViewBag.Title = "DbSummaryReport";
+    ViewBag.Name = "dbSummaryReport";
+}
+
+<h2>Summary Report</h2>
+
+
+<div class="container">
+
+    <!-- Table of Db Load Results -->
+    <div class="row">
+        <div class="col-md-12">
+            <div id="divDbLoadResults" style="padding-left: 1.0em; padding-right: 1.0em;" class="uploader-border">
+                <h4>Data upload summary for your HydroServer (grouped by ODM table name)</h4>
+                <table style="margin-top: 1.5em;" class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="col-md-6 text-center">Table Name</th>
+                            <th class="col-md-2 text-center">Inserted</th>
+                            <th class="col-md-2 text-center">Updated</th>
+                            <th class="col-md-2 text-center">Rejected</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Dynamic table row template -->
+                        <tr class="templateTableRow hidden">
+                            <td class="col-md-6 text-center"><span style="font-size: 1.5em; font-weight: bold;" class="spanTableName">Test Table Name</span></td>
+
+                            <!-- If Inserted === 0 show span else show button -->
+                            <td class="col-md-2 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanInserted">0</span></td>
+                            <td class="col-md-2 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-success buttonInserted">100</button></td>
+
+                            <!-- If Updated === 0 show span else show button -->
+                            <td class="col-md-2 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanUpdated">0</span></td>
+                            <td class="col-md-2 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-primary buttonUpdated">50</button></td>
+
+                            <!-- If Rejected === 0 show span else show button -->
+                            <td class="col-md-2 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanRejected">0</span></td>
+                            <td class="col-md-2 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-danger buttonRejected">25</button></td>
+                        </tr>
+
+                        <!-- DB Load Results go here... -->
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="btn-group col-md-12" style="position: relative;">
+            <div class="pull-right">
+                <button type="button" id="btnRevisedUploadFinish" class="btn btn-success" >Finish</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Test rows - hidden -->
+    <!-- TEST row... -->
+    <table class="hidden">
+        <!-- TEST row... -->
+        <tbody>
+            <tr class="templateTableRow">
+                <td class="col-md-6 text-center"><span style="font-size: 1.5em; font-weight: bold;" class="spanTableName">Test Table Name</span></td>
+
+                <!-- If Inserted === 0 show span else show button -->
+                <td class="col-md-2 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanInserted">0</span></td>
+                <td class="col-md-2 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-success buttonInserted">100</button></td>
+
+                <!-- If Updated === 0 show span else show button -->
+                <td class="col-md-2 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanUpdated">0</span></td>
+                <td class="col-md-2 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-primary buttonUpdated">50</button></td>
+
+                <!-- If Rejected === 0 show span else show button -->
+                <td class="col-md-2 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanRejected">0</span></td>
+                <td class="col-md-2 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-danger buttonRejected">25</button></td>
+            </tr>
+            <tr class="templateTableRow">
+                <td class="col-md-6 text-center"><span style="font-size: 1.5em; font-weight: bold;" class="spanTableName">Test Table Name</span></td>
+
+                <!-- If Inserted === 0 show span else show button -->
+                <td class="col-md-2 text-center hidden"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanInserted">0</span></td>
+                <td class="col-md-2 text-center"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-success buttonInserted">100</button></td>
+
+                <!-- If Updated === 0 show span else show button -->
+                <td class="col-md-2 text-center hidden"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanUpdated">0</span></td>
+                <td class="col-md-2 text-center"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-primary buttonUpdated">50</button></td>
+
+                <!-- If Rejected === 0 show span else show button -->
+                <td class="col-md-2 text-center hidden"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanRejected">0</span></td>
+                <td class="col-md-2 text-center"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-danger buttonRejected">25</button></td>
+            </tr>
+
+            <!-- TEST row... -->
+            <tr class="templateTableRow">
+                <td class="col-md-6 text-center"><span style="font-size: 1.5em; font-weight: bold;" class="spanTableName">Test Table Name</span></td>
+
+                <!-- If Inserted === 0 show span else show button -->
+                <td class="col-md-2 text-center hidden"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanInserted">0</span></td>
+                <td class="col-md-2 text-center"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-success buttonInserted">100</button></td>
+
+                <!-- If Updated === 0 show span else show button -->
+                <td class="col-md-2 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanUpdated">0</span></td>
+                <td class="col-md-2 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-primary buttonUpdated">50</button></td>
+
+                <!-- If Rejected === 0 show span else show button -->
+                <td class="col-md-2 text-center hidden"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanRejected">0</span></td>
+                <td class="col-md-2 text-center"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-danger buttonRejected">25</button></td>
+            </tr>
+        </tbody>
+    </table>
+
+</div>

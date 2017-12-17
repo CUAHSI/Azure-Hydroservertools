@@ -1,0 +1,197 @@
+
+HydroServer Redesign Part 2
+
+**** Summary ****
+
+ - Additions in the following areas:
+   - New project: HydroServerToolsUtilities
+   - New context classes for Status Messages and Db Load Results
+   - Initial implementation of Summary Report page
+
+
+**** HydroserverRedesign ****
+ - HydroServerTools.sln
+   -- Add project: HydroServerToolsUtilities
+
+
+**** .vs ****
+ - Visual Studio 2017 adds some directories and storage.ide 
+
+
+**** HydroServerTools ****
+ - Global.asax.cs
+   - Add ConcurrentDictionary instances to runtime cache at startup
+ - HydroServerTools.csproj
+   - New files: Utilities\DbLoadContext.cs
+	      CSVUpload\DbSummaryReport.cshtml
+   - New project: HydroServerToolsUtilities
+   - New runtime directory: Processed
+
+
+**** HydroServerTools/App_Start ****
+ - WebApiConfig.cs 
+    - Add RevisedUploadController route: DeleteFile 
+
+
+**** HydroServerTools/Content ****
+ - Site.css
+   - Add styling for uploader-border class
+
+
+**** HydroServerTools/Controllers ****
+ - CSVUploadController.cs 
+   - RevisedUploadData(...) - add case for db summary report
+   - Commit(...) - Re-factor as an asynchronous method to allow 'awaits' on CommitNewRecords calls
+
+
+**** HydroServerTools/Controllers/api ****
+ - RevisedUploadController.cs
+   - New methods: GetStatusContexts(), getDbLoadContexts()
+   - Put(...) method: Add logic to capture status messages and db load results from repository context LoadDb(...) call...
+   - Post() meethod: Add logic to add uploaded file names to file context
+   - New method: DeleteFile(...)
+   - ValidateFileContentsAsync(...) - remove unncessary memory stream references
+   - Update miscellaneous comments
+ - UploadController.cs 
+   - Re-factor various methods to accommodate asyncrhous 'Add...' repository calls
+
+
+**** HydroServerTools/fonts ****
+ - Visual Studio 2017 adds various glyphicon files
+
+
+**** HydroServerTools/Utilities ****
+ - New file: DbLoadContext.cs
+ - RepositoryContext.cs - update LoadDb logic to capture status messages and db load results
+ - ValidationContext.cs - update comments
+ 
+
+**** HydroServerTools/Validators ****
+ - CsvValidator.cs - revise validationsTypesToClassMaps to use the GenericMap class
+
+
+**** HydroServerTools/Views/CSVUpload ****
+ - New file: DbSummaryReport.cshtml
+ - DragAndDropFiles.cshtml 
+   - Add deleteListItem(...) handler
+   - Revise addFileObjects(...) markup logic
+   - Revise document ready logic to check session storage for existing entries (supports page navigation)
+   - Revise file upload 'Progress' handler logic to save uploaded file names/counts to session storage
+   - Add 'Cancel' button handler
+ - ValidateFiles.cshtml
+   - Revisions to collapsible panel markup logic
+   - Reduce display time of db load alert
+   - Add 'Cancel' button handler
+
+
+**** HydroServerToolsBusinessObjects **** 
+ - HydroserverToolsBusinessObjects.csproj
+   - Remove ,,,Map.cs files from project
+   - Add ModelMaps\GenericMap.cs to project
+ - Ressources.cs - add IMPORT_STATUS_PROCESSING_RECORDS string
+
+
+**** HydroServerToolsBusinessObjects/ModelMaps **** 
+ - Add GenericMap class
+
+
+**** HydroServerToolsRepository/HydroServerToolsRepository **** 
+ - HydroServerToolsRespository.csproj
+   - New project: HydroServerToolsUtilities
+ - IRepository.cs
+   - Revise 'Add...' method signatures to return a Task and to accept a StatusContext parameter
+ - Repository.cs 
+   - Revise 'Add...' methods:
+     - Agree with revised Interface signatures
+     - Remove 'out' qualifier from list parameters - not needed
+     - Remove allocations of new lists - not needed
+     - Add logic to capture status messages in StatusContext parameter when parameter is not null
+ - Utils.cs 
+   - CommitNewRecords(..) - Add StatusContext parameter, return a Task, await BulkInsert calls
+   - BulkInsert(...) - Add StatusContext parameter, return a Task 
+
+
+**** HydroServerToolsRepository/HydroServerToolsRepository/HISWebClient/Util ****
+ - Files from the HydroClient
+   - LinqPredicateBuilder.cs
+   - SearchStringComparer.cs
+   - StringContext.cs 
+
+
+**** HydroServerToolsUtilities **** 
+ - New project and files
+   - SemaphoreSlimExtensions.cs (relocated here) 
+   - StatusContext.cs 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

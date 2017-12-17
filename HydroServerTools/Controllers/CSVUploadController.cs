@@ -22,6 +22,8 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
 
+using System.Threading.Tasks;
+
 namespace HydroServerTools.Controllers
 {
     [Authorize]
@@ -157,8 +159,19 @@ namespace HydroServerTools.Controllers
                             viewName = "ValidateFiles";
                             break;
                     }
+                    case "dbsummaryreport":
+                        {
+                            viewName = "DbSummaryReport";
+                            break;
+                        }
                     default:
+#if (DEBUG)
+                        //DEBUG only - throw an exception...
                         throw new ArgumentException("CSVUploadController.RevisedUploadData(...) - Unknown input id!!");
+#else
+                        //Release - take no action...
+                        break;
+#endif
                 }
 
                 if (!String.IsNullOrEmpty(viewName))
@@ -323,7 +336,7 @@ namespace HydroServerTools.Controllers
         }
 
         [HttpPost]
-        public ActionResult Commit(string id, int index)
+        public async Task<ActionResult> Commit(string id, int index)
         {
 
             
@@ -356,7 +369,7 @@ namespace HydroServerTools.Controllers
                             {
                                 if (index == 0)
                                 {
-                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<SiteModel>(connectionString, id, listOfRecords);
+                                    await HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<SiteModel>(connectionString, id, listOfRecords, null);
                                 }
                                 else
                                 {
@@ -378,7 +391,7 @@ namespace HydroServerTools.Controllers
                             {
                                 if (index == 0)
                                 {
-                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<VariablesModel>(connectionString, id, listOfRecords);
+                                    await HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<VariablesModel>(connectionString, id, listOfRecords, null);
                                 }
                                 else
                                 {
@@ -400,7 +413,7 @@ namespace HydroServerTools.Controllers
                             {
                                 if (index == 0)
                                 {
-                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<OffsetTypesModel>(connectionString, id, listOfRecords);
+                                    await HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<OffsetTypesModel>(connectionString, id, listOfRecords, null);
                                 }
                                 else
                                 {
@@ -422,7 +435,7 @@ namespace HydroServerTools.Controllers
                             {
                                 if (index == 0)
                                 {
-                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<ISOMetadataModel>(connectionString, id, listOfRecords);
+                                    await HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<ISOMetadataModel>(connectionString, id, listOfRecords, null);
                                 }
                                 else
                                 {
@@ -444,7 +457,7 @@ namespace HydroServerTools.Controllers
                             {
                                 if (index == 0)
                                 {
-                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<SourcesModel>(connectionString, id, listOfRecords);
+                                    await HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<SourcesModel>(connectionString, id, listOfRecords, null);
                                 }
                                 else
                                 {
@@ -466,7 +479,7 @@ namespace HydroServerTools.Controllers
                             {
                                 if (index == 0)
                                 {
-                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<MethodModel>(connectionString, id, listOfRecords);
+                                    await HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<MethodModel>(connectionString, id, listOfRecords, null);
                                 }
                                 else
                                 {
@@ -488,7 +501,7 @@ namespace HydroServerTools.Controllers
                             {
                                 if (index == 0)
                                 {
-                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<LabMethodModel>(connectionString, id, listOfRecords);
+                                    await HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<LabMethodModel>(connectionString, id, listOfRecords, null);
                                 }
                                 else
                                 {
@@ -510,7 +523,7 @@ namespace HydroServerTools.Controllers
                             {
                                 if (index == 0)
                                 {
-                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<SampleModel>(connectionString, id, listOfRecords);
+                                    await HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<SampleModel>(connectionString, id, listOfRecords, null);
                                 }
                                 else
                                 {
@@ -532,7 +545,7 @@ namespace HydroServerTools.Controllers
                             {
                                 if (index == 0)
                                 {
-                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<QualifiersModel>(connectionString, id, listOfRecords);
+                                    await HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<QualifiersModel>(connectionString, id, listOfRecords, null);
                                 }
                                 else
                                 {
@@ -554,7 +567,7 @@ namespace HydroServerTools.Controllers
                             {
                                 if (index == 0)
                                 {
-                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<QualityControlLevelModel>(connectionString, id, listOfRecords);
+                                    await HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<QualityControlLevelModel>(connectionString, id, listOfRecords, null);
                                 }
                                 else
                                 {
@@ -576,7 +589,7 @@ namespace HydroServerTools.Controllers
                             {
                                 if (index == 0)
                                 {
-                                     HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<DataValuesModel>(connectionString, id, listOfRecords);
+                                    await HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<DataValuesModel>(connectionString, id, listOfRecords, null);
                                 //update Seriescatalog
                                 
                                 //    var seriesCatalogRepository = new SeriesCatalogRepository();
@@ -608,7 +621,7 @@ namespace HydroServerTools.Controllers
                             {
                                if (index == 0)
                                 {
-                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<GroupDescriptionModel>(connectionString, id, listOfRecords);
+                                    await HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<GroupDescriptionModel>(connectionString, id, listOfRecords, null);
                                 }
                                 else
                                 {
@@ -629,7 +642,7 @@ namespace HydroServerTools.Controllers
                             {
                                 if (index == 0)
                                 {
-                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<GroupsModel>(connectionString, id, listOfRecords);
+                                    await HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<GroupsModel>(connectionString, id, listOfRecords, null);
                                 }
                                 else
                                 {
@@ -650,7 +663,7 @@ namespace HydroServerTools.Controllers
                             {
                                if (index == 0)
                                 {
-                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<DerivedFromModel>(connectionString, id, listOfRecords);
+                                    await HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<DerivedFromModel>(connectionString, id, listOfRecords, null);
                                 }
                                 else
                                 {
@@ -671,7 +684,7 @@ namespace HydroServerTools.Controllers
                             {
                                if (index == 0)
                                 {
-                                    HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<CategoriesModel>(connectionString, id, listOfRecords);
+                                    await HydroServerToolsRepository.Repository.RepositoryUtils.CommitNewRecords<CategoriesModel>(connectionString, id, listOfRecords, null);
                                 }
                                 else
                                 {

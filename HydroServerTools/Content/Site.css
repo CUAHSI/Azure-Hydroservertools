@@ -240,6 +240,15 @@ table
     user-select: none;
 }
 
+/* Uploader border styles... */
+.uploader-border {
+    border: 2px dotted #A5A5C7;
+    color: #92AAB0;
+    padding: 30px 0px;
+    margin-bottom: 10px;
+    cursor: default;
+}
+
 /* CSS for rotating glyphicons...
 	Source: http://stackoverflow.com/questions/19364726/issue-making-bootstrap3-icon-spin - answer 28
 */
