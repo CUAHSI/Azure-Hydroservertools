@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+using System.Text;
 
 using System.Threading;
 using System.Threading.Tasks;
 
-//A simple class for the automatic release of a SemaphoneSlim instance from within a 'using' block
-//Source: http://www.tomdupont.net/2016/03/how-to-release-semaphore-with-using.html
-
-namespace HydroServerTools.Utilities
+namespace HydroServerToolsUtilities
 {
+    //A simple class for the automatic release of a SemaphoneSlim instance from within a 'using' block
+    //Source: http://www.tomdupont.net/2016/03/how-to-release-semaphore-with-using.html
     public static class SemaphoreSlimExtensions
     {
         public static async Task<IDisposable> UseWaitAsync(

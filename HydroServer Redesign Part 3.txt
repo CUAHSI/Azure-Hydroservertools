@@ -1,0 +1,119 @@
+
+HydroServer Redesign Part 3
+
+**** Summary ****
+
+ - Additions in the following areas:
+   - First implementation - Summary Report Page
+
+
+**** .vs ****
+ - Visual Studio 2017 adds some directories and storage.ide 
+
+
+**** HydroServerTools/App_Start ****
+ - WebApiConfig.cs 
+    - Update comments
+    - Add RevisedUploadController route: .../get/dbloadresults/...
+    - Change  RevisedUploadController route from: .../deletefile/... 
+				       to:     .../delete/file/... 
+
+
+**** HydroServerTools/Controllers/api ****
+ - RevisedUploadController.cs
+   - New GET method: GetDbLoadResults(...)
+   - Update comments
+
+
+**** HydroServerTools/fonts ****
+ - Visual Studio 2017 adds various glyphicon files
+
+
+**** HydroServerTools/Views/CSVUpload ****
+ - DbSummaryReport.cshtml
+   - Comment out test table rows
+   - Add logic for db load results retrieval and display
+ - DragAndDropFiles.cshtml 
+   - Update for .../delete/file/... API changes
+   - Update comments
+ - ValidateFiles.cshtml
+   - Correct comment spelling
+
+
+**** HydroServerToolsUtilities **** 
+ - New project and files
+   - SemaphoreSlimExtensions.cs (relocated here) 
+   - StatusContext.cs 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

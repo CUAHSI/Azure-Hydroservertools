@@ -215,6 +215,48 @@ namespace HydroServerTools.Controllers.api
             return response;
         }
 
+        //Get DB Load Results method...
+        //GET api/revisedupload/get/dbloadresults/{uploadId}
+        //Web API feature: Have to name the input variable 'uploadId' to satisfy the router!!!
+        //See WebApiConfig.cs for custom route...
+        [HttpGet]
+        public async Task<HttpResponseMessage> GetDbLoadResults(string uploadId)
+        {
+            HttpResponseMessage response = new HttpResponseMessage();
+            HttpStatusCode httpStatusCode = HttpStatusCode.OK;  //Assume success...
+
+            //Validate/initialize input parameters
+            if (String.IsNullOrWhiteSpace(uploadId))
+            {
+                response.StatusCode = HttpStatusCode.BadRequest;    //Missing/invalid parameter(s) - return early
+                response.ReasonPhrase = "Invalid parameter(s)";
+                return response;
+            }
+
+            var dbLoadContexts = getDbLoadContexts();
+            if (!dbLoadContexts.ContainsKey(uploadId))
+            {
+                response.StatusCode = HttpStatusCode.BadRequest;    //Unknown uploadId - return early
+                response.ReasonPhrase = "Unknown upload id...";
+                return response;
+            }
+
+            //Input parameter(s) valid - retrieve db load context
+            DbLoadContext dbLoadContext = dbLoadContexts[uploadId];
+            using (await dbLoadContext.DbLoadSemaphore.UseWaitAsync())
+            {
+                //Db load context found - convert db load results to JSON, if indicated...
+                var results = dbLoadContext.DbLoadResults;
+                string jsonData = (0 < results.Count) ? Newtonsoft.Json.JsonConvert.SerializeObject(results) : Newtonsoft.Json.JsonConvert.SerializeObject("{}");
+
+                response.StatusCode = httpStatusCode;
+                response.Content = new StringContent(jsonData, System.Text.Encoding.UTF8, "application/json");
+            }
+
+            //Processing complete - return response
+            return response;
+        }
+
         //Put method
         //PUT api/revisedupload/put/{uploadId}
         //Web API feature: Have to name the input variable 'uploadId' to satisfy the router!!!
@@ -576,7 +618,7 @@ namespace HydroServerTools.Controllers.api
 
 
         //Delete the input file per the input uploadId...
-        //DELETE api/revisedupload/deletefile/{uploadId}/{fileName}
+        //DELETE api/revisedupload/delete/file/{uploadId}/{fileName}
         [HttpDelete]
         public async Task<HttpResponseMessage> DeleteFile(string uploadId, string fileName)
         {

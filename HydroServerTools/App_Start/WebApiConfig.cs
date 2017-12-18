@@ -24,13 +24,21 @@ namespace HydroServerTools
             //    defaults: new { id = RouteParameter.Optional }
             //);
 
-            //Define custom routes for Get and Put taking a parameter 
-            //that is not named 'Id' (thus different from the DefaultApi)
+            //Define a custom route taking a parameter that is not named 'Id' 
+            // (thus different from the DefaultApi)
             config.Routes.MapHttpRoute(
                 name: "RevisedUploadApiGet",
                 routeTemplate: "api/revisedupload/get/{uploadId}",
                 defaults: new { controller = "RevisedUpload", action = "Get" });
 
+            //Get Summary Report Route
+            config.Routes.MapHttpRoute(
+                name: "RevisedUploadApiGetDbLoadResults",
+                routeTemplate: "api/revisedupload/get/dbloadresults/{uploadId}",
+                defaults: new { controller = "RevisedUpload", action = "GetDbLoadResults" });
+
+            //Define a custom route taking a parameter that is not named 'Id' 
+            // (thus different from the DefaultApi)
             config.Routes.MapHttpRoute(
                 name: "RevisedUploadApiPut",
                 routeTemplate: "api/revisedupload/put/{uploadId}",
@@ -45,7 +53,7 @@ namespace HydroServerTools
             //Delete route taking two parameters...
             config.Routes.MapHttpRoute(
                 name: "RevisedUploadApiDeleteFile",
-                routeTemplate: "api/revisedupload/deletefile/{uploadId}/{fileName}",
+                routeTemplate: "api/revisedupload/delete/file/{uploadId}/{fileName}",
                 defaults: new { controller = "RevisedUpload", action = "DeleteFile" });
 
             RouteTable.Routes.MapHttpRoute(

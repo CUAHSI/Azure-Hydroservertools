@@ -59,7 +59,7 @@
 
     <!-- Test rows - hidden -->
     <!-- TEST row... -->
-    <table class="hidden">
+    @*<table class="hidden">
         <!-- TEST row... -->
         <tbody>
             <tr class="templateTableRow">
@@ -110,6 +110,115 @@
                 <td class="col-md-2 text-center"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-danger buttonRejected">25</button></td>
             </tr>
         </tbody>
-    </table>
+    </table>*@
+
+<script type="text/javascript">
+
+    //Add table rows for db load results...
+    function buildSummaryReportMarkup(tableDivId, dbLoadResults) {
+        //Validate/initialize input parameters...
+        if (('undefined' !== typeof tableDivId && null != tableDivId) &&
+            ('undefined' !== typeof dbLoadResults && null != dbLoadResults)) {
+
+            //Input parameters valid - select table and clear contents, if any...
+            var jqSumRptTable = $('div#' + tableDivId + ' table tbody');
+            var jsSumRptRowTemplate = $('.templateTableRow'); 
+
+            jqSumRptTable.empty();
+
+            //For each db load result...
+            var length = dbLoadResults.length;
+            for (var i = 0; i < length; ++i) {
+                var dbLoadResult = dbLoadResults[i];
+
+                //Clone table row template...
+                var newTableRow = jsSumRptRowTemplate.clone();
+                newTableRow.removeClass('hidden');
+                //Set table name column
+                newTableRow.find('.spanTableName').text(dbLoadResult.TableName);
+
+                //Set remaining columns...
+                var columns = ['Inserted', 'Updated', 'Rejected'];
+                var columnsLength = columns.length;
+
+                //For each remaining column...
+                for (var cI = 0; cI < columnsLength; ++cI) {
+                    var column = columns[cI];
+                    var tempSpan = newTableRow.find('.span' + column);
+                    var tempButton = newTableRow.find('.button' + column);
+
+                    //Hide each parent 'td'
+                    tempSpan.parent().addClass('hidden');
+                    tempButton.parent().addClass('hidden');
+
+                    //Set/show column per associated db load count value...
+                    var loadCount = dbLoadResult.LoadCounts[column];
+                    if (0 < loadCount) {
+                        //Positive count - set and show the button
+                        tempButton.text(loadCount);
+                        tempButton.parent().removeClass('hidden');
+                    }
+                    else {
+                        //Zero count - set and show the span
+                        tempSpan.text(loadCount);
+                        tempSpan.parent().removeClass('hidden');
+                    }
+                }
+
+                //Append row to table...
+                jqSumRptTable.append(newTableRow);
+            }
+        }
+    }
+
+    //Retrieve DB Load Results Report values for the input uploadId...
+    function getDbLoadResults(currentUploadId) {
+        //Validate/initialize input parameters...
+        if ('undefined' !== typeof currentUploadId && null !== currentUploadId) {
+            //Input parameters valid - set url...
+            var url = '/api/revisedupload/get/dbloadresults/' + currentUploadId + '/';
+
+            $.ajax({
+                "url": url,
+                "type": "GET",
+                "async": true,
+                "dataType": "json",
+                "cache": false, //So IE does not cache when calling the same URL - source: http://stackoverflow.com/questions/7846707/ie9-jquery-ajax-call-first-time-doing-well-second-time-not
+                "success": function (data, textStatus, jqXHR) {
+                    console.log('RevisedUpload GET/dbloadresults success!!');
+                    var dbLoadResults = data;
+                    var length = dbLoadResults.length;
+                    console.log('getDbLoadResults(...) dbLoadResults.length = ' + length);
+                    for (var i = 0; i < length; ++i) {
+                        console.log("Load results for: " + dbLoadResults[i].TableName);
+                    }
+
+                    //Display db load results...
+                    buildSummaryReportMarkup('divDbLoadResults', dbLoadResults);
+                },
+                "error": function (xmlhttprequest, textStatus, message) {
+                    //Failure - Log messsage received from server...
+                    console.log('RevisedUpload GET/dbloadresults reports error: ' + xmlhttprequest.status + ' (' + message + ')');
+                }
+            });
+        }
+    }
+
+    $(document).ready(function () {
+        console.log('DB Summary Report - document ready called!!');
+
+        //Retrieve current upload Id...
+        var currentUploadId = sessionStorage.currentUploadId;
+        console.log('DB Summary Report retrieves upload Id: ' + currentUploadId);
+
+        //Queue retrieval of db load results...
+        setTimeout(function () {
+            getDbLoadResults(currentUploadId);
+        }, 100);
+
+    });
+
+</script>
+
 
 </div>
