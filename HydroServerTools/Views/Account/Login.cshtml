@@ -2,7 +2,7 @@
 
 @{
     ViewBag.Title = "Log in";
-    Layout = null;
+    Layout = "~/Views/Shared/_LayoutSimple.cshtml";
     var message = @TempData["message"];
 }
 
@@ -22,35 +22,19 @@
 
 </script>
 <div class="container ">
-    <div>
-    <img src="~/Images/Hydroserver/HydroserverLogo.png" class="center img-thumbnail" style="border:0px; vertical-align:top; padding:10px" />
-</div>
-    <div class="row drop-shadow">
+  
+    @*<div class="row drop-shadow">*@
         
-        <div class="navbar navbar-inverse ">
+        
 
-            <div class="navbar-header ">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                   
-                </button>
-                
-             
-            </div>
+      
             @*<ul class="nav  navbar-nav">
                 
                 <li>@Html.ActionLink("Contact", "Contact", "Home", new { area = "" }, null)</li>
                 <li>@Html.ActionLink("Templates", "Templates", "Home", new { area = "" }, null)</li>
                 <li>@Html.ActionLink("Controlled Vocabularies", "ControlledVocabularies", "Home", new { area = "" }, null)</li>
             </ul>*@
-            @if (User.Identity.IsAuthenticated)
-            {
-                @Html.Partial("_LoginPartial")
-                @Html.ActionLink("Sign-out", "SignOut", "Account", new { @class = "btn btn-info navbar navbar-inverse", @id = "logout" })
-
-            }
+           
         </div>
 
 
@@ -100,7 +84,7 @@
                 <div class="thumbnail">
                     @*<img src="http://placehold.it/320x200" alt="ALT NAME">*@
                     <div class="caption selectbox">
-                        <p align="center"><h2><u>Need more information</u></h2></p>
+                        <p align="center"><h2><u>More information</u></h2></p>
                          <br />
                        
                         <p align="right"><a href="#" class="btn btn-primary btn-block " id="dialog">Help</a></p><br />
@@ -109,11 +93,11 @@
             </div>
             @*</ul>*@
 
-        </div>
+        
         
     
-    <footer class="navbar-header ">Copyright &copy; CUAHSI 2017 </footer>
-</div>
+  
+
 
         @*<h2>@ViewBag.Title.</h2>
         <div class="container">

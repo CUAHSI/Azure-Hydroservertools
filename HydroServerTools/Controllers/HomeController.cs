@@ -126,8 +126,10 @@ namespace HydroServerTools.Controllers
         public ActionResult GoogleForm()
         {
             ViewBag.Message = "";
-            //var user = User.Identity.Name;
-            return View();
+            
+            //UserRegistrations/Create
+            
+            return RedirectToAction("Create", "UserRegistrations");
         }
         [AllowAnonymous]
         public ContentResult _GoogleFormIframe()

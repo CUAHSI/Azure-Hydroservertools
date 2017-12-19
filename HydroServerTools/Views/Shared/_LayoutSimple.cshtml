@@ -1,0 +1,88 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - HydroServerTools</title>
+    @Styles.Render("~/Content/css")
+    @*@Scripts.Render("~/bundles/modernizr")*@
+    
+    @RenderSection("styles", required: false)
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/jquery-ui-1.10.3.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/purl.js"></script>
+    <script src="~/Scripts/bootbox.min.js"></script>
+    @*<script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
+    <script src="/signalr/hubs"></script>
+    <script>
+
+    $(function() {
+        // Save the reference to the SignalR hub
+        var theHub = $.connection.yourAppHub;
+
+        // Invoke the function to be called back from the server
+        // when changes are detected
+        
+        // Start the SignalR client-side listener
+        $.connection.hub.start().done(function () {
+            // Do here any initialization work you may need
+            
+        });
+    });
+    </script>*@
+
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <img src="~/Images/Hydroserver/HydroserverLogo.png" class="center img-thumbnail" style="border:0px; vertical-align:top"/>
+        </div>
+    </div>
+    <div class="navbar navbar-inverse">
+        <div class="container">
+            <div class="navbar-header ">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                
+        </div>
+            <div class="navbar-collapse collapse ">
+                @if (User.Identity.IsAuthenticated)
+                {
+
+
+                    if (User.Identity.IsAuthenticated)
+                    {
+                         @Html.Partial("_LoginPartial")
+
+                         @Html.ActionLink("Sign-out", "SignOut", "Account", new { @class = "btn btn-info", @id = "logout" })
+
+                    }
+                }
+            </div>
+        </div>
+    </div>
+  
+    <div class="container body-content">
+      
+          @RenderBody()
+      
+    </div>
+    <div class="container">
+        <footer>
+            <hr />
+            <p><a href="https://github.com/CUAHSI/Azure-Hydroservertools/issues" class="h5" target="_blank">Report a bug here!</a><span style="float:right"> &copy; @DateTime.Now.Year - &copy; CUAHSI Version 1.2.5</span></p>
+
+        </footer>
+    </div>
+   @* @Scripts.Render("~/bundles/jquery")*@
+    @*@Scripts.Render("~/bundles/bootstrap")*@
+
+  
+    @RenderSection("scripts", required: false)
+  
+</body>
+</html> 

@@ -57,15 +57,13 @@
       <HintPath>..\packages\Elmah.MVC.2.1.1\lib\net40\Elmah.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.Extended">
       <HintPath>..\packages\EntityFramework.Extended.6.1.0.168\lib\net45\EntityFramework.Extended.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
@@ -282,6 +280,7 @@
     <Compile Include="Areas\Admin\Models\RolesViewModel.cs" />
     <Compile Include="Areas\Admin\Controllers\ConnectionParametersController.cs" />
     <Compile Include="Areas\Admin\Controllers\ConnectionParametersUsersController.cs" />
+    <Compile Include="Controllers\UserRegistrationsController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\api\UploadController.cs" />
     <Compile Include="Controllers\CSVUploadController.cs" />
@@ -501,6 +500,11 @@
     <Content Include="Areas\Admin\Views\ConnectionParametersUsers\Details.cshtml" />
     <Content Include="Areas\Admin\Views\ConnectionParametersUsers\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\ConnectionParametersUsers\Index.cshtml" />
+    <Content Include="Views\UserRegistrations\Create.cshtml" />
+    <Content Include="Views\UserRegistrations\Delete.cshtml" />
+    <Content Include="Views\UserRegistrations\Details.cshtml" />
+    <Content Include="Views\UserRegistrations\Edit.cshtml" />
+    <Content Include="Views\UserRegistrations\Index.cshtml" />
     <None Include="Microsoft.WindowsAzure.Caching\ClientPerfCountersInstaller.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -744,6 +748,7 @@
     <Content Include="Views\Home\Default.cshtml" />
     <Content Include="Templates\ODMTemplates.zip" />
     <Content Include="Views\Home\_CountInTables.cshtml" />
+    <Content Include="Views\Shared\_LayoutSimple.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
