@@ -127,11 +127,18 @@ namespace HydroServerTools.Validators
 
         //Methods 
 
-        //Header valid?
-        public bool HeadersValid()
+        //All headers valid?
+        public bool AllHeadersValid()
         {
-            return ((0 >= InvalidHeaderNames.Count) &&  //No invalid headers
-                    (0 < ValidHeaderNames.Count));      //Headers exist
+            return ((0 >= InvalidHeaderNames.Count) &&  //No invalid headers exist
+                    (0 < ValidHeaderNames.Count));      //Valid headers exist
+        }
+
+        //Some headers valid?
+        public bool SomeHeadersValid()
+        {
+            return ((0 < InvalidHeaderNames.Count) &&  //Some invalid headers exist
+                    (0 < ValidHeaderNames.Count));      //Some valid headers exist
         }
 
         //Data valid?
@@ -222,6 +229,45 @@ namespace HydroServerTools.Validators
             list.Add(headerNames[headerNameIndex]);
         }
 
+        //CsvHelper - BadDataFound handler...
+        private static void handlerBadDataFound(IReadingContext iReadingContext, List<CsvDataError> dataErrors)
+        {
+            //Validate/initialize input parameters...
+            if (null != iReadingContext && null != dataErrors)
+            {
+                //Input parameters valid - create and log data error...
+                var index = iReadingContext.CurrentIndex;
+                var fieldName = iReadingContext.HeaderRecord[index];
+                var fieldValue = iReadingContext.Record[index];
+                var message = String.IsNullOrEmpty(fieldValue) ? "empty" : "invalid format";
+
+                var csvDataError = new CsvDataError(String.Format("Field: {0} - {1}", fieldName, message),
+                                                     iReadingContext.RawRecordBuilder.ToString(),
+                                                     iReadingContext.RawRow,
+                                                     index);
+                dataErrors.Add(csvDataError);
+            }
+        }
+
+        //CsvHelper - MissingFieldFound handler...
+        private static void handlerMissingFieldFound(string[] headerNames, int index, IReadingContext iReadingContext, List<CsvDataError> dataErrors )
+        {
+            handlerBadDataFound(iReadingContext, dataErrors);
+        }
+
+        //CsvHelper - ReadingExceptionOccurred handler 
+        private static void handlerReadingExceptionOccurred(Exception ex, List<CsvDataError> dataErrors)
+        {
+            if (null != ex)
+            {
+                ValidationException vex = ex as ValidationException;
+                if (null != vex)
+                {
+                    handlerBadDataFound(vex.ReadingContext, dataErrors);
+                }
+            }
+        }
+
         //Properties...
 
         //Validated model type of records data
@@ -260,6 +306,25 @@ namespace HydroServerTools.Validators
                         //Reading...
                         conf.IgnoreBlankLines = true;
 
+                        //BC - 18-Dec-2017 - Add custom error handling so that 
+                        //  reading of records does not trigger ValidationExceptions...
+                        conf.BadDataFound = context =>
+                        {
+                            //Invoke member handler...
+                            handlerBadDataFound(context, DataErrors);
+                        };
+
+                        conf.MissingFieldFound = (headerNames, index, context) =>
+                        {
+                            //Invoke member handler...
+                            handlerMissingFieldFound(headerNames, index, context, DataErrors);
+                        };
+
+                        conf.ReadingExceptionOccurred = exception =>
+                        {
+                            handlerReadingExceptionOccurred(exception, DataErrors);
+                        };
+
                         //Attempt to read the CSV header..
                         csvReader.Read();
                         if (csvReader.ReadHeader())
@@ -278,12 +343,19 @@ namespace HydroServerTools.Validators
 
                                 csvReader.ValidateHeader(modelType);
 
-                                if (HeadersValid())
+                                if (AllHeadersValid())
                                 {
                                     //Successful validation - set validated type...
                                     ValidatedModelType = modelType;
                                     break;
                                 }
+                                //else if (SomeHeadersValid())
+                                //{
+                                //    //Partially successful validation - 
+                                //    //Assumption: The current model type is correct for the current file 
+                                //    //              but the file header contains error(s)...
+                                //    break;
+                                //}
 
                                 //Unregister map class...
                                 conf.UnregisterClassMap(mapType);
@@ -307,18 +379,20 @@ namespace HydroServerTools.Validators
                                         //NOTE: A sucessful ValidateFileContents() call can find validation error(s) 
                                         //      on one or more records.  Thus the catch block does not set the result
                                         //      indicator...
-                                        var rContext = ex.ReadingContext;
+                                        handlerBadDataFound(ex.ReadingContext, DataErrors);
 
-                                        var index = rContext.CurrentIndex;
-                                        var fieldName = rContext.HeaderRecord[index];
-                                        var fieldValue = rContext.Record[index];
-                                        var message = String.IsNullOrEmpty(fieldValue) ? "empty" : "invalid format";
+                                        //var rContext = ex.ReadingContext;
 
-                                        var csvDataError = new CsvDataError( String.Format("Field: {0} - {1}", fieldName, message ),
-                                                                             rContext.RawRecordBuilder.ToString(),
-                                                                             rContext.RawRow,
-                                                                             index);
-                                        DataErrors.Add(csvDataError);
+                                        //var index = rContext.CurrentIndex;
+                                        //var fieldName = rContext.HeaderRecord[index];
+                                        //var fieldValue = rContext.Record[index];
+                                        //var message = String.IsNullOrEmpty(fieldValue) ? "empty" : "invalid format";
+
+                                        //var csvDataError = new CsvDataError(String.Format("Field: {0} - {1}", fieldName, message),
+                                        //                                     rContext.RawRecordBuilder.ToString(),
+                                        //                                     rContext.RawRow,
+                                        //                                     index);
+                                        //DataErrors.Add(csvDataError);
                                     }
                                 }
                             }

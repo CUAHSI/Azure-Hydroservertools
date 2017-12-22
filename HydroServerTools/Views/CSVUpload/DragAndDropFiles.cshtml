@@ -431,8 +431,12 @@
                         if ('undefined' !== typeof sessionStorage.uploadedFileNames && null !== sessionStorage.uploadedFileNames) {
                             uploadedFileNames = (sessionStorage.uploadedFileNames).split(',');
                         }
-                        uploadedFileNames.push(fileName);
-                        sessionStorage.uploadedFileNames = uploadedFileNames.toString();
+
+                        //Store unique file names only (in case of chunking)
+                        if (-1 == uploadedFileNames.indexOf(fileName)) {
+                            uploadedFileNames.push(fileName);
+                            sessionStorage.uploadedFileNames = uploadedFileNames.toString();
+                        }
                     }
 
                     divStatus.html(status);

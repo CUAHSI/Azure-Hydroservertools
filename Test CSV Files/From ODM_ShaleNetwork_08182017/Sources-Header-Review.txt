@@ -1,0 +1,47 @@
+
+
+
+Sources.csv 
+
+Good Fields:
+
+	SourceCode
+
+	Organization,
+
+	SourceDescription,
+
+	SourceLink,
+
+	ContactName,
+
+	Phone,
+
+	Email,
+
+	Address,
+
+	City,
+
+	State,
+
+	ZipCode,
+
+	Citation,
+
+Missing Fields:
+
+	TopicCategory,	 --added
+
+	Title,		--added
+
+	Abstract,		--added
+
+	ProfileVersion,	--added
+
+	MetadataLink	--added
+
+
+Unknown fields:
+
+	MetadataID,  	--removed

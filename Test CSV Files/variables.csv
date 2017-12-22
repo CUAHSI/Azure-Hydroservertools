@@ -1,3 +1,0 @@
-VariableCode,VariableName,Speciation,VariableUnitsName,SampleMedium,ValueType,IsRegular,TimeSupport,TimeUnitsName,DataType,GeneralCategory,NoDataValue
-RN,Precipitatixxxx,Not Applicable,millimeters per day,Precipitation,Derived Value,TRUE,1,day,Cumulative,Climate,-9999
-FLW,streamflow,Not Applicable,cubic meters per second,Surface Water,Derived Value,TRUE,1,day,Average,Hydrology,-9999

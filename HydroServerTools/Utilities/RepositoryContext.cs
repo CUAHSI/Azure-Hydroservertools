@@ -151,14 +151,15 @@ namespace HydroServerTools.Utilities
                     System.Collections.IList iList = (System.Collections.IList)Activator.CreateInstance(modelListType);
 
                     //Construct validated binary file path and name...
-                    string binFileNameAndPath = pathValidated + validatedFileNamePrefix + "-" + modelType.Name + "-validated.bin";
+                    string binFilePathAndName = pathValidated + validatedFileNamePrefix + "-" + modelType.Name + "-validated.bin";
 
                     using (await RepositorySemaphore.UseWaitAsync())
                     {
                         try
                         {
                             //For the input file stream...
-                            using (var fileStream = new FileStream(binFileNameAndPath, FileMode.Open, FileAccess.Read))
+                            //using (var fileStream = new FileStream(binFileNameAndPath, FileMode.Open, FileAccess.Read))
+                            using (var fileStream = new FileStream(binFilePathAndName, FileMode.Open, FileAccess.Read, FileShare.Read, 65536, true))
                             {
                                 //De-serialize to generic list...
                                 BinaryFormatter binFor = new BinaryFormatter();
@@ -322,12 +323,13 @@ namespace HydroServerTools.Utilities
                                                 System.Collections.IList recordList = paramNamesToLists[kvpair.Key];
 
                                                 //Create file path and name...
-                                                var binFilePathAndName = pathProcessed + validatedFileNamePrefix + "-" +
+                                                var binFilePathAndName_1 = pathProcessed + validatedFileNamePrefix + "-" +
                                                                          modelType.Name + "-" + recordType + ".bin";
                                                 try
                                                 {
                                                     //For the output file stream...
-                                                    using (var fileStream_1 = new FileStream(binFilePathAndName, FileMode.Create))
+                                                    //using (var fileStream_1 = new FileStream(binFilePathAndName_1, FileMode.Create))
+                                                    using (var fileStream_1 = new FileStream(binFilePathAndName_1, FileMode.Create, FileAccess.Write, FileShare.None, 65536, true))
                                                     {
                                                         //Serialize validated records to file stream as binary...
                                                         BinaryFormatter binFor_1 = new BinaryFormatter();

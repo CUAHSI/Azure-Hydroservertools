@@ -1,0 +1,37 @@
+
+
+
+Good Fields:
+
+
+	VariableCode,
+
+	VariableName,
+
+	Speciation,
+
+	VariableUnitsID,
+
+	SampleMedium,
+
+	ValueType,
+
+	IsRegular,
+
+	TimeSupport,
+
+	TimeUnitsID,
+
+	DataType,
+
+	GeneralCategory,
+
+	NoDataValue
+
+Missing Fields:
+
+	VariableUnitsName,	--added
+
+	TimeUnitsName,		--added
+
+	

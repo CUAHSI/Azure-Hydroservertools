@@ -20,6 +20,8 @@ namespace HydroserverToolsBusinessObjects.Models
         public string LocalDateTime { get; set; }
         [Required]
         public string UTCOffset { get; set; }
+        //BC - 21-Dec-2017 - Set required attribute per 'cannot be empty' check in DataValuesRepository.AddDataValues(...)
+        [Required]
         public string DateTimeUTC { get; set; }
 
         [Display(Name = "NotVisible")]//

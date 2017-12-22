@@ -1,0 +1,6 @@
+DataValue,LocalDateTime,UTCOffset,DateTimeUTC,SiteCode,ValueAccuracy,VariableCode,OffsetValue,OffsetTypeCode,CensorCode,QualifierCode,MethodCode,SourceCode,SampleCode,DerivedFromID,QualityControlLevelCode
+254.6124,5/15/2006,0,5/15/2006,66260001,,FLW,,,nc,,2FLW,1FLW,,,2
+245.3763,5/16/2006,0,5/16/2006,66260001,,FLW,,,nc,,2FLW,1FLW,,,2
+245.3763,5/17/2006,0,5/17/2006,66260001,,FLW,,,nc,,2FLW,1FLW,,,2
+245.3763,5/18/2006,0,5/18/2006,66260001,,FLW,,,nc,,2FLW,1FLW,,,2
+241.8113,5/19/2006,0,5/19/2006,66260001,,FLW,,,nc,,2FLW,1FLW,,,2

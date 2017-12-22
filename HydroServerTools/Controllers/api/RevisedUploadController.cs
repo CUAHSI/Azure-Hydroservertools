@@ -545,15 +545,16 @@ namespace HydroServerTools.Controllers.api
                                 //Create output file --OR-- open file for append...
                                 //using (await fileContext.FileSemaphore.UseWaitAsync())
                                 //{
-                                    using (var fileStream = new FileStream(filePathAndName, isFirstChunk ? FileMode.Create : FileMode.Append))
-                                    {
-                                        //Copy content to file...
-                                        await contentStream.CopyToAsync(fileStream);
+                                //using (var fileStream = new FileStream(filePathAndName, isFirstChunk ? FileMode.Create : FileMode.Append))
+                                using (var fileStream = new FileStream(filePathAndName, isFirstChunk ? FileMode.Create : FileMode.Append, FileAccess.Write, FileShare.None, 65536, true))
+                                {
+                                    //Copy content to file...
+                                    await contentStream.CopyToAsync(fileStream, 65536);
 
-                                        //Close all streams...
-                                        fileStream.Close();
-                                        contentStream.Close();
-                                    }
+                                    //Close all streams...
+                                    fileStream.Close();
+                                    contentStream.Close();
+                                }
 
                                     //If the last chunk, queue a validation task for the completed file
                                     if (isLastChunk)
@@ -723,6 +724,83 @@ namespace HydroServerTools.Controllers.api
             return response;
         }
 
+        //Delete all entries and files associated with the input uploadId...
+        //DELETE api/revisedupload/delete/uploadId/{uploadId}
+        [HttpDelete]
+        public async Task<HttpResponseMessage> DeleteUploadId(string uploadId)
+        {
+            HttpResponseMessage response = new HttpResponseMessage();
+            response.StatusCode = HttpStatusCode.OK;    //Assume success
+
+            //Write an empty JSON object to the response
+            //  To avoid 'Unexpected end of JSON input' error in jQuery file download!!
+            response.Content = new StringContent("{}", System.Text.Encoding.UTF8, "application/json");
+
+            //Validate/initialize input parameters
+            if (String.IsNullOrWhiteSpace(uploadId))
+            {
+                response.StatusCode = HttpStatusCode.BadRequest;    //Missing/invalid parameter(s) - return early
+                response.ReasonPhrase = "Invalid parameter(s)";
+                return response;
+            }
+
+            //For input uploadId, remove associated file context and uploaded files, if any...
+            var wildCard = uploadId + "*.*";
+
+            var fileContexts = getFileContexts();
+            FileContext fileContext = null;
+            if ( fileContexts.TryRemove(uploadId, out fileContext))
+            {
+                using (await fileContext.FileSemaphore.UseWaitAsync())
+                {
+                    //Source: https://forums.asp.net/t/1899755.aspx?How+to+delete+files+with+wildcard+
+                    string pathUploads = System.Web.Hosting.HostingEnvironment.MapPath("~/Uploads/");
+                    DirectoryInfo directoryInfo = new DirectoryInfo(pathUploads);
+                    foreach (FileInfo fI in directoryInfo.GetFiles(wildCard))
+                    {
+                        fI.Delete();
+                    }
+                }
+            }
+
+            //For input uploadId, remove associated validation context and validated files, if any...
+            var validationContexts = getValidationContexts();
+            ValidationContext<CsvValidator> validationContext = null;
+            if (validationContexts.TryRemove(uploadId, out validationContext))
+            {
+                using (await validationContext.ValidationResultSemaphore.UseWaitAsync())
+                {
+                    //Source: https://forums.asp.net/t/1899755.aspx?How+to+delete+files+with+wildcard+
+                    string pathValidated = System.Web.Hosting.HostingEnvironment.MapPath("~/Validated/");
+                    DirectoryInfo directoryInfo = new DirectoryInfo(pathValidated);
+                    foreach (FileInfo fI in directoryInfo.GetFiles(wildCard))
+                    {
+                        fI.Delete();
+                    }
+                }
+            }
+
+            //For input uploadId, remove associated db load context and rsults files, if any...
+            var dbLoadContexts = getDbLoadContexts();
+            DbLoadContext dbLoadContext = null;
+            if (dbLoadContexts.TryRemove(uploadId, out dbLoadContext))
+            {
+                using (await dbLoadContext.DbLoadSemaphore.UseWaitAsync())
+                {
+                    //Source: https://forums.asp.net/t/1899755.aspx?How+to+delete+files+with+wildcard+
+                    string pathProcessed = System.Web.Hosting.HostingEnvironment.MapPath("~/Processed/");
+                    DirectoryInfo directoryInfo = new DirectoryInfo(pathProcessed);
+                    foreach (FileInfo fI in directoryInfo.GetFiles(wildCard))
+                    {
+                        fI.Delete();
+                    }
+                }
+            }
+
+            //Processing complete - return
+            return response;
+        }
+
         //An asynchronous method for file content validation...
         //ASSUMPTION: Referenced file is available for read access
         //Source: https://www.dotnetperls.com/async
@@ -799,7 +877,8 @@ namespace HydroServerTools.Controllers.api
                                         try
                                         {
                                             //For the output file stream...
-                                            using (var fileStream = new FileStream(binFilePathAndName, FileMode.Create))
+                                            //using (var fileStream = new FileStream(binFilePathAndName, FileMode.Create))
+                                            using (var fileStream = new FileStream(binFilePathAndName, FileMode.Create, FileAccess.Write, FileShare.None, 65536, true))
                                             {
                                                 //Serialize validated records to file stream as binary...
                                                 BinaryFormatter binFor = new BinaryFormatter();

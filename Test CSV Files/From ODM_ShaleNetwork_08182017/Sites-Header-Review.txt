@@ -1,0 +1,41 @@
+
+
+
+Good Fields:
+
+	SiteCode,
+
+	SiteName,
+
+	Latitude,
+
+	Longitude,
+
+	LatLongDatumID,
+
+	Elevation_m,
+
+	VerticalDatum,
+
+	LocalX,
+
+	LocalY,
+
+	LocalProjectionID,
+
+	PosAccuracy_m,
+
+	State,
+
+	County,
+
+	Comments,
+
+	SiteType
+
+
+Missing Fields:
+
+	LatLongDatumSRSName	--added
+
+	LocalProjectionSRSName	--added

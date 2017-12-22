@@ -25,10 +25,10 @@
                 <ul class="headerListTemplate list-group">
                     <!-- <li> header markup goes here...</li> -->
                 </ul>
-                <h4>Data <span class="badge spanData hidden"></span></h4>
-                <ul class="dataListTemplate list-group">
+                @*<h4>Data <span class="badge spanData hidden"></span></h4>
+                <ul class="dataListTemplate list-group">*@
                     <!-- <li> data markup goes here...</li> -->
-                </ul>
+                @*</ul>*@
             </div>
         </div>
     </div>
@@ -100,9 +100,11 @@
 
                 var msg = 'File: ' + fileName;
 
-                msg += ' - Headers: ' + ((0 >= validation.InvalidHeaderNames.length) ? '<span class="btn-success">valid</span>' : '<span class="btn-danger">invalid</span>');
-                msg += ' - Data: ' + ((0 >= validation.DataErrors.length) ? '<span class="btn-success">valid</span>' : '<span class="btn-danger">invalid</span>'); 
-                 
+                //msg += ' - Headers: ' + ((0 >= validation.InvalidHeaderNames.length) ? '<span class="btn-success">valid</span>' : '<span class="btn-danger">invalid</span>');
+                //msg += ' - Data: ' + ((0 >= validation.DataErrors.length) ? '<span class="btn-success">valid</span>' : '<span class="btn-danger">invalid</span>'); 
+                msg += ' - ' + ((0 >= validation.InvalidHeaderNames.length) ? '<span class="btn-success">valid</span>' : '<span class="btn-danger">invalid</span>');
+
+
                 //toggle.text(msg);
                 toggle.html(msg);
 
@@ -111,7 +113,8 @@
 
                 //If panel contains errors, open, if indicated...
                 if (openErrorPanel &&
-                    ((0 < validation.InvalidHeaderNames.length) || (0 < validation.DataErrors.length))) {
+                    //((0 < validation.InvalidHeaderNames.length) || (0 < validation.DataErrors.length))) {
+                    (0 < validation.InvalidHeaderNames.length)) {
                     newPanel.find('.panel-collapse').addClass('in');
                     openErrorPanel = false;
                 }
@@ -141,29 +144,29 @@
                     }
 
 
-                //Add items to panel data list...
-                panelList = newPanel.find('.dataListTemplate');
-                var dataErrors = validation.DataErrors;
-                var dLength = dataErrors.length;
+                ////Add items to panel data list...
+                //panelList = newPanel.find('.dataListTemplate');
+                //var dataErrors = validation.DataErrors;
+                //var dLength = dataErrors.length;
 
-                if (0 < dLength) {
-                    //Data errors - show count...
-                    var spanData = newPanel.find('.spanData');
-                    spanData.removeClass('hidden');
-                    spanData.text(dLength);
+                //if (0 < dLength) {
+                //    //Data errors - show count...
+                //    var spanData = newPanel.find('.spanData');
+                //    spanData.removeClass('hidden');
+                //    spanData.text(dLength);
 
-                    //Add to list...
-                    for (var dI = 0; dI < dLength; ++dI) {
-                        var dataError = dataErrors[dI];
+                //    //Add to list...
+                //    for (var dI = 0; dI < dLength; ++dI) {
+                //        var dataError = dataErrors[dI];
 
-                        var dMsg = 'Row: ' + dataError.RowIndex + ', Column: ' + dataError.FieldIndex + ' - "' + dataError.Reason + '"';
-                        panelList.append('<li class="list-group-item"> ' + dMsg + '</li>');
-                    }
-                }
-                else {
-                    //No data errors - add data OK message to list...
-                    panelList.append('<li class="list-group-item"> ' + 'No data validation errors reported...' + '</li>');
-                }
+                //        var dMsg = 'Row: ' + dataError.RowIndex + ', Column: ' + dataError.FieldIndex + ' - "' + dataError.Reason + '"';
+                //        panelList.append('<li class="list-group-item"> ' + dMsg + '</li>');
+                //    }
+                //}
+                //else {
+                //    //No data errors - add data OK message to list...
+                //    panelList.append('<li class="list-group-item"> ' + 'No data validation errors reported...' + '</li>');
+                //}
 
                 //Append to panel group...
                 jqPanelGroup.append(newPanel.fadeIn());

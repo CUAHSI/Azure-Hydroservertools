@@ -1,0 +1,71 @@
+
+
+
+Good Fields:
+
+	DataValue,		--in Liza's data file
+
+	ValueAccuracy,		--in Liza's data file
+
+	LocalDateTime,		--in Liza's data file
+
+	UTCOffset,		--in Liza's data file
+
+	DateTimeUTC,		--in Liza's data file
+
+	SiteID,			(marked 'NotVisible' in model class)
+
+	VariableID,		(marked 'NotVisible' in model class)
+
+	OffsetValue,		--in Liza's data file
+
+	OffsetTypeID,		(marked 'NotVisible' in model class)
+
+	CensorCode,		--in Liza's data file
+
+	QualifierID,		(marked 'NotVisible' in model class)
+
+	MethodID,		(marked 'NotVisible' in model class)
+
+	SourceID,			(marked 'NotVisible' in model class)
+
+	SampleID,		(marked 'NotVisible' in model class)
+
+	DerivedFromID,		--in Liza's data file
+
+	QualityControlLevelID	(marked 'NotVisible' in model class)
+
+
+Missing Fields:
+
+
+	ValueId, 			(marked 'NotVisible' in model class)
+
+	SiteCode,			--in Liza's data file
+
+	VariableCode,		--in Liza's data file
+
+	OffsetTypeCode,		--in Liza's data file
+
+	QualifierCode,		--in Liza's data file
+
+	MethodCode,		--in Liza's data file
+
+	MethodDescription,
+
+	SourceCode,		--in Liza's data file
+
+	LabSampleCode,
+
+	SampleCode,		--in Liza's data file
+
+	QualityControlLevelCode	--in Liza's data file
+
+
+	
+
+	
+
+	
+
+		

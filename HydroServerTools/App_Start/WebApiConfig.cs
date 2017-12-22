@@ -56,6 +56,12 @@ namespace HydroServerTools
                 routeTemplate: "api/revisedupload/delete/file/{uploadId}/{fileName}",
                 defaults: new { controller = "RevisedUpload", action = "DeleteFile" });
 
+            //Delete route taking one parameter...
+            config.Routes.MapHttpRoute(
+                name: "RevisedUploadApiDeleteUploadId",
+                routeTemplate: "api/revisedupload/delete/uploadId/{uploadId}",
+                defaults: new { controller = "RevisedUpload", action = "DeleteUploadId" });
+
             RouteTable.Routes.MapHttpRoute(
                name: "DefaultApi",
                routeTemplate: "api/{controller}/{action}/{id}",

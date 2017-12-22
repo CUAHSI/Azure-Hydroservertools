@@ -1,0 +1,643 @@
+MethodDescription,MethodLink,MethodCode
+No method specified,,0
+"filtered, 0.45um, analyzed by ICP-AES",,3
+Flow rate calculated by pressure transducer and HEC-RAS,,4
+"Ba Total, ICP EPA method 200.7",,29
+"Chloride Total, EPA Method 300.0",,30
+"Method RSK-175 for Dissolved Gases (Ethane, Ethylene, and Methane) by a Standard Gas Chromatographic Technique",,31
+"pH water,  EPA Method 150.1",,32
+"Solids, TDS- EPA Method SM2540C",,33
+"Sr Total, ICP EPA Method 200.7",,34
+Bromide was measured on water samples collected from the PWSA Trearment Plant intake on a daily basis.,,35
+Bromide ws measured on water samples collected from the PWSA Trearment Plant intake on a daily basis.,,45
+Model 3001 LTC Levelogger_ Junior,,53
+"Model 3001 LTC Levelogger_ Junior, relative to altitude of 495m",,54
+"Model 3001 LTC Levelogger_ Junior, relative to altitude of 441m",,56
+"ALLARM single endpoint sulfuric acid titration kit, with bromocresol green as indicator",,132
+EM Science pH strips,,133
+Field thermometer,,134
+HACH field kit NI-14 (Cd reduction),,135
+LaMotte Kit 5860 (Winkler titration),,136
+ALLARM protocol,,137
+EMD ColorpHast pH strips,,138
+LaMotte PockeTester Tracer,,139
+www.weather.com,,143
+Dissolved Oxygen Percent Saturation Nomogram,,160
+HACH Test kit Model NI-14 (Cd reduction),,161
+HACH Test Kit Model PO19A,,162
+LaMotte Kit 5860 (Winker titration),,163
+"calculated from Fe, Mn, Al, and alkalinity values",,252
+ECTestr (0-1900 _S) conductivity meter,,253
+Hach 16900 digital titrator,,254
+"Hach Kit, placing 20 mL of sample water in beaker, adding 2 drops of bromocresol green solution, and adding 0.04 N sulfuric acid",,255
+"ICP Spectrometer analysis, .45 micron filter membrane",,256
+"Marsh-McBirny FLO-MATE 2000 electromagnetic current meter, USGS discharge measurements standards",,257
+USGS gaging station,,258
+VWR Scientific SP20 pH meter,,259
+MCAWW 300.0A,,1375
+SM18 2320B,,1376
+SW846 6010B,,1377
+SW846 8020,,1378
+SW846 8021,,1379
+SW846 8022,,1380
+SW846 8023,,1381
+SW846 8024,,1382
+SW846 8030,,1383
+SW846 8031,,1384
+SW846 8032,,1385
+SW846 8033,,1386
+SW846 8034,,1387
+SW846 8035,,1388
+SW846 8036,,1389
+SW846 8037,,1390
+SW846 8038,,1391
+SW846 8040,,1392
+SW846 8041,,1393
+SW846 8042,,1394
+SW846 8043,,1395
+SW846 8044,,1396
+SW846 8045,,1397
+SW846 8047,,1398
+SW846 8048,,1399
+SW846 8051,,1400
+SW846 8052,,1401
+SW846 8054,,1402
+SW846 8055,,1403
+SW846 8057,,1404
+SW846 8058,,1405
+SW846 8059,,1406
+SW846 8060,,1407
+SW846 8064,,1408
+SW846 8065,,1409
+SW846 8066,,1410
+SW846 8067,,1411
+SW846 8068,,1412
+SW846 8069,,1413
+SW846 8070,,1414
+SW846 8073,,1415
+SW846 8074,,1416
+SW846 8075,,1417
+SW846 8077,,1418
+SW846 8078,,1419
+SW846 8079,,1420
+SW846 8080,,1421
+SW846 8082,,1422
+SW846 8083,,1423
+SW846 8084,,1424
+SW846 8085,,1425
+SW846 8086,,1426
+SW846 8087,,1427
+SW846 8088,,1428
+SW846 8089,,1429
+SW846 8090,,1430
+SW846 8091,,1431
+SW846 8092,,1432
+SW846 8094,,1433
+SW846 8095,,1434
+SW846 8096,,1435
+SW846 8097,,1436
+SW846 8098,,1437
+SW846 8099,,1438
+SW846 8100,,1439
+SW846 8101,,1440
+SW846 8102,,1441
+SW846 8105,,1442
+SW846 8106,,1443
+SW846 8107,,1444
+SW846 8108,,1445
+SW846 8260B,,1446
+SW846 8270C,,1447
+SW846 9040,,1448
+SW846 9041,,1449
+SW846 9043,,1450
+SW846 9044,,1451
+SW846 9045,,1452
+SW846 9046,,1453
+SW846 9047,,1454
+SW846 9048,,1455
+SW846 9049,,1456
+SW846 9050,,1457
+SW846 9051,,1458
+SW846 9052,,1459
+SW846 9053,,1460
+SW846 9054,,1461
+SW846 9055,,1462
+SW846 9056,,1463
+SW846 9057,,1464
+SW846 9058,,1465
+SW846 9059,,1466
+SW846 9060,,1467
+SW846 9061,,1468
+SW846 9062,,1469
+SW846 9063,,1470
+SW846 9065,,1471
+SW846 9066,,1472
+SW846 9067,,1473
+SW846 9068,,1474
+SW846 9069,,1475
+SW846 9070,,1476
+SW846 9071,,1477
+SW846 9072,,1478
+SW846 9073,,1479
+SW846 9074,,1480
+SW846 9076,,1481
+SW846 9077,,1482
+SW846 9078,,1483
+SW846 9079,,1484
+SW846 9080,,1485
+SW846 9082,,1486
+SW846 9083,,1487
+SW846 9084,,1488
+SW846 9085,,1489
+SW846 9086,,1490
+SW846 9088,,1491
+SW846 9089,,1492
+SW846 9090,,1493
+SW846 9091,,1494
+SW846 9093,,1495
+SW846 9094,,1496
+SW846 9095,,1497
+SW846 9096,,1498
+SW846 9098,,1499
+SW846 9099,,1500
+SW846 9100,,1501
+SW846 9101,,1502
+SW846 9103,,1503
+SW846 9104,,1504
+SW846 9105,,1505
+SW846 9106,,1506
+SW846 9108,,1507
+SW846 9109,,1508
+SW846 9110,,1509
+SW846 9111,,1510
+SW846 9112,,1511
+SW846 9113,,1512
+SW846 9114,,1513
+SW846 9115,,1514
+SW846 9116,,1515
+SW846 9117,,1516
+SW846 9118,,1517
+SW846 9119,,1518
+SW846 9120,,1519
+SW846 9121,,1520
+SW846 9122,,1521
+SW846 9123,,1522
+SW846 9124,,1523
+SW846 9126,,1524
+SW846 9127,,1525
+SW846 9128,,1526
+SW846 9129,,1527
+SW846 9130,,1528
+SW846 9131,,1529
+SW846 9132,,1530
+SW846 9133,,1531
+SW846 9134,,1532
+Eight individual samples taken at 3-hour intervals were collected from the effluent discharge pipe.  1L nalgene vessels were filled for analysis of inorganic chemicals. Two 50 ml glass vials with teflon caps were filled for analysis of organic chemicals.  Samples were analyzed using EPA methods by R.J. Lee Group Laboratories.,,1534
+Model 3001 LTC Levelogger Junior,,1543
+"Model 3001 LTC Levelogger Junior, with relative altitude of 487m",,1544
+"Model 3001 LTC Levelogger Junior, with relative altitude of 411m",,1545
+APHA 2310B,,1876
+APHA 2320B,,1877
+APHA 2510,,1878
+APHA 2540 C,,1879
+APHA 4500-H+B,,1880
+APHA 5310-D,,1881
+EPA 300,,1882
+SM 20-2321,,1883
+SM 20-2322,,1884
+SM 4500-CO2D,,1885
+USEPA 300.0,,1886
+USEPA 300.1,,1887
+USEPA 6010C,,1888
+USEPA 900,,1889
+USGS TWRI 5-C1,,1890
+"Model 3001 LTC Levelogger Junior, with relative altitude of 527m",,1892
+"0.45 micron filter, acified (nitric acid) for  anaylsis",,2083
+"0.45 micron filter, acified (nitric acid) for metal anaylsis",,2084
+"51 mL of glass-fiber filtered sample, evaporated at 105deg C for 24 hours, then heated at 500 C for 24 hrs",,2085
+"52 mL of glass-fiber filtered sample, evaporated at 105deg C for 24 hours, then heated at 500 C for 24 hrs",,2086
+"53 mL of glass-fiber filtered sample, evaporated at 105deg C for 24 hours, then heated at 500 C for 24 hrs",,2087
+"54 mL of glass-fiber filtered sample, evaporated at 105deg C for 24 hours, then heated at 500 C for 24 hrs",,2088
+A digital titrator used to add counts (1/800 mL( of 1.6 H2SO,,2089
+An aliquot was acified (sulfuric acid) for analysis,,2090
+multimeter,,2091
+"unfiltered, acified (nitric acid) for metal anaylsis",,2092
+Surrogate flow measurement.  The product of width and depth. Not used to compare flows between sites ( ALLARM protocol).,,2095
+Real time raw data,,2108
+"Model 3001 LTC Levelogger Junior, with relative altitude of 693m",,2114
+"Model 3001 LTC Levelogger Junior, with relative altitude of 419m",,2115
+"Model 3001 LTC Levelogger Junior, with relative altitude of 406m",,2116
+"Model 3001 LTC Levelogger Junior, with relative altitude of 407m",,2117
+"Model 3001 LTC Levelogger Junior, with relative altitude of 486m",,2118
+"Model 3001 LTC Levelogger Junior, with relative altitude of 441m",,2119
+"Model 3001 LTC Levelogger Junior, with relative altitude of 431m",,2120
+"Model 3001 LTC Levelogger Junior, with relative altitude of 439m",,2121
+"Model 3001 LTC Levelogger Junior, with relative altitude of 443m",,2122
+"Model 3001 LTC Levelogger Junior, with relative altitude of 646m",,2413
+222Rn content at equilibrium,,2414
+Aminco-Cotlove C1 titrator; dilution by 1000 required,,2415
+"APDC-MIBK extraction, back extraction into HNO3, and atomic-absorption determination",,2416
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 1",,2417
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 10",,2418
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 11",,2419
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 12",,2420
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 13",,2421
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 14",,2422
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 15",,2423
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 16",,2424
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 17",,2425
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 18",,2426
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 19",,2427
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 2",,2428
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 20",,2429
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 21",,2430
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 22",,2431
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 23",,2432
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 24",,2433
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 25",,2434
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 26",,2435
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 27",,2436
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 28",,2437
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 29",,2438
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 3",,2439
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 30",,2440
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 31",,2441
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 32",,2442
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 33",,2443
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 34",,2444
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 35",,2445
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 36",,2446
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 37",,2447
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 38",,2448
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 39",,2449
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 4",,2450
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 5",,2451
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 6",,2452
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 7",,2453
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 8",,2454
+"Beckman Model RC-16C conductivity bridge, probe with cell constant 9",,2455
+calculated from the total dissolved species ,,2456
+"Corning Model 4 meter, calomel combination electrode",,2457
+"Corning Model 4 meter, Pt electrode, calomel reference",,2458
+Dry 50 ml filtered brine from well at 180?C for 1 hour,,2459
+Emission spectrography of dried residues,,2460
+Hypochlorite oxidation and bromine oxidation by titration,,2461
+Hypochlorite oxidation by titration ,,2462
+mercury thermometer,,2463
+Orion F electrode and Orion Model 710A mV meter,,2464
+"Orion sulfide-selective electrode, double junction Ag/AgCl reference; Orion Model 407 or Corning Model 4 meter, calibrated using sulfide standards ",,2465
+Perkin-Elmer Model 703 atomic absorption spectrometer after dilution by 400 ,,2466
+"Pretreatment by passing 100ml through alumina column, elution with ammonia, then passing through cation-exchange column; determination by turbidimetry ",,2467
+Spectraspan III argon plasma emission spectrometer after dilution by 400 or 2000; matrix correction for Na enhancement,,2468
+"Titration with 0.05 H2SO4 using pH meter as above, to pH 4.5 or inflection point",,2469
+"Weigh 25 ml of filtered, non-acidified sample at 25 deg Celsius ",,2470
+YSI Model oxygen meter and YSI 5739,,2471
+CFR136A 1664A HEM,,2556
+MCAWW 120.1,,2557
+MCAWW 365.2,,2558
+MCAWW 410.4,,2559
+SM18 2540 C,,2560
+SM18 5210B,,2561
+SM20 2310B (4a),,2562
+SM20 2340C,,2563
+SM20 2540D,,2564
+SM5540 C,,2565
+SW846 7196A,,2566
+SW846 7470A,,2567
+DEP Lab Color Method,,2676
+EPA Method 1664,,2677
+EPA Method 200.7,,2678
+EPA Method 200.7 EPA 420.4 OR EPA 9066,,2679
+EPA Method 200.8,,2680
+EPA Method 300.0,,2681
+EPA Method 305.1,,2682
+EPA Method 310.1,,2683
+EPA Method 325.2,,2684
+EPA Method 350.1,,2685
+EPA420.4 OR EPA 9066,,2686
+EPA-903.0,,2687
+EPA-Ra-05,,2688
+SM 2310 B,,2689
+SM 2320 B,,2690
+"SM 2340 B, EPA 200.7",,2691
+STD Method (LAB),,2692
+STD Method 2510,,2693
+"30 ml sample, acidified and filtered (0.45 um); analysis by IC (Dionex ICS2500)",,2716
+"30 ml sample, acidified and filtered (0.45 um); analysis by ICP-AES",,2717
+"30 ml sample, acidified and filtered (0.45 um); analysis by ICP-MS",,2718
+gamma-ray spectrometry,,2720
+"Model 3001 LTC Levelogger Junior, with relative altitude of 464m",,2721
+_-spectrometry,,2735
+EPA900.0,,2736
+EPA900.0Mod.,,2737
+EPA901.1Mod.,,2738
+EPA903.0,,2739
+EPA903.1,,2740
+"EPA903.1,904",,2741
+EPA904.0,,2742
+"EPA904.0, Analysis by GPC",,2743
+SM182540C,,2744
+SM2540C,,2745
+"SM2540C, Total Dissolved Solids Dried at 180 Deg C",,2746
+SM7110C;EPA900.0,,2747
+ASTM Method D516-90,,2801
+"ASTM Method D516-90, 02",,2802
+EPA 245.1,,2803
+EPA Method 245.1,,2804
+EPA Method 300.0_28D,,2805
+EPA Method 3810M,,2806
+Isotope Ration Mass Spectrometry (IRMS),,2807
+SM 4500 S2 E,,2808
+"Water samples are collected in new 250-mL polyethylene bottles. The bottles are rinsed three times with stream water before the sample is collected. The samples are sent to ALLARM within two weeks of collection, where they are acidified using 5 ml of concentrated trace element grade nitric acid, and refrigerated (Method EPA 200.2). Samples are then sent to an accredited laboratory (Chemical Solutions, 273 Mulberry Drive, Suite 9, Mechanicsburg, PA) where they are analyzed for barium and strontium using a Perkin-Elmer ICP-MS and EPA Method 200.8.",,2817
+00095- SPECIFIC CONDUCTIVITY @ 25.0 C (reference; SM 2510B),,3202
+00314-BIOCHEMICAL OXYGEN DEMAND INHIBITED 5 DAY (reference; SM 5210B),,3203
+"00403- pH, Lab (Electrometric) (reference; SM 4500H-B)",,3204
+00410- ALKALINITY TOTAL AS CACO3 (TITRIMETRIC) (reference; SM 2320B),,3205
+"00515- RESIDUE, DISSOLVED @ 105 C (reference; USGS-I-1749)",,3206
+00530- TOTAL SUSPENDED SOLIDS (reference; USGS-I-3765),,3207
+00610A- AMMONIA TOTAL AS NITROGEN (reference; EPA 350.1),,3208
+"00630A- NITRATE & NITRITE, TOTAL AS NITROGEN (reference; EPA 353.2)",,3209
+"00665A- PHOSPHORUS, TOTAL AS P (reference; EPA 365.1)",,3210
+00900- Hardness Total (Calculated) (reference; SM 2340A+B and EPA 200.7 revision 4.4),,3211
+"00927A- MAGNESIUM, TOTAL BY TRACE ELEMENTS IN WATERS & WASTES (reference; EPA 200.7 Revision 4.4)",,3212
+"00929A- SODIUM, TOTAL BY TRACE ELEMENTS IN WATERS & WASTES BY (EPA 200.7 Revision 4.4)",,3213
+00940- CHLORIDE BY ION CHROMATOGRAPH (reference; EPA 300.0),,3214
+"01002H- ARSENIC, TOTAL BY TRACE ELEMENTS IN WATERS & WASTES BY (reference; EPA 200.8 Revision 5.4)",,3215
+"01007A- BARIUM, TOTAL BY TRACE ELEMENTS IN WATERS & WASTES BY (reference; EPA 200.7 Revision 4.4)",,3216
+01022K (EPA 200.7 Revision 4.4),,3217
+"01045A- IRON, TOTAL BY TRACE ELEMENTS IN WATERS & WASTES BY ICP (reference; EPA 200.7 Revision 4.4)",,3218
+"01055A- MANGANESE, TOTAL BY TRACE ELEMENTS IN WATERS & WASTES (reference; EPA 200.7 Revision 4.4)",,3219
+01082A- STRONTIUM TOTAL REPORTED (reference; EPA 200.7 Revision 4.4),,3220
+"01092A- ZINC, TOTAL BY TRACE ELEMENTS IN WATERS & WASTES BY ICP (EPA 200.7 Revision 4.4)",,3221
+"01105A- ALUMINUM, TOTAL BY TRACE ELEMENTS IN WATERS & WASTES (reference; EPA 200.7 Revision 4.4)",,3222
+01132A- LITHIUM TOTAL REPORTED (reference; EPA 200.7 Revision 4.4),,3223
+"01147H- SELENIUM, TOTAL BY TRACE ELEMENTS IN WATERS & WASTES (reference; EPA 200.8 Revision 5.4)",,3224
+1304- SULFATE BY ION CHROMATOGRAPH (reference; EPA 300.0),,3225
+38260 (reference; SM5540C),,3226
+"70300- RESIDUE, TOTAL FILTERABLE at 180 C (reference; USGS-I-1750)",,3227
+70300U,,3228
+71870- BROMIDE BY ION CHROMATOGRAPHY (reference; EPA 300.0),,3229
+82079A (reference; EPA 180.1),,3230
+"82550- OSMOTIC PRESSURE, MOS/KG (reference; DEP BOL)",,3231
+99020 (reference; EPA 300.0),,3232
+"DEP_SAC046_Ca- CALCIUM, TOTAL BY TRACE ELEMENTS IN WATERS & WASTES BY (reference; EPA 200.7)",,3233
+"analyzed using dual gas chromotagraphy at the USGS Chlorofluorocarbon Laboratory (Reston, Va), ",,3234
+ASTM D6919-03,,3292
+EPA1664A,,3293
+EPA200.7,,3294
+EPA245.1,,3295
+EPA300.0,,3296
+EPA410.4,,3297
+EPA420.1,,3298
+EPA8015M,,3299
+EPA8260B,,3300
+SM2320B,,3301
+SM2340C,,3302
+SM23l0B,,3303
+SM2510B,,3304
+SM254OD,,3305
+SM45O0Norg,,3306
+SM45OOH+B,,3307
+SM5210B,,3308
+SM554OC,,3309
+SM7500-U A-B,,3310
+"13C:12C ratio- Isotech (Isotech Laboratories, Inc., 2005)",,3432
+"13C:12C ration- USGS-RSIL (McCrea, 1950; http://isotopes.usgs.gov/Methods.htm",,3433
+"13C:12C ration- USGS-RSIL (McCrea, 1950; http://isotopes.usgs.gov/Methods.htm)",,3434
+18O:16:O- USGS-RISL (Epstein and Mayeda; http://isotopes.usgs.gov/Methods.htm),,3435
+"2H:1H- Isotech (Isotech Laboratories, Inc., 2005)  ",,3436
+"2H:1H- USGS-RSIL (Coplen and others, 1991; http://isotopes.usgs.gov/Methods.htm)",,3437
+"Carbon-14, Isotech (www.isotechlabs.com/analytical/radiogenic_gas.htm)",,3438
+"Gas, concentration dissolved in water- USGS-RDGL (Busenberg and others, 1998)",,3439
+"Gas, volume fraction- Isotech (Isotech Laboratories, Inc., 2005)",,3440
+"Incremental titration- USGS Laboratory, New Cumberland",,3441
+USGS protocols for data collection (http://water.usgs.gov/owq/FieldManual/),,3442
+analyzed using atomic absorption spectroscopy (AAS) by Dr. Demorta at Loch Haven University,,3461
+Hach sensIon5 Conductivity meter,,3462
+HACH single parameter probe,,3463
+Samples filtered (0.45 micron filter). Analyzed using COD Reactor and Spectrophotometer.,,3464
+Samples filtered (0.45 micron filter). Analyzed using DR 5000 HACH Spectrophotometer ,,3465
+Samples filtered (0.45 micron filter). Analyzed using DR 5000 HACH Spectrophotometer or titration,,3466
+Samples filtered (0.45 micron filter). Analyzed using DR 5000 HACH Spectrophotometer.,,3467
+Samples filtered (0.45 micron filter). Analyzed using sequential titration,,3468
+unknown,,3469
+Analyzed at Summit Environmental Technologies,,3812
+"Analyzed at Summit Environmental Technologies, EPA 200.7",,3813
+"Analyzed at Summit Environmental Technologies, EPA 300.0",,3827
+"Analyzed at Summit Environmental Technologies, EPA 900.0",,3828
+"Analyzed at Summit Environmental Technologies, GC/FID",,3829
+"Analyzed at Summit Environmental Technologies, INC. SM 2310 B",,3830
+"Analyzed at Summit Environmental Technologies, SM 2300 B",,3831
+"Analyzed at Summit Environmental Technologies, SM 2540 C",,3832
+"Analyzed at Summit Environmental Technologies, SM 2540 D",,3833
+Flow measured by Frostburg Water Treatment Center,,3834
+Hach Turbidimeter used in field,,3835
+ICP-MS by Dr. Johan Schijf at the University of Maryland,,3836
+YSI pH10 Meter used in the field,,3837
+YSI Pro 30 used in the field,,3838
+YSI ProODO used in the field,,3839
+Datum reported as  zero; no detection limits noted. PFGC used Standard Methods  for the Examination of Water and Wastewater (14 Ed.).,,3866
+PFGC used Standard Methods  for the Examination of Water and Wastewater (14 Ed.).,,3867
+pH8-cold acidity to pH8;  PFGC used Standard Methods  for the Examination of Water and Wastewater (14 Ed.).,,3874
+pH4- Acidity to pH4;  PFGC used Standard Methods  for the Examination of Water and Wastewater (14 Ed.).,,3875
+pH8-hot acidity to pH8;  PFGC used Standard Methods  for the Examination of Water and Wastewater (14 Ed.).,,3876
+ PFGC used Standard Methods  for the Examination of Water and Wastewater (14 Ed.).,,3877
+Broome Tioga: depth of water from stage,,3943
+"Broome Tioga: LaMotte Tracer PockeTester, ALLARM sampling protocol",,3944
+Broome Tioga: stream width x water depth,,3945
+Concerned Citizens of Cattaraugus County: depth of water from stage,,3946
+"Concerned Citizens of Cattaraugus County: LaMotte Tracer PockeTester, ALLARM sampling protocol",,3947
+Concerned Citizens of Cattaraugus County: stream width x water depth,,3948
+Norwich: depth of water from stage,,3949
+"Norwich: LaMotte Tracer PockeTester, ALLARM sampling protocol",,3950
+Norwich: stream width x water depth,,3951
+Painted Post: depth of water from stage,,3952
+"Painted Post: LaMotte Tracer PockeTester, ALLARM sampling protocol",,3953
+Painted Post: stream width x water depth,,3954
+Samples collected following ALLARM Protocol. Analyzed at IsleChem LLC.,,3955
+Sampling followed USGS Reston Chlorofluorocarbon Laboratory protocol for dissolved gases. Samples and QA/QC standards were analyzed using a Hewlett Packard model 5890 GC (http://water.usgs.gov/lab/dissolved-gas/lab/analytical_procedures/),,3958
+"During purging of well, field measurements made using a Orion Star A329 portable multiparameter meter.",,3979
+"Sample collected in polyethylene bottles, unfiltered, after purging.  Analyzed colorimetrically by titration (HACH Company, 2012b).",,3980
+"Sample collected in polyethylene bottles, unfiltered, after purging. Alkalinity measured using a digital titrator with sulfuric acid (HACH Company, 2008).",,3981
+"Sample collected in polyethylene bottles, unfiltered, after purging. Analyzed colorimetrically by titration using a test kit with a minimum reporting lime of 10 mg/L (HACH Company, 2012a).",,3982
+"Well purged before collection. Samples collected in two 40 mL glass vials. Samples were shipped to ALS Environmental in Middletown, PA for analysis. The constituents analyzed were dissolved methane, propane, ethane, and ethene concentrations using the headspace method (RSK-175). Towards the end of the sampling portion of the study, the laboratory analyses also included n-butane and isobutane.",,3983
+MCAWW 180.1,,4000
+MCAWW 350.1,,4002
+MCAWW 351.3,,4003
+MCAWW 353.2,,4004
+SM20 5310B,,4005
+SW846 9030B/9034,,4009
+MCAWW  180.1,,4020
+MCAWW  300.0A,,4021
+MCAWW  350.1,,4022
+MCAWW  351.3,,4023
+MCAWW  353.2,,4024
+"Analyzed at Isotech Laboratories using a custom-configured Carle Gas Chromatograph (GC), based on the ASTM D1945 method.",,4346
+Analyzed using an offline preparation system and duel inlet mass spectrometer at Isotech Laboratories.,,4347
+Collected in 30 mL capped class serum vials with no head space and preserved with CuCl2 to prevent microbial degradation. Determined on a ThermoQuest Finnigan Delta Plus XL continuous-flow gas ratio mass spectrometer.,,4348
+Collected in 30 mL glass scintillation vials with no head space. Measurements compiled on a Finnigan Delta S gas-source isotope ratio mass spectrometer.,,4349
+Monitored during purging of well,,4350
+"Oakton 110 series pH meter and Ross Combination electrode (precision, +/-0.01 pH units)",,4351
+"Samples filtered through a 0.45 micrometer nylon filter, collected in 30 mL HDPE bottle with no headspace and preserved with concentrated HNO3. Chemistry determined by Perkin Elmer Inductively Coupled Plasma Optical Emission Spectrometer (ICP-OES) Model Optima 5300 DV.",,4352
+"Samples filtered through a 0.45 micrometer nylon filter, collected in 30 mL HDPE bottle with no headspace. Alkalinity was measured by the Gran-Alk titration method within 12 hours of sampling.",,4353
+"Samples filtered through a 0.45 micrometer nylon filter, collected in 30 mL HDPE bottle with no headspace. Chemistry determined  by a Dionex Ion Chromatograph Model ICS-3000 with an AS23 column.",,4354
+"USGS- 00010 parameter code, THM01 method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4576
+"USGS- 00095 parameter code, SC001 method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4577
+"USGS- 00400 parameter code, PROBE method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4578
+"USGS- 00405 parameter code, GC152  method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4579
+"USGS- 00597 parameter code, GC153 method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4580
+"USGS- 00915 parameter code, PLA11  method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4581
+"USGS- 00925 parameter code, PLA11 method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4582
+"USGS- 00930 parameter code, PLA11 method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4583
+"USGS- 00935 parameter code, PLOO3 method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4584
+"USGS- 00940 parameter code, IC022  method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4585
+"USGS- 00945 parameter code, IC022 method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4586
+"USGS- 00950 parameter code, ISE05 method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4587
+"USGS- 00955 parameter code, PLA11 method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4588
+"USGS- 01000 parameter code, PLM10  method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4589
+"USGS- 01005 parameter code, PLM43  method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4590
+"USGS- 01010 parameter code, PLM43  method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4591
+"USGS- 01020 parameter code, PLM40  method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4592
+"USGS- 01025 parameter code, PLM43  method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4593
+"USGS- 01030 parameter code, PLM10 method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4594
+"USGS- 01040 parameter code, PLM10  method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4595
+"USGS- 01040 parameter code, PLM10 method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4596
+"USGS- 01046 parameter code, PLA11 method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4597
+"USGS- 01049 parameter code, PLM43 method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4598
+"USGS- 01056 parameter code, PLM43 method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4599
+"USGS- 01060 parameter code, PLM43 method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4600
+"USGS- 01065 parameter code, PLM10 method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4601
+"USGS- 01075 parameter code, PLM43  method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4602
+"USGS- 01080 parameter code, PLM40 method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4603
+"USGS- 01090 parameter code, PLM10 method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4604
+"USGS- 01095 parameter code, PLM43 method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4605
+"USGS- 01106 parameter code, PLM43  method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4606
+"USGS- 01130 parameter code, PLA11 method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4607
+"USGS- 01145 parameter code, PLM10 method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4608
+"USGS- 01519 parameter code, AS025  method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4609
+"USGS- 22607 parameter code, PLM143 method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4610
+"USGS- 29801 parameter code, TT040  method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4611
+"USGS- 62971 parameter code, GC153 method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4612
+"USGS- 70300 parameter code, ROE10 method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4613
+"USGS- 71870 parameter code, IC027  method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4614
+"USGS- 82043 parameter code, GC153  method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4615
+"USGS- 82303 parameter code, LSC01 method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4616
+"USGS- 85574 parameter code, GC152  method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4617
+"USGS- 85817 parameter code, BC018  method code (http://nwis.waterdata.usgs.gov/mp/nwis/help/?read_file=meth_table&format=table)",,4618
+ALLARM Protocal (http://blogs.dickinson.edu/marcellusmonitoring/),,4623
+Hanna Titration kit,,4633
+ALLARM protocol:  http://blogs.dickinson.edu/marcellusmonitoring/files/2012/07/Marcellus-Shale-Volunteer-Monitoring-Manual-2.0.pdf,,4636
+Solinst Level logger LTC Junior,,4644
+2320B,,6267
+2510B,,6268
+4500H-B,,6269
+BOL 6019,,6270
+BOL BOL,,6271
+BOL6019,,6272
+Conducted by McIntire Anaysis,,6273
+EPA 180.1,,6274
+EPA 200.7,,6275
+EPA 200.8,,6278
+EPA 300.0,,6284
+EPA 300.1,,6285
+EPA 350.1,,6286
+EPA 353.2,,6287
+EPA 365.1,,6288
+EPA 375.2,,6289
+SM 2320B,,6290
+SM 2340 B,,6291
+SM 2340B,,6292
+SM 2510b,,6293
+SM 2540 C,,6315
+SM 2540C,,6316
+SM 4500-CL,,6317
+SM 4500-H,,6320
+SM 4500H-B,,6321
+SM 5210B,,6322
+SM 5540C,,6323
+SM 9223B,,6324
+SM4500-Cl,,6325
+USGS I 3765,,6327
+USGS I-1749,,6328
+USGS I-1750,,6329
+USGS I-3765,,6330
+EPA200.8,,6568
+SM4500NorgC,,6584
+0,,6595
+1664A-HEM,,7369
+EPA 1664A,,7370
+EPA 170.1,,7371
+EPA 524.2,,7377
+EPA 6010C,,7378
+EPA 7470A,,7379
+EPA 8260B,,7380
+Lamotte,,7381
+Measured in the field,,7382
+RSK 175,,7383
+Sm 2540D,,7387
+SM 4500 H B,,7388
+SM 4500HB,,7389
+SM 5540 C,,7390
+SM20-2320 B,,7392
+SM20-2320 C,,7393
+SM20-2510 B,,7394
+SM20-2540D,,7395
+SM20-4500-H B,,7396
+SM20-5310B,,7397
+SM20-5540C,,7398
+SM20-9223,,7399
+SM2130B,,7400
+SM2510 B,,7401
+SM2540 C,,7402
+SM2540 D,,7403
+SW846 6010C,,7404
+SW846 6010C - Dissolved,,7405
+SW846 8015C,,7407
+YSI 556,,7409
+2340B,,8253
+SM 2510 b,,8279
+SM 4500b,,8305
+EPA 1311,,8348
+EPA 1664,,8349
+EPA 6010,,8350
+EPA 7470,,8351
+HACH 8000,,8352
+EPA 8260,,8393
+EPA 350.1M,,EPA_350.1M
+EPA 351.2,,EPA_351.2
+MCAWW 300.0,,MCAWW_300.0
+SM 4500OG,,SM_4500OG
+SM20-4500HB,,SM20-4500HB
+Collected in 250 ml glass bottles and spiked with KOH biocide. Analyzed by the USGS Chlorofluorcarbon Laboratory using a Hewlett Packard model 5890 gas chromatograph with a Flame Ionization Detector with a minimum reporting limit of 1.0 micrograms per liter (?g/L) and precision of ±0.5 ?g/L.,,USGS
+"Collected in 1 L Isotech bottles, with a benzyl alkonium chloride biocide capsul (~0.5 mL/L).  Analyzed at The Pennsylvania State University using a Hewlett Packard model 5830 gas chromatograph and Flame Ionization Detector with a minimum reporting limit of 0.1 ?g/L and precision of less than or equal to (?) 2 percent. ",,PSU-1
+"Collected in 500 mL bottles with no biocide, sampled and analyzed within 5 days at The Pennsylvania State University using a Hewlett Packard model 5830 gas chromatograph and Flame Ionization Detector with a minimum reporting limit of 0.1 ?g/L and precision of less than or equal to (?) 2 percent. Collected 500mL for testing. Did not use biocide for analysis. The analysis was done directly after collection. ",,PSU-2
+The approach used to estimate mean areal precipitation (MAP) for each of the MOPEX basins is essentially the same as used for gauge-only MAP estimation in the National Weather Service River Forecast System (NWSRFS). The undelying interpolation procedure uses an inverse distance algorithm. The MAP procedure can be found in the MOPEX US Data Documentation. The link is included. ,ftp://hydrology.nws.noaa.gov/pub/gcip/mopex/US_Data/Documentation/US%20MOPEX%20Data%20Set%2020060612.pdf,Mean_Areal_Precip
+"The procedure to estimate mean areal temperature involved first estimating mean areal maximum and minimum daily temperature. Then if temperature values during the day are needed, the procedure suggested by Parton and Logan (1981) to estimate hourly tempertures from daily maximum and minimum was used. ",ftp://hydrology.nws.noaa.gov/pub/gcip/mopex/US_Data/Documentation/US%20MOPEX%20Data%20Set%2020060612.pdf,Mean_Areal_Temp
+US Geological Survey streamflow gage,,USGS_Gage
+Potential Evaporation estimates based on data from the NOAA Evaporation Atlas. This atlas contains maps of average annual and May-October free water surface potential evaporaton. The NOAA Evaporation Atlas Maps were derived by analysis ,,PE_Estimation
+EPA 1664B,,7410
+EPA 299,,7411
+EPA 365.3,,7412
+QRAEII,,7413
+S2130B,,7414
+S2330B-97,,7415
+S2510B,,7416
+S2540C,,7417
+S2540D,,7418
+S5540C,,7419
+S9223B,,7420
+SM 2540B,,7421
+SM 4500HD,,7422
+SM 5310 B,,7423
+SM 5310B,,7424
+SM 9923,,7425
+SM20 2510,,7426
+SM20 2510B,,7427
+SM20 2540C,,7428
+SM20 2550B,,7429
+SM20 4500 cl-g,,7430
+SM20 4500H,,7431
+SM20 5310C,,7432
+SM20 5310D,,7433
+SM20-2340C,,7434
+TVA 1000,,7435

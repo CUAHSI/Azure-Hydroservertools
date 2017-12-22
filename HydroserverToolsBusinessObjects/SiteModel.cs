@@ -34,6 +34,8 @@ namespace HydroserverToolsBusinessObjects.Models
         public string State { get; set; }
         public string County { get; set; }
         public string Comments { get; set; }
+        //BC - 21-Dec-2017 - Added Required attribute per 'cannot be empty' check in SitesRepository.AddSites(...)
+        [Required]
         public string SiteType { get; set; }
         public string Errors { get; set; }
 
