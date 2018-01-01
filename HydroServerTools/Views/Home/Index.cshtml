@@ -15,13 +15,15 @@
 
         <div class="well">
 
-            <h4>Click to Upload:@TempData["message"]</h4>
+            <h4>Click to Upload:&nbsp; @TempData["message"]</h4>
 
             @*<button class="btn btn-primary btn-lg btn-block" data-toggle="modal" data-target="#setConnection">Set Database Connection</button>*@
             @*<p><a href="/CSVUpload/Sites" class="btn btn-primary btn-lg active" role="button">Import Data into Hydroserver</a></p>*@
-            @Html.ActionLink("Import CSV Data into Hydroserver", "UploadData", "CSVUpload", new { id = "Sites" }, new { @class = "btn btn-primary btn active" })
-            <p></p>
-            @Html.ActionLink("Revised Import CSV Data into Hydroserver", "RevisedUploadData", "CSVUpload", new { id = "DragAndDropFiles" }, new { @class = "btn btn-primary" })
+            @Html.ActionLink("Full CSV File Upload", "UploadData", "CSVUpload", new { id = "Sites" }, new { @class = "btn btn-primary btn active" })
+            @*<p></p>*@
+            <span style="margin-left: 0.5em;"></span>
+            @*@Html.ActionLink("Basic CSV File Import", "RevisedUploadData", "CSVUpload", new { id = "DragAndDropFiles" }, new { @class = "btn btn-primary" })*@
+            @Html.ActionLink("Basic CSV File Upload", "RevisedUploadData", "CSVUpload", new { id = "SelectUploadType" }, new { @class = "btn btn-primary" })
         </div>
         <div class="well">
             <h4>Click to update the time series catalog. Required after uploading datavalues</h4>

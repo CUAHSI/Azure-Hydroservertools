@@ -1,0 +1,185 @@
+
+HydroServer Redesign Part 5
+
+**** Summary ****
+
+ - Additions in the following areas:
+   - Encoding utility class
+   - Select Upload Type view
+   - DB Table Counts Web API route
+   - Modified Drag And Drop view
+   - Restore original MethodsRepository calls
+   - Add IRepository method
+
+
+**** .vs ****
+ - Visual Studio 2017 adds some directories and storage.ide 
+
+
+**** HydroServerTools ****
+ - HydroServerTools.csproj
+   - new files: 
+     - Utilities\EncodingContext.cs
+     - Views\CSVUpload\SelectUploadType.cshtml
+
+
+**** HydroServerTools/App_Start ****
+ - WebApiConfig.cs 
+    - Add RevisedUploadController route: api/revisedupload/post/requestdbtablecounts
+
+
+**** HydroServerTools/Controllers ****
+ - CSVUploadController.cs
+   - method RevisedUploadData(...) - add new/revised view references
+ - HomeController.cs
+   - method Index() - Add TempData "message" value
+   - method ClearTablesHandler(...) - restore original MethodsRepository calls
+
+
+**** HydroServerTools/Controllers/api ****
+ - RevisedUploadController.cs
+   - New HttpPost method: RequestDbTableCounts()
+   - Post Method: 
+     - Revise form data handling to retrieve 'File names and types'
+     - File 'chunk' processing - restore ealier contentStream.CopyToAsync calls to avoid encoding issues
+     - DeleteFile(...) - revise file delete processing
+     - Method ValidateFileContentsAsync(...) 
+       - include contentType string in arguments
+       - Validated file processing - add stream flush
+ - UploadController.cs
+    - Restore original MethodsRepository calls...
+
+
+**** HydroServerTools/Scripts/Custom **** 
+ - UploadHelper.js
+   - file upload 'done' - add a delay to startUploadMonitor() call
+
+
+**** HydroServerTools/Utilities **** 
+ - New file: EncodingContext.cs
+ - FileContext.cs 
+   - Revise to handle 'file names and types'
+ - RepositoryContext.cs
+   - method LoadDB(...) - add FileStream flush() call
+
+
+**** HydroServerTools/Validators **** 
+ - CsvValidator.cs
+   - class CsvValidationResults - Remove method: SomeHeadersValid()
+   - class CsvValidator 
+     - Revise logic to handle 'content type' 
+     - method ValidateFileContents() - add logic to distingush between required and optional headers
+
+
+**** HydroServerTools/Views/CSVUpload **** 
+ - DragAndDropFiles.cshtml
+   - Revise header to reference TempData["qualifier"] 
+   - Fileupload 'submit' - capture file name and type from file objects for upload
+ - New file: SelectUploadType.cshtml
+
+
+**** HydroServerTools/Views/Home **** 
+ - Index.cshtml
+   - Add buttons: 'Full CSV File Upload' and 'Basic CSV File Upload'
+
+
+**** HydroServerToolsBusinessObjects **** 
+ - Ressources.cs - add string CSV_FILES_HYDROSERVER
+
+
+**** HydroServerToolsBusinessObjects/ModelMaps **** 
+ - GenericMap.cs
+   - Add methods: GetRequiredPropertyNames() and GetOptionalPropertyNames()
+
+
+**** HydroServerToolsRepository/HydroServerToolsRepository **** 
+ - IRepository.cs
+   - new interface definition: IRepository
+ - Repository.cs
+   - Implement IRepository method(s)
+
+
+**** Test CSV Files **** 
+ - Changes to Martin's files
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

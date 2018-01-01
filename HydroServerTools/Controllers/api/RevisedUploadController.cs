@@ -8,6 +8,7 @@ using System.Web.Http;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -15,12 +16,20 @@ using HydroServerTools.Utilities;
 using HydroServerTools.Validators;
 
 using HydroserverToolsBusinessObjects;
+using HydroServerToolsRepository.Repository;
 using HydroServerToolsUtilities;
 
 namespace HydroServerTools.Controllers.api
 {
     public class RevisedUploadController : ApiController
     {
+        public class TableNames
+        {
+
+            //Properties...
+            public List<string> tableNames { get; set; }
+        }
+
         //NOTE: Static members are thread-specific in web api!!
         //      One HttpRuntime.Cache instance exists for the Application Domain...
 
@@ -257,6 +266,74 @@ namespace HydroServerTools.Controllers.api
             return response;
         }
 
+        //Request DB Table Counts method...
+        //Post api/revisedupload/post/requestdbtablecounts/{tablenames}
+        //See WebApiConfig.cs for custom route...
+        [HttpPost]
+        public async Task<HttpResponseMessage> RequestDbTableCounts()
+        {
+            HttpResponseMessage response = new HttpResponseMessage();
+            response.StatusCode = HttpStatusCode.OK;    //Assume success...
+
+            //Write an empty JSON object to the response
+            //  To avoid 'Unexpected end of JSON input' error in jQuery AJAX!!
+            response.Content = new StringContent("{}", System.Text.Encoding.UTF8, "application/json");
+
+            ////Validate/initialize input parameters
+            //if (null == tableNames || 0 >= tableNames.Count)
+            //{
+            //    response.StatusCode = HttpStatusCode.BadRequest;    //Missing/invalid parameter(s) - return early
+            //    response.ReasonPhrase = "Invalid parameter(s)";
+            //    return response;
+            //}
+
+            //Retrieve request data...
+            HttpContent httpContent = Request.Content;
+
+            string content = await httpContent.ReadAsStringAsync();
+            TableNames tableNames = Newtonsoft.Json.JsonConvert.DeserializeObject<TableNames>(content) ;
+
+            if (null == tableNames)
+            {
+                response.StatusCode = HttpStatusCode.BadRequest;    //Missing/invalid parameter(s) - return early
+                response.ReasonPhrase = "Invalid parameter(s)";
+                return response;
+            }
+
+            //Retrieve user name - build connection string...
+            var userName = HttpContext.Current.User.Identity.Name;
+            if (String.IsNullOrWhiteSpace(userName))
+            {
+                response.StatusCode = HttpStatusCode.BadRequest;    //Username not found - return early
+                response.ReasonPhrase = Resources.HYDROSERVER_USERLOOKUP_FAILED;
+                return response;
+            }
+
+            var entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(userName);
+            if (String.IsNullOrWhiteSpace(entityConnectionString))
+            {
+                response.StatusCode = HttpStatusCode.BadRequest;    //Connection string not found - return early
+                response.ReasonPhrase = Resources.CONNECTION_STRING_NOT_FOUND;
+                return response;
+            }
+
+            //Create Repository instance...
+            var repository = new Repository(entityConnectionString);
+
+            //Retieve counts for input table names...
+            Dictionary<string, int> tableNamesToRecordCounts = repository.GetTableRecordCounts(tableNames.tableNames);
+
+            //Return results...
+            if (0 < tableNamesToRecordCounts.Count)
+            {
+                string jsonData = Newtonsoft.Json.JsonConvert.SerializeObject(tableNamesToRecordCounts);
+                response.Content = new StringContent(jsonData, System.Text.Encoding.UTF8, "application/json");
+            }
+
+            //Processing complete - return response
+            return response;
+        }
+
         //Put method
         //PUT api/revisedupload/put/{uploadId}
         //Web API feature: Have to name the input variable 'uploadId' to satisfy the router!!!
@@ -417,26 +494,45 @@ namespace HydroServerTools.Controllers.api
             DebugData debugData = new DebugData();
 #endif
             //Retrieve form data via request context...
-            string[] fileNames = null;
+            List<FileNameAndType> fileNamesAndTypes = null;
             string currentUploadId = String.Empty;
             if ( HttpContext.Current.Request.Form.HasKeys() )
             {
                 var form = HttpContext.Current.Request.Form;
-                fileNames = form["fileNames"].Split(new char[] { ',' });
                 currentUploadId = form["currentUploadId"];
+                try
+                {
+                    fileNamesAndTypes = Newtonsoft.Json.JsonConvert.DeserializeObject<List<FileNameAndType>>(form["fileNamesAndTypes"]);
+                }
+                catch (Newtonsoft.Json.JsonException jEx)
+                {
+                    //Deserialization error - log and return error...
+                    response.StatusCode = HttpStatusCode.BadRequest;
+
+                    //Find the 'inner-most' exception...
+                    Exception innerException = jEx;
+                    while (null != innerException.InnerException)
+                    {
+                        innerException = innerException.InnerException;
+                    }
+
+                    response.ReasonPhrase = jEx.Message;
+
+                    return response;
+                }
             }
 #if (DEBUG)
             debugData.currentUploadId = currentUploadId;
 #endif
             var fileContexts = getFileContexts();
             FileContext fileContext = null;
-            if (null != fileNames && (! String.IsNullOrWhiteSpace(currentUploadId)))
+            if (null != fileNamesAndTypes && (! String.IsNullOrWhiteSpace(currentUploadId)))
             {
                 //Form data found - retrieve/create associated context instance...
                 if ( !fileContexts.TryGetValue(currentUploadId, out fileContext))
                 {
                     //Not found - create new instance...
-                    fileContext = new FileContext(currentUploadId, fileNames.ToList());
+                    fileContext = new FileContext(currentUploadId, fileNamesAndTypes);
                     fileContexts.TryAdd(currentUploadId, fileContext);
 
                     //Get the instance again...
@@ -461,12 +557,13 @@ namespace HydroServerTools.Controllers.api
             using (await fileContext.FileSemaphore.UseWaitAsync())
             {
                 //File context found - add file name(s), if indicated...
-                var contextFileNames = fileContext.FileNames;
-                foreach (var fileName in fileNames)
+                var contextFileNamesAndTypes = fileContext.FileNamesAndTypes;
+                foreach (var fileNameAndType in fileNamesAndTypes)
                 {
-                    if (-1 == contextFileNames.IndexOf(fileName))
+                    if ( null == contextFileNamesAndTypes.Where(item => item.fileName == fileNameAndType.fileName && 
+                                                                        item.fileType == fileNameAndType.fileType) )
                     {
-                        contextFileNames.Add(fileName);
+                        contextFileNamesAndTypes.Add(fileNameAndType);
                     }
                 }
                 
@@ -483,7 +580,6 @@ namespace HydroServerTools.Controllers.api
 
                         //Check headers...
                         var headers = httpContent.Headers;
-
                         var hdrContentDisposition = headers.ContentDisposition;
                         var hdrContentRange = headers.ContentRange;
 
@@ -516,14 +612,13 @@ namespace HydroServerTools.Controllers.api
                         debugData.isFirstChunk = isFirstChunk;
                         debugData.isLastChunk = isLastChunk;
 #endif
-
                         //For each content  element in the contents...
                         char[] charArray = { '\"' };
                         foreach (var content in mpmProvider.Contents)
                         {
                             //Skip 'form' data...
                             var name = content.Headers.ContentDisposition.Name.Trim(charArray);
-                            if ("fileNames" == name || "currentUploadId" == name)
+                            if ("fileNamesAndTypes" == name || "currentUploadId" == name)
                             {
                                 continue;
                             }
@@ -541,27 +636,51 @@ namespace HydroServerTools.Controllers.api
                                 debugData.fileName = fileName;
                                 debugData.filePathAndName = filePathAndName;
 #endif
+                                //Retrieve file encoding...
+                                var contentType = String.Empty;
+                                foreach (var fileNameAndType in fileContext.FileNamesAndTypes)
+                                {
+                                    if (fileName == fileNameAndType.fileName)
+                                    {
+                                        contentType = fileNameAndType.fileType;
+                                        break;
+                                    }
+                                }
+
+                                Encoding currentEncoding = EncodingContext.GetFileEncoding(contentType, filePathAndName);
 
                                 //Create output file --OR-- open file for append...
-                                //using (await fileContext.FileSemaphore.UseWaitAsync())
-                                //{
-                                //using (var fileStream = new FileStream(filePathAndName, isFirstChunk ? FileMode.Create : FileMode.Append))
                                 using (var fileStream = new FileStream(filePathAndName, isFirstChunk ? FileMode.Create : FileMode.Append, FileAccess.Write, FileShare.None, 65536, true))
                                 {
                                     //Copy content to file...
                                     await contentStream.CopyToAsync(fileStream, 65536);
+
+                                    //NOTE: DO NOT use StreamReader/StreamWriter here.  
+                                    //      Apparently their use introduces invalid NUL characters in the file stream...
+
+                                    //char[] buffer = new char[65536];
+                                    //using (var streamReader = new StreamReader(contentStream, currentEncoding))
+                                    //{
+                                    //    using (var streamWriter = new StreamWriter(fileStream, currentEncoding))
+                                    //    {
+                                    //        while (!streamReader.EndOfStream)
+                                    //        {
+                                    //            await streamReader.ReadAsync(buffer, 0, 65536);
+                                    //            await streamWriter.WriteAsync(buffer);
+                                    //        }
+                                    //    }
+                                    //}
 
                                     //Close all streams...
                                     fileStream.Close();
                                     contentStream.Close();
                                 }
 
-                                    //If the last chunk, queue a validation task for the completed file
-                                    if (isLastChunk)
-                                    {
-                                        await ValidateFileContentsAsync(currentUploadId, fileName, filePathAndName);
-                                    }
-                                //}
+                                //If the last chunk, queue a validation task for the completed file
+                                if (isLastChunk)
+                                {
+                                    await ValidateFileContentsAsync(currentUploadId, contentType, fileName, filePathAndName);
+                                }
                             }
                         }
 
@@ -667,8 +786,21 @@ namespace HydroServerTools.Controllers.api
                 }
 
                 //Remove entry from file names...
-                var contextFileNames = fileContext.FileNames;
-                contextFileNames.Remove(fileName);
+                var contextFileNamesAndTypes = fileContext.FileNamesAndTypes;
+                FileNameAndType target = null;
+                foreach (var fileNameAndType in contextFileNamesAndTypes)
+                {
+                    if (fileName == fileNameAndType.fileName)
+                    {
+                        target = fileNameAndType;
+                        break;
+                    }
+                }
+
+                if (null != target)
+                {
+                    contextFileNamesAndTypes.Remove(target);
+                }
             }
 
             //Retrieve validation context...
@@ -806,7 +938,7 @@ namespace HydroServerTools.Controllers.api
         //Source: https://www.dotnetperls.com/async
         //private static async void ValidateFileContentsAsync(string uploadId, string fileName, string filePathAndName)
         //private static async Task ValidateFileContentsAsync(string uploadId, string fileName, string filePathAndName)
-        private async Task ValidateFileContentsAsync(string uploadId, string fileName, string filePathAndName)
+        private async Task ValidateFileContentsAsync(string uploadId, string contentType, string fileName, string filePathAndName)
         {
             //Await a task to ensure this method runs asynchronously
             await Task.Run( async () =>
@@ -814,6 +946,7 @@ namespace HydroServerTools.Controllers.api
                 //Validate/initialize input parameters...
                 var validationContexts = getValidationContexts();
                 ValidationContext<CsvValidator> validationContext = null;
+                //NOTE: input contentType may be empty...
                 if ((!String.IsNullOrWhiteSpace(uploadId)) && 
                     (!String.IsNullOrWhiteSpace(fileName)) && 
                     (!String.IsNullOrWhiteSpace(filePathAndName)))
@@ -850,7 +983,7 @@ namespace HydroServerTools.Controllers.api
 
                         if (null == validationResult)
                         {
-                            validationResult = new ValidationResult<CsvValidator>(fileName, new CsvValidator(filePathAndName));
+                            validationResult = new ValidationResult<CsvValidator>(fileName, new CsvValidator(contentType, filePathAndName));
                             validationContext.ValidationResults.Add(validationResult);
                         }
 
@@ -882,8 +1015,8 @@ namespace HydroServerTools.Controllers.api
                                             {
                                                 //Serialize validated records to file stream as binary...
                                                 BinaryFormatter binFor = new BinaryFormatter();
-
                                                 binFor.Serialize(fileStream, validatedRecords);
+                                                fileStream.Flush();
                                             }
                                         }
                                         catch (Exception ex)

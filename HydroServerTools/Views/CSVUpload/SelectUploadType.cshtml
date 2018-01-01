@@ -1,0 +1,92 @@
+﻿
+@{
+    ViewBag.Title = "SelectUploadType";
+    ViewBag.Name = "selectUploadType";
+}
+
+<h2>Select Upload Type</h2>
+
+<div class="container">
+    <div class="col-md-6">
+
+        <div class="well">
+            <h4>Meta-data</h4>
+            <p>Meta-data description goes here...</p>
+            @Html.ActionLink("Meta-data Upload", "RevisedUploadData", "CSVUpload", new { id = "DragAndDropFiles_meta_data" }, new { @class = "btn btn-primary" })
+        </div>
+
+        <div class="well">
+            <h4>Data Values</h4>
+            <p>Data values description goes here...</p>
+            @Html.ActionLink("Data Values Upload", "RevisedUploadData", "CSVUpload", new { id = "DragAndDropFiles_data_values" }, new { @class = "btn btn-primary data-values-upload" })
+            <br />
+            <br />
+            <div id="alertDataValuesUpload" class="alert alert-info fade in hidden" role="alert">
+                <span class="glyphicon glyphicon-alert"></span>
+                <span>Data values upload disabled.  Meta-data upload not yet complete!!</span>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script type="text/javascript">
+
+    function getDbRecordCounts() {
+
+        //Set url...
+        var url = '/api/revisedupload/post/requestdbtablecounts/';
+
+        //Set request data...
+        var data = {
+                    "tablenames": ["methods", "qualitycontrollevels", "sites", "sources", "variables"] 
+                   };
+
+        $.ajax({
+            "url": url,
+            "type": "POST",
+            "async": true,
+            "dataType": "json",
+            "data": JSON.stringify(data),
+            "cache": false, //So IE does not cache when calling the same URL - source: http://stackoverflow.com/questions/7846707/ie9-jquery-ajax-call-first-time-doing-well-second-time-not
+            "success": function (data, textStatus, jqXHR) {
+                console.log('RevisedUpload POST/requestdbtablecounts success!!');
+                var dbTableCounts = data;
+                var missingMetadata = false; //Assume all metadata exists...
+
+                //For each count...
+                for (var key in dbTableCounts) {
+                    if (0 >= dbTableCounts[key]) {
+                        missingMetadata = true;  //Metadata does NOT exist - set indicator
+                        break;
+                    }
+                }
+
+                if (missingMetadata) {
+                    $('#' + 'alertDataValuesUpload').removeClass('hidden'); //Show alert
+                    $('a.data-values-upload').addClass('disabled');         //Disable data values upload
+                }
+                else {
+                    $('#' + 'alertDataValuesUpload').addClass('hidden');    //Hide alert
+                    $('a.data-values-upload').removeClass('disabled');      //Enable data values upload
+                }
+            },
+            "error": function (xmlhttprequest, textStatus, message) {
+                //Failure - Log messsage received from server...
+                console.log('RevisedUpload POST/requestdbtablecounts reports error: ' + xmlhttprequest.status + ' (' + message + ')');
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        console.log('Select Upload Type - document ready called!!');
+
+        //Queue retrieval of db record counts...
+        setTimeout(function () {
+            getDbRecordCounts();
+        }, 100);
+
+    });
+
+</script>

@@ -7,6 +7,35 @@ using System.Threading;
 
 namespace HydroServerTools.Utilities
 {
+    //A simple class for the association of a file name and a file (MIME) type
+    public class FileNameAndType
+    {
+        //Constructors...
+
+        //Default...
+        private FileNameAndType() { }
+
+        //Initializing
+        public FileNameAndType( string fileName, string fileType)
+        {
+#if (DEBUG)
+            if ( String.IsNullOrWhiteSpace(fileName) || String.IsNullOrWhiteSpace(fileType))
+            {
+                var paramName = String.IsNullOrWhiteSpace(fileName) ? "fileName" : "fileType";
+                throw new ArgumentException("Invalid input parameter...", paramName);
+            }
+#endif
+            this.fileName = fileName;
+            this.fileType = fileType;
+        }
+
+        //Properties...
+        public string fileName { get; set; }
+
+        public string fileType { get; set; }
+    }
+
+
     //A simple class for the association of prefixed file names with an access semaphore...
     public class FileContext
     {
@@ -15,34 +44,34 @@ namespace HydroServerTools.Utilities
         //Default...
         private FileContext()
         {
-            FileNames = new List<string>();
+            FileNamesAndTypes = new List<FileNameAndType>();
             FileSemaphore = new SemaphoreSlim(1, 1);
         }
 
         //Initializing constructor...
-        public FileContext( string fileNamePrefix, List<string> fileNames) : this()
+        public FileContext( string fileNamePrefix, List<FileNameAndType> fileNamesAndTypes) : this()
         {
 #if (DEBUG)
             //Validate/initialize input parameters...
-            if (String.IsNullOrWhiteSpace(fileNamePrefix) || null == fileNames || 0 >= fileNames.Count)
+            if (String.IsNullOrWhiteSpace(fileNamePrefix) || null == fileNamesAndTypes || 0 >= fileNamesAndTypes.Count)
             {
-                string paramName = String.IsNullOrWhiteSpace(fileNamePrefix) ? "fileNamePrefix" : "fileNames";
+                string paramName = String.IsNullOrWhiteSpace(fileNamePrefix) ? "fileNamePrefix" : "fileNamesAndTypes";
                 throw new ArgumentException("Invalid input parameter...", paramName);
             }
 #endif
             //Update instance member(s)...
             FileNamePrefix = fileNamePrefix;
 
-            foreach (var fileName in fileNames)
+            foreach (var fileNameAndType in fileNamesAndTypes)
             {
-                FileNames.Add(fileName);
+                FileNamesAndTypes.Add( new FileNameAndType(fileNameAndType.fileName, fileNameAndType.fileType));
             }
         }
 
         //Properties...
         private string FileNamePrefix { get; set; }
 
-        public List<string> FileNames { get; private set; }
+        public List<FileNameAndType> FileNamesAndTypes { get; private set; }
 
         public SemaphoreSlim FileSemaphore { get; private set; }
 
@@ -54,9 +83,13 @@ namespace HydroServerTools.Utilities
             string result = String.Empty;
             if (! String.IsNullOrWhiteSpace(fileName))
             {
-                if ( -1 != FileNames.IndexOf(fileName))
+                foreach (var fileNameAndType in FileNamesAndTypes)
                 {
-                    result = FileNamePrefix + "-" + fileName;
+                    if (fileNameAndType.fileName == fileName)
+                    {
+                        result = FileNamePrefix + "-" + fileName;
+                        break;
+                    }
                 }
             }
 

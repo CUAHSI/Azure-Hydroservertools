@@ -318,6 +318,7 @@
     <Compile Include="Services\JobManager.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Utilities\DbLoadContext.cs" />
+    <Compile Include="Utilities\EncodingContext.cs" />
     <Compile Include="Utilities\FileContext.cs" />
     <Compile Include="Utilities\RepositoryContext.cs" />
     <Compile Include="Utilities\ValidationContext.cs" />
@@ -771,6 +772,7 @@
     <Content Include="Views\CSVUpload\DragAndDropFiles.cshtml" />
     <Content Include="Views\CSVUpload\ValidateFiles.cshtml" />
     <Content Include="Views\CSVUpload\DbSummaryReport.cshtml" />
+    <Content Include="Views\CSVUpload\SelectUploadType.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

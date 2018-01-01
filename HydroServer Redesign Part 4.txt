@@ -1,0 +1,151 @@
+
+HydroServer Redesign Part 4
+
+**** Summary ****
+
+ - Additions in the following areas:
+   - Added concole project: HydroServerCsvGenerator - incomplete - for possible future use
+   - New REST api: api/revisedupload/delete/uploadId/{uploadId}
+   - Selected CSV processing changes
+
+
+**** .vs ****
+ - Visual Studio 2017 adds some directories and storage.ide 
+
+
+**** HydroServerTools/App_Start ****
+ - WebApiConfig.cs 
+    - Add RevisedUploadController route: api/revisedupload/delete/uploadId/{uploadId}
+
+
+**** HydroServerTools/Controllers/api ****
+ - RevisedUploadController.cs
+   - Revised FileStream parameters for increased efficiency
+   - New HttpDelete method: DeleteUploadId(...)
+
+
+**** HydroServerTools/Utilities **** 
+ - RepositoryContext.cs
+   - Update variable names for increased legibility
+
+
+**** HydroServerTools/Validators **** 
+ - CsvValidator.cs
+   - Revise/Add methods: AllHeadersValid(), SomeHeadersValid()
+   - Add CsvHelper handler methods: 
+     - handlerBadDataFound(...)
+     - handlerMissingFieldFound(...)
+     - handlerReadingExceptionOccurred(...)
+   - ValidateRecords(...)
+     - Add CsvHelper handler calls...
+
+
+**** HydroServerTools/Views/CSVUpload **** 
+ - DbSummaryReport.cshtml
+   - Revise 'Finish' anchor markup
+   - Add function: removeUploadId(...)
+   - Add click handler for 'Finish' anchor
+ - DragAndDropFiles.cshtml
+   - CsvHelper 'progress' method: retain unique processed file names 
+ - ValidateFiles.cshtml
+   - Comment out 'data errors' markup and logic
+
+
+**** HydroServerToolsBusinessObjects **** 
+ - DataValuesModel.cs 
+   - Add 'Required' attribute to DateTimeUTC per Repository.cs validation logic
+ - SiteModel.cs
+   - Add 'Required' attribute to SiteType per Repository.cs validation logic
+
+
+**** HydroServerToolsBusinessObjects/ModelMaps **** 
+ - GenericMap.cs
+    - Add logic for Display attribute: 'NotVisible'
+    - Limit Map calls to Required properties
+
+
+**** Test CSV Files **** 
+ - Changes to Liza's files
+ - Addition of Martin's files
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

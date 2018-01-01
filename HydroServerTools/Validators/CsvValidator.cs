@@ -5,11 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 
 using System.IO;
+using System.Reflection;
 
 using CsvHelper;
 
+using HydroServerTools.Utilities;
 using HydroserverToolsBusinessObjects.Models;
-
 using HydroserverToolsBusinessObjects.ModelMaps;
 
 namespace HydroServerTools.Validators
@@ -134,12 +135,12 @@ namespace HydroServerTools.Validators
                     (0 < ValidHeaderNames.Count));      //Valid headers exist
         }
 
-        //Some headers valid?
-        public bool SomeHeadersValid()
-        {
-            return ((0 < InvalidHeaderNames.Count) &&  //Some invalid headers exist
-                    (0 < ValidHeaderNames.Count));      //Some valid headers exist
-        }
+        ////Some headers valid?
+        //public bool SomeHeadersValid()
+        //{
+        //    return ((0 < InvalidHeaderNames.Count) &&  //Some invalid headers exist
+        //            (0 < ValidHeaderNames.Count));      //Some valid headers exist
+        //}
 
         //Data valid?
         public virtual bool DataValid()
@@ -189,23 +190,27 @@ namespace HydroServerTools.Validators
         //CSV file path and name...
         private string csvFilePathAndName;
 
+        //CSV content type (from HTTP header)
+        private string csvContentType;
+
         //Default constructor...
         private CsvValidator() : base()
         {
         }
 
         //Initializing constructor
-        public CsvValidator(string csvFilePathAndNameIn) : this()
+        public CsvValidator(string csvContentTypeIn, string csvFilePathAndNameIn) : this()
         {
             //Validate/initialize input parameters...
-            if (!String.IsNullOrWhiteSpace(csvFilePathAndNameIn))
+            if ((!String.IsNullOrWhiteSpace(csvContentTypeIn)) && (!String.IsNullOrWhiteSpace(csvFilePathAndNameIn)))
             {
+                csvContentType = csvContentTypeIn;
                 csvFilePathAndName = csvFilePathAndNameIn;
             }
 #if (DEBUG)
             else
             {
-                var paramName = "csvFilePathAndNameIn";
+                var paramName = String.IsNullOrWhiteSpace(csvContentTypeIn) ? "csvContentTypeIn" : "csvFilePathAndNameIn";
                 throw new ArgumentNullException(paramName, "invalid value...");
             }
 #endif
@@ -235,17 +240,30 @@ namespace HydroServerTools.Validators
             //Validate/initialize input parameters...
             if (null != iReadingContext && null != dataErrors)
             {
-                //Input parameters valid - create and log data error...
+                //Input parameters valid - check index value...
                 var index = iReadingContext.CurrentIndex;
-                var fieldName = iReadingContext.HeaderRecord[index];
-                var fieldValue = iReadingContext.Record[index];
-                var message = String.IsNullOrEmpty(fieldValue) ? "empty" : "invalid format";
+                if (0 <= index)
+                {
+                    //Index value valid - create and log data error...
+                    var fieldName = "unknown";
+                    if ( index < iReadingContext.HeaderRecord.Length)
+                    {
+                        fieldName = iReadingContext.HeaderRecord[index];
+                    }
 
-                var csvDataError = new CsvDataError(String.Format("Field: {0} - {1}", fieldName, message),
-                                                     iReadingContext.RawRecordBuilder.ToString(),
-                                                     iReadingContext.RawRow,
-                                                     index);
-                dataErrors.Add(csvDataError);
+                    var fieldValue = "unknown";
+                    if (index < iReadingContext.Record.Length)
+                    {
+                        fieldValue = iReadingContext.Record[index];
+                    }
+
+                    var message = String.IsNullOrEmpty(fieldValue) ? "empty" : "invalid format";
+                    var csvDataError = new CsvDataError(String.Format("Field: {0} - {1}", fieldName, message),
+                                                         (null != iReadingContext.RawRecordBuilder) ? iReadingContext.RawRecordBuilder.ToString() : "unknown",
+                                                         iReadingContext.RawRow,
+                                                         index);
+                    dataErrors.Add(csvDataError);
+                }
             }
         }
 
@@ -288,118 +306,226 @@ namespace HydroServerTools.Validators
             //Set return value
             bool result = true; //Assume success
 
+            //Retrieve the current encoding...
+            Encoding currentEncoding = EncodingContext.GetFileEncoding(csvContentType, csvFilePathAndName);
+
             try
             {
-                //Open a text reader on the associated CSV file...
-                using (TextReader tReaderCsv = File.OpenText(csvFilePathAndName))
+                //Open a text-reader derived instance on the associated CSV file...
+                using (var fileStream = File.Open(csvFilePathAndName, FileMode.Open, FileAccess.Read, FileShare.None))
                 {
-                    //Allocate a CsvReader instance...
-                    using (var csvReader = new CsvHelper.CsvReader(tReaderCsv))
+                    //using (var streamReader = new StreamReader(fileStream))
+                    using (var streamReader = new StreamReader(fileStream, currentEncoding))
                     {
-                        //Configure the csv reader instance...
-                        var conf = csvReader.Configuration;
-
-                        //Headers...
-                        conf.HasHeaderRecord = true;
-                        conf.HeaderValidated = headerValidationCallback;
-
-                        //Reading...
-                        conf.IgnoreBlankLines = true;
-
-                        //BC - 18-Dec-2017 - Add custom error handling so that 
-                        //  reading of records does not trigger ValidationExceptions...
-                        conf.BadDataFound = context =>
+                        //Allocate a CsvReader instance...
+                        using (var csvReader = new CsvHelper.CsvReader(streamReader))
                         {
-                            //Invoke member handler...
-                            handlerBadDataFound(context, DataErrors);
-                        };
+                            //Configure the csv reader instance...
+                            var conf = csvReader.Configuration;
 
-                        conf.MissingFieldFound = (headerNames, index, context) =>
-                        {
-                            //Invoke member handler...
-                            handlerMissingFieldFound(headerNames, index, context, DataErrors);
-                        };
+                            //Headers...
+                            conf.HasHeaderRecord = true;
+                            conf.HeaderValidated = headerValidationCallback;
 
-                        conf.ReadingExceptionOccurred = exception =>
-                        {
-                            handlerReadingExceptionOccurred(exception, DataErrors);
-                        };
+                            //Reading...
+                            conf.IgnoreBlankLines = true;
 
-                        //Attempt to read the CSV header..
-                        csvReader.Read();
-                        if (csvReader.ReadHeader())
-                        {
-                            //Success - for each known model type...  
-                            foreach (var kvp in validationTypesToClassMaps)
+                            //BC - 18-Dec-2017 - Add custom error handling so that 
+                            //  reading of records does not trigger ValidationExceptions...
+                            conf.BadDataFound = context =>
                             {
-                                //Attempt to validate header...
-                                var modelType = kvp.Key;
-                                var mapType = kvp.Value;
+                                //Invoke member handler...
+                                handlerBadDataFound(context, DataErrors);
+                            };
 
-                                reset();
+                            conf.MissingFieldFound = (headerNames, index, context) =>
+                            {
+                                //Invoke member handler...
+                                handlerMissingFieldFound(headerNames, index, context, DataErrors);
+                            };
 
-                                //Register map class...
-                                conf.RegisterClassMap(mapType);
+                            conf.ReadingExceptionOccurred = exception =>
+                            {
+                                handlerReadingExceptionOccurred(exception, DataErrors);
+                            };
 
-                                csvReader.ValidateHeader(modelType);
+                            //Attempt to read the CSV header..
+                            csvReader.Read();
+                            if (csvReader.ReadHeader())
+                            {
+                                //Success - retrieve header record and record length... 
+                                var headers = csvReader.Context.HeaderRecord;
+                                int headersLength = headers.Length;
 
-                                if (AllHeadersValid())
+                                //For each known model type...  
+                                foreach (var kvp in validationTypesToClassMaps)
                                 {
-                                    //Successful validation - set validated type...
-                                    ValidatedModelType = modelType;
-                                    break;
+                                    //Attempt to validate header...
+                                    var modelType = kvp.Key;
+                                    var mapType = kvp.Value;
+                                    var bRequiredHeadersPresent = false;    //Assume not all required headers are present in file header...
+
+                                    reset();
+
+                                    //Register map class, validate header...
+                                    conf.RegisterClassMap(mapType);
+                                    csvReader.ValidateHeader(modelType);
+
+                                    //Check for presence of valid header names in file...
+                                    if ( 0 >= ValidHeaderNames.Count)
+                                    {
+                                        //No valid header names in file - cannot validate - continue to next map type...
+                                        conf.UnregisterClassMap(mapType);
+                                        continue;
+                                    }
+
+                                    //Construct map type instance...
+                                    ConstructorInfo constructorInfo = mapType.GetConstructor(Type.EmptyTypes);
+                                    if (null != constructorInfo)
+                                    {
+                                        //Instantiate a map class instance...
+                                        object mapTypeInstance = constructorInfo.Invoke(new object[] { });
+
+                                        //Get required property names...
+                                        MethodInfo miGetRequiredPropertyNames = mapType.GetMethod("GetRequiredPropertyNames");
+                                        List<string> requiredPropertyNames = miGetRequiredPropertyNames.Invoke(mapTypeInstance, new object[] { }) as List<string>;
+                                        int requiredCount = requiredPropertyNames.Count;
+
+                                        //Check if header can be validated against current map type...
+                                        if (headersLength < requiredCount)
+                                        {
+                                            //Number of header fields < number of required fields - cannot validate - continue to next map type...
+                                            conf.UnregisterClassMap(mapType);
+                                            continue;
+                                        }
+                                        else
+                                        {
+                                            //Number of header fields >= number of required fields - check valid header names for required field coverage...
+                                            foreach (var vhName in ValidHeaderNames)
+                                            {
+                                                if (-1 != requiredPropertyNames.IndexOf(vhName))
+                                                {
+                                                    //Required property name found - decrement count...
+                                                    --requiredCount;
+                                                }
+                                            }
+
+                                            if (0 < requiredCount)
+                                            {
+                                                //Not all required property names present - cannot validate - continue to next map type...
+                                                conf.UnregisterClassMap(mapType);
+                                                continue;
+                                            }
+
+                                            bRequiredHeadersPresent = true;
+                                        }
+                                    }
+
+                                    if ((AllHeadersValid())|| bRequiredHeadersPresent)
+                                    {
+                                        //Successful validation - set validated type...
+                                        ValidatedModelType = modelType;
+                                        break;
+                                    }
+                                    //else
+                                    //{
+                                    //    //Unsuccessful validation - current file header incomplete or contains errors
+                                    //    //Attempt to determine header state...
+
+                                    //    //Check for missing required fields...
+                                    //    ConstructorInfo constructorInfo = mapType.GetConstructor(Type.EmptyTypes);
+                                    //    if ( null != constructorInfo)
+                                    //    {
+                                    //        //Instantiate a map class instance...
+                                    //        object mapTypeInstance = constructorInfo.Invoke(new object[] { });
+
+                                    //        //Get required property names...
+                                    //        MethodInfo miGetRequiredPropertyNames = mapType.GetMethod("GetRequiredPropertyNames");
+                                    //        MethodInfo miGetOptionalPropertyNames = mapType.GetMethod("GetOptionalPropertyNames");
+                                    //        List<string> requiredPropertyNames = miGetRequiredPropertyNames.Invoke(mapTypeInstance, new object[] { }) as List<string>;
+                                    //        List<string> optionalPropertyNames = miGetOptionalPropertyNames.Invoke(mapTypeInstance, new object[] { }) as List<string>;
+
+                                    //        if (null != requiredPropertyNames && null != optionalPropertyNames)
+                                    //        {
+                                    //            //Scan valid header names for ***ALL*** required property names...
+                                    //            int requiredCount = requiredPropertyNames.Count;
+                                    //            foreach (var vhName in ValidHeaderNames)
+                                    //            {
+                                    //                if (-1 != requiredPropertyNames.IndexOf(vhName))
+                                    //                {
+                                    //                    //Required property name found - decrement count...
+                                    //                    --requiredCount;
+                                    //                }
+                                    //            }
+
+                                    //            if ( 0 >= requiredCount)
+                                    //            {
+                                    //                //All required property names present - scan invalid header names for optional property names...
+                                    //                int optionalCount = optionalPropertyNames.Count;
+                                    //                foreach (var ihName in InvalidHeaderNames)
+                                    //                {
+                                    //                    if (-1 != optionalPropertyNames.IndexOf(ihName))
+                                    //                    {
+                                    //                        //optional property name found - decrement count...
+                                    //                        --optionalCount;
+                                    //                    }
+                                    //                }
+
+                                    //                if (0 >= optionalCount)
+                                    //                {
+                                    //                    //Successful validation - set validated type...
+                                    //                    ValidatedModelType = modelType;
+                                    //                    break;
+                                    //                }
+                                    //            }
+                                    //        }
+                                    //    }
+                                    //}
+
+                                    //Unregister map class...
+                                    conf.UnregisterClassMap(mapType);
                                 }
-                                //else if (SomeHeadersValid())
-                                //{
-                                //    //Partially successful validation - 
-                                //    //Assumption: The current model type is correct for the current file 
-                                //    //              but the file header contains error(s)...
-                                //    break;
-                                //}
 
-                                //Unregister map class...
-                                conf.UnregisterClassMap(mapType);
-                            }
-
-                            if (null != ValidatedModelType)
-                            {
-                                //Successful header validation - scan and validate records...
-                                while (await csvReader.ReadAsync())
+                                if (null != ValidatedModelType)
                                 {
-                                    try
+                                    //Successful header validation - scan and validate records...
+                                    while (await csvReader.ReadAsync())
                                     {
-                                        //Add validated record to list...
-                                        var record = csvReader.GetRecord(ValidatedModelType);
+                                        try
+                                        {
+                                            //Add validated record to list...
+                                            var record = csvReader.GetRecord(ValidatedModelType);
 
-                                        ValidatedRecords.Add(record);
-                                    }
-                                    catch (ValidationException ex)
-                                    {
-                                        //Validation error - log...
-                                        //NOTE: A sucessful ValidateFileContents() call can find validation error(s) 
-                                        //      on one or more records.  Thus the catch block does not set the result
-                                        //      indicator...
-                                        handlerBadDataFound(ex.ReadingContext, DataErrors);
+                                            ValidatedRecords.Add(record);
+                                        }
+                                        catch (ValidationException ex)
+                                        {
+                                            //Validation error - log...
+                                            //NOTE: A sucessful ValidateFileContents() call can find validation error(s) 
+                                            //      on one or more records.  Thus the catch block does not set the result
+                                            //      indicator...
+                                            handlerBadDataFound(ex.ReadingContext, DataErrors);
 
-                                        //var rContext = ex.ReadingContext;
+                                            //var rContext = ex.ReadingContext;
 
-                                        //var index = rContext.CurrentIndex;
-                                        //var fieldName = rContext.HeaderRecord[index];
-                                        //var fieldValue = rContext.Record[index];
-                                        //var message = String.IsNullOrEmpty(fieldValue) ? "empty" : "invalid format";
+                                            //var index = rContext.CurrentIndex;
+                                            //var fieldName = rContext.HeaderRecord[index];
+                                            //var fieldValue = rContext.Record[index];
+                                            //var message = String.IsNullOrEmpty(fieldValue) ? "empty" : "invalid format";
 
-                                        //var csvDataError = new CsvDataError(String.Format("Field: {0} - {1}", fieldName, message),
-                                        //                                     rContext.RawRecordBuilder.ToString(),
-                                        //                                     rContext.RawRow,
-                                        //                                     index);
-                                        //DataErrors.Add(csvDataError);
+                                            //var csvDataError = new CsvDataError(String.Format("Field: {0} - {1}", fieldName, message),
+                                            //                                     rContext.RawRecordBuilder.ToString(),
+                                            //                                     rContext.RawRow,
+                                            //                                     index);
+                                            //DataErrors.Add(csvDataError);
+                                        }
                                     }
                                 }
-                            }
-                            else
-                            {
-                                //Invalid header(s)...
-                                result = false;
+                                else
+                                {
+                                    //Invalid header(s)...
+                                    result = false;
+                                }
                             }
                         }
                     }

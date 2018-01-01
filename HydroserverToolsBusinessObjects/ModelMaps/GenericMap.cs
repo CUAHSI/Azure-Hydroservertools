@@ -12,6 +12,12 @@ namespace HydroserverToolsBusinessObjects.ModelMaps
 {
     public class GenericMap<MappedType> : ClassMap<MappedType>
     {
+
+        //Members...
+        private List<string> requiredPropertyNames = new List<string>();
+
+        private List<string> optionalPropertyNames = new List<string>();
+
         //Default constructor...
         public GenericMap()
         {
@@ -54,18 +60,30 @@ namespace HydroserverToolsBusinessObjects.ModelMaps
                             }
                         }
 
+                        //Map for header validation...
+                        Map(mappedType, memberInfo).Name(propName);
+
                         //Retrieve attributes
                         //NOTE: CsvHelper operation note:
                         //      Returning false from validation code causes CsvHelper to throw a ValidationException
                         //      Can return true from validation code to inhibit the exception throw - thus can keep going through the file to check for more errors... 
                         if (Attribute.IsDefined(propertyInfo, typeof(RequiredAttribute)))
                         {
-                            //Required - map for header validation...
-                            Map(mappedType, memberInfo).Name(propName);     
-
-                            //Validate field is not empty
+                            //Required - validate field is not empty
                             //Assumption - fields are all strings...
                             Map(mappedType, memberInfo).Validate(field => !String.IsNullOrWhiteSpace(field));
+
+                            //Retain required property name...
+                            requiredPropertyNames.Add(propName);
+                        }
+                        else
+                        {
+                            //Not required - make validation a 'no-op' so field contents, if available, are copied
+                            //Assumption - fields are all strings...
+                            Map(mappedType, memberInfo).Validate(field => true);
+
+                            //Retain optional property name...
+                            optionalPropertyNames.Add(propName);
                         }
                     }
                     else
@@ -75,6 +93,36 @@ namespace HydroserverToolsBusinessObjects.ModelMaps
                     }
                 }
             }
+        }
+
+        //Methods
+
+        //Return a COPY of the list of required property names...
+        public List<string> GetRequiredPropertyNames()
+        {
+            var result = new List<string>();
+
+            foreach (var propName in requiredPropertyNames)
+            {
+                result.Add(propName);
+            }
+
+            //Processing complete - return result...
+            return result;
+        }
+
+        //Return a COPY of the list of optional property names...
+        public List<string> GetOptionalPropertyNames()
+        {
+            var result = new List<string>();
+
+            foreach (var propName in optionalPropertyNames)
+            {
+                result.Add(propName);
+            }
+
+            //Processing complete - return result...
+            return result;
         }
     }
 }

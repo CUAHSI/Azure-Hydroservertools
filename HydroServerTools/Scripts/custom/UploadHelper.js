@@ -131,7 +131,11 @@
             //window.location.href = '/CSVUpload/' +viewName
             //alert(result);
             //$('</div><div class="progress"><div class="bar" style="width:60%"></div></div>').appendTo(data.context);
-            startUploadMonitor()
+            //Delay start of upload monitoring...
+            setTimeout(function () {
+                startUploadMonitor()
+            }, 1000);
+                
             $.ajax({
                 url: "/api/upload/startProcess/" + viewName,
                 type: 'POST',
@@ -152,7 +156,6 @@
                 {
                         clearInterval(uploadMonitor.intervalId);
                 }
-
             });
             
         },

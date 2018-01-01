@@ -12,6 +12,13 @@ using HydroServerToolsUtilities;
 
 namespace HydroServerToolsRepository.Repository
 {
+    //A simple repository interface for actions involving multiple repositories...
+    interface IRepository
+    {
+        //For the input table names, return a dictionary of table names to record counts
+        Dictionary<string, int> GetTableRecordCounts(List<string> tableNames);
+    }
+
     //"Sites", "Variables", "OffsetTypes", "ISOMetadata", "Sources", "Methods", "LabMethods", "Samples", "Qualifiers", "QualityControlLevels", "DataValues", "GroupDescriptions", "Groups", "DerivedFrom", "Categories"};
 
     //Sites

@@ -147,11 +147,34 @@ namespace HydroServerTools.Controllers
             if (!String.IsNullOrEmpty(id))
             {
                 var viewName = String.Empty;
-                switch (id.ToLowerInvariant())
+
+                string idLower = id.ToLowerInvariant();
+                string idQualifier = String.Empty;
+
+                switch (idLower)
                 {
-                    case "draganddropfiles":
+                    case "dbsummaryreport":
+                    {
+                            viewName = "DbSummaryReport";
+                            break;
+                    }
+                    case "draganddropfiles_meta_data":
                     {
                             viewName = "DragAndDropFiles";
+                            //Set temp data for qualifier...
+                            TempData["qualifier"] = "meta_data";
+                            break;
+                    }
+                    case "draganddropfiles_data_values":
+                        {
+                            viewName = "DragAndDropFiles";
+                            //Set temp data for qualifier...
+                            TempData["qualifier"] = "data_values";
+                            break;
+                        }
+                    case "selectuploadtype":
+                    {
+                            viewName = "SelectUploadType";
                             break;
                     }
                     case "validatefiles":
@@ -159,11 +182,6 @@ namespace HydroServerTools.Controllers
                             viewName = "ValidateFiles";
                             break;
                     }
-                    case "dbsummaryreport":
-                        {
-                            viewName = "DbSummaryReport";
-                            break;
-                        }
                     default:
 #if (DEBUG)
                         //DEBUG only - throw an exception...

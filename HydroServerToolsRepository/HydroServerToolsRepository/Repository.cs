@@ -19,7 +19,7 @@ using System.Text;
 using System.Web;
 using TB.ComponentModel;
 
-//using System.Data.Entity;
+using System.Data.Entity;
 using System.Threading.Tasks;
 
 using HydroServerToolsUtilities;
@@ -28,6 +28,163 @@ using EntityFramework.Metadata.Extensions;
 
 namespace HydroServerToolsRepository.Repository
 {
+    //A simple class implementing the IRepository methods...
+    public class Repository: IRepository
+    {
+        //Dictionary of table names to ODM types...
+        //private static Dictionary<string, object> tableNamesToDbSets = new Dictionary<string, object>();
+
+        //Properties...
+        private string ConnectionString { get; set; }
+
+        private ODM_1_1_1Entities OdmEntities { get; set; }
+
+        //Constructors 
+
+        //Default constructor - private to prevent use...
+        private Repository() { }
+
+        //Initializing - throw exception on empty connection string
+        //TO DO - RegEx check for connection string format?
+        public Repository(string connectionString)
+        {
+            //Validate/initialize input parameters...
+            if (String.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new ArgumentNullException("connectionString", "empty/null input value...");
+            }
+
+            //Assign input value to member...
+            ConnectionString = connectionString;
+
+            //Instantiate entities member...
+            OdmEntities = new ODM_1_1_1Entities(connectionString);
+        }
+
+        //For the input table name(s), return a dictionary of table names and record counts...
+        public Dictionary<string, int> GetTableRecordCounts(List<string> tableNames)
+        {
+            Dictionary<string, int> tableNamesToRecordCounts = new Dictionary<string, int>();
+
+            //Validate/initialize input parameters...
+            if (null != tableNames)
+            {
+                //For each input table name...
+                foreach (var tableName in tableNames)
+                {
+                    var lowerTableName = tableName.ToLowerInvariant();
+                    int count = 0;
+
+                    switch (lowerTableName)
+                    {
+                        case "sites":
+                            {
+                              var items = from item in OdmEntities.Sites select item;
+                              count = items.Count();
+                            }
+                            break;    
+                        case "variables":
+                            {
+                                var items = from item in OdmEntities.Sites select item;
+                                count = items.Count();
+                            }
+                            break;
+                        case "offsettypes":
+                            {
+                                var items = from item in OdmEntities.OffsetTypes select item;
+                                count = items.Count();
+                            }
+                            break;
+                        case "sources":
+                            {
+                                var items = from item in OdmEntities.Sources select item;
+                                count = items.Count();
+                            }
+                            break;
+                        case "methods":
+                            {
+                                var items = from item in OdmEntities.Methods select item;
+                                count = items.Count();
+                            }
+                            break;
+                        case "labmethods":
+                            {
+                                var items = from item in OdmEntities.LabMethods select item;
+                                count = items.Count();
+                            }
+                            break;
+                        case "samples":
+                            {
+                                var items = from item in OdmEntities.Samples select item;
+                                count = items.Count();
+                            }
+                            break;
+                        case "qualifiers":
+                            {
+                                var items = from item in OdmEntities.Qualifiers select item;
+                                count = items.Count();
+                            }
+                            break;
+                        case "qualitycontrollevels":
+                            {
+                                var items = from item in OdmEntities.QualityControlLevels select item;
+                                count = items.Count();
+                            }
+                            break;
+                        case "datavalues":
+                            {
+                                var items = from item in OdmEntities.DataValues select item;
+                                count = items.Count();
+                            }
+                            break;
+                        case "groupdescriptions":
+                            {
+                                var items = from item in OdmEntities.GroupDescriptions select item;
+                                count = items.Count();
+                            }
+                            break;
+                        case "groups":
+                            {
+                                var items = from item in OdmEntities.Groups select item;
+                                count = items.Count();
+                            }
+                            break;
+                        case "derivedfrom":
+                            {
+                                var items = from item in OdmEntities.DerivedFroms select item;
+                                count = items.Count();
+                            }
+                            break;
+                        case "categories":
+                            {
+                                var items = from item in OdmEntities.Categories select item;
+                                count = items.Count();
+                            }
+                            break;
+                        default:
+                            //Take no action
+                            break;
+                    }
+
+                    //Adjust count value for selected tables, if indicated...
+                    if (1 == count && ("methods" == lowerTableName || "labmethods" == lowerTableName))
+                    {
+                        count = 0;
+                    }
+
+                    //if (6 == count && "qualitycontrollevels" == lowerTableName)
+                    //{
+                    //    count = 0;
+                    //}
+
+                    tableNamesToRecordCounts[tableName] = count;
+                }
+            }
+
+            //Processing complete - return
+            return tableNamesToRecordCounts;
+        }
+    }
     
     //  Sites
     public class SitesRepository : ISitesRepository
@@ -5052,7 +5209,7 @@ namespace HydroServerToolsRepository.Repository
                     Debug.WriteLine("timeToRetrieve " + currentSiteId + ": " + span);
 
                     var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING_DATAVALUES, count, maxCount, listOfCorrectRecords.Count(), listOfIncorrectRecords.Count(), listOfDuplicateRecords.Count());
-                    if (null != statusContext)
+                    if (null == statusContext)
                     {
                         BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
                     }

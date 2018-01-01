@@ -59,7 +59,8 @@ namespace HydroServerTools.Controllers
                 var databaseRepository = new DatabaseRepository();
                 
                 tableValueCounts = databaseRepository.GetDatabaseTableValueCount(entityConnectionString);
-                
+
+                TempData["message"] = Resources.CSV_FILES_HYDROSERVER;
                 return View(tableValueCounts);
                 
             }
@@ -230,13 +231,13 @@ namespace HydroServerTools.Controllers
                     if (collection.AllKeys.Contains("qualifiers")) { var repo = new QualifiersRepository(); repo.deleteAll(entityConnectionString); }
                     if (collection.AllKeys.Contains("samples")) { var repo = new SamplesRepository(); repo.deleteAll(entityConnectionString); }
                     if (collection.AllKeys.Contains("labmethods")) { var repo = new LabMethodsRepository(); repo.deleteAll(entityConnectionString); }
-                    //BC - 01-Nov-2017 - Replace MethodsRepository call with GenericRepository call... 
-                    //if (collection.AllKeys.Contains("methods")) { var repo = new MethodsRepository(); repo.deleteAll(entityConnectionString); }
-                    if (collection.AllKeys.Contains("methods"))
-                    {
-                        var repo = new GenericRepository<EFD_Method, Method>(entityConnectionString);
-                        repo.DeleteAll();
-                    }
+                    if (collection.AllKeys.Contains("methods")) { var repo = new MethodsRepository(); repo.deleteAll(entityConnectionString); }
+                    ////BC - 01-Nov-2017 - Replace MethodsRepository call with GenericRepository call... 
+                    //if (collection.AllKeys.Contains("methods"))
+                    //{
+                    //    var repo = new GenericRepository<EFD_Method, Method>(entityConnectionString);
+                    //    repo.DeleteAll();
+                    //}
                     if (collection.AllKeys.Contains("sources")) { var repo = new SourcesRepository(); repo.deleteAll(entityConnectionString); }
                     if (collection.AllKeys.Contains("offsettypes")) { var repo = new OffsetTypesRepository(); repo.deleteAll(entityConnectionString); }
                     if (collection.AllKeys.Contains("variables")) { var repo = new VariablesRepository(); repo.deleteAll(entityConnectionString); }

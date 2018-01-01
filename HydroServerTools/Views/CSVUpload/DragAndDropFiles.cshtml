@@ -2,11 +2,19 @@
 @{
     ViewBag.Title = "DragAndDropFiles";
     ViewBag.Name = "dragAndDropFiles";
+
+    string qualifier = TempData["qualifier"] as string;
 }
 <link rel="stylesheet" href="~/Content/mvcfileupload/blueimp/jquery.fileupload.css" />
 
-
-<h2>Select Metadata Files for Upload</h2>
+@if ("meta_data" == qualifier)
+{
+    <h2>Select Meta-data Files for Upload</h2>
+}
+else
+{
+    <h2>Select Data Values Files for Upload</h2>
+}
 
 <div class="container">
 
@@ -247,9 +255,9 @@
                 "type": "POST",
                 "url": "/api/revisedupload/post",
                 "singleFileUploads": true,          //Upload each file in a separate XHR request
-                //"sequentialUploads": true,          //Issue file upload requests in a sequential order
-                "sequentialUploads": false,          //Issue file upload requests simultaneously
-                "limitConcurrentUploads": 20,         //Limit the number of concurrent uploads      
+                //"sequentialUploads": true,        //Issue file upload requests in a sequential order
+                "sequentialUploads": false,         //Issue file upload requests simultaneously
+                "limitConcurrentUploads": 20,       //Limit the number of concurrent uploads      
                 //Callbacks...
                 "add": function(event, data) {
                     //File(s) added for upload - check event type...
@@ -265,16 +273,18 @@
                 },
                 "submit": function (event, data) {
                     //Include file names as 'form' data...
-                    var fileNames = [];
+                    var fileNamesAndTypes = [];
                     if (0 < fileObjectsForUpload.length) {
                         //List entries exist - retrieve file names as 'form' data...
                         $.each(fileObjectsForUpload, function (index, file) {
-                            fileNames.push(file.name);
+                            fileNamesAndTypes.push({ "fileName": file.name,
+                                                     "fileType": file.type
+                                                   });
                         });
                     }
 
                     //Send current data to server (start the upload manually)...
-                    data.formData = { "fileNames": fileNames,
+                    data.formData = { "fileNamesAndTypes": JSON.stringify(fileNamesAndTypes),
                                       "currentUploadId": currentUploadId
                                     };
 

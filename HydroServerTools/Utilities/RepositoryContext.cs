@@ -335,6 +335,7 @@ namespace HydroServerTools.Utilities
                                                         BinaryFormatter binFor_1 = new BinaryFormatter();
 
                                                         binFor_1.Serialize(fileStream_1, recordList);
+                                                        fileStream_1.Flush();
                                                     }
                                                 }
                                                 catch (Exception ex)

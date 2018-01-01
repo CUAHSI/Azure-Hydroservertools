@@ -465,45 +465,46 @@ namespace HydroServerTools.Controllers.WebApi
                 #region Methods
                 if (viewName.ToLower() == "methods")
                 {
-                    //List<MethodModel> values = null;
-                    List<EFD_Method> values = null;
+                    List<MethodModel> values = null;
+                    //List<EFD_Method> values = null;
 
 
                     //// var siteViewModel = new SitesViewModel();
                     //// Type t = typeof(SiteModel);
 
-                    //var listOfIncorrectRecords = new List<MethodModel>();
-                    //var listOfCorrectRecords = new List<MethodModel>();
-                    //var listOfDuplicateRecords = new List<MethodModel>();
-                    //var listOfEditedRecords = new List<MethodModel>();
-                    var listOfIncorrectRecords = new List<EFD_Method>();
-                    var listOfCorrectRecords = new List<EFD_Method>();
-                    var listOfDuplicateRecords = new List<EFD_Method>();
-                    var listOfEditedRecords = new List<EFD_Method>();
+                    var listOfIncorrectRecords = new List<MethodModel>();
+                    var listOfCorrectRecords = new List<MethodModel>();
+                    var listOfDuplicateRecords = new List<MethodModel>();
+                    var listOfEditedRecords = new List<MethodModel>();
+                    //var listOfIncorrectRecords = new List<EFD_Method>();
+                    //var listOfCorrectRecords = new List<EFD_Method>();
+                    //var listOfDuplicateRecords = new List<EFD_Method>();
+                    //var listOfEditedRecords = new List<EFD_Method>();
 
 
                     //// Verify that the user selected a file
                     ////if (file != null && file.ContentLength > 0)
                     ////{
 
-                    //values = parseCSV<MethodModel>(file, viewName);
-                    values = parseCSV<EFD_Method>(file, viewName);
+                    values = parseCSV<MethodModel>(file, viewName);
+                    //values = parseCSV<EFD_Method>(file, viewName);
                     ////}
 
 
                     if (values != null)
                     {
-                        //BC - 01-Nov-2017 - Replace MethodsRepository call with GenericRepository call... 
-                        //var repository = new MethodsRepository();
+                        var repository = new MethodsRepository();
                         //repository.AddMethods(values, entityConnectionString, instanceIdentifier, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
+                        await repository.AddMethods(values, entityConnectionString, instanceIdentifier, listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords, statusContext);
 
-                        var genericRepository = new GenericRepository<EFD_Method, ODM_1_1_1EFModel.Method>(entityConnectionString);
-                        genericRepository.AddInstances(values, instanceIdentifier, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
+                        ////BC - 01-Nov-2017 - Replace MethodsRepository call with GenericRepository call... 
+                        //var genericRepository = new GenericRepository<EFD_Method, ODM_1_1_1EFModel.Method>(entityConnectionString);
+                        //genericRepository.AddInstances(values, instanceIdentifier, out listOfIncorrectRecords, out listOfCorrectRecords, out listOfDuplicateRecords, out listOfEditedRecords);
                     }
 
                     ////PutRecordsInSession<MethodModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords);
-                    //PutRecordsInCache<MethodModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords, instanceIdentifier);
-                    PutRecordsInCache<EFD_Method>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords, instanceIdentifier);
+                    PutRecordsInCache<MethodModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords, instanceIdentifier);
+                    //PutRecordsInCache<EFD_Method>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords, instanceIdentifier);
 
                 }
                 #endregion

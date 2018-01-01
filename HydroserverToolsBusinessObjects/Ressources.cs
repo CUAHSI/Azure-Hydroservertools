@@ -21,6 +21,7 @@ namespace HydroserverToolsBusinessObjects
         public const string IMPORT_FAILED = "The Import failed please validate your input. Please make sure the file contains all necessary fields.";
         public const string FILETYPE_NOT_CSV = "The uploaded file is not a CSV file. Please upload a correct file.";
         public const string FILETYPE_NOT_CSV_ZIP = "The uploaded file is not a CSV or ZIP file. Please upload a correct file.";
+        public const string CSV_FILES_HYDROSERVER = "CSV Files into HydroServer...";
        
         public const string UPLOAD_SITES_HELP = "Sites Help";
 
