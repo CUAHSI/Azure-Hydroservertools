@@ -192,6 +192,10 @@
     <Reference Include="System.Data.Services.Client" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Management.Automation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Management.Automation.6.1.7601.17515\lib\net45\System.Management.Automation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Spatial, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\System.Spatial.5.6.2\lib\net40\System.Spatial.dll</HintPath>
@@ -280,7 +284,7 @@
     <Compile Include="Areas\Admin\Models\RolesViewModel.cs" />
     <Compile Include="Areas\Admin\Controllers\ConnectionParametersController.cs" />
     <Compile Include="Areas\Admin\Controllers\ConnectionParametersUsersController.cs" />
-    <Compile Include="Controllers\UserRegistrationsController.cs" />
+    <Compile Include="Controllers\ServiceRegistrationsController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\api\UploadController.cs" />
     <Compile Include="Controllers\CSVUploadController.cs" />
@@ -311,6 +315,7 @@
     <Compile Include="Services\Job.cs" />
     <Compile Include="Services\JobManager.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="Utilities\ServiceRegistrationHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
@@ -500,11 +505,6 @@
     <Content Include="Areas\Admin\Views\ConnectionParametersUsers\Details.cshtml" />
     <Content Include="Areas\Admin\Views\ConnectionParametersUsers\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\ConnectionParametersUsers\Index.cshtml" />
-    <Content Include="Views\UserRegistrations\Create.cshtml" />
-    <Content Include="Views\UserRegistrations\Delete.cshtml" />
-    <Content Include="Views\UserRegistrations\Details.cshtml" />
-    <Content Include="Views\UserRegistrations\Edit.cshtml" />
-    <Content Include="Views\UserRegistrations\Index.cshtml" />
     <None Include="Microsoft.WindowsAzure.Caching\ClientPerfCountersInstaller.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -607,6 +607,8 @@
     <None Include="Microsoft.WindowsAzure.Caching\ClientPerfCountersInstaller.exe.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Content Include="Powershell\copyDBTemplateAzure.ps1" />
+    <Content Include="Powershell\azureprofile.json" />
     <None Include="Properties\PublishProfiles\hydroserver - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\hydroserver - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\hydroserver-staging - FTP.pubxml" />
@@ -749,12 +751,19 @@
     <Content Include="Templates\ODMTemplates.zip" />
     <Content Include="Views\Home\_CountInTables.cshtml" />
     <Content Include="Views\Shared\_LayoutSimple.cshtml" />
+    <Content Include="Views\ServiceRegistrations\Create.cshtml" />
+    <Content Include="Views\ServiceRegistrations\Delete.cshtml" />
+    <Content Include="Views\ServiceRegistrations\Details.cshtml" />
+    <Content Include="Views\ServiceRegistrations\Edit.cshtml" />
+    <Content Include="Views\ServiceRegistrations\Index.cshtml" />
+    <Content Include="Views\ServiceRegistrations\Activation.cshtml" />
+    <Content Include="Views\ServiceRegistrations\ActivationInProcess.cshtml" />
+    <Content Include="Views\ServiceRegistrations\AccountIsRegistered.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Admin\Views\test\" />
     <Folder Include="Scripts\test\" />
-    <Folder Include="Utilities\" />
     <Folder Include="Views\Export\" />
     <Folder Include="Views\User\" />
   </ItemGroup>

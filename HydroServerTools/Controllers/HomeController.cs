@@ -129,7 +129,7 @@ namespace HydroServerTools.Controllers
             
             //UserRegistrations/Create
             
-            return RedirectToAction("Create", "UserRegistrations");
+            return RedirectToAction("Create", "ServiceRegistrations");
         }
         [AllowAnonymous]
         public ContentResult _GoogleFormIframe()
