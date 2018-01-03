@@ -59,7 +59,7 @@ namespace HydroServerTools.Controllers
             //check if user has connected database
             var connection = HydroServerToolsUtils.getConnectionName(userName);
             
-            if (connection != Ressources.NOT_LINKED_TO_DATABASE)
+            if (connection != Resources.NOT_LINKED_TO_DATABASE)
             {
                 return RedirectToAction("AccountIsRegistered", "ServiceRegistrations");
             }

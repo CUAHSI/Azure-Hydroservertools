@@ -5150,12 +5150,7 @@ namespace HydroServerToolsRepository.Repository
                     {
                         currentSiteId = siteCodes[sv.SiteCode];
                     }
-                    //variableId for variablecode
-                    int currentVariableId = 0;
-                    if (variableCodes.ContainsKey(sv.VariableCode))
-                    {
-                        currentVariableId = variableCodes[sv.VariableCode];
-                    }
+                    
 
                     var a_start = DateTime.Now;
                     //get min/max dates in upload
@@ -5230,7 +5225,7 @@ namespace HydroServerToolsRepository.Repository
                         await statusContext.AddStatusMessage(typeof (DataValuesModel).Name, statusMessage);
                     }
 
-                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount, listOfCorrectRecords.Count(), listOfIncorrectRecords.Count(), listOfDuplicateRecords.Count()));
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount, listOfCorrectRecords.Count(), listOfIncorrectRecords.Count(), listOfDuplicateRecords.Count()));
                     #region loop through series
                     var filteredList = (from i in itemList
                                         where i.SiteCode == sv.SiteCode && i.VariableCode == sv.VariableCode

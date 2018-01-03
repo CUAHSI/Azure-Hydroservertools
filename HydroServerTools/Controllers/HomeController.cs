@@ -99,9 +99,9 @@ namespace HydroServerTools.Controllers
 
             string connectionName = HydroServerToolsUtils.getConnectionName(HttpContext.User.Identity.Name.ToString());
 
-            if (connectionName == Ressources.NOT_LINKED_TO_DATABASE)
+            if (connectionName == Resources.NOT_LINKED_TO_DATABASE)
             {
-                TempData["message"] = Ressources.USERACCOUNT_NOT_LINKED;
+                TempData["message"] = Resources.USERACCOUNT_NOT_LINKED;
                 return RedirectToAction("Login", "Account");
             }
             string entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name.ToString());
