@@ -11,7 +11,7 @@
     <script src="~/Scripts/jquery-1.10.2.min.js"></script>
     <script src="~/Scripts/jquery-ui-1.10.3.min.js"></script>
     <script src="~/Scripts/bootstrap.min.js"></script>
-    <script src="~/Scripts/purl.js"></script>@*//url parser*
+    <script src="~/Scripts/purl.js"></script>
     <script src="~/Scripts/bootbox.min.js"></script>
     @*<script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
     <script src="/signalr/hubs"></script>
@@ -36,117 +36,117 @@
 <body>
     <div class="container">
         <div class="row">
-            <img src="~/Images/Hydroserver/HydroserverLogo.png" class="center img-thumbnail" style="border:0px; vertical-align:top"/>
+            <img src="~/Images/Hydroserver/HydroserverLogo.png" class="center img-thumbnail" style="border:0px; vertical-align:top" />
         </div>
-    </div>
-    <div class="navbar navbar-inverse">
-        <div class="container">
+
+        <div class="navbar navbar-inverse">
             <div class="navbar-header ">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                
-        </div>
+
+            </div>
             <div class="navbar-collapse collapse ">
-                @if (User.Identity.IsAuthenticated )
-                { 
-                <ul class="nav  navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home", new { area = "" }, null)</li>
-                    @*<li>@Html.ActionLink("About", "About", "Home")</li>*@
-                    <li>@Html.ActionLink("Contact", "Contact", "Home", new { area = "" }, null)</li>
-                    <li>@Html.ActionLink("Manage", "Manage", "Home", new { area = "" }, null)</li>
-                    <li>@Html.ActionLink("Templates", "Templates", "Home", new { area = "" }, null)</li>
-                    <li>@Html.ActionLink("Controlled Vocabularies", "ControlledVocabularies", "Home", new { area = "" }, null)</li>
-                 
-                    @*<li>@Html.ActionLink("MVCUploder", "Demo", "Home")</li>
-                    <li>@Html.ActionLink("JQupload", "JQupload", "Home", new { identifier = "Sites" }, null)</li>
-                    <li>@Html.ActionLink("JQuploaddemo", "JQuploaddemo", "Home", new { identifier = "Sites" }, null)</li>
-                    <li>@Html.ActionLink("SimpleUpload", "SimpleUpload", "Home")</li>*@
-                    @*<li>@Html.ActionLink("JQueryApI", "JQueryApI", "Home", new { identifier = "Sites" }, null)</li>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <ul class="nav  navbar-nav">
+                        <li>@Html.ActionLink("Home", "Index", "Home", new { area = "" }, null)</li>
+                        @*<li>@Html.ActionLink("About", "About", "Home")</li>*@
+                        <li>@Html.ActionLink("Contact", "Contact", "Home", new { area = "" }, null)</li>
+                        <li>@Html.ActionLink("Manage", "Manage", "Home", new { area = "" }, null)</li>
+                        <li>@Html.ActionLink("Templates", "Templates", "Home", new { area = "" }, null)</li>
+                        <li>@Html.ActionLink("Controlled Vocabularies", "ControlledVocabularies", "Home", new { area = "" }, null)</li>
 
-                    <li>@Html.ActionLink("Datatable1", "Datatable1", "Home")</li>
-                    <li>@Html.ActionLink("Datatable2", "Datatable2", "Home", new { identifier = "Sites" }, null)</li>*@
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Import CSV Data<b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            <li>@Html.ActionLink("Import Sites", "UploadData", "CSVUpload", new {area = "", id = "Sites" }, null)</li>
-                            <li>@Html.ActionLink("Import Variables", "UploadData", "CSVUpload", new { area = "", id = "Variables" }, null)</li>
-                            <li>@Html.ActionLink("Import OffsetTypes", "UploadData", "CSVUpload", new { area = "", id = "OffsetTypes" }, null)</li>
-                            @*<li>@Html.ActionLink("Import ISOMetadata", "ViewTableData", "ViewData", new { identifier = "ISOMetadata" }, null)</li>*@
-                            <li>@Html.ActionLink("Import Sources", "UploadData", "CSVUpload", new { area = "", id = "Sources" }, null)</li>
-                            <li>@Html.ActionLink("Import Methods", "UploadData", "CSVUpload", new { area = "", id = "Methods" }, null)</li>
-                            <li>@Html.ActionLink("Import LabMethods", "UploadData", "CSVUpload", new { area = "", id = "LabMethods" }, null)</li>
-                            <li>@Html.ActionLink("Import Samples", "UploadData", "CSVUpload", new { area = "", id = "Samples" }, null)</li>
-                            <li>@Html.ActionLink("Import Qualifiers", "UploadData", "CSVUpload", new { area = "", id = "Qualifiers" }, null)</li>
-                            <li>@Html.ActionLink("Import QualityControlLevels", "UploadData", "CSVUpload", new { area = "", id = "QualityControlLevels" }, null)</li>
-                            <li>@Html.ActionLink("Import DataValues", "UploadData", "CSVUpload", new { area = "", id = "DataValues" }, null)</li>
-                            <li>@Html.ActionLink("Import GroupDescriptions", "UploadData", "CSVUpload", new { area = "", id = "GroupDescriptions" }, null)</li>
-                            <li>@Html.ActionLink("Import Groups", "UploadData", "CSVUpload", new { area = "", id = "Groups" }, null)</li>
-                            <li>@Html.ActionLink("Import DerivedFrom", "UploadData", "CSVUpload", new { area = "", id = "DerivedFrom" }, null)</li>
-                            <li>@Html.ActionLink("Import Categories", "UploadData", "CSVUpload", new { area = "", id = "Categories" }, null)</li>
+                        @*<li>@Html.ActionLink("MVCUploder", "Demo", "Home")</li>
+                            <li>@Html.ActionLink("JQupload", "JQupload", "Home", new { identifier = "Sites" }, null)</li>
+                            <li>@Html.ActionLink("JQuploaddemo", "JQuploaddemo", "Home", new { identifier = "Sites" }, null)</li>
+                            <li>@Html.ActionLink("SimpleUpload", "SimpleUpload", "Home")</li>*@
+                        @*<li>@Html.ActionLink("JQueryApI", "JQueryApI", "Home", new { identifier = "Sites" }, null)</li>
 
-                        </ul>
-                    </li>
-
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">View Data<b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            <li>@Html.ActionLink("View Sites", "ViewTableData", "ViewData", new { area = "", identifier = "Sites" }, null)</li>
-                            <li>@Html.ActionLink("View Variables", "ViewTableData", "ViewData", new { area = "", identifier = "Variables" }, null)</li>
-                            <li>@Html.ActionLink("View OffsetTypes", "ViewTableData", "ViewData", new { area = "", identifier = "OffsetTypes" }, null)</li>
-                           @* <li>@Html.ActionLink("View ISOMetadata", "ViewTableData", "ViewData", new { identifier = "ISOMetadata" }, null)</li>*@
-                            <li>@Html.ActionLink("View Sources", "ViewTableData", "ViewData", new { area = "", identifier = "Sources" }, null)</li>
-                            <li>@Html.ActionLink("View Methods", "ViewTableData", "ViewData", new { area = "", identifier = "Methods" }, null)</li>
-                            <li>@Html.ActionLink("View LabMethods", "ViewTableData", "ViewData", new { area = "", identifier = "LabMethods" }, null)</li>
-                            <li>@Html.ActionLink("View Samples", "ViewTableData", "ViewData", new { area = "", identifier = "Samples" }, null)</li>
-                            <li>@Html.ActionLink("View Qualifiers", "ViewTableData", "ViewData", new { area = "", identifier = "Qualifiers" }, null)</li>
-                            <li>@Html.ActionLink("View QualityControlLevels", "ViewTableData", "ViewData", new { area = "", identifier = "QualityControlLevels" }, null)</li>
-                            <li>@Html.ActionLink("View DataValues", "ViewTableData", "ViewData", new { area = "", identifier = "DataValues" }, null)</li>
-                            <li>@Html.ActionLink("View GroupDescriptions", "ViewTableData", "ViewData", new { area = "", identifier = "GroupDescriptions" }, null)</li>
-                            <li>@Html.ActionLink("View Groups", "ViewTableData", "ViewData", new { area = "", identifier = "Groups" }, null)</li>
-                            <li>@Html.ActionLink("View DerivedFrom", "ViewTableData", "ViewData", new { area = "", identifier = "DerivedFrom" }, null)</li>
-                            <li>@Html.ActionLink("View Categories", "ViewTableData", "ViewData", new { area = "", identifier = "Categories" }, null)</li>
-                            <li class="divider"></li>
-                            <li>@Html.ActionLink("View SeriesCatalog", "ViewTableData", "ViewData", new { area = "", identifier = "SeriesCatalog" }, null)</li>
-
-                        </ul>
-                    </li>
-                    @if (User.IsInRole("Admin") || User.Identity.Name=="mseul@cuahsi.org" )
-                     { 
+                            <li>@Html.ActionLink("Datatable1", "Datatable1", "Home")</li>
+                            <li>@Html.ActionLink("Datatable2", "Datatable2", "Home", new { identifier = "Sites" }, null)</li>*@
                         <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin<b class="caret"></b></a>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Import CSV Data<b class="caret"></b></a>
                             <ul class="dropdown-menu">
-                                <li>@Html.ActionLink("Roles", "Index", "Roles", new { area = "Admin" }, null)</li>
-                                <li>@Html.ActionLink("Add Connection", "Index", "ConnectionParameters", new { area = "Admin" }, null)</li>
-                                <li>@Html.ActionLink("Link Connections", "Index", "ConnectionParametersUsers", new { area = "Admin" }, null)</li>
-                                <li>@Html.ActionLink("Register as a new user", "Register", "Account", new { area = "" },null)</li>
+                                <li>@Html.ActionLink("Import Sites", "UploadData", "CSVUpload", new { area = "", id = "Sites" }, null)</li>
+                                <li>@Html.ActionLink("Import Variables", "UploadData", "CSVUpload", new { area = "", id = "Variables" }, null)</li>
+                                <li>@Html.ActionLink("Import OffsetTypes", "UploadData", "CSVUpload", new { area = "", id = "OffsetTypes" }, null)</li>
+                                @*<li>@Html.ActionLink("Import ISOMetadata", "ViewTableData", "ViewData", new { identifier = "ISOMetadata" }, null)</li>*@
+                                <li>@Html.ActionLink("Import Sources", "UploadData", "CSVUpload", new { area = "", id = "Sources" }, null)</li>
+                                <li>@Html.ActionLink("Import Methods", "UploadData", "CSVUpload", new { area = "", id = "Methods" }, null)</li>
+                                <li>@Html.ActionLink("Import LabMethods", "UploadData", "CSVUpload", new { area = "", id = "LabMethods" }, null)</li>
+                                <li>@Html.ActionLink("Import Samples", "UploadData", "CSVUpload", new { area = "", id = "Samples" }, null)</li>
+                                <li>@Html.ActionLink("Import Qualifiers", "UploadData", "CSVUpload", new { area = "", id = "Qualifiers" }, null)</li>
+                                <li>@Html.ActionLink("Import QualityControlLevels", "UploadData", "CSVUpload", new { area = "", id = "QualityControlLevels" }, null)</li>
+                                <li>@Html.ActionLink("Import DataValues", "UploadData", "CSVUpload", new { area = "", id = "DataValues" }, null)</li>
+                                <li>@Html.ActionLink("Import GroupDescriptions", "UploadData", "CSVUpload", new { area = "", id = "GroupDescriptions" }, null)</li>
+                                <li>@Html.ActionLink("Import Groups", "UploadData", "CSVUpload", new { area = "", id = "Groups" }, null)</li>
+                                <li>@Html.ActionLink("Import DerivedFrom", "UploadData", "CSVUpload", new { area = "", id = "DerivedFrom" }, null)</li>
+                                <li>@Html.ActionLink("Import Categories", "UploadData", "CSVUpload", new { area = "", id = "Categories" }, null)</li>
+
                             </ul>
                         </li>
-                     }
-                </ul>
+
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">View Data<b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li>@Html.ActionLink("View Sites", "ViewTableData", "ViewData", new { area = "", identifier = "Sites" }, null)</li>
+                                <li>@Html.ActionLink("View Variables", "ViewTableData", "ViewData", new { area = "", identifier = "Variables" }, null)</li>
+                                <li>@Html.ActionLink("View OffsetTypes", "ViewTableData", "ViewData", new { area = "", identifier = "OffsetTypes" }, null)</li>
+                                @* <li>@Html.ActionLink("View ISOMetadata", "ViewTableData", "ViewData", new { identifier = "ISOMetadata" }, null)</li>*@
+                                <li>@Html.ActionLink("View Sources", "ViewTableData", "ViewData", new { area = "", identifier = "Sources" }, null)</li>
+                                <li>@Html.ActionLink("View Methods", "ViewTableData", "ViewData", new { area = "", identifier = "Methods" }, null)</li>
+                                <li>@Html.ActionLink("View LabMethods", "ViewTableData", "ViewData", new { area = "", identifier = "LabMethods" }, null)</li>
+                                <li>@Html.ActionLink("View Samples", "ViewTableData", "ViewData", new { area = "", identifier = "Samples" }, null)</li>
+                                <li>@Html.ActionLink("View Qualifiers", "ViewTableData", "ViewData", new { area = "", identifier = "Qualifiers" }, null)</li>
+                                <li>@Html.ActionLink("View QualityControlLevels", "ViewTableData", "ViewData", new { area = "", identifier = "QualityControlLevels" }, null)</li>
+                                <li>@Html.ActionLink("View DataValues", "ViewTableData", "ViewData", new { area = "", identifier = "DataValues" }, null)</li>
+                                <li>@Html.ActionLink("View GroupDescriptions", "ViewTableData", "ViewData", new { area = "", identifier = "GroupDescriptions" }, null)</li>
+                                <li>@Html.ActionLink("View Groups", "ViewTableData", "ViewData", new { area = "", identifier = "Groups" }, null)</li>
+                                <li>@Html.ActionLink("View DerivedFrom", "ViewTableData", "ViewData", new { area = "", identifier = "DerivedFrom" }, null)</li>
+                                <li>@Html.ActionLink("View Categories", "ViewTableData", "ViewData", new { area = "", identifier = "Categories" }, null)</li>
+                                <li class="divider"></li>
+                                <li>@Html.ActionLink("View SeriesCatalog", "ViewTableData", "ViewData", new { area = "", identifier = "SeriesCatalog" }, null)</li>
+
+                            </ul>
+                        </li>
+                        @if (User.IsInRole("Admin") || User.Identity.Name == "mseul@cuahsi.org")
+                        {
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin<b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li>@Html.ActionLink("Roles", "Index", "Roles", new { area = "Admin" }, null)</li>
+                                    <li>@Html.ActionLink("Add Connection", "Index", "ConnectionParameters", new { area = "Admin" }, null)</li>
+                                    <li>@Html.ActionLink("Link Connections", "Index", "ConnectionParametersUsers", new { area = "Admin" }, null)</li>
+                                    <li>@Html.ActionLink("Register as a new user", "Register", "Account", new { area = "" }, null)</li>
+                                </ul>
+                            </li>
+                        }
+                    </ul>
                 }
                 @if (User.Identity.IsAuthenticated)
                 {
-                     @Html.Partial("_LoginPartial")
+                    @Html.Partial("_LoginPartial")
+
+                    @Html.ActionLink("Sign-out", "SignOut", "Account", new { @class = "btn btn-info", @id = "logout" })
+
                 }
             </div>
         </div>
-    </div>
-  
-    <div class="container body-content">
-      
-          @RenderBody()
-      
-    </div>
-    <div class="container">
+
+
+
+
+        @RenderBody()
+
+
         <footer>
             <hr />
-
             <p><a href="https://github.com/CUAHSI/Azure-Hydroservertools/issues" class="h5" target="_blank">Report a bug here!</a><span style="float:right"> &copy; @DateTime.Now.Year - &copy; CUAHSI Version 1.2.5</span></p>
-        </footer>
-    </div>
+      </footer>
+    </div>  
    @* @Scripts.Render("~/bundles/jquery")*@
     @*@Scripts.Render("~/bundles/bootstrap")*@
 

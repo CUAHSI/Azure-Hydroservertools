@@ -1,0 +1,91 @@
+﻿@model HydroServerTools.Models.ServiceRegistration
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_LayoutSimple.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>ServiceRegistration</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Id)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Id)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.GoogleAccount)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.GoogleAccount)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ServiceTitle)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ServiceTitle)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ServiceDescription)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ServiceDescription)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ContactName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ContactName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ContactEmail)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ContactEmail)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ContactPhone)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ContactPhone)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Organization)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Organization)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.OrganizationUrl)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.OrganizationUrl)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.ServiceName }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

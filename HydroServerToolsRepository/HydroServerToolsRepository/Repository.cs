@@ -512,7 +512,7 @@ namespace HydroServerToolsRepository.Repository
                         double result;
                         bool canConvert = UniversalTypeConverter.TryConvertTo<double>(item.Latitude, out result);
 
-                        if (!canConvert)
+                        if (!canConvert || Double.IsNaN(result))
                         {
                             var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "Latitude")); listOfErrors.Add(err); isRejected = true;
                         }
@@ -535,7 +535,7 @@ namespace HydroServerToolsRepository.Repository
                         double result;
                         bool canConvert = UniversalTypeConverter.TryConvertTo<double>(item.Longitude, out result);
 
-                        if (!canConvert)
+                        if (!canConvert || Double.IsNaN(result))
                         {
                             var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "Longitude")); listOfErrors.Add(err); isRejected = true;
                         }
@@ -623,7 +623,7 @@ namespace HydroServerToolsRepository.Repository
                         double result;
                         bool canConvert = UniversalTypeConverter.TryConvertTo<double>(item.Elevation_m, out result);
 
-                        if (!canConvert)
+                        if (!canConvert || Double.IsNaN(result))
                         {
                             var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "Elevation_m")); listOfErrors.Add(err); isRejected = true;
                         }
@@ -677,7 +677,7 @@ namespace HydroServerToolsRepository.Repository
                         double result;
                         bool canConvert = UniversalTypeConverter.TryConvertTo<double>(item.LocalX, out result);
 
-                        if (!canConvert)
+                        if (!canConvert || Double.IsNaN(result))
                         {
                             var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "LocalX")); listOfErrors.Add(err); isRejected = true;
                         }
@@ -696,7 +696,7 @@ namespace HydroServerToolsRepository.Repository
                         double result;
                         bool canConvert = UniversalTypeConverter.TryConvertTo<double>(item.LocalY, out result);
 
-                        if (!canConvert)
+                        if (!canConvert || Double.IsNaN(result))
                         {
                             var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "LocalY")); listOfErrors.Add(err); isRejected = true;
                         }
@@ -776,7 +776,7 @@ namespace HydroServerToolsRepository.Repository
                         double result;
                         bool canConvert = UniversalTypeConverter.TryConvertTo<double>(item.PosAccuracy_m, out result);
 
-                        if (!canConvert)
+                        if (!canConvert || Double.IsNaN(result))
                         {
                             var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "PosAccuracy_m")); listOfErrors.Add(err); isRejected = true;
                         }
@@ -1527,7 +1527,7 @@ namespace HydroServerToolsRepository.Repository
                         double result;
                         bool canConvert = UniversalTypeConverter.TryConvertTo<double>(item.TimeSupport, out result);
                         
-                        if (!canConvert)
+                        if (!canConvert || Double.IsNaN(result))
                         {
                             var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_NOT_IN_CV, item.TimeSupport, "TimeSupport"));
                             listOfErrors.Add(err);
@@ -1637,7 +1637,7 @@ namespace HydroServerToolsRepository.Repository
                     {
                         double result;
                         bool canConvert = UniversalTypeConverter.TryConvertTo<double>(item.NoDataValue, out result);
-                        if (!canConvert)
+                        if (!canConvert || Double.IsNaN(result))
                         {
                             var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_FAILED_NOVALIDDATA, "NoDataValue"));
                             listOfErrors.Add(err);
@@ -5127,7 +5127,13 @@ namespace HydroServerToolsRepository.Repository
             var a_end = DateTime.Now;
 
             timeToRetrieveVars = a_end - startTime;
-            Debug.WriteLine("timeToRetrieveVars:" + timeToRetrieveVars);
+            var resultCollection = new System.Collections.Concurrent.ConcurrentBag<string>();
+            System.Threading.Tasks.Parallel.ForEach(siteCodeVarCodePermutations, sv =>
+            {
+
+            });
+
+           Debug.WriteLine("timeToRetrieveVars:" + timeToRetrieveVars);
             try
             {
                 foreach (var sv in siteCodeVarCodePermutations)
@@ -5135,6 +5141,12 @@ namespace HydroServerToolsRepository.Repository
                     //siteid for sitecode
                     int currentSiteId = 0;
                     if (siteCodes.ContainsKey(sv.SiteCode))
+                    {
+                        currentSiteId = siteCodes[sv.SiteCode];
+                    }
+                    //variableId for variablecode
+                    int currentVariableId = 0;
+                    if (variableCodes.ContainsKey(sv.VariableCode))
                     {
                         currentSiteId = siteCodes[sv.SiteCode];
                     }
@@ -5218,6 +5230,7 @@ namespace HydroServerToolsRepository.Repository
                         await statusContext.AddStatusMessage(typeof (DataValuesModel).Name, statusMessage);
                     }
 
+                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Ressources.IMPORT_STATUS_PROCESSING, count, maxCount, listOfCorrectRecords.Count(), listOfIncorrectRecords.Count(), listOfDuplicateRecords.Count()));
                     #region loop through series
                     var filteredList = (from i in itemList
                                         where i.SiteCode == sv.SiteCode && i.VariableCode == sv.VariableCode
@@ -5250,8 +5263,8 @@ namespace HydroServerToolsRepository.Repository
                             var model = new DataValue();
                             var listOfErrors = new List<ErrorModel>();
 
-                            ////set default values
-                            //string unk = "Unknown";
+                            //set default values
+                            string unk = "Unknown";
 
                             model.ValueAccuracy = null;
                             model.OffsetValue = null;
@@ -5287,8 +5300,8 @@ namespace HydroServerToolsRepository.Repository
                             {
                                 double result;
                                 bool canConvert = UniversalTypeConverter.TryConvertTo<double>(item.ValueAccuracy, out result);
-
-                                if (!canConvert)
+                                
+                                if (!canConvert || Double.IsNaN(result))
                                 {
                                     var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "ValueAccuracy")); listOfErrors.Add(err); isRejected = true;
                                 }
@@ -5422,7 +5435,7 @@ namespace HydroServerToolsRepository.Repository
                                 double result;
                                 bool canConvert = UniversalTypeConverter.TryConvertTo<double>(item.OffsetValue, out result);
 
-                                if (!canConvert)
+                                if (!canConvert || Double.IsNaN(result))
                                 {
                                     var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "OffsetValue")); listOfErrors.Add(err); isRejected = true;
                                 }
@@ -6896,7 +6909,7 @@ namespace HydroServerToolsRepository.Repository
                         double result;
                         bool canConvert = UniversalTypeConverter.TryConvertTo<double>(item.DataValue, out result);
 
-                        if (!canConvert)
+                        if (!canConvert || Double.IsNaN(result))
                         {
                             var err = new ErrorModel("AddCategories", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "DataValue")); listOfErrors.Add(err); isRejected = true;
                         }

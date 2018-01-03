@@ -645,8 +645,8 @@ namespace HydroServerToolsRepository.Repository
                 // open the connection
                 destinationConnection.Open();
 
-                using (SqlBulkCopy bulkCopy =
-                            new SqlBulkCopy(destinationConnection.ConnectionString, SqlBulkCopyOptions.KeepNulls| SqlBulkCopyOptions.CheckConstraints ))
+                    using (SqlBulkCopy bulkCopy =
+                                new SqlBulkCopy(destinationConnection.ConnectionString, SqlBulkCopyOptions.KeepNulls))//| SqlBulkCopyOptions.CheckConstraints ))
                 {
 
                         //bulkCopy.SqlRowsCopied += new SqlRowsCopiedEventHandler(OnSqlRowsTransfer, instanceIdentifier, CacheName);
@@ -668,7 +668,7 @@ namespace HydroServerToolsRepository.Repository
                         bulkCopy.NotifyAfter = 5000;
                     bulkCopy.BatchSize = 10000;
                     // Set the timeout.
-                    bulkCopy.BulkCopyTimeout = 600;
+                    bulkCopy.BulkCopyTimeout = 6000;
 
                     // bulkCopy.ColumnMappings.Add("OrderID", "NewOrderID");     
                     bulkCopy.DestinationTableName = tableName;

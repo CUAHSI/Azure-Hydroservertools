@@ -10,11 +10,20 @@
 
 /* Set width on the form input elements since they're 100% wide by default */
 input,
-select,
-textarea {
-    max-width: 280px;
-}
+select
+ {
+    max-width: 400px;
 
+}
+.form-group input 
+{
+    width:250px
+}
+textarea {
+    font-family: inherit;
+    width: 250px;
+    height: 100px;
+}
 /* styles for validation helpers */
 .field-validation-error {
     color: #b94a48;
