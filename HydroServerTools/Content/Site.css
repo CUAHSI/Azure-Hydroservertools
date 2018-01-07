@@ -329,3 +329,23 @@ tr.shown td.collapse-control:before {
     content: "\e160";
 }
 
+/* Make bootstrap modal dialog components wide...*/
+.modal-dialog-full {
+    width: 100%;
+}
+
+.modal-content-full {
+    width: 100%;
+}
+
+.modal-body-full {
+    width: 100%;
+}
+
+.modal-header-full {
+    width: 100%;
+}
+
+.modal-footer-full {
+    width: 100%;
+}
