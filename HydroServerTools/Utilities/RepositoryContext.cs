@@ -107,6 +107,73 @@ namespace HydroServerTools.Utilities
                 }
             }
 
+            //Processing complete - return result
+            return result;
+        }
+
+        //Retrieve the model type per the input table name...
+        //Returns null if no such type found...
+        public async Task<Type> ModelTypeByTableName(string tableName)
+        {
+            Type result = null;
+            if (!String.IsNullOrWhiteSpace(tableName))
+            {
+                //Create a DbContext...
+                var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
+                
+                //Create a 'Db' method for the associated entity framework type via reflection...
+                //Looking for a method signature: Db<T>(System.Data.Entity.DbContext)
+                Type typeExtension = typeof(EntityFramework.Metadata.Extensions.MappingApiExtensions);
+
+                MethodInfo methodInfoTarget = null;
+                MethodInfo[] methodInfoDbs = typeExtension.GetMethods().Where(mi => mi.Name == "Db").ToArray();
+
+                foreach (var methodInfoDb in methodInfoDbs)
+                {
+                    if (methodInfoDb.IsGenericMethod)
+                    {
+                        //Generic method...
+                        ParameterInfo[] pInfos = methodInfoDb.GetParameters();
+
+                        if (1 == pInfos.Length)
+                        {
+                            //Single parameter...
+                            if (typeof(DbContext) == pInfos[0].ParameterType)
+                            {
+                                //Parameter type: DbContext...
+                                methodInfoTarget = methodInfoDb;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (null != methodInfoTarget)
+                {
+                    //'Db' method information found - scan entity framework types...
+                    foreach (var kvp in modelTypesToEntityFrameworkTypes)
+                    {
+                        Type modelType = kvp.Key;
+                        Type efType = kvp.Value;
+
+                        using (await RepositorySemaphore.UseWaitAsync())
+                        {
+                            //Call extension method to retrieve table name for current entity framework type...
+                            MethodInfo methodInfo_G = methodInfoTarget.MakeGenericMethod(efType);
+                            var efMetadata = methodInfo_G.Invoke(context, new object[] { context }) as EntityFramework.Metadata.IEntityMap;
+
+                            if (tableName.ToLowerInvariant() == efMetadata.TableName.ToLowerInvariant())
+                            {
+                                //Matching table name - return model type...
+                                result = modelType;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            //Processing complete - return result
             return result;
         }
 

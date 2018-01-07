@@ -265,7 +265,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http.Formatting">
@@ -414,6 +414,38 @@
     <Content Include="Content\DataTables-1.9.4\media\images\sort_both.png" />
     <Content Include="Content\DataTables-1.9.4\media\images\sort_desc.png" />
     <Content Include="Content\DataTables-1.9.4\media\images\sort_desc_disabled.png" />
+    <Content Include="Content\DataTables-Editor-1.7.0\dataTables.editor.css" />
+    <Content Include="Content\DataTables-Editor-1.7.0\editor.bootstrap.css" />
+    <Content Include="Content\DataTables-Editor-1.7.0\editor.bootstrap.min.css" />
+    <Content Include="Content\DataTables-Editor-1.7.0\editor.bootstrap4.css" />
+    <Content Include="Content\DataTables-Editor-1.7.0\editor.bootstrap4.min.css" />
+    <Content Include="Content\DataTables-Editor-1.7.0\editor.dataTables.css" />
+    <Content Include="Content\DataTables-Editor-1.7.0\editor.dataTables.min.css" />
+    <Content Include="Content\DataTables-Editor-1.7.0\editor.foundation.css" />
+    <Content Include="Content\DataTables-Editor-1.7.0\editor.foundation.min.css" />
+    <Content Include="Content\DataTables-Editor-1.7.0\editor.jqueryui.css" />
+    <Content Include="Content\DataTables-Editor-1.7.0\editor.jqueryui.min.css" />
+    <Content Include="Content\DataTables-Editor-1.7.0\editor.semanticui.css" />
+    <Content Include="Content\DataTables-Editor-1.7.0\editor.semanticui.min.css" />
+    <Content Include="Content\DataTables-KeyTable-2.3.2\css\keyTable.bootstrap.css" />
+    <Content Include="Content\DataTables-KeyTable-2.3.2\css\keyTable.bootstrap.min.css" />
+    <Content Include="Content\DataTables-KeyTable-2.3.2\css\keyTable.bootstrap4.css" />
+    <Content Include="Content\DataTables-KeyTable-2.3.2\css\keyTable.bootstrap4.min.css" />
+    <Content Include="Content\DataTables-KeyTable-2.3.2\css\keyTable.dataTables.css" />
+    <Content Include="Content\DataTables-KeyTable-2.3.2\css\keyTable.dataTables.min.css" />
+    <Content Include="Content\DataTables-KeyTable-2.3.2\css\keyTable.foundation.css" />
+    <Content Include="Content\DataTables-KeyTable-2.3.2\css\keyTable.foundation.min.css" />
+    <Content Include="Content\DataTables-KeyTable-2.3.2\css\keyTable.jqueryui.css" />
+    <Content Include="Content\DataTables-KeyTable-2.3.2\css\keyTable.jqueryui.min.css" />
+    <Content Include="Content\DataTables-KeyTable-2.3.2\css\keyTable.semanticui.css" />
+    <Content Include="Content\DataTables-KeyTable-2.3.2\css\keyTable.semanticui.min.css" />
+    <Content Include="Content\DT-1.10.16-Btns-1.5.1-Ed-1.7.0-Sel-1.2.4\DataTables-1.10.16\images\sort_asc.png" />
+    <Content Include="Content\DT-1.10.16-Btns-1.5.1-Ed-1.7.0-Sel-1.2.4\DataTables-1.10.16\images\sort_asc_disabled.png" />
+    <Content Include="Content\DT-1.10.16-Btns-1.5.1-Ed-1.7.0-Sel-1.2.4\DataTables-1.10.16\images\sort_both.png" />
+    <Content Include="Content\DT-1.10.16-Btns-1.5.1-Ed-1.7.0-Sel-1.2.4\DataTables-1.10.16\images\sort_desc.png" />
+    <Content Include="Content\DT-1.10.16-Btns-1.5.1-Ed-1.7.0-Sel-1.2.4\DataTables-1.10.16\images\sort_desc_disabled.png" />
+    <Content Include="Content\DT-1.10.16-Btns-1.5.1-Ed-1.7.0-Sel-1.2.4\DT-1.10.16-Btns-1.5.1-Ed-1.7.0-Sel-1.2.4.css" />
+    <Content Include="Content\DT-1.10.16-Btns-1.5.1-Ed-1.7.0-Sel-1.2.4\DT-1.10.16-Btns-1.5.1-Ed-1.7.0-Sel-1.2.4.min.css" />
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
     <Content Include="Content\mvcfileupload\blueimp\jquery.fileupload-noscript.css" />
@@ -526,6 +558,17 @@
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="Content\DataTables-Editor-1.7.0\scss\bubble.scss" />
+    <Content Include="Content\DataTables-Editor-1.7.0\scss\datatable.scss" />
+    <Content Include="Content\DataTables-Editor-1.7.0\scss\datetime.scss" />
+    <Content Include="Content\DataTables-Editor-1.7.0\scss\envelope.scss" />
+    <Content Include="Content\DataTables-Editor-1.7.0\scss\fields.scss" />
+    <Content Include="Content\DataTables-Editor-1.7.0\scss\inline.scss" />
+    <Content Include="Content\DataTables-Editor-1.7.0\scss\lightbox.scss" />
+    <Content Include="Content\DataTables-Editor-1.7.0\scss\main.scss" />
+    <Content Include="Content\DataTables-Editor-1.7.0\scss\mixins.scss" />
+    <Content Include="Content\DataTables-Editor-1.7.0\scss\processing.scss" />
+    <Content Include="Content\DataTables-Editor-1.7.0\scss\upload.scss" />
     <None Include="Microsoft.WindowsAzure.Caching\ClientPerfCountersInstaller.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -591,6 +634,22 @@
     <Content Include="Content\DataTables-1.9.4\extras\TableTools\media\images\psd\file_types.psd" />
     <Content Include="Content\DataTables-1.9.4\extras\TableTools\media\images\psd\copy document.psd" />
     <Content Include="Content\DataTables-1.9.4\extras\TableTools\media\images\psd\collection.psd" />
+    <Content Include="Scripts\DataTables-Editor-1.7.0\dataTables.editor.js" />
+    <Content Include="Scripts\DataTables-Editor-1.7.0\dataTables.editor.min.js" />
+    <Content Include="Scripts\DataTables-Editor-1.7.0\editor.bootstrap.js" />
+    <Content Include="Scripts\DataTables-Editor-1.7.0\editor.bootstrap.min.js" />
+    <Content Include="Scripts\DataTables-Editor-1.7.0\editor.bootstrap4.js" />
+    <Content Include="Scripts\DataTables-Editor-1.7.0\editor.bootstrap4.min.js" />
+    <Content Include="Scripts\DataTables-Editor-1.7.0\editor.foundation.js" />
+    <Content Include="Scripts\DataTables-Editor-1.7.0\editor.foundation.min.js" />
+    <Content Include="Scripts\DataTables-Editor-1.7.0\editor.jqueryui.js" />
+    <Content Include="Scripts\DataTables-Editor-1.7.0\editor.jqueryui.min.js" />
+    <Content Include="Scripts\DataTables-Editor-1.7.0\editor.semanticui.js" />
+    <Content Include="Scripts\DataTables-Editor-1.7.0\editor.semanticui.min.js" />
+    <Content Include="Scripts\DataTables-KeyTable-2.3.2\js\dataTables.keyTable.js" />
+    <Content Include="Scripts\DataTables-KeyTable-2.3.2\js\dataTables.keyTable.min.js" />
+    <Content Include="Scripts\DT-1.10.16-Btns-1.5.1-Ed-1.7.0-Sel-1.2.4\DT-1.10.16-Btns-1.5.1-Ed-1.7.0-Sel-1.2.4.js" />
+    <Content Include="Scripts\DT-1.10.16-Btns-1.5.1-Ed-1.7.0-Sel-1.2.4\DT-1.10.16-Btns-1.5.1-Ed-1.7.0-Sel-1.2.4.min.js" />
     <Content Include="Scripts\jquery.jqupload.min.js" />
     <Content Include="Scripts\jquery.signalR-2.2.0.js" />
     <Content Include="Scripts\jquery.signalR-2.2.0.min.js" />
@@ -646,7 +705,9 @@
     <None Include="Properties\PublishProfiles\hydroservertools-staging - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\hydroservertools-staging - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\hydroservertools.pubxml" />
+    <None Include="Properties\PublishProfiles\HydroServerToolsBCTest - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\local.pubxml" />
+    <None Include="Properties\PublishProfiles\QA-HydroServer - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\QA-HydroServer - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\DataTables-1.9.4\extras\TableTools\media\js\ZeroClipboard.js" />
@@ -796,6 +857,7 @@
     <Content Include="Views\CSVUpload\ValidateFiles.cshtml" />
     <Content Include="Views\CSVUpload\DbSummaryReport.cshtml" />
     <Content Include="Views\CSVUpload\SelectUploadType.cshtml" />
+    <Content Include="Views\CSVUpload\RejectedItems.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

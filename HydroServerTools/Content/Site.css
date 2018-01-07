@@ -301,3 +301,31 @@ table
         transform: rotate(360deg);
     }
 }
+
+/* Sources: local copy of bootstrap.css
+                https://stackoverflow.com/questions/14238905/using-twitter-bootstrap-glyphicons-in-css
+                https://www.datatables.net/examples/api/row_details.html
+    */
+td.collapse-control {
+    font-size: 1.5em;
+    text-align: center;
+    color: green;
+    width: 2.0em;
+}
+
+tr.shown td.collapse-control {
+    color: red;
+}
+
+td.collapse-control:before {
+    /* from: glyphicon-collapse-down */
+    font-family: 'Glyphicons Halflings';
+    content: "\e159";
+}
+
+tr.shown td.collapse-control:before {
+    /* from: glyphicon-collapse-up */
+    font-family: 'Glyphicons Halflings';
+    content: "\e160";
+}
+

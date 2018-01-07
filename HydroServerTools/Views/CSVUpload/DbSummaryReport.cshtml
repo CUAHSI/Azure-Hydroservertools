@@ -38,7 +38,7 @@
 
                             <!-- If Rejected === 0 show span else show button -->
                             <td class="col-md-2 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanRejected">0</span></td>
-                            <td class="col-md-2 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-danger buttonRejected">25</button></td>
+                            <td class="col-md-2 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-danger buttonRejected" data-toggle="modal" data-target="#rejectedItemsModal">25</button></td>
                         </tr>
 
                         <!-- DB Load Results go here... -->
@@ -54,6 +54,27 @@
             <div class="pull-right">
                 @*<a href="/home/index" class="btn btn-success cancel" >Finish</a>*@
                 <a class="btn btn-success cancel">Finish</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal dialog for rejected items -->
+    <div class="modal fade" id="rejectedItemsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-full" role="document">
+            <div class="modal-content modal-content-full">
+                <div class="modal-header">
+                    <button type="button" id="btnRejectedItemsX" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h3 class="modal-title" id="myModalLabel">Rejected&nbsp;<span id="spanRejectedItemsTitle"></span></h3>
+                </div>
+                <div class="modal-body modal-body-full">
+                    @*<p>Rejected items table goes here!!</p>*@
+                    <table id="tblRejectedItems" class="display" cellspacing="0" style="width: 100%;"></table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="btnRejectedItemsModalDownload" class="btn btn-default btn-primary left" >Download</button>
+                    <button type="button" id="btnRejectedItemsModalClose" class="btn btn-warning left" data-dismiss="modal">Close</button>
+                    <button type="button" id="btnRejectedItemsModalReupload" class="btn btn-success left" >Re-Upload</button>
+                </div>
             </div>
         </div>
     </div>
@@ -113,7 +134,257 @@
         </tbody>
     </table>*@
 
-<script type="text/javascript">
+@section styles {
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/css/DataTablesEditorCombo")
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/js/DataTablesEditorCombo")
+}
+
+    <script type="text/javascript">
+
+        //A simple function to format a 'child' table of errors for a DataTables row...
+        function formatErrors(rowErrors) {
+            var result = '';
+
+            //Validate/initialize input parameter(s)...
+            if ('undefined' !== typeof rowErrors && null !== rowErrors) {
+                //Input parameter(s) valid - scan content, built table markup...
+                result += '<table class="errorTable" cellpadding="5" cellspacing="0" border="0" style="padding-left:0.5em;">';
+
+                //for (var fieldName in rowErrors) {
+                //    var fieldErrors = rowErrors[fieldName];
+
+                //    if ('string' === typeof fieldErrors) {
+                //        //String type - add one table row to result...
+                //        result += '<tr>' +
+                //            '<td>Field:&nbsp;' + fieldName + '</td>' +
+                //            '<td>Error:&nbsp;' + fieldErrors + '</td>' +
+                //            '</tr>';
+                //    }
+                //    else if (Array.isArray(fieldErrors)) {
+                //        //Array type - add multiple table row to result...
+                //        var length = fieldErrors.length;
+                //        for (var i = 0; i < length; ++i) {
+                //            result += '<tr>';
+                //            if (0 === i) {
+                //                result += '<td>Field:&nbsp;' + fieldName + '</td>';
+                //                result += '<td>Error:&nbsp;' + fieldErrors[i] + '</td>';
+                //            }
+                //            else {
+                //                result += '<td style="width: ' + ('Field: '.length + fieldName.length) + 'em;"></td>';
+                //                result += '<td>Error:&nbsp;' + fieldErrors[i] + '</td>';
+                //            }
+                //            result += '</tr>';
+                //        }
+                //    }
+                //}
+
+                //Scan input error string - create markup for each error...
+                var errors = rowErrors.split(';');
+                var length = errors.length;
+                for (var i = 0; i < length; ++i) {
+                    var error = errors[i];
+
+                    result += '<tr>' +
+                        '<td>&nbsp;' + error + '</td>' +
+                        '</tr>';
+                }
+
+                result += '</table>';
+            }
+
+            //Processing complete - return result
+            return result;
+        }
+
+        function buildRejectedItemsTable(rejectedItemsData) {
+
+            //Validate/initialize input parameters... 
+            if ('undefined' !== typeof rejectedItemsData && null !== rejectedItemsData) {
+
+                //Build table data...
+                var tblData = {
+                    "columns": [
+                        {
+                            "className": "collapse-control",
+                            "orderable": false,
+                            "data": null,
+                            "defaultContent": ""
+                        }
+
+                    ],
+                    "data": [],
+                    "editorFields": [],
+                    "errors": {}
+                };
+
+                //Column definitions...
+                var propertyNames = rejectedItemsData.RequiredPropertyNames.concat(rejectedItemsData.OptionalPropertyNames);
+                var pnLength = propertyNames.length;
+                for (pnI = 0; pnI < pnLength; ++pnI) {
+                    var colDef = { "data": "", "title": "" };
+                    var editorDef = {"label": "", "name": ""};
+                    var propertyName = propertyNames[pnI];
+
+                    colDef.data = propertyName;
+                    colDef.title = propertyName;
+                    tblData.columns.push(colDef);
+
+                    editorDef.label = propertyName;
+                    editorDef.name = propertyName;
+                    tblData.editorFields.push(editorDef);
+                }
+
+                //Data...
+                tblData.data = rejectedItemsData.RejectedItems;
+
+                //DataTables Editor 1.7.0 Configuration...
+                var editor = new $.fn.dataTable.Editor({
+                    "table": '#tblRejectedItems',
+                    "fields": tblData.editorFields,
+                    "display": "bootstrap",  //Display main editing form in Bootstrap modal dialog...
+                    //Apply changes locally only...
+                    "ajax": function (method,      //Legacy parameter - should be null
+                                        url,         //Legacy parameter - should be null 
+                                        data,        //Data to send to server...
+                                        success,     //Success callback accepting data returned from the server
+                                        error) {     //Error callback accepting (not for validation errors!!)
+                        //For now - update the data array...
+                        var objs = tblData.data;
+                        var length = objs.length;
+                        for (var i = 0; i < length; ++i) {
+                            var obj = objs[i];
+
+                        //    var dataObjs = data.data;
+                        //    for (var key in dataObjs) {
+                        //        if (key == obj.DT_RowId) {
+                        //            var value = dataObjs[key];
+                        //            obj.supplier = value.supplier;
+                        //            obj.color = value.color;
+                        //            obj.size = value.size;
+                        //            obj.options = value.options;
+                        //            var fromServer = { "data": [obj] };
+
+                        //            success(fromServer);  //Call the success function...
+                        //            break;
+                        //        }
+                        //    }
+                        }
+                    },
+                    "formOptions": {
+                        "inline": {
+                            "submit": "allIfChanged",
+                            "onBlur": "submit"
+                        }
+                    }
+                });
+
+                //DataTables 1.10.16 Configuration...
+                var newTable = $('#tblRejectedItems').DataTable({
+                    //"dom": "Bfrtip",
+                    "dom": "frtip",
+                    "data": tblData.data,
+                    "columns": tblData.columns,
+                    "select": { "style": "os" },
+                    "keys": {
+                        "columns": ":not(.collapse-control)",
+                        "keys": [9],
+                        "editor": editor,
+                        "editOnFocus": true
+                    }//,
+                    //,
+                    //"buttons": [
+                    //    { "extend": "create", "editor": editor },
+                    //    { "extend": "edit", "editor": editor },
+                    //    { "extend": "remove", "editor": editor }
+                    //]
+                });
+
+                //Click handler for 'collapse control' column...
+                $('table#tblRejectedItems > tbody').on('click', 'td.collapse-control', function () {
+                    //Retrieve row data...
+                    var tr = $(this).closest('tr');
+                    var row = newTable.row(tr);
+
+                    if (row.child.isShown()) {
+                        //Child row open, close...
+                        row.child.hide();
+                        tr.removeClass('shown');
+                    }
+                    else {
+                        // Child row closed, retrieve row errors... 
+                        var rowData = row.data();
+                        //var rowId = rowData.DT_RowId;
+                        //var rowErrors = tblData.errors[rowId];
+
+                        ////Format errors...
+                        //var markup = formatErrors(rowErrors);
+                        var markup = formatErrors(rowData.Errors);
+
+                        ////Open child row, show errors...
+                        row.child(markup).show();
+                        tr.addClass('shown');
+                    }
+                });
+            }
+
+        }
+
+        //Shown handler for rejected items dialog...
+        function shownRejectedItems(event) {
+
+            //Retrieve upload Id and  rejected items table name...
+            var currentUploadId = sessionStorage.currentUploadId;
+            var tableName = sessionStorage.currentRejectedItemsTableName;
+
+            if ('undefined' !== currentUploadId && null !== currentUploadId &&
+                'undefined' !== typeof tableName && null !== tableName) {
+                //Display table name...
+                $('#' + 'spanRejectedItemsTitle').text(tableName);
+                
+                //Retrieve rejected items for display...
+                var url = '/api/revisedupload/get/rejecteditems/' + currentUploadId + '/' +  tableName + '/';
+
+                $.ajax({
+                    "url": url,
+                    "type": "GET",
+                    "async": true,
+                    "dataType": "json",
+                    "cache": false, //So IE does not cache when calling the same URL - source: http://stackoverflow.com/questions/7846707/ie9-jquery-ajax-call-first-time-doing-well-second-time-not
+                    "success": function (data, textStatus, jqXHR) {
+                        console.log('RevisedUpload GET/rejecteditems success!!');
+                        var rejectedItemsData = data;
+
+                        //Build the rejected items table...
+                        buildRejectedItemsTable(rejectedItemsData);
+                        var n = 5;
+
+                        ++n;
+                        //var length = dbLoadResults.length;
+                        //console.log('getDbLoadResults(...) dbLoadResults.length = ' + length);
+                        //for (var i = 0; i < length; ++i) {
+                        //    console.log("Load results for: " + dbLoadResults[i].TableName);
+                        //}
+
+                        ////Display db load results...
+                        //buildSummaryReportMarkup('divDbLoadResults', dbLoadResults);
+                    },
+                    "error": function (xmlhttprequest, textStatus, message) {
+                        //Failure - Log messsage received from server...
+                        console.log('RevisedUpload GET/rejecteditems reports error: ' + xmlhttprequest.status + ' (' + message + ')');
+                    }
+                });
+            }
+        }
+
+        //Hidden handler for rejected items dialog...
+        function hiddenRejectedItems(event) {
+
+        }
 
     //Add table rows for db load results...
     function buildSummaryReportMarkup(tableDivId, dbLoadResults) {
@@ -123,7 +394,7 @@
 
             //Input parameters valid - select table and clear contents, if any...
             var jqSumRptTable = $('div#' + tableDivId + ' table tbody');
-            var jsSumRptRowTemplate = $('.templateTableRow'); 
+                var jsSumRptRowTemplate = $('.templateTableRow');
 
             jqSumRptTable.empty();
 
@@ -136,7 +407,8 @@
                 var newTableRow = jsSumRptRowTemplate.clone();
                 newTableRow.removeClass('hidden');
                 //Set table name column
-                newTableRow.find('.spanTableName').text(dbLoadResult.TableName);
+                    var tableName = dbLoadResult.TableName;
+                    newTableRow.find('.spanTableName').text(tableName);
 
                 //Set remaining columns...
                 var columns = ['Inserted', 'Updated', 'Rejected'];
@@ -154,13 +426,18 @@
 
                     //Set/show column per associated db load count value...
                     var loadCount = dbLoadResult.LoadCounts[column];
-                    if (0 < loadCount) {
-                        //Positive count - set and show the button
+                        if (0 < loadCount && 'Rejected' === column) {
+                            //Positive count, Rejected Column - set and show the button
                         tempButton.text(loadCount);
                         tempButton.parent().removeClass('hidden');
+
+                            //Add click handler to write associated table name to session storage...
+                            tempButton.on('click', function (event) {
+                                sessionStorage.currentRejectedItemsTableName = tableName;
+                            });
                     }
                     else {
-                        //Zero count - set and show the span
+                            //Zero count --OR-- Inserted or Updated column - set and show the span
                         tempSpan.text(loadCount);
                         tempSpan.parent().removeClass('hidden');
                     }
@@ -231,7 +508,7 @@
                     console.log('RevisedUpload DELETE/uploadId reports error: ' + xmlhttprequest.status + ' (' + message + ')');
                 }
             });
-        }    
+            }
     }
 
     $(document).ready(function () {
@@ -241,7 +518,7 @@
         var currentUploadId = sessionStorage.currentUploadId;
         console.log('DB Summary Report retrieves upload Id: ' + currentUploadId);
 
-        //'Click' handler for Finish 'anchor' 
+            //'Click' handler for Finish 'anchor'
         $('a.cancel').on('click', function (event) {
             //Clear session storage items...
             sessionStorage.removeItem('currentUploadId');
@@ -257,9 +534,12 @@
             getDbLoadResults(currentUploadId);
         }, 100);
 
+            //Set 'shown' and 'hidden' handlers for rejected items dialog
+            $('#' + 'rejectedItemsModal').on('shown.bs.modal', shownRejectedItems);
+            $('#' + 'rejectedItemsModal').on('hidden.bs.modal', hiddenRejectedItems);
     });
 
-</script>
+    </script>
 
 
-</div>
+    </div>

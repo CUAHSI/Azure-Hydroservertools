@@ -386,6 +386,26 @@ namespace HydroServerTools.Validators
                                         //Instantiate a map class instance...
                                         object mapTypeInstance = constructorInfo.Invoke(new object[] { });
 
+                                        //NOTE: Appears to work only on a static type declaration - like typeof (GenericMapConfiguration)
+                                        //var enumValue = System.Enum.Parse( enumType.GetType(), "SuppressEmptyRequiredFieldsChecks");
+
+                                        //Suppress empty required field checks...
+                                        var enumType = mapType.GetNestedType("GenericMapConfiguration");
+                                        FieldInfo[] fieldInfos;
+
+                                        fieldInfos = enumType.GetFields();
+                                        int enumValue = 0;
+                                        foreach (var fieldInfo in fieldInfos)
+                                        {
+                                            if ("SuppressEmptyRequiredFieldsChecks" == fieldInfo.Name)
+                                            {
+                                                enumValue = (int) Convert.ChangeType(fieldInfo.GetValue(null), typeof(int));
+                                            }
+                                        }
+
+                                        MethodInfo miConfigurationOptions = mapType.GetMethod("set_ConfigurationOptions");
+                                        miConfigurationOptions.Invoke(mapTypeInstance, new object[] { enumValue });
+
                                         //Get required property names...
                                         MethodInfo miGetRequiredPropertyNames = mapType.GetMethod("GetRequiredPropertyNames");
                                         List<string> requiredPropertyNames = miGetRequiredPropertyNames.Invoke(mapTypeInstance, new object[] { }) as List<string>;
@@ -532,8 +552,10 @@ namespace HydroServerTools.Validators
                 }
             }
             //catch (Exception ex)
-            catch (Exception)
+            catch (Exception Ex)
             {
+                string msg = Ex.Message;
+
                 //For now take no action...
                 reset();
                 result = false;
