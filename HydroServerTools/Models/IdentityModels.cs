@@ -92,7 +92,7 @@ namespace HydroServerTools.Models
         [MaxLength(30)]
         [Required]
         [RegularExpression("^[a-zA-Z]*$", ErrorMessage = "Please Enter Only Letters (no spaces)")]       
-        [Display(Name = "Service Name*")]
+        [Display(Name = "Service Name*")]        
         public string ServiceName { get; set; }
         [MaxLength(30)]
         [Required]
@@ -118,7 +118,7 @@ namespace HydroServerTools.Models
         [Display(Name = "Contact Email*")]
         [RegularExpression(".+@.+\\..+", ErrorMessage = "Please Enter Correct Email Address")]
         public string ContactEmail { get; set; }
-        [MaxLength(12)]
+        [MaxLength(15)]
         //[Required]
         [Display(Name = "Contact Phone")]
         public string ContactPhone { get; set; }

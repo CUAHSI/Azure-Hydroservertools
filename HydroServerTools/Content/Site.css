@@ -49,7 +49,10 @@ input[type="checkbox"].input-validation-error {
     display: none;
 }
 
-
+.infobutton {
+    width : 25px;
+    height :25px;
+}
 
 .ui-tabs.ui-tabs-vertical {
 padding: 0;

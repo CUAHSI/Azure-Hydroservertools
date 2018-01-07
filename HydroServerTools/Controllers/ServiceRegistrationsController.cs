@@ -92,7 +92,7 @@ namespace HydroServerTools.Controllers
             //check in registered services
             bool serviceExists = registeredServices.Any(rs => rs.ServiceCode.ToLower() == serviceRegistration.ServiceName.ToLower());
             //check in proposed services
-            serviceExists = db.ServiceRegistrations.Any(rs => rs.ServiceName.ToLower() == serviceRegistration.ServiceName.ToLower());
+            if (!serviceExists)  serviceExists = db.ServiceRegistrations.Any(rs => rs.ServiceName.ToLower() == serviceRegistration.ServiceName.ToLower());
             if (serviceExists)
             {
                 ModelState.AddModelError("ServiceName", "The Service Name is already taken please choose a different name");
@@ -265,11 +265,17 @@ namespace HydroServerTools.Controllers
                 mm.Subject = "Account Activation";
                 string body = "Hello " + userEmail + ",";
                 body += "<br /><br />Please click the following link to activate request for CUAHSI Data Hosting ";
+                body += "<br /><br />Please also find attached instructions on how to format your data before uploading it";
                 body += "<br /><a href = '" + string.Format("{0}://{1}/ServiceRegistrations/Activation/{2}", Request.Url.Scheme, Request.Url.Authority, activationCode) + "'>Click here to activate your account.</a>";
-                body += "<br /><br />Thanks";
+                body += "<br /><br />Please don't hesitate to contact us at help.cuahsi.org if you encounter any problems.";
+                body += "<br /><br />Thank you";
                 body += "<br /><br />The CUAHSI team";
                 mm.Body = body;
                 mm.IsBodyHtml = true;
+
+                System.Net.Mail.Attachment attachment;
+                attachment = new System.Net.Mail.Attachment(Server.MapPath("~/Templates/ODM Guide Shortened 2017.xlsx"));
+                mm.Attachments.Add(attachment);
 
                 //smtp.Host = "smtp.gmail.com";
                 //smtp.EnableSsl = true;

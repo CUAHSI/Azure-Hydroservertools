@@ -524,6 +524,7 @@
     <Content Include="Content\ViewData.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Images\infobutton_60.jpg" />
     <Content Include="Images\request.png" />
     <Content Include="Processed\NEVER-DELETE-THIS-FILE.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -858,6 +859,7 @@
     <Content Include="Views\CSVUpload\DbSummaryReport.cshtml" />
     <Content Include="Views\CSVUpload\SelectUploadType.cshtml" />
     <Content Include="Views\CSVUpload\RejectedItems.cshtml" />
+    <Content Include="Templates\ODM Guide Shortened 2017.xlsx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

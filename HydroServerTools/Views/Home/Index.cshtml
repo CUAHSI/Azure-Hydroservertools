@@ -4,7 +4,7 @@
 
     ViewBag.Message = TempData["message"];
 
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_LayoutSimple.cshtml";
 
 }
 
@@ -15,27 +15,40 @@
 
         <div class="well">
 
-            <h4>Click to Upload:@TempData["message"]</h4>
+            <h3>Please select: </h3>
 
             @*<button class="btn btn-primary btn-lg btn-block" data-toggle="modal" data-target="#setConnection">Set Database Connection</button>*@
             @*<p><a href="/CSVUpload/Sites" class="btn btn-primary btn-lg active" role="button">Import Data into Hydroserver</a></p>*@
          @*   @Html.ActionLink("Import CSV Data into Hydroserver", "UploadData", "CSVUpload", new { id = "Sites" }, new { @class = "btn btn-primary btn active" })*@
-
-            @Html.ActionLink("Basic CSV File Upload", "RevisedUploadData", "CSVUpload", new { id = "SelectUploadType" }, new { @class = "btn btn-primary" })
-            @Html.ActionLink("Full CSV File Upload", "UploadData", "CSVUpload", new { id = "Sites" }, new { @class = "btn btn-primary btn active" })
-
+            
+            <div class="row">
+                <div class="col-sm-5 " style="border-style: solid; border-width: thin; padding:5px">
+                    <h4>Please select if you only upload Sites, Variables, Sources and Datavalues</h4>
+                    @Html.ActionLink("Basic CSV File Upload", "RevisedUploadData", "CSVUpload", new { id = "SelectUploadType" }, new { @class = "btn btn-primary" })
+                    
+   </div>
+                <div class="col-sm-5 col-sm-offset-1" style="border-style: solid; border-width: thin; padding:5px">
+                    <h4>Please select if you upload more metadata than Sites, Variables, Sources and Datavalues</h4>
+                    @Html.ActionLink("Advanced CSV File Upload", "UploadData", "CSVUpload", new { id = "Sites" }, new { @class = "btn btn-primary" })
+                </div>
+            </div>
+            
+            <h3></h3>
+            @*<h3>you can allways start with the basic upload and add more comples metadata later.</h3>*@
+          
+          
 
         </div>
+       
+        
+        <br />
         <div class="well">
             <h4>
                 Click "Update Timeseries metadata" after new data is saved to the database.                
             </h4>
-            @Html.ActionLink("Refresh Timeseries metadata", "RecreateSeriescatalog", "Home", new { @class = "btn btn-info active" })
+            @Html.ActionLink("Synchronize Data", "RecreateSeriescatalog", "Home", new { @class = "btn btn-info active" })
             <h5>
-                This is required to register the new data values with the existing timeseries or create new timeseries.
-                Failing to do this will result in the new data not being discoverable.
-                Since this can take a long period of time depending on the amount of data in the database
-                it is recommended to be the last step of uploading multiple sheets of data.
+                Synchronize your database after you have uploaded new data values.  This step may take several minutes to complete so we recommend that you synchronize at the end of your uploading session. 
             </h5>
         </div>
         @if (User.IsInRole("Admin"))
