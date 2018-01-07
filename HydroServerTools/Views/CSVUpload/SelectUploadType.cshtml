@@ -4,20 +4,20 @@
     ViewBag.Name = "selectUploadType";
 }
 
-<h2>Select Upload Type</h2>
+@*<h2>Select Upload Type</h2>*@
 
 <div class="container">
     <div class="col-md-6">
 
         <div class="well">
             <h4>Meta-data</h4>
-            <p>Meta-data description goes here...</p>
+            <p>Our metadata templates will help you describe the “who”, “what”, “when”, “where”, and “why” of your data.</p>
             @Html.ActionLink("Meta-data Upload", "RevisedUploadData", "CSVUpload", new { id = "DragAndDropFiles_meta_data" }, new { @class = "btn btn-primary" })
         </div>
 
         <div class="well">
             <h4>Data Values</h4>
-            <p>Data values description goes here...</p>
+            <p>Our data values template will help you format your observations and measurements. Upload all applicable metadata before uploading data values.</p>
             @Html.ActionLink("Data Values Upload", "RevisedUploadData", "CSVUpload", new { id = "DragAndDropFiles_data_values" }, new { @class = "btn btn-primary data-values-upload" })
             <br />
             <br />

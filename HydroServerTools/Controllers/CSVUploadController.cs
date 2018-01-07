@@ -151,6 +151,8 @@ namespace HydroServerTools.Controllers
                 string idLower = id.ToLowerInvariant();
                 string idQualifier = String.Empty;
 
+                //hack for previous bug
+                if (idLower.Contains("draganddropfiles"))  idLower = "draganddropfiles_meta_data"; 
                 switch (idLower)
                 {
                     case "dbsummaryreport":

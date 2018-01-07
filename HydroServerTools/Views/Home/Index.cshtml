@@ -22,14 +22,14 @@
          @*   @Html.ActionLink("Import CSV Data into Hydroserver", "UploadData", "CSVUpload", new { id = "Sites" }, new { @class = "btn btn-primary btn active" })*@
             
             <div class="row">
-                <div class="col-sm-5 " style="border-style: solid; border-width: thin; padding:5px">
-                    <h4>Please select if you only upload Sites, Variables, Sources and Datavalues</h4>
-                    @Html.ActionLink("Basic CSV File Upload", "RevisedUploadData", "CSVUpload", new { id = "SelectUploadType" }, new { @class = "btn btn-primary" })
+                <div class="col-sm-5 col-sm-offset-1" style="padding:5px">
+                    <h4>Upload Sites, Variables, Sources and Datavalues</h4>
+                    @Html.ActionLink("Basic CSV File Upload", "RevisedUploadData", "CSVUpload", new { id = "SelectUploadType" }, new { @class = "btn btn-primary center-block" })
                     
    </div>
-                <div class="col-sm-5 col-sm-offset-1" style="border-style: solid; border-width: thin; padding:5px">
-                    <h4>Please select if you upload more metadata than Sites, Variables, Sources and Datavalues</h4>
-                    @Html.ActionLink("Advanced CSV File Upload", "UploadData", "CSVUpload", new { id = "Sites" }, new { @class = "btn btn-primary" })
+                <div class="col-sm-5 col-sm-offset-1" style="padding:5px">
+                    <h4>Upload other metadata than Sites, Variables, Sources and Datavalues</h4>
+                    @Html.ActionLink("Advanced CSV File Upload", "UploadData", "CSVUpload", new { id = "Sites" }, new { @class = "btn btn-primary center-block" })
                 </div>
             </div>
             
@@ -42,13 +42,14 @@
        
         
         <br />
+        <br />
         <div class="well">
             <h4>
-                Click "Update Timeseries metadata" after new data is saved to the database.                
+                Synchronize your Data <u>after</u> new data is saved to the database.                
             </h4>
-            @Html.ActionLink("Synchronize Data", "RecreateSeriescatalog", "Home", new { @class = "btn btn-info active" })
+            @Html.ActionLink("Synchronize Data", "RecreateSeriescatalog", "Home", new { @class = "btn btn-info active " })
             <h5>
-                Synchronize your database after you have uploaded new data values.  This step may take several minutes to complete so we recommend that you synchronize at the end of your uploading session. 
+                 This step may take several minutes to complete so we recommend that you synchronize at the end of your uploading session. 
             </h5>
         </div>
         @if (User.IsInRole("Admin"))

@@ -51,14 +51,23 @@
         </div>
             <div class="navbar-collapse collapse ">
                 @if (User.Identity.IsAuthenticated)
-                {                  
-                        
-                    if (User.Identity.IsAuthenticated)
-                    {
-                        @Html.Partial("_LoginPartial")
-                        @Html.ActionLink("Sign-out", "SignOut", "Account", new { @class = "btn btn-info", @id = "logout" })
-                    }
-                }
+                {
+                   
+                        <ul class="nav  navbar-nav">
+                            <li>@Html.ActionLink("Home", "Index", "Home", new { area = "" }, null)</li>
+                            @*<li>@Html.ActionLink("About", "About", "Home")</li>*@
+                            <li>@Html.ActionLink("Contact", "Contact", "Home", new { area = "" }, null)</li>
+                            <li>@Html.ActionLink("Manage", "Manage", "Home", new { area = "" }, null)</li>
+                            <li>@Html.ActionLink("Controlled Vocabularies", "ControlledVocabularies", "Home", new { area = "" }, null)</li>
+                        </ul>
+                            if (User.Identity.IsAuthenticated)
+                            {
+                            @Html.Partial("_LoginPartial")
+
+                            @Html.ActionLink("Sign-out", "SignOut", "Account", new { @class = "btn btn-info", @id = "logout" })
+
+                            }
+                            }
 </div>
         </div>
     </div>

@@ -860,6 +860,7 @@
     <Content Include="Views\CSVUpload\SelectUploadType.cshtml" />
     <Content Include="Views\CSVUpload\RejectedItems.cshtml" />
     <Content Include="Templates\ODM Guide Shortened 2017.xlsx" />
+    <Content Include="Views\Shared\_LayoutBasic.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
