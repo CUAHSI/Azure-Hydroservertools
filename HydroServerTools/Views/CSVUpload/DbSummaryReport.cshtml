@@ -432,10 +432,18 @@
                         tempButton.text(loadCount);
                         tempButton.parent().removeClass('hidden');
 
-                            //Add click handler to write associated table name to session storage...
-                            tempButton.on('click', function (event) {
-                                sessionStorage.currentRejectedItemsTableName = tableName;
-                            });
+                        //Add click handler to write associated table name to session storage...
+                        tempButton.on('click', function (event) {
+                                //From the current <button> tag navigate to the containing <tr> tag...
+                                var parent = $(this).parent();          //<td> tag
+                                var grandparent = $(parent).parent()    //<tr> tag
+
+                                //Find the descendant span containing the table name...
+                                var span = $(grandparent).find('span.spanTableName');
+                                var tblName = span.text();
+
+                                sessionStorage.currentRejectedItemsTableName = tblName;
+                        });
                     }
                     else {
                             //Zero count --OR-- Inserted or Updated column - set and show the span
