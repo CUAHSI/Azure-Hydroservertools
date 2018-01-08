@@ -228,6 +228,14 @@ namespace HydroServerTools.Controllers
                         fileType = "application/zip";
                         filePath = Server.MapPath(dir + filename);
                         break;
+                    case "ODMGuideBasic-Excel":
+                        dir = "~/Templates/";
+                        filename = "ODM Guide Shortened 2017.xlsx";
+                        fileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                        filePath = Server.MapPath(dir + filename);
+                        break;
+
+
                         
                 }
                if (System.IO.File.Exists(filePath))

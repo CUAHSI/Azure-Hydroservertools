@@ -15,21 +15,33 @@
 
         <div class="well">
 
-            <h3>Please select: </h3>
+            @*<h3>Please select: </h3>*@
 
             @*<button class="btn btn-primary btn-lg btn-block" data-toggle="modal" data-target="#setConnection">Set Database Connection</button>*@
             @*<p><a href="/CSVUpload/Sites" class="btn btn-primary btn-lg active" role="button">Import Data into Hydroserver</a></p>*@
          @*   @Html.ActionLink("Import CSV Data into Hydroserver", "UploadData", "CSVUpload", new { id = "Sites" }, new { @class = "btn btn-primary btn active" })*@
             
             <div class="row">
-                <div class="col-sm-5 col-sm-offset-1" style="padding:5px">
-                    <h4>Upload Sites, Variables, Sources and Datavalues</h4>
-                    @Html.ActionLink("Basic CSV File Upload", "RevisedUploadData", "CSVUpload", new { id = "SelectUploadType" }, new { @class = "btn btn-primary center-block" })
+                <div class="col-sm-5 " style="padding:5px">
+                    <h4><u>Please select</u> for uploading Sites, Variables, Methods, Sources and Datavalues</h4>
                     
+                    <h5>
+                        Please click to download 
+
+                        @Html.ActionLink("Basic formatting guide", "DownloadFile", "Export", new { id = "ODMGuideBasic-Excel" }, new { target = "_blank" })
+                    </h5>   
+                    <p>
+                        @Html.ActionLink("Basic CSV File Upload", "RevisedUploadData", "CSVUpload", new { id = "SelectUploadType" }, new { @class = "btn btn-primary center-block" })
+                    </p> 
    </div>
                 <div class="col-sm-5 col-sm-offset-1" style="padding:5px">
-                    <h4>Upload other metadata than Sites, Variables, Sources and Datavalues</h4>
-                    @Html.ActionLink("Advanced CSV File Upload", "UploadData", "CSVUpload", new { id = "Sites" }, new { @class = "btn btn-primary center-block" })
+                    <h4>
+                        <u>Please select</u> for Upload other metadata than Sites, Variables, Methods, Sources and Datavalues                        
+                    </h4>
+                    <h5>Please click to download
+                        @Html.ActionLink("Advanced formatting guide", "DownloadFile", "Export", new { id = "ODMGuide-Excel" }, new { target = "_blank" })
+                    </h5>
+                    <p> @Html.ActionLink("Advanced CSV File Upload", "UploadData", "CSVUpload", new { id = "Sites" }, new { @class = "btn btn-primary center-block" })</p>
                 </div>
             </div>
             
