@@ -172,6 +172,11 @@ namespace HydroServerTools.Controllers
                             TempData["qualifier"] = "data_values";
                             break;
                         }
+                    case "rejecteditems":
+                    {
+                            viewName = "RejectedItems";
+                            break;
+                    }
                     case "selectuploadtype":
                     {
                             viewName = "SelectUploadType";

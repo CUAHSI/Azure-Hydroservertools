@@ -436,7 +436,8 @@ namespace HydroServerToolsRepository.Repository
             var maxCount = itemList.Count;
             var count = 0;
 
-            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+            //var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING_RECORDS, maxCount, "Sites");
             if (null == statusContext)
             {
                 BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
@@ -452,7 +453,7 @@ namespace HydroServerToolsRepository.Repository
 
                 try
                 {
-                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, (count + 1), maxCount);
                     if (null == statusContext)
                     {
                         BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
@@ -898,7 +899,10 @@ namespace HydroServerToolsRepository.Repository
                             sb.Append(er.ErrorMessage + ";");
                             if (null != statusContext)
                             {
-                                await statusContext.AddStatusMessage(typeof (SiteModel).Name, er.ErrorMessage);
+                                var errorIndex = listOfIncorrectRecords.Count;
+                                StatusMessage statMsg = new StatusMessage(er.ErrorMessage, errorIndex);
+                                statMsg.IsError = true;
+                                await statusContext.AddStatusMessage(typeof (SiteModel).Name, statMsg);
                             }
                         }
                         item.Errors = sb.ToString();
@@ -931,7 +935,10 @@ namespace HydroServerToolsRepository.Repository
                             item.Errors += err.ErrorMessage + ";";
                             if (null != statusContext)
                             {
-                                await statusContext.AddStatusMessage(typeof(SiteModel).Name, err.ErrorMessage);
+                                var errorIndex = listOfIncorrectRecords.Count - 1;
+                                StatusMessage statMsg = new StatusMessage(err.ErrorMessage, errorIndex);
+                                statMsg.IsError = true;
+                                await statusContext.AddStatusMessage(typeof(SiteModel).Name, statMsg);
                             }
                         }
                     }
@@ -1304,7 +1311,8 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+            //var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING_RECORDS, maxCount, "Variables");
             if (null == statusContext)
             {
                 BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
@@ -1318,7 +1326,7 @@ namespace HydroServerToolsRepository.Repository
             {
                 try
                 {
-                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, (count + 1), maxCount);
                     if ( null == statusContext)
                     {
                         BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
@@ -1662,7 +1670,10 @@ namespace HydroServerToolsRepository.Repository
                             sb.Append(er.ErrorMessage + ";");
                             if (null != statusContext)
                             {
-                                await statusContext.AddStatusMessage(typeof(VariablesModel).Name, er.ErrorMessage);
+                                var errorIndex = listOfIncorrectRecords.Count;
+                                StatusMessage statMsg = new StatusMessage(er.ErrorMessage, errorIndex);
+                                statMsg.IsError = true;
+                                await statusContext.AddStatusMessage(typeof(VariablesModel).Name, statMsg);
                             }
                         }
                         item.Errors = sb.ToString();
@@ -1692,7 +1703,10 @@ namespace HydroServerToolsRepository.Repository
                             item.Errors += err.ErrorMessage + ";";
                             if (null != statusContext)
                             {
-                                await statusContext.AddStatusMessage(typeof(VariablesModel).Name, err.ErrorMessage);
+                                var errorIndex = listOfIncorrectRecords.Count - 1;
+                                StatusMessage statMsg = new StatusMessage(err.ErrorMessage, errorIndex);
+                                statMsg.IsError = true;
+                                await statusContext.AddStatusMessage(typeof(VariablesModel).Name, statMsg);
                             }
                         }
                     }
@@ -1926,7 +1940,8 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+            //var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING_RECORDS, maxCount, "OffsetTypes");
             if (null == statusContext)
             {
                 BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
@@ -1941,7 +1956,7 @@ namespace HydroServerToolsRepository.Repository
 
                 try
                 {
-                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, (count + 1), maxCount);
                     if (null == statusContext)
                     {
                         BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
@@ -2046,7 +2061,10 @@ namespace HydroServerToolsRepository.Repository
                             sb.Append(er.ErrorMessage + ";");
                             if (null != statusContext)
                             {
-                                await statusContext.AddStatusMessage(typeof(OffsetTypesModel).Name, er.ErrorMessage);
+                                var errorIndex = listOfIncorrectRecords.Count;
+                                StatusMessage statMsg = new StatusMessage(er.ErrorMessage, errorIndex);
+                                statMsg.IsError = true;
+                                await statusContext.AddStatusMessage(typeof(OffsetTypesModel).Name, statMsg);
                             }
                         }
                         item.Errors = sb.ToString();
@@ -2074,7 +2092,10 @@ namespace HydroServerToolsRepository.Repository
                             item.Errors += err.ErrorMessage + ";";
                             if (null != statusContext)
                             {
-                                await statusContext.AddStatusMessage(typeof(OffsetTypesModel).Name, err.ErrorMessage);
+                                var errorIndex = listOfIncorrectRecords.Count - 1;
+                                StatusMessage statMsg = new StatusMessage(err.ErrorMessage, errorIndex);
+                                statMsg.IsError = true;
+                                await statusContext.AddStatusMessage(typeof(OffsetTypesModel).Name, statMsg);
                             }
                         }
                     }
@@ -2474,7 +2495,8 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+            //var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING_RECORDS, maxCount, "Sources");
 
             if ( null == statusContext)
             BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);    
@@ -2487,7 +2509,7 @@ namespace HydroServerToolsRepository.Repository
             {
                 try
                 {
-                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, (count + 1), maxCount);
                     if (null == statusContext)
                     {
                         BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
@@ -2806,7 +2828,10 @@ namespace HydroServerToolsRepository.Repository
                             sb.Append(er.ErrorMessage + ";");
                             if (null != statusContext)
                             {
-                                await statusContext.AddStatusMessage(typeof(SourcesModel).Name, er.ErrorMessage);
+                                var errorIndex = listOfIncorrectRecords.Count;
+                                StatusMessage statMsg = new StatusMessage(er.ErrorMessage, errorIndex);
+                                statMsg.IsError = true;
+                                await statusContext.AddStatusMessage(typeof(SourcesModel).Name, statMsg);
                             }
                         }
                         item.Errors = sb.ToString();
@@ -2884,7 +2909,10 @@ namespace HydroServerToolsRepository.Repository
                             item.Errors += err.ErrorMessage + ";";
                             if (null != statusContext)
                             {
-                                await statusContext.AddStatusMessage(typeof(SourcesModel).Name, err.ErrorMessage);
+                                var errorIndex = listOfIncorrectRecords.Count - 1;
+                                StatusMessage statMsg = new StatusMessage(err.ErrorMessage, errorIndex);
+                                statMsg.IsError = true;
+                                await statusContext.AddStatusMessage(typeof(SourcesModel).Name, statMsg);
                             }
                         }
 
@@ -3132,7 +3160,7 @@ namespace HydroServerToolsRepository.Repository
             {
                 try
                 {
-                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, (count + 1), maxCount);
                     if (null == statusContext)
                     {
                         BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
@@ -3205,7 +3233,10 @@ namespace HydroServerToolsRepository.Repository
                             sb.Append(er.ErrorMessage + ";");
                             if (null != statusContext)
                             {
-                                await statusContext.AddStatusMessage(typeof (MethodModel).Name, er.ErrorMessage);
+                                var errorIndex = listOfIncorrectRecords.Count;
+                                StatusMessage statMsg = new StatusMessage(er.ErrorMessage, errorIndex);
+                                statMsg.IsError = true;
+                                await statusContext.AddStatusMessage(typeof (MethodModel).Name, statMsg);
                             }
                         }
                         item.Errors = sb.ToString();
@@ -3235,7 +3266,10 @@ namespace HydroServerToolsRepository.Repository
                             item.Errors += err.ErrorMessage + ";";
                             if (null != statusContext)
                             {
-                                await statusContext.AddStatusMessage(typeof(MethodModel).Name, err.ErrorMessage);
+                                var errorIndex = listOfIncorrectRecords.Count - 1;
+                                StatusMessage statMsg = new StatusMessage(err.ErrorMessage, errorIndex);
+                                statMsg.IsError = true;
+                                await statusContext.AddStatusMessage(typeof(MethodModel).Name, statMsg);
                             }
                         }
                     }
@@ -3455,7 +3489,8 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+            //var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING_RECORDS, maxCount, "LabMethods");
 
             if (null == statusContext)
             {
@@ -3471,7 +3506,7 @@ namespace HydroServerToolsRepository.Repository
 
                 try
                 {
-                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, (count + 1), maxCount);
                     if (null == statusContext)
                     {
                         BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
@@ -3598,7 +3633,10 @@ namespace HydroServerToolsRepository.Repository
                             sb.Append(er.ErrorMessage + ";");
                             if (null != statusContext)
                             {
-                                await statusContext.AddStatusMessage(typeof(LabMethodModel).Name, er.ErrorMessage);
+                                var errorIndex = listOfIncorrectRecords.Count;
+                                StatusMessage statMsg = new StatusMessage(er.ErrorMessage, errorIndex);
+                                statMsg.IsError = true;
+                                await statusContext.AddStatusMessage(typeof(LabMethodModel).Name, statMsg);
                             }
                         }
                         item.Errors = sb.ToString();
@@ -3628,7 +3666,10 @@ namespace HydroServerToolsRepository.Repository
                             item.Errors += err.ErrorMessage + ";";
                             if (null != statusContext)
                             {
-                                await statusContext.AddStatusMessage(typeof(LabMethodModel).Name, err.ErrorMessage);
+                                var errorIndex = listOfIncorrectRecords.Count - 1;
+                                StatusMessage statMsg = new StatusMessage(err.ErrorMessage, errorIndex);
+                                statMsg.IsError = true;
+                                await statusContext.AddStatusMessage(typeof(LabMethodModel).Name, statMsg);
                             }
                         }
                     }
@@ -3876,7 +3917,8 @@ namespace HydroServerToolsRepository.Repository
             var labMethods = context.LabMethods.ToDictionary(p => p.LabMethodName, p => p.LabMethodID);
             var maxCount = itemList.Count;
             var count = 0;
-            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+            //var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING_RECORDS, maxCount, "Samples");
             if (null == statusContext)
             {
                 BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
@@ -3891,7 +3933,7 @@ namespace HydroServerToolsRepository.Repository
 
                 try
                 {
-                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, (count + 1), maxCount);
                     if (null == statusContext)
                     {
                         BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
@@ -3990,7 +4032,10 @@ namespace HydroServerToolsRepository.Repository
                             sb.Append(er.ErrorMessage + ";");
                             if (null != statusContext)
                             {
-                                await statusContext.AddStatusMessage(typeof(SampleModel).Name, er.ErrorMessage);
+                                var errorIndex = listOfIncorrectRecords.Count;
+                                StatusMessage statMsg = new StatusMessage(er.ErrorMessage, errorIndex);
+                                statMsg.IsError = true;
+                                await statusContext.AddStatusMessage(typeof(SampleModel).Name, statMsg);
                             }
                         }
                         item.Errors = sb.ToString();
@@ -4056,7 +4101,10 @@ namespace HydroServerToolsRepository.Repository
                             item.Errors += err.ErrorMessage + ";";
                             if (null != statusContext)
                             {
-                                await statusContext.AddStatusMessage(typeof(SampleModel).Name, err.ErrorMessage);
+                                var errorIndex = listOfIncorrectRecords.Count - 1;
+                                StatusMessage statMsg = new StatusMessage(err.ErrorMessage, errorIndex);
+                                statMsg.IsError = true;
+                                await statusContext.AddStatusMessage(typeof(SampleModel).Name, statMsg);
                             }
                         }
                     }
@@ -4253,7 +4301,8 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+            //var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING_RECORDS, maxCount, "Qualifiers");
             if ( null == statusContext)
             {
                 BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
@@ -4268,7 +4317,7 @@ namespace HydroServerToolsRepository.Repository
 
                 try
                 {
-                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, (count + 1), maxCount);
                     if (null == statusContext)
                     {
                         BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
@@ -4329,6 +4378,9 @@ namespace HydroServerToolsRepository.Repository
                             sb.Append(er.ErrorMessage + ";");
                             if (null != statusContext)
                             {
+                                var errorIndex = listOfIncorrectRecords.Count;
+                                StatusMessage statMsg = new StatusMessage(er.ErrorMessage, errorIndex);
+                                statMsg.IsError = true;
                                 await statusContext.AddStatusMessage(typeof(QualifiersModel).Name, er.ErrorMessage);
                             }
                         }
@@ -4356,7 +4408,10 @@ namespace HydroServerToolsRepository.Repository
                             item.Errors += err.ErrorMessage + ";";
                             if (null != statusContext)
                             {
-                                await statusContext.AddStatusMessage(typeof(QualifiersModel).Name, err.ErrorMessage);
+                                var errorIndex = listOfIncorrectRecords.Count - 1;
+                                StatusMessage statMsg = new StatusMessage(err.ErrorMessage, errorIndex);
+                                statMsg.IsError = true;
+                                await statusContext.AddStatusMessage(typeof(QualifiersModel).Name, statMsg);
                             }
                         }
 
@@ -4553,7 +4608,8 @@ namespace HydroServerToolsRepository.Repository
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
             var maxCount = itemList.Count;
             var count = 0;
-            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+            //var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING_RECORDS, maxCount, "QualityControlLevels");
 
             if (null == statusContext)
             {
@@ -4568,7 +4624,7 @@ namespace HydroServerToolsRepository.Repository
             {
                 try
                 {
-                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, (count + 1), maxCount);
                     if ( null == statusContext)
                     {
                         BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
@@ -4648,7 +4704,10 @@ namespace HydroServerToolsRepository.Repository
                             sb.Append(er.ErrorMessage + ";");
                             if (null != statusContext)
                             {
-                                await statusContext.AddStatusMessage(typeof(QualityControlLevelModel).Name, er.ErrorMessage);
+                                var errorIndex = listOfIncorrectRecords.Count;
+                                StatusMessage statMsg = new StatusMessage(er.ErrorMessage, errorIndex);
+                                statMsg.IsError = true;
+                                await statusContext.AddStatusMessage(typeof(QualityControlLevelModel).Name, statMsg);
                             }
                         }
                         item.Errors = sb.ToString();
@@ -4678,7 +4737,10 @@ namespace HydroServerToolsRepository.Repository
                             item.Errors += err.ErrorMessage + ";";
                             if (null != statusContext)
                             {
-                                await statusContext.AddStatusMessage(typeof(QualityControlLevelModel).Name, err.ErrorMessage);
+                                var errorIndex = listOfIncorrectRecords.Count - 1;
+                                StatusMessage statMsg = new StatusMessage(err.ErrorMessage, errorIndex);
+                                statMsg.IsError = true;
+                                await statusContext.AddStatusMessage(typeof(QualityControlLevelModel).Name, statMsg);
                             }
                         }
                     }
@@ -5711,7 +5773,10 @@ namespace HydroServerToolsRepository.Repository
                                     sb.Append(er.ErrorMessage + ";");
                                     if (null != statusContext)
                                     {
-                                        await statusContext.AddStatusMessage(typeof(DataValuesModel).Name, er.ErrorMessage);
+                                        var errorIndex = listOfIncorrectRecords.Count;
+                                        StatusMessage statMsg = new StatusMessage(er.ErrorMessage, errorIndex);
+                                        statMsg.IsError = true;
+                                        await statusContext.AddStatusMessage(typeof(DataValuesModel).Name, statMsg);
                                     }
                                 }
                                 item.Errors = sb.ToString();
@@ -6012,7 +6077,8 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+            //var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING_RECORDS, maxCount, "GroupDescriptions");
 
             if (null == statusContext)
             {
@@ -6027,7 +6093,7 @@ namespace HydroServerToolsRepository.Repository
             {
                 try
                 {
-                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, (count + 1), maxCount);
                     if (null == statusContext)
                     {
                         BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage );
@@ -6067,7 +6133,10 @@ namespace HydroServerToolsRepository.Repository
                             sb.Append(er.ErrorMessage + ";");
                             if (null != statusContext)
                             {
-                                await statusContext.AddStatusMessage(typeof(GroupDescriptionModel).Name, er.ErrorMessage);
+                                var errorIndex = listOfIncorrectRecords.Count;
+                                StatusMessage statMsg = new StatusMessage(er.ErrorMessage, errorIndex);
+                                statMsg.IsError = true;
+                                await statusContext.AddStatusMessage(typeof(GroupDescriptionModel).Name, statMsg);
                             }
                         }
                         item.Errors = sb.ToString();
@@ -6255,7 +6324,8 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+            //var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING_RECORDS, maxCount, "Groups");
 
             if (null == statusContext)
             {
@@ -6271,7 +6341,7 @@ namespace HydroServerToolsRepository.Repository
 
                 try
                 {
-                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, (count + 1), maxCount);
 
                     if (null == statusContext)
                     {
@@ -6358,7 +6428,10 @@ namespace HydroServerToolsRepository.Repository
                             sb.Append(er.ErrorMessage + ";");
                             if (null != statusContext)
                             {
-                                await statusContext.AddStatusMessage(typeof(GroupsModel).Name, er.ErrorMessage);
+                                var errorIndex = listOfIncorrectRecords.Count;
+                                StatusMessage statMsg = new StatusMessage(er.ErrorMessage, errorIndex);
+                                statMsg.IsError = true;
+                                await statusContext.AddStatusMessage(typeof(GroupsModel).Name, statMsg);
                             }
                         }
                         item.Errors = sb.ToString();
@@ -6531,7 +6604,8 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+            //var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING_RECORDS, maxCount, "DerivedFrom");
 
             if (null == statusContext)
             {
@@ -6547,7 +6621,7 @@ namespace HydroServerToolsRepository.Repository
 
                 try
                 {
-                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+                    statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, (count + 1), maxCount);
                     if (null == statusContext)
                     {
                         BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
@@ -6633,7 +6707,10 @@ namespace HydroServerToolsRepository.Repository
                             sb.Append(er.ErrorMessage + ";");
                             if (null != statusContext)
                             {
-                                await statusContext.AddStatusMessage(typeof(DerivedFromModel).Name, er.ErrorMessage);
+                                var errorIndex = listOfIncorrectRecords.Count;
+                                StatusMessage statMsg = new StatusMessage(er.ErrorMessage, errorIndex);
+                                statMsg.IsError = true;
+                                await statusContext.AddStatusMessage(typeof(DerivedFromModel).Name, statMsg);
                             }
                         }
                         item.Errors = sb.ToString();
@@ -6830,7 +6907,8 @@ namespace HydroServerToolsRepository.Repository
           
             var maxCount = itemList.Count;
             var count = 0;
-            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+            //var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
+            var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING_RECORDS, maxCount, "Categories");
 
             if (null == statusContext)
             {
@@ -6946,7 +7024,10 @@ namespace HydroServerToolsRepository.Repository
                             sb.Append(er.ErrorMessage + ";");
                             if (null != statusContext)
                             {
-                                await statusContext.AddStatusMessage(typeof(CategoriesModel).Name, er.ErrorMessage);
+                                var errorIndex = listOfIncorrectRecords.Count;
+                                StatusMessage statMsg = new StatusMessage(er.ErrorMessage, errorIndex);
+                                statMsg.IsError = true;
+                                await statusContext.AddStatusMessage(typeof(CategoriesModel).Name, statMsg);
                             }
                         }
                         item.Errors = sb.ToString();

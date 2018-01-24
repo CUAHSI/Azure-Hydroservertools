@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 using CsvHelper.Configuration;
@@ -12,11 +13,24 @@ namespace HydroserverToolsBusinessObjects.ModelMaps
 {
     public class GenericMap<MappedType> : ClassMap<MappedType>
     {
+        //Configuration enums...
+        [Flags]
+        public enum GenericMapConfiguration //OR-able - values should be: 0x0001, 0x0002, 0x0004 etc.
+        {
+            [Description("No Configuration Options Set...")]
+            NoConfigurationOptions = 0x0000,
+            [Description("Suppress Empty Required Fields Checks...")]
+            SuppressEmptyRequiredFieldsChecks = 0x0001
+        }
 
         //Members...
         private List<string> requiredPropertyNames = new List<string>();
 
         private List<string> optionalPropertyNames = new List<string>();
+
+        //Default to 'Suppress Empty Required Field Checks' For integration with CsvHelper and suppression of its field checking functions...
+        //private GenericMapConfiguration configurationOptions = GenericMapConfiguration.NoConfigurationOptions;
+        private GenericMapConfiguration configurationOptions = GenericMapConfiguration.SuppressEmptyRequiredFieldsChecks;
 
         //Default constructor...
         public GenericMap()
@@ -71,7 +85,14 @@ namespace HydroserverToolsBusinessObjects.ModelMaps
                         {
                             //Required - validate field is not empty
                             //Assumption - fields are all strings...
-                            Map(mappedType, memberInfo).Validate(field => !String.IsNullOrWhiteSpace(field));
+                            if (configurationOptions.HasFlag(GenericMapConfiguration.SuppressEmptyRequiredFieldsChecks))
+                            {
+                                Map(mappedType, memberInfo).Validate(field => true);
+                            }
+                            else
+                            {
+                                Map(mappedType, memberInfo).Validate(field => !String.IsNullOrWhiteSpace(field));
+                            }
 
                             //Retain required property name...
                             requiredPropertyNames.Add(propName);
@@ -90,6 +111,40 @@ namespace HydroserverToolsBusinessObjects.ModelMaps
                     {
                         //Errors property - DO NOT map...
                         Map(mappedType, memberInfo).Ignore();
+                    }
+                }
+            }
+        }
+
+        //Properties
+
+        public GenericMapConfiguration ConfigurationOptions
+        {
+            get
+            {
+                //Return a copy of the configuration options
+                GenericMapConfiguration result = configurationOptions;
+
+                return result;
+            }
+
+            set
+            {
+                if ( value == GenericMapConfiguration.NoConfigurationOptions )
+                {
+                    //Reset options - none selected
+                    configurationOptions = GenericMapConfiguration.NoConfigurationOptions;
+                }
+                else
+                {
+                    //Currently only one OR'able value...
+                    var ORedValues = GenericMapConfiguration.SuppressEmptyRequiredFieldsChecks;
+
+
+                    if ((value | ORedValues) == ORedValues)
+                    {
+                        //Value in range of currently defined OR-able options - assign...
+                        configurationOptions = value;
                     }
                 }
             }

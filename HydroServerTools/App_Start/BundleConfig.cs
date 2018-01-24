@@ -30,6 +30,18 @@ namespace HydroServerTools
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.min.css",
                       "~/Content/site.css"));
+
+            //Bundles for DataTables 1.10.16 / Editor 1.7.0 et. al.
+            bundles.Add(new ScriptBundle("~/bundles/js/DataTablesEditorCombo").Include(
+                      "~/Scripts/DT-1.10.16-Btns-1.5.1-Ed-1.7.0-Sel-1.2.4/DT-1.10.16-Btns-1.5.1-Ed-1.7.0-Sel-1.2.4.js",
+                      "~/Scripts/DataTables-Editor-1.7.0/editor.bootstrap.js",
+                      "~/Scripts/DataTables-KeyTable-2.3.2/js/dataTables.keyTable.js"));
+
+            bundles.Add(new StyleBundle("~/Content/css/DataTablesEditorCombo").Include(
+                      "~/Content/DT-1.10.16-Btns-1.5.1-Ed-1.7.0-Sel-1.2.4/DT-1.10.16-Btns-1.5.1-Ed-1.7.0-Sel-1.2.4.css",
+                      "~/Content/DataTables-Editor-1.7.0/editor.bootstrap.css",
+                      "~/Content/DataTables-KeyTable-2.3.2/css/keyTable.dataTables.css"));
+
         }
     }
 }

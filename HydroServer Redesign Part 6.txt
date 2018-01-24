@@ -1,0 +1,175 @@
+
+HydroServer Redesign Part 6
+
+**** Summary ****
+ - Additions in the following areas:
+   - css/js/image files for DataTables Editor, KeyTable and Buttons extensions
+   - Changes for Rejected Items Dialog 
+   - Changes for Rejected Items re-upload (partial)
+   - Re-factored Correct/Incorrect/Duplicate/Updated lists to reference UpdateableItems instances
+
+
+**** HydroServerTools ****
+ - HydroServerTools.csproj
+   - new files: 
+     - various js/css/image files for DataTables-Editor, DataTables-KeyTable     
+     - Views\CSVUpload\RejectedItems.cshtml
+
+
+**** HydroServerTools/App_Start ****
+ - BundleConfig.cs
+   - Add 'bundles' for DataTablesEditorCombo js and css files
+ - WebApiConfig.cs 
+    - Add RevisedUploadController routes:
+       - get/rejecteditems/{uploadId}/{tableName}
+       - put/rejecteditems
+
+
+**** HydroServerTools/Content ****
+ - Add directories for DataTables-Editor, DataTables-KeyTable and DataTables Btns css and png files
+
+
+**** HydroServerTools/Controllers ****
+ - CSVUploadController.cs
+   - method RevisedUploadData(...) - add new/revised view references
+
+
+**** HydroServerTools/Controllers/api ****
+ - RevisedUploadController.cs
+   - New HttpGet method: GetRejectedItems()
+   - New HttpPut method: PutRejectedItems()
+
+**** HydroServerTools/Scripts **** 
+ - Add directories for DataTables-Editor, DataTables-KeyTable and DataTables Btns js files
+
+
+**** HydroServerTools/Utilities **** 
+ - RepositoryContext.cs
+   - add various utility methods
+   - Method: LoadDb(...) - re-factor for Updateable Items
+   - New Method: UpdateDbTable(...)
+
+
+**** HydroServerTools/Validators **** 
+ - CsvValidator.cs
+   - Method: ValidateFileContents()
+      - suppress empty required field checks...
+
+
+**** HydroServerTools/Views/CSVUpload **** 
+ - DbSummaryReport.cshtml
+   - Add modal dialog for rejected items
+   - Add Styles.Render() and Scripts.Render() for new bundles
+   - JavaScript changes:
+     - new functions for rejected items modal dialog
+ - New file: RejectedItems.cshtml
+
+
+**** HydroServerToolsBusinessObjects/ModelMaps **** 
+ - GenericMap.cs
+   - Add GenericMapConfiguration options
+
+
+**** HydroServerToolsRepository/HydroServerToolsRepository **** 
+ - Repository.cs
+   - Revise selected status messages for clarity
+   - In 'processing record' status messages replace zero-based count with one-based count
+   - Revise StatusContext status message formatting
+
+
+**** HydroServerToolsUtilities **** 
+ - New file: RejectedItemsData.cs
+ - StatusContext.cs 
+   - re-factor StatusMessage class
+   - StatusContext - add second AddStatusMessage signature
+ - New file: UpdateableItemsData.cs
+
+
+**** Test CSV Files **** 
+ - Changes to Martin's files
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

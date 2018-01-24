@@ -7,6 +7,7 @@ using System.Web.Http;
 
 using System.Collections.Concurrent;
 using System.IO;
+using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,8 +17,10 @@ using HydroServerTools.Utilities;
 using HydroServerTools.Validators;
 
 using HydroserverToolsBusinessObjects;
+using HydroserverToolsBusinessObjects.ModelMaps;
 using HydroServerToolsRepository.Repository;
 using HydroServerToolsUtilities;
+using System.Xml.Serialization;
 
 namespace HydroServerTools.Controllers.api
 {
@@ -266,6 +269,203 @@ namespace HydroServerTools.Controllers.api
             return response;
         }
 
+        //Get Rejected Items method...
+        //GET api/revisedupload/get/rejecteditems/{uploadId}/{tableName}
+        //See WebApiConfig.cs for custom route...
+        [HttpGet]
+        public async Task<HttpResponseMessage> GetRejectedItems(string uploadId, string tableName)
+        {
+            HttpResponseMessage response = new HttpResponseMessage();
+            HttpStatusCode httpStatusCode = HttpStatusCode.OK;  //Assume success...
+
+            //Write an empty JSON object to the response
+            //  To avoid 'Unexpected end of JSON input' error in jQuery AJAX!!
+            response.Content = new StringContent("{}", System.Text.Encoding.UTF8, "application/json");
+
+            //Validate/initialize input parameters
+            if (String.IsNullOrWhiteSpace(uploadId) || String.IsNullOrWhiteSpace(tableName))
+            {
+                response.StatusCode = HttpStatusCode.BadRequest;    //Missing/invalid parameter(s) - return early
+                response.ReasonPhrase = "Invalid parameter(s)";
+                return response;
+            }
+
+            //Retrieve the associated DbLoadContext...
+            var dbLoadContexts = getDbLoadContexts();
+            if (!dbLoadContexts.ContainsKey(uploadId))
+            {
+                response.StatusCode = HttpStatusCode.NotFound;    //Unknown uploadId - return early
+                response.ReasonPhrase = String.Format("No dbLoadContext for upload id: {0}", uploadId);
+                return response;
+            }
+
+            //Check context for input table name...
+            DbLoadContext dbLoadContext = dbLoadContexts[uploadId];
+            using (await dbLoadContext.DbLoadSemaphore.UseWaitAsync())
+            {
+                bool bFound = false;    //Assume failure
+                var dbLoadResults = dbLoadContext.DbLoadResults;
+                foreach (var dbLoadResult in dbLoadResults)
+                {
+                    if (tableName.ToLowerInvariant() == dbLoadResult.TableName.ToLowerInvariant())
+                    {
+                        bFound = true;
+                        break;
+                    }
+                }
+
+                if (!bFound)
+                {
+                    response.StatusCode = HttpStatusCode.NotFound;    //Invalid table name - return early
+                    response.ReasonPhrase = String.Format("Unknown table name {0} for upload id: {1}", tableName, uploadId);
+                    return response;
+                }
+            }
+
+            //Retrieve the associated repository context...
+            var repositoryContexts = getRepositoryContexts();
+            if (!repositoryContexts.ContainsKey(uploadId))
+            {
+                response.StatusCode = HttpStatusCode.NotFound;    //Unknown uploadId - return early
+                response.ReasonPhrase = String.Format("No repositoryContext for upload id: {0}", uploadId);
+                return response;
+            }
+
+            //Retrieve the associated model type...
+            RepositoryContext repositoryContext = repositoryContexts[uploadId];
+            Type modelType = await repositoryContext.ModelTypeByTableName(tableName);
+
+            //Retrieve the associated StatusContext...
+            var statusContexts = getStatusContexts();
+            if (!statusContexts.ContainsKey(uploadId))
+            {
+                response.StatusCode = HttpStatusCode.NotFound;    //Unknown uploadId - return early
+                response.ReasonPhrase = String.Format("No status context for table name {0} for upload id: {1}", tableName, uploadId);
+                return response;
+            }
+
+            //Retrieve the associated status messages...
+            StatusContext statusContext = statusContexts[uploadId];
+            List<StatusMessage> listStatusMessages = new List<StatusMessage>();
+            using (await statusContext.StatusMessagesSemaphore.UseWaitAsync())
+            {
+                if (statusContext.StatusMessages.ContainsKey(modelType.Name))
+                {
+                    var msgQueue = statusContext.StatusMessages[modelType.Name];
+                    foreach (var msg in msgQueue)
+                    {
+                        StatusMessage statMsg = new StatusMessage(msg);
+                        listStatusMessages.Add(statMsg);
+                    }
+                }
+            }
+
+            //Retrieve the list of UpdateableItem<> from the incorrect records binary file...
+            string pathProcessed = System.Web.Hosting.HostingEnvironment.MapPath("~/Processed/");
+            string binFilePathAndName = pathProcessed + uploadId + "-" + modelType.Name + "-IncorrectRecords.bin";
+            Type tGenericList = typeof(List<>);
+            //Type modelListType = tGenericList.MakeGenericType(modelType);
+            //System.Collections.IList iList = (System.Collections.IList) Activator.CreateInstance(modelListType);
+            Type tUpdateableItem = typeof(UpdateableItem<>);
+            Type gUpdateableItem = tUpdateableItem.MakeGenericType(modelType);
+            Type updateableItemsListType = tGenericList.MakeGenericType(gUpdateableItem);
+            System.Collections.IList iUpdateableItemsList = (System.Collections.IList)Activator.CreateInstance(updateableItemsListType);
+
+            using (await repositoryContext.RepositorySemaphore.UseWaitAsync())
+            {
+                try
+                {
+                    using (var fileStream = new FileStream(binFilePathAndName, FileMode.Open, FileAccess.Read, FileShare.Read, 65536, true))
+                    {
+                        //De-serialize to generic list...
+                        BinaryFormatter binFor = new BinaryFormatter();
+                        //iList = (System.Collections.IList)binFor.Deserialize(fileStream);
+                        iUpdateableItemsList = (System.Collections.IList)binFor.Deserialize(fileStream);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    //File not found - return early
+                    string msg = ex.Message;
+
+                    response.StatusCode = HttpStatusCode.NotFound;
+                    response.ReasonPhrase = String.Format("Incorrect records file not found: {0}", binFilePathAndName);
+                    return response;
+                }
+
+            }
+
+            //Retrieve required and optional property names for model type...
+            Type tGenericMap = typeof(GenericMap<>);
+            Type tModelMap = tGenericMap.MakeGenericType(modelType);
+            List<string> listRequiredPropertyNames = null;
+            List<string> listOptionalPropertyNames = null;
+
+            //Construct a map type instance...
+            ConstructorInfo constructorInfo = tModelMap.GetConstructor(Type.EmptyTypes);
+            if ( null != constructorInfo)
+            {
+                object mapTypeInstance = constructorInfo.Invoke(new object[] { });
+
+                MethodInfo miGetRequiredPropertyNames = tModelMap.GetMethod("GetRequiredPropertyNames");
+                listRequiredPropertyNames = miGetRequiredPropertyNames.Invoke(mapTypeInstance, new object[] { }) as List<string>;
+
+                MethodInfo miGetOptionalPropertyNames = tModelMap.GetMethod("GetOptionalPropertyNames");
+                listOptionalPropertyNames = miGetOptionalPropertyNames.Invoke(mapTypeInstance, new object[] { }) as List<string>;
+            }
+            
+            if (null == listRequiredPropertyNames && null == listOptionalPropertyNames)
+            {
+                //Cannot retrieve property names - return early
+                response.StatusCode = HttpStatusCode.NotFound;
+                response.ReasonPhrase = String.Format("Cannot find property names for map type {0} for upload id {1}", tModelMap.Name, uploadId);
+                return response;
+            }
+
+            //All rejected items data retrieved - assemble and return to caller...
+            Type tRejectedItemsData = typeof(RejectedItemsData<>);
+            Type rejectedItemsModelType = tRejectedItemsData.MakeGenericType(modelType);
+
+            IRejectedItemsData iRejectedItemsData = (IRejectedItemsData)Activator.CreateInstance(rejectedItemsModelType);
+
+            iRejectedItemsData.TableName = tableName;
+            iRejectedItemsData.StatusMessages = listStatusMessages;
+            //iRejectedItemsData.RejectedItems = iList;
+            iRejectedItemsData.RejectedItems = iUpdateableItemsList;
+            iRejectedItemsData.RequiredPropertyNames = listRequiredPropertyNames;
+            iRejectedItemsData.OptionalPropertyNames = listOptionalPropertyNames;
+            string jsonData = Newtonsoft.Json.JsonConvert.SerializeObject(iRejectedItemsData);
+#if (DEBUG)
+            lock (fileLockObject)
+            {
+                using (System.IO.FileStream output = new System.IO.FileStream(@"C:\CUAHSI\IRejectedItemsData.json", FileMode.Create))
+                {
+                    //ms.CopyTo(output);
+                    //output.Flush();
+                    //output.Close();
+
+                    //ms.Seek(0, SeekOrigin.Begin);
+
+                    using (StreamWriter sw = new StreamWriter(output))
+                    {
+                        Newtonsoft.Json.JsonTextWriter jw = new Newtonsoft.Json.JsonTextWriter(sw);
+                        jw.WriteRaw(jsonData);
+                        jw.Flush();
+                        jw.Close();
+                    }
+
+                    //output.Flush();
+                    output.Close();
+                }
+            }
+#endif
+            response.StatusCode = httpStatusCode;
+            response.Content = new StringContent(jsonData, System.Text.Encoding.UTF8, "application/json");
+
+            //Processing complete - return response
+            return response;
+        }
+
         //Request DB Table Counts method...
         //Post api/revisedupload/post/requestdbtablecounts/{tablenames}
         //See WebApiConfig.cs for custom route...
@@ -278,14 +478,6 @@ namespace HydroServerTools.Controllers.api
             //Write an empty JSON object to the response
             //  To avoid 'Unexpected end of JSON input' error in jQuery AJAX!!
             response.Content = new StringContent("{}", System.Text.Encoding.UTF8, "application/json");
-
-            ////Validate/initialize input parameters
-            //if (null == tableNames || 0 >= tableNames.Count)
-            //{
-            //    response.StatusCode = HttpStatusCode.BadRequest;    //Missing/invalid parameter(s) - return early
-            //    response.ReasonPhrase = "Invalid parameter(s)";
-            //    return response;
-            //}
 
             //Retrieve request data...
             HttpContent httpContent = Request.Content;
@@ -471,6 +663,186 @@ namespace HydroServerTools.Controllers.api
                     string jsonData = Newtonsoft.Json.JsonConvert.SerializeObject(dbLoadResults);
                     response.Content = new StringContent(jsonData, System.Text.Encoding.UTF8, "application/json");
                 }
+            }
+
+            //Processing complete - return response
+            return response;
+        }
+
+        //Put (updated) Rejected Items method...
+        //PUT api/revisedupload/put/rejecteditems/
+        //See WebApiConfig.cs for custom route...
+        [HttpPut]
+        public async Task<HttpResponseMessage> PutRejectedItems()
+        {
+            HttpResponseMessage response = new HttpResponseMessage();
+            response.StatusCode = HttpStatusCode.OK;    //Assume success...
+
+            //Write an empty JSON object to the response
+            //  To avoid 'Unexpected end of JSON input' error in jQuery AJAX!!
+            response.Content = new StringContent("{}", System.Text.Encoding.UTF8, "application/json");
+
+            //Retrieve data from request body...
+            HttpContent httpContent = Request.Content;
+            IUpdateableItemsData<object> iupdateableItemsData = null;
+
+            try
+            {
+                //Load contents into internal buffer (to allow multiple reads) and read...
+                //Source: https://stackoverflow.com/questions/26942514/multiple-calls-to-httpcontent-readasasync
+                await httpContent.LoadIntoBufferAsync();
+                iupdateableItemsData = await httpContent.ReadAsAsync<UpdateableItemsData<object>>();
+            }
+            catch (Exception ex)
+            {
+                //Read content error - return early...
+
+                //Find the 'inner-most' exception
+                Exception innerException = ex;
+                while (null != innerException.InnerException)
+                {
+                    innerException = innerException.InnerException;
+                }
+
+                response.ReasonPhrase = String.Format("Cannot retrieve request data.  Error: {0}", innerException.Message);
+                response.StatusCode = HttpStatusCode.InternalServerError;
+                return response;
+            }
+
+            if (null == iupdateableItemsData)
+            {
+                response.ReasonPhrase = "Request data empty!!";
+                response.StatusCode = HttpStatusCode.BadRequest;
+                return response;
+            }
+
+            //Data retrieved - validate uploadId and table name...
+            var uploadId = iupdateableItemsData.UploadId;
+            var tableName = iupdateableItemsData.TableName;
+
+            //Retrieve the associated DbLoadContext...
+            var dbLoadContexts = getDbLoadContexts();
+            if (!dbLoadContexts.ContainsKey(uploadId))
+            {
+                response.StatusCode = HttpStatusCode.NotFound;    //Unknown uploadId - return early
+                response.ReasonPhrase = String.Format("No dbLoadContext for upload id: {0}", uploadId);
+                return response;
+            }
+
+            //Check context for input table name...
+            DbLoadContext dbLoadContext = dbLoadContexts[uploadId];
+            using (await dbLoadContext.DbLoadSemaphore.UseWaitAsync())
+            {
+                bool bFound = false;    //Assume failure
+                var dbLoadResults = dbLoadContext.DbLoadResults;
+                foreach (var dbLoadResult in dbLoadResults)
+                {
+                    if (tableName.ToLowerInvariant() == dbLoadResult.TableName.ToLowerInvariant())
+                    {
+                        bFound = true;
+                        break;
+                    }
+                }
+
+                if (!bFound)
+                {
+                    response.StatusCode = HttpStatusCode.NotFound;    //Invalid table name - return early
+                    response.ReasonPhrase = String.Format("Unknown table name {0} for upload id: {1}", tableName, uploadId);
+                    return response;
+                }
+            }
+
+            //Find the associated StatusContext...
+            var statusContexts = getStatusContexts();
+            if (!statusContexts.ContainsKey(uploadId))
+            {
+                response.StatusCode = HttpStatusCode.NotFound;    //Unknown uploadId - return early
+                response.ReasonPhrase = String.Format("No status context for table name {0} for upload id: {1}", tableName, uploadId);
+                return response;
+            }
+
+            StatusContext statusContext = statusContexts[uploadId];
+
+            //Find the associated repository context...
+            var repositoryContexts = getRepositoryContexts();
+            if (!repositoryContexts.ContainsKey(uploadId))
+            {
+                response.StatusCode = HttpStatusCode.NotFound;    //Unknown uploadId - return early
+                response.ReasonPhrase = String.Format("No repositoryContext for upload id: {0}", uploadId);
+                return response;
+            }
+
+            //Retrieve associated model type from table name...
+            RepositoryContext repositoryContext = repositoryContexts[uploadId];
+            Type modelType = await repositoryContext.ModelTypeByTableName(tableName);
+
+            //Set generic type for UpdatedItemsData for deserialization of request content...
+            //NOTE: To correctly deserialize the <tModelType> items in the UpdatedItems list
+            //      a call to the Newtonsoft JsonSerializer is required.  A call to 
+            //      httpContent.ReadAsAsync(gUpdatedItemsDataType) runs OK but leaves all 
+            //      fields in the <tModelType> items null...
+            Type updateableItemsDataType = typeof(UpdateableItemsData<>);
+            Type gUpdateableItemsDataType = updateableItemsDataType.MakeGenericType(modelType);
+
+            try
+            {
+                //Re-read request content with correct model type...
+                //Source: https://stackoverflow.com/questions/26942514/multiple-calls-to-httpcontent-readasasync
+                using (Stream stream = await httpContent.ReadAsStreamAsync())
+                {
+                    //Deserialize directly from a stream to optimize memory usage...
+                    //Source: https://www.newtonsoft.com/json/help/html/Performance.htm
+                    stream.Seek(0, SeekOrigin.Begin);   //rewind stream...
+                    using (StreamReader streamReader = new StreamReader(stream))
+                    {
+                        using (Newtonsoft.Json.JsonReader jsonReader = new Newtonsoft.Json.JsonTextReader(streamReader))
+                        {
+                            Newtonsoft.Json.JsonSerializer jsonSerializer = new Newtonsoft.Json.JsonSerializer();
+                            var iupdateableItemsData2 = jsonSerializer.Deserialize(jsonReader, gUpdateableItemsDataType);
+
+                            //Prepare call to RepositoryContext method to update the database...
+                            string pathProcessed = System.Web.Hosting.HostingEnvironment.MapPath("~/Processed/");
+                            Type resContextType = repositoryContext.GetType();
+                            MethodInfo miUpdateDbTable = resContextType.GetMethod("UpdateDbTable");
+                            MethodInfo miUpdateDbTable_G = miUpdateDbTable.MakeGenericMethod(modelType);
+
+                            //Call the async method via reflection...
+                            //Source: https://stackoverflow.com/questions/43426533/how-to-invoke-async-method-in-c-sharp-by-using-reflection-and-wont-cause-deadlo
+                            var task = (Task)miUpdateDbTable_G.Invoke(repositoryContext, new object[] { iupdateableItemsData2,
+                                                                                                        pathProcessed,
+                                                                                                        statusContext,
+                                                                                                        dbLoadContext });
+                            await task;
+
+                            //Retrieve result...
+                            TableUpdateResult tableUpdateResult = task.GetType().GetProperty("Result").GetValue(task) as TableUpdateResult;
+                            UpdateResults updateResults = null;
+
+                            if ( null != tableUpdateResult)
+                            {
+                                //Allocate update results, serialize to response content...
+                                updateResults = new UpdateResults(uploadId);
+                                updateResults.TableUpdateResults.Add(tableUpdateResult);
+                            }
+
+                            string jsonData = (null != updateResults) ? Newtonsoft.Json.JsonConvert.SerializeObject(updateResults) : Newtonsoft.Json.JsonConvert.SerializeObject("{}");
+                            response.Content = new StringContent(jsonData, System.Text.Encoding.UTF8, "application/json");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                //Find the 'inner-most' exception
+                Exception innerException = ex;
+                while (null != innerException.InnerException)
+                {
+                    innerException = innerException.InnerException;
+                }
+
+                response.StatusCode = HttpStatusCode.InternalServerError;    //Error - return early
+                response.ReasonPhrase = String.Format("PutRejectedItems error: '{0}' for upload id: {1}", innerException.Message, uploadId);
+                return response;
             }
 
             //Processing complete - return response

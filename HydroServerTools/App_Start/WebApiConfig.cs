@@ -37,6 +37,18 @@ namespace HydroServerTools
                 routeTemplate: "api/revisedupload/get/dbloadresults/{uploadId}",
                 defaults: new { controller = "RevisedUpload", action = "GetDbLoadResults" });
 
+            //Get Rejected Items Route...
+            config.Routes.MapHttpRoute(
+                name: "RevisedUploadApiGetRejectedItems",
+                routeTemplate: "api/revisedupload/get/rejecteditems/{uploadId}/{tableName}",
+                defaults: new { controller = "RevisedUpload", action = "GetRejectedItems" });
+
+            //Put (updated) Rejected Items Route...
+            config.Routes.MapHttpRoute(
+                name: "RevisedUploadApiPutRejectedItems",
+                routeTemplate: "api/revisedupload/put/rejecteditems",
+                defaults: new { controller = "RevisedUpload", action = "PutRejectedItems" });
+
             //Define a custom route taking a parameter that is not named 'Id' 
             // (thus different from the DefaultApi)
             config.Routes.MapHttpRoute(

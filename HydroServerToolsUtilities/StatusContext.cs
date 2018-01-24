@@ -14,10 +14,23 @@ namespace HydroServerToolsUtilities
         //Constructors
 
         //Default...
-        private StatusMessage() { }
+        private StatusMessage()
+        {
+            //Assume: current date/time
+            When = DateTime.Now;
+
+            //Assume: NOT reported, NOT an error message...
+            Reported = false;
+            IsError = false;
+
+            //Assume: NOT associated with any record list
+            //RecordIndex = -1;
+            ItemId = -1;
+        }
 
         //Initializing...
-        public StatusMessage(string message, bool reported = false)
+        //public StatusMessage(string message, int recordIndex = -1,  bool reported = false ) : this()
+        public StatusMessage(string message, int itemId = -1, bool reported = false) : this()
         {
 #if (DEBUG)
             if (String.IsNullOrWhiteSpace(message))
@@ -27,8 +40,27 @@ namespace HydroServerToolsUtilities
             }
 #endif
             Message = message;
+            ItemId = itemId;
             Reported = reported;
-            When = DateTime.Now;
+        }
+
+        //Copy...
+        public StatusMessage(StatusMessage statusMessage) : this()
+        {
+#if (DEBUG)
+            if (null == statusMessage)
+            {
+                ArgumentNullException exception = new ArgumentNullException("Status Message - statusMessage parameter cannot be null!!");
+                throw exception;
+            }
+#endif
+            //Assign input values to current instance...
+            Message = statusMessage.Message;
+            When = statusMessage.When;
+            Reported = statusMessage.Reported;
+            IsError = statusMessage.IsError;
+            //RecordId = statusMessage.RecordId;
+            ItemId = statusMessage.ItemId;
         }
 
         //Properties...
@@ -37,6 +69,13 @@ namespace HydroServerToolsUtilities
         public DateTime When { get; private set; }
 
         public bool Reported { get; set; }
+
+        public bool IsError { get; set; }
+
+        //ItemId in the associated rejected items list
+        //NOTE: A value of -1 indicates the message is NOT associated with any list
+        //public int RecordIndex { get; set; }
+        public int ItemId { get; set; }
     }
 
     //A simple class for the association of a dictionary of status message stacks and an access semaphore...
@@ -95,5 +134,29 @@ namespace HydroServerToolsUtilities
                 }
             }
         }
+
+        public async Task AddStatusMessage(string key, StatusMessage statusMessage)
+        {
+            //Validate/initialize input parameters...
+            if ((!String.IsNullOrWhiteSpace(key)) && (null != statusMessage))
+            {
+                //Parameters valid - access member semaphore...
+                using (await StatusMessagesSemaphore.UseWaitAsync())
+                {
+                    //Find/create status message dictionary per input key...
+                    if (!StatusMessages.Keys.Contains(key))
+                    {
+                        StatusMessages[key] = new ConcurrentQueue<StatusMessage>();
+                    }
+
+                    ConcurrentQueue<StatusMessage> cq = StatusMessages[key];
+
+                    //Create new status message instance, add to member queue
+                    StatusMessage sM = new StatusMessage(statusMessage);
+                    cq.Enqueue(sM);
+                }
+            }
+        }
+
     }
 }
