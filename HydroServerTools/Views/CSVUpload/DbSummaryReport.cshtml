@@ -71,9 +71,9 @@
                     <table id="tblRejectedItems" class="display" cellspacing="0" style="width: 100%;"></table>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" id="btnRejectedItemsModalDownload" class="btn btn-default btn-primary left" >Download</button>
+                    <button type="button" id="btnRejectedItemsModalDownload" class="btn btn-default btn-primary left disabled" >Download</button>
                     <button type="button" id="btnRejectedItemsModalClose" class="btn btn-warning left" data-dismiss="modal">Close</button>
-                    <button type="button" id="btnRejectedItemsModalReupload" class="btn btn-success left" >Re-Upload</button>
+                    <button type="button" id="btnRejectedItemsModalReupload" class="btn btn-success left disabled" >Re-Upload</button>
                 </div>
             </div>
         </div>
@@ -146,6 +146,111 @@
 
     <script type="text/javascript">
 
+        //A simple function to re-load updated items from the rejected items table
+        function reloadRejectedItems(event) {
+            //Retrieve 'data' variables
+            if ('undefined' === typeof event.data || null === event.data) {
+                return; //'data' variables not defined - return early
+            }
+
+            var currentUploadId = event.data.currentUploadId;
+            var tableName = event.data.tableName;
+
+            //Retrieve table data...
+            var table = $('#' + 'tblRejectedItems').DataTable();
+            var tableData = table.data();
+            var tdLength = tableData.length;
+
+            //Create updated data objects...
+            var updateableData = [];
+            for (var tdI = 0; tdI < tdLength; ++tdI) {
+                var tData = tableData[tdI];
+                var uData = {};
+
+                if (tData.rowUpdated) {
+                    for (var tKey in tData) {
+                        //if ('rejectedRowId' === tKey || 'rowUpdated' === tKey) {
+                        if ('rowUpdated' === tKey) {
+                            continue;
+                        }
+
+                        if ('Item' === tKey) {
+                            var tDataItem = tData[tKey];
+                            for (var iKey in tDataItem) {
+                                uData[iKey] = tDataItem[iKey];
+                            }
+                        }
+                    }
+
+                    updateableData.push({
+                        "Item": uData,
+                        //"RejectedRowId": tData.rejectedRowId });
+                        "ItemId": tData.ItemId });
+                }
+            }
+
+            //POST updated data to controller...
+            var updateableItemsData = {
+                "UploadId": currentUploadId,
+                "TableName": tableName,
+                "UpdateableItems": updateableData
+            };
+
+            var url = '/api/revisedupload/put/rejecteditems/';
+
+            $.ajax({
+                "url": url,
+                "type": "PUT",
+                "async": true,
+                "contentType": "application/json",
+                "data": JSON.stringify(updateableItemsData),
+                "dataType": "json",
+                "cache": false, //So IE does not cache when calling the same URL - source: http://stackoverflow.com/questions/7846707/ie9-jquery-ajax-call-first-time-doing-well-second-time-not
+                "success": function (data, textStatus, jqXHR) {
+                    console.log('RevisedUpload PUT/rejecteditems success!!');
+                    if ('undefined' !== typeof (data) && null !== data)
+                    {
+                        //Response received - verify uploadId...
+                        var updateResults = data;
+                        if (currentUploadId === updateResults.UploadId) {
+                            //uploadId verified - scan table update results...
+                            var tableUpdateResults = updateResults.TableUpdateResults;
+                            var tLength = tableUpdateResults.length;
+
+                            var tableUpdateResult = null;
+                            for (var tI = 0; tI < tLength; ++tI) {
+                                if (tableName === tableUpdateResults[tI].TableName) {
+                                    //table update result found for current table - break
+                                    tableUpdateResult = tableUpdateResults[tI];
+                                    break;
+                                }
+                            }
+
+                            if (null !== tableUpdateResult) {
+                                //Update the rejected items table with the results of the db update...
+                                updateRejectedItemsTable(tableUpdateResult);
+                            }
+                        }
+                    }
+                },
+                "error": function (xmlhttprequest, textStatus, message) {
+                    //Failure - Log messsage received from server...
+                    console.log('RevisedUpload PUT/rejecteditems reports error: ' + xmlhttprequest.status + ' (' + message + ')');
+                }
+            });
+
+            //TO DO - update rejected items table per results received from controller...
+
+            //TO DO - Disable re-upload button...
+            //var button = $('#' + 'btnRejectedItemsModalReupload');
+            //button.addClass('disabled');
+
+            var n = 5;
+
+            ++n;
+
+        }
+
         //A simple function to format a 'child' table of errors for a DataTables row...
         function formatErrors(rowErrors) {
             var result = '';
@@ -155,42 +260,13 @@
                 //Input parameter(s) valid - scan content, built table markup...
                 result += '<table class="errorTable" cellpadding="5" cellspacing="0" border="0" style="padding-left:0.5em;">';
 
-                //for (var fieldName in rowErrors) {
-                //    var fieldErrors = rowErrors[fieldName];
-
-                //    if ('string' === typeof fieldErrors) {
-                //        //String type - add one table row to result...
-                //        result += '<tr>' +
-                //            '<td>Field:&nbsp;' + fieldName + '</td>' +
-                //            '<td>Error:&nbsp;' + fieldErrors + '</td>' +
-                //            '</tr>';
-                //    }
-                //    else if (Array.isArray(fieldErrors)) {
-                //        //Array type - add multiple table row to result...
-                //        var length = fieldErrors.length;
-                //        for (var i = 0; i < length; ++i) {
-                //            result += '<tr>';
-                //            if (0 === i) {
-                //                result += '<td>Field:&nbsp;' + fieldName + '</td>';
-                //                result += '<td>Error:&nbsp;' + fieldErrors[i] + '</td>';
-                //            }
-                //            else {
-                //                result += '<td style="width: ' + ('Field: '.length + fieldName.length) + 'em;"></td>';
-                //                result += '<td>Error:&nbsp;' + fieldErrors[i] + '</td>';
-                //            }
-                //            result += '</tr>';
-                //        }
-                //    }
-                //}
-
                 //Scan input error string - create markup for each error...
-                var errors = rowErrors.split(';');
-                var length = errors.length;
-                for (var i = 0; i < length; ++i) {
-                    var error = errors[i];
+                var reLength = rowErrors.length;
+                for (var reI = 0; reI < reLength; ++reI) {
+                    var rowError = rowErrors[reI];
 
                     result += '<tr>' +
-                        '<td>&nbsp;' + error + '</td>' +
+                        '<td>&nbsp;' + rowError + '</td>' +
                         '</tr>';
                 }
 
@@ -199,6 +275,38 @@
 
             //Processing complete - return result
             return result;
+        }
+
+        //Remove Rejected Items table row(s) per the input correct item ids... 
+        function updateRejectedItemsTable(tableUpdateResult) {
+
+            //Validate/initialize input parameters...
+            if ('undefined' !== typeof tableUpdateResult && null !== tableUpdateResult) {
+                //Input parameters valid - build row Ids array...
+                var correctItemIds = tableUpdateResult.CorrectItemIds;
+                var cLength = correctItemIds.length;
+                var rowIds = [];
+                for (var cI = 0; cI < cLength; ++cI) {
+                    rowIds.push('#' + correctItemIds[cI].toString());
+                }
+
+                if (0 < rowIds.length) {
+                    //Row ids exist - retrieve DataTables API...
+                    var table = $('#' + 'tblRejectedItems').DataTable();
+
+                    //Select row(s) per row ids
+                    var rows = table.rows(rowIds);
+
+                    //Fade rows via jQuery, re-draw table...
+                    rows.nodes().to$().fadeTo(1500, 0.5, function () {
+                        //$(this).remove();   //jQuery Remove...
+                        rows.remove();        //DataTables Remove...
+                        table.draw();
+                    });
+
+                }
+
+            }
         }
 
         function buildRejectedItemsTable(rejectedItemsData) {
@@ -214,8 +322,16 @@
                             "orderable": false,
                             "data": null,
                             "defaultContent": ""
+                        },
+                        {
+                            //"data": "itemId",
+                            "data": "ItemId",
+                            "visible": false
+                        },
+                        {
+                            "data": "rowUpdated",
+                            "visible": false
                         }
-
                     ],
                     "data": [],
                     "editorFields": [],
@@ -230,49 +346,87 @@
                     var editorDef = {"label": "", "name": ""};
                     var propertyName = propertyNames[pnI];
 
-                    colDef.data = propertyName;
+                    //colDef.data = propertyName;
+                    colDef.data = 'Item.' + propertyName;
                     colDef.title = propertyName;
                     tblData.columns.push(colDef);
 
                     editorDef.label = propertyName;
-                    editorDef.name = propertyName;
+                    //editorDef.name = propertyName;
+                    editorDef.name = 'Item.' + propertyName;
                     tblData.editorFields.push(editorDef);
                 }
 
+                //Rejected items - add 'rejectedRowId' and 'rowUpdated' values to each data item...
+                var rjItems = rejectedItemsData.RejectedItems;
+                var rjLength = rjItems.length;
+
+                for (var rjI = 0; rjI < rjLength; ++rjI) {
+                    var rjItem = rjItems[rjI];
+
+                    //rjItem['rejectedRowId'] = rjI;  //NOTE: rejectedRowId value should match StatusMessage.RecordIndex
+                    rjItem['rowUpdated'] = false;   //NOTE: true when any field is updated by user...
+                }
+
                 //Data...
-                tblData.data = rejectedItemsData.RejectedItems;
+                tblData.data = rjItems;
 
                 //DataTables Editor 1.7.0 Configuration...
                 var editor = new $.fn.dataTable.Editor({
                     "table": '#tblRejectedItems',
                     "fields": tblData.editorFields,
+                    //"idSrc": "rejectedRowId",
+                    "idSrc": "ItemId",
                     "display": "bootstrap",  //Display main editing form in Bootstrap modal dialog...
                     //Apply changes locally only...
                     "ajax": function (method,      //Legacy parameter - should be null
                                         url,         //Legacy parameter - should be null 
                                         data,        //Data to send to server...
-                                        success,     //Success callback accepting data returned from the server
-                                        error) {     //Error callback accepting (not for validation errors!!)
-                        //For now - update the data array...
-                        var objs = tblData.data;
-                        var length = objs.length;
+                                        success,    //Success callback accepting data returned from the server.  Signature: success({ "data": [<data object(s)>] })
+                                        error) {    //Error callback for server errors (not validation errors!!). Signature: error(xhr, error, thrown)  
+                        //For now - update the table data...
+                        var tblObjs = tblData.data;
+                        var length = tblObjs.length;
+
+                        //For each table data object...
                         for (var i = 0; i < length; ++i) {
-                            var obj = objs[i];
+                            var tblObj = tblObjs[i];
 
-                        //    var dataObjs = data.data;
-                        //    for (var key in dataObjs) {
-                        //        if (key == obj.DT_RowId) {
-                        //            var value = dataObjs[key];
-                        //            obj.supplier = value.supplier;
-                        //            obj.color = value.color;
-                        //            obj.size = value.size;
-                        //            obj.options = value.options;
-                        //            var fromServer = { "data": [obj] };
+                            //For each input data object...
+                            var dataObjs = data.data;
+                            for (var key in dataObjs) {
+                                if (key == tblObj.ItemId) {
+                                    //Match on unique Id...
 
-                        //            success(fromServer);  //Call the success function...
-                        //            break;
-                        //        }
-                        //    }
+                                    //Assign input data object 'Item' values to table data object 'Item'  
+                                    var dataObj = dataObjs[key];
+                                    for (var dKey in dataObj) {
+                                        //if ('rejectedRowId' !== dKey && 'rowUpdated' !== dKey) {
+                                        //    tblObj[dKey] = dataObj[dKey];
+                                        //}
+                                        if ('Item' === dKey) {
+                                            var itemDataObj = dataObj[dKey];
+                                            var itemTblObj = tblObj[dKey];
+                                            for (var iKey in itemDataObj) {
+                                                itemTblObj[iKey] = itemDataObj[iKey];
+                                        }
+                                    }
+                                    }
+
+                                    //Set 'updated' field in table and data objects...
+                                    dataObj['rowUpdated'] = true;
+                                    tblObj['rowUpdated'] = true;
+
+                                    //Enable re-upload button...
+                                    var button = $('#' + 'btnRejectedItemsModalReupload');
+                                    button.removeClass('disabled');
+
+                                    //Initialize 'from server' data, call success function...
+                                    var fromServer = { "data": [tblObj] };
+                                    success(fromServer); 
+                                    break;
+                                }
+                            }
                         }
                     },
                     "formOptions": {
@@ -288,6 +442,8 @@
                     //"dom": "Bfrtip",
                     "dom": "frtip",
                     "data": tblData.data,
+                    //"rowId": "rejectedRowId",
+                    "rowId": "ItemId",
                     "columns": tblData.columns,
                     "select": { "style": "os" },
                     "keys": {
@@ -317,16 +473,25 @@
                         tr.removeClass('shown');
                     }
                     else {
-                        // Child row closed, retrieve row errors... 
+                        // Child row closed, retrieve row errors from StatusMessages... 
                         var rowData = row.data();
-                        //var rowId = rowData.DT_RowId;
-                        //var rowErrors = tblData.errors[rowId];
+                        var itemId = rowData.ItemId;
+                        var rowErrors = [];
 
-                        ////Format errors...
-                        //var markup = formatErrors(rowErrors);
-                        var markup = formatErrors(rowData.Errors);
+                        var statusMessages = rejectedItemsData.StatusMessages;
+                        var smLength = statusMessages.length;
 
-                        ////Open child row, show errors...
+                        for (var smI = 0; smI < smLength; ++smI) {
+                            var statusMessage = statusMessages[smI];
+                            if (statusMessage.IsError && (itemId === statusMessage.ItemId)) {
+                                rowErrors.push(statusMessage.Message);
+                            }
+                        }
+
+                        //Format errors...
+                        var markup = formatErrors(rowErrors);
+
+                        //Open child row, show errors...
                         row.child(markup).show();
                         tr.addClass('shown');
                     }
@@ -346,6 +511,11 @@
                 'undefined' !== typeof tableName && null !== tableName) {
                 //Display table name...
                 $('#' + 'spanRejectedItemsTitle').text(tableName);
+
+                //Set re-upload button 'click' handler...
+                var button = $('#' + 'btnRejectedItemsModalReupload');
+                button.off('click', reloadRejectedItems);
+                button.on('click', { "currentUploadId": currentUploadId, "tableName": tableName }, reloadRejectedItems);
                 
                 //Retrieve rejected items for display...
                 var url = '/api/revisedupload/get/rejecteditems/' + currentUploadId + '/' +  tableName + '/';
@@ -365,14 +535,6 @@
                         var n = 5;
 
                         ++n;
-                        //var length = dbLoadResults.length;
-                        //console.log('getDbLoadResults(...) dbLoadResults.length = ' + length);
-                        //for (var i = 0; i < length; ++i) {
-                        //    console.log("Load results for: " + dbLoadResults[i].TableName);
-                        //}
-
-                        ////Display db load results...
-                        //buildSummaryReportMarkup('divDbLoadResults', dbLoadResults);
                     },
                     "error": function (xmlhttprequest, textStatus, message) {
                         //Failure - Log messsage received from server...
@@ -384,7 +546,43 @@
 
         //Hidden handler for rejected items dialog...
         function hiddenRejectedItems(event) {
+            //Upon close of the dialog - destroy the DataTables instance...
 
+            var tableId = 'tblRejectedItems';
+            if ($.fn.DataTable.isDataTable('#' + tableId)) {
+                //Retrieve the DataTables API...
+                var tableApi = $('#' + tableId).DataTable();
+
+                ////Disable the key table instance
+                //var keysApi = tableApi.keys;
+                //keysApi.disable();
+
+                ////What does the Select API allow?
+                //var selectApi = tableApi.select();
+                ////selectApi.destroy();      //If called, next attempt to build runs OK but shows nothing...
+                ////selectApi.clear();        //If called, no effect on problem
+                ////selectApi.init();         //If called, no effect on problem
+
+                //Retrieve and destroy the editor instance...
+                var editor = tableApi.editor();
+                editor.destroy();
+
+                //Clear, draw and destroy the DataTables instance...
+                tableApi.clear();
+                tableApi.draw();
+                tableApi.destroy();
+
+                //Remove various table elements not removed by DataTables code...
+                //NOTE: If these elements are left in place, creating another DataTables 'tblRejectedItems' instance
+                //       for a different data type (different column headers) encounters errors
+                $('#' + tableId + ' thead tr');                     //Table header table row...
+                $('#' + tableId + ' tbody').remove();               //Table body...
+                $('#' + tableId + ' thead').remove();               //Table header...
+                $('#' + tableId).removeClass('no-footer');          //'no-footer' class
+                $('#' + tableId).removeAttr('role');                //'role' attribute
+                $('#' + tableId).removeAttr('aria-describedby');    //'aria-describedby' attribute
+                $('#' + tableId).css('position', '');               //CSS style attribute: 'position'
+            }
         }
 
     //Add table rows for db load results...

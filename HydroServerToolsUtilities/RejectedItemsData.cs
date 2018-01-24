@@ -20,7 +20,6 @@ namespace HydroServerToolsUtilities
         List<string> RequiredPropertyNames { get; set; }
 
         List<string> OptionalPropertyNames { get; set; }
-
     }
 
     //A simple class encapsulating context-related values for the rejected items dialog...

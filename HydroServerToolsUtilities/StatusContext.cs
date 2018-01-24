@@ -24,11 +24,13 @@ namespace HydroServerToolsUtilities
             IsError = false;
 
             //Assume: NOT associated with any record list
-            RecordIndex = -1;
+            //RecordIndex = -1;
+            ItemId = -1;
         }
 
         //Initializing...
-        public StatusMessage(string message, int recordIndex = -1,  bool reported = false ) : this()
+        //public StatusMessage(string message, int recordIndex = -1,  bool reported = false ) : this()
+        public StatusMessage(string message, int itemId = -1, bool reported = false) : this()
         {
 #if (DEBUG)
             if (String.IsNullOrWhiteSpace(message))
@@ -38,7 +40,7 @@ namespace HydroServerToolsUtilities
             }
 #endif
             Message = message;
-            RecordIndex = recordIndex;
+            ItemId = itemId;
             Reported = reported;
         }
 
@@ -57,7 +59,8 @@ namespace HydroServerToolsUtilities
             When = statusMessage.When;
             Reported = statusMessage.Reported;
             IsError = statusMessage.IsError;
-            RecordIndex = statusMessage.RecordIndex;
+            //RecordId = statusMessage.RecordId;
+            ItemId = statusMessage.ItemId;
         }
 
         //Properties...
@@ -69,9 +72,10 @@ namespace HydroServerToolsUtilities
 
         public bool IsError { get; set; }
 
-        //Index in the associated records list
-        //NOTE: A value of -1 indicates the message is NOT associated with any records list
-        public int RecordIndex { get; set; }
+        //ItemId in the associated rejected items list
+        //NOTE: A value of -1 indicates the message is NOT associated with any list
+        //public int RecordIndex { get; set; }
+        public int ItemId { get; set; }
     }
 
     //A simple class for the association of a dictionary of status message stacks and an access semaphore...
