@@ -5210,9 +5210,8 @@ namespace HydroServerToolsRepository.Repository
                     int currentVariableId = 0;
                     if (variableCodes.ContainsKey(sv.VariableCode))
                     {
-                        currentSiteId = siteCodes[sv.SiteCode];
+                        currentVariableId = variableCodes[sv.VariableCode];
                     }
-                    
 
                     var a_start = DateTime.Now;
                     //get min/max dates in upload
