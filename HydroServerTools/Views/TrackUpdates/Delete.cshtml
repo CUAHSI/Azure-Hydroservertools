@@ -1,0 +1,73 @@
+﻿@model HydroServerTools.Models.TrackUpdates
+
+@{
+    ViewBag.Title = "Delete";
+    Layout = "~/Views/Shared/_LayoutSimple.cshtml";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>TrackUpdates</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.ConnectionId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ConnectionId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UserId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UserId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.IsUpdated)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.IsUpdated)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UpdateDateTime)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UpdateDateTime)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.IsSynchronized)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.IsSynchronized)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SynchronizedDateTime)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SynchronizedDateTime)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>

@@ -1,0 +1,67 @@
+﻿@model HydroServerTools.Models.TrackUpdates
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_LayoutSimple.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>TrackUpdates</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.ConnectionId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ConnectionId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UserId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UserId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.IsUpdated)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.IsUpdated)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UpdateDateTime)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UpdateDateTime)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.IsSynchronized)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.IsSynchronized)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SynchronizedDateTime)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SynchronizedDateTime)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

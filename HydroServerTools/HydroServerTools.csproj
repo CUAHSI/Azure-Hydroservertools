@@ -296,6 +296,7 @@
     <Compile Include="Controllers\CSVUploadController.cs" />
     <Compile Include="Controllers\ExportController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\TrackUpdatesController.cs" />
     <Compile Include="Controllers\ViewDataController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -863,6 +864,11 @@
     <Content Include="Views\CSVUpload\RejectedItems.cshtml" />
     <Content Include="Templates\ODM Guide Shortened 2017.xlsx" />
     <Content Include="Views\Shared\_LayoutBasic.cshtml" />
+    <Content Include="Views\TrackUpdates\Create.cshtml" />
+    <Content Include="Views\TrackUpdates\Delete.cshtml" />
+    <Content Include="Views\TrackUpdates\Details.cshtml" />
+    <Content Include="Views\TrackUpdates\Edit.cshtml" />
+    <Content Include="Views\TrackUpdates\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
