@@ -221,14 +221,41 @@ namespace HydroServerTools.Validators
         {
             base.reset();
 
+            CurrentModelType = null;
+
             ValidatedModelType = null;
 
             ValidatedRecords = new List<object>();
+
+            FileEncoding = Encoding.Default;
         }
 
         //CsvHelper - Header validation callback...
         private void headerValidationCallback(bool isValid, string[] headerNames, int headerNameIndex, CsvHelper.IReadingContext context)
         {
+            //TO DO - Find ModelMap - GetOptionalPropertyNames - if invalid header is optional - do not add to list...
+            if ((!isValid) && null != CurrentModelType)
+            {
+                if (validationTypesToClassMaps.ContainsKey(CurrentModelType))
+                {
+                    var mapType = validationTypesToClassMaps[CurrentModelType];
+
+                    ConstructorInfo constructorInfo = mapType.GetConstructor(Type.EmptyTypes);
+                    if ( null != constructorInfo)
+                    {
+                        object mapTypeInstance = constructorInfo.Invoke(new object[] { });
+                        MethodInfo miGetRequiredPropertyNames = mapType.GetMethod("GetOptionalPropertyNames");
+                        List<string> optionalPropertyNames = miGetRequiredPropertyNames.Invoke(mapTypeInstance, new object[] { }) as List<string>;
+
+                        if (-1 != optionalPropertyNames.IndexOf(headerNames[headerNameIndex]))
+                        {
+                            //Invalid header is optional - return early...
+                            return;
+                        }
+                    }
+                }
+            }
+
             //Update the member list per validation indicator...
             var list = isValid ? ValidHeaderNames : InvalidHeaderNames;
             list.Add(headerNames[headerNameIndex]);
@@ -288,11 +315,17 @@ namespace HydroServerTools.Validators
 
         //Properties...
 
+        //Current model type for validation...
+        private Type CurrentModelType { get; set; }
+
         //Validated model type of records data
         public Type ValidatedModelType { get; private set; }
 
         //Validated records...
         public List<object> ValidatedRecords { get; private set; }
+
+        //File encoding
+        public Encoding FileEncoding { get; private set; }
 
         //Methods 
 
@@ -307,7 +340,7 @@ namespace HydroServerTools.Validators
             bool result = true; //Assume success
 
             //Retrieve the current encoding...
-            Encoding currentEncoding = EncodingContext.GetFileEncoding(csvContentType, csvFilePathAndName);
+            FileEncoding = EncodingContext.GetFileEncoding(csvContentType, csvFilePathAndName);
 
             try
             {
@@ -315,7 +348,7 @@ namespace HydroServerTools.Validators
                 using (var fileStream = File.Open(csvFilePathAndName, FileMode.Open, FileAccess.Read, FileShare.None))
                 {
                     //using (var streamReader = new StreamReader(fileStream))
-                    using (var streamReader = new StreamReader(fileStream, currentEncoding))
+                    using (var streamReader = new StreamReader(fileStream, FileEncoding))
                     {
                         //Allocate a CsvReader instance...
                         using (var csvReader = new CsvHelper.CsvReader(streamReader))
@@ -369,6 +402,8 @@ namespace HydroServerTools.Validators
 
                                     //Register map class, validate header...
                                     conf.RegisterClassMap(mapType);
+
+                                    CurrentModelType = modelType;
                                     csvReader.ValidateHeader(modelType);
 
                                     //Check for presence of valid header names in file...

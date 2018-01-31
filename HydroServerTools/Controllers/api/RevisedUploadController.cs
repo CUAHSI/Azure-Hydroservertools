@@ -364,8 +364,6 @@ namespace HydroServerTools.Controllers.api
             string pathProcessed = System.Web.Hosting.HostingEnvironment.MapPath("~/Processed/");
             string binFilePathAndName = pathProcessed + uploadId + "-" + modelType.Name + "-IncorrectRecords.bin";
             Type tGenericList = typeof(List<>);
-            //Type modelListType = tGenericList.MakeGenericType(modelType);
-            //System.Collections.IList iList = (System.Collections.IList) Activator.CreateInstance(modelListType);
             Type tUpdateableItem = typeof(UpdateableItem<>);
             Type gUpdateableItem = tUpdateableItem.MakeGenericType(modelType);
             Type updateableItemsListType = tGenericList.MakeGenericType(gUpdateableItem);
@@ -392,7 +390,6 @@ namespace HydroServerTools.Controllers.api
                     response.ReasonPhrase = String.Format("Incorrect records file not found: {0}", binFilePathAndName);
                     return response;
                 }
-
             }
 
             //Retrieve required and optional property names for model type...
@@ -461,6 +458,190 @@ namespace HydroServerTools.Controllers.api
 #endif
             response.StatusCode = httpStatusCode;
             response.Content = new StringContent(jsonData, System.Text.Encoding.UTF8, "application/json");
+
+            //Processing complete - return response
+            return response;
+        }
+
+        //Get Rejected Items File method...
+        //GET api/revisedupload/get/rejecteditemsfile/{uploadId}/{tableName}
+        //See WebApiConfig.cs for custom route...
+        [HttpGet]
+        public async Task<HttpResponseMessage> GetRejectedItemsFile(string uploadId, string tableName)
+        {
+            HttpResponseMessage response = new HttpResponseMessage();
+            HttpStatusCode httpStatusCode = HttpStatusCode.OK;  //Assume success...
+
+            //Write an empty JSON object to the response
+            //  To avoid 'Unexpected end of JSON input' error in jQuery AJAX!!
+            response.Content = new StringContent("{}", System.Text.Encoding.UTF8, "application/json");
+
+            //Validate/initialize input parameters
+            if (String.IsNullOrWhiteSpace(uploadId) || String.IsNullOrWhiteSpace(tableName))
+            {
+                response.StatusCode = HttpStatusCode.BadRequest;    //Missing/invalid parameter(s) - return early
+                response.ReasonPhrase = "Invalid parameter(s)";
+                return response;
+            }
+
+            //Retrieve the associated DbLoadContext...
+            var dbLoadContexts = getDbLoadContexts();
+            if (!dbLoadContexts.ContainsKey(uploadId))
+            {
+                response.StatusCode = HttpStatusCode.NotFound;    //Unknown uploadId - return early
+                response.ReasonPhrase = String.Format("No dbLoadContext for upload id: {0}", uploadId);
+                return response;
+            }
+
+            //Check context for input table name...
+            DbLoadContext dbLoadContext = dbLoadContexts[uploadId];
+            using (await dbLoadContext.DbLoadSemaphore.UseWaitAsync())
+            {
+                bool bFound = false;    //Assume failure
+                var dbLoadResults = dbLoadContext.DbLoadResults;
+                foreach (var dbLoadResult in dbLoadResults)
+                {
+                    if (tableName.ToLowerInvariant() == dbLoadResult.TableName.ToLowerInvariant())
+                    {
+                        bFound = true;
+                        break;
+                    }
+                }
+
+                if (!bFound)
+                {
+                    response.StatusCode = HttpStatusCode.NotFound;    //Invalid table name - return early
+                    response.ReasonPhrase = String.Format("Unknown table name {0} for upload id: {1}", tableName, uploadId);
+                    return response;
+                }
+            }
+
+            //Retrieve the associated repository context...
+            var repositoryContexts = getRepositoryContexts();
+            if (!repositoryContexts.ContainsKey(uploadId))
+            {
+                response.StatusCode = HttpStatusCode.NotFound;    //Unknown uploadId - return early
+                response.ReasonPhrase = String.Format("No repositoryContext for upload id: {0}", uploadId);
+                return response;
+            }
+
+            //Retrieve the associated model type...
+            RepositoryContext repositoryContext = repositoryContexts[uploadId];
+            Type modelType = await repositoryContext.ModelTypeByTableName(tableName);
+
+            //Retrieve required and optional property names for model type...
+            Type tGenericMap = typeof(GenericMap<>);
+            Type tModelMap = tGenericMap.MakeGenericType(modelType);
+            List<string> listRequiredPropertyNames = null;
+            List<string> listOptionalPropertyNames = null;
+
+            //Construct a map type instance...
+            ConstructorInfo constructorInfo = tModelMap.GetConstructor(Type.EmptyTypes);
+            if (null != constructorInfo)
+            {
+                object mapTypeInstance = constructorInfo.Invoke(new object[] { });
+
+                MethodInfo miGetRequiredPropertyNames = tModelMap.GetMethod("GetRequiredPropertyNames");
+                listRequiredPropertyNames = miGetRequiredPropertyNames.Invoke(mapTypeInstance, new object[] { }) as List<string>;
+
+                MethodInfo miGetOptionalPropertyNames = tModelMap.GetMethod("GetOptionalPropertyNames");
+                listOptionalPropertyNames = miGetOptionalPropertyNames.Invoke(mapTypeInstance, new object[] { }) as List<string>;
+            }
+
+            if (null == listRequiredPropertyNames && null == listOptionalPropertyNames)
+            {
+                //Cannot retrieve property names - return early
+                response.StatusCode = HttpStatusCode.NotFound;
+                response.ReasonPhrase = String.Format("Cannot find property names for map type {0} for upload id {1}", tModelMap.Name, uploadId);
+                return response;
+            }
+
+            //Retrieve validation context...
+            var validationContexts = getValidationContexts();
+            if (!validationContexts.ContainsKey(uploadId))
+            {
+                response.StatusCode = HttpStatusCode.NotFound;    //Unknown uploadId - return early
+                response.ReasonPhrase = String.Format("No validationContext for upload id: {0}", uploadId);
+                return response;
+            }
+
+            //Retrieve the associated file encoding...
+            Encoding fileEncoding = Encoding.GetEncoding("iso-8859-1"); //Default usage...
+            ValidationContext<CsvValidator> validationContext = validationContexts[uploadId];
+            using (await validationContext.ValidationResultSemaphore.UseWaitAsync())
+            {
+                foreach (var validationRes in validationContext.ValidationResults)
+                {
+                    if (modelType == validationRes.FileValidator.ValidatedModelType)
+                    {
+                        fileEncoding = validationRes.FileValidator.FileEncoding;
+                    }
+                }
+            }
+
+            //Retrieve the list of UpdateableItem<> from the incorrect records binary file...
+            string pathProcessed = System.Web.Hosting.HostingEnvironment.MapPath("~/Processed/");
+            string binFilePathAndName = pathProcessed + uploadId + "-" + modelType.Name + "-IncorrectRecords.bin";
+
+            using (await repositoryContext.RepositorySemaphore.UseWaitAsync())
+            {
+                try
+                {
+                    using (var fileStream = new FileStream(binFilePathAndName, FileMode.Open, FileAccess.Read, FileShare.Read, 65536, true))
+                    {
+                        //De-serialize to generic list...
+                        BinaryFormatter binFor = new BinaryFormatter();
+                        var iUpdateableItemsList = binFor.Deserialize(fileStream);
+
+                        //Prepare call to RepositoryContext method to stream list to model type...
+                        Type resContextType = repositoryContext.GetType();
+                        MethodInfo miStreamItemsToModelList = resContextType.GetMethod("StreamItemsToModelList");
+                        MethodInfo miStreamItemsToModelList_G = miStreamItemsToModelList.MakeGenericMethod(modelType);
+
+                        //Call the async method via reflection...
+                        //Source: https://stackoverflow.com/questions/43426533/how-to-invoke-async-method-in-c-sharp-by-using-reflection-and-wont-cause-deadlo
+                        var task = (Task)miStreamItemsToModelList_G.Invoke(repositoryContext, new object[] { iUpdateableItemsList,
+                                                                                                             fileEncoding,
+                                                                                                             listRequiredPropertyNames,
+                                                                                                             listOptionalPropertyNames });
+                        await task;
+
+                        //Retrieve result...
+                        //using (Stream streamResult = task.GetType().GetProperty("Result").GetValue(task) as Stream)
+                        Stream streamResult = task.GetType().GetProperty("Result").GetValue(task) as Stream;
+                        if (null != streamResult)
+                        {
+
+                            //Reset stream position - add stream to response content...
+                            streamResult.Position = 0;
+                            response.Content = new StreamContent(streamResult);  
+                            //response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/vnd.ms-excel");
+                            response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/octet-stream");
+                            response.Content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("attachment");
+                            response.Content.Headers.ContentDisposition.FileName = "Rejected-" + modelType.Name + ".csv";
+                            response.Content.Headers.ContentLength = streamResult.Length;
+
+                            response.StatusCode = httpStatusCode;
+                        }
+                        else
+                        {
+                            //Streaming error...
+                            response.StatusCode = HttpStatusCode.InternalServerError;
+                            response.ReasonPhrase = String.Format("Unable to stream rejected items to output for upload id: {0}", uploadId);
+                            return response;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    //File not found - return early
+                    string msg = ex.Message;
+
+                    response.StatusCode = HttpStatusCode.NotFound;
+                    response.ReasonPhrase = String.Format("Incorrect records file not found: {0}", binFilePathAndName);
+                    return response;
+                }
+            }
 
             //Processing complete - return response
             return response;

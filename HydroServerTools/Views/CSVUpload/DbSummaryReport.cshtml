@@ -53,6 +53,8 @@
         <div class="btn-group col-md-12" style="position: relative;">
             <div class="pull-right">
                 @*<a href="/home/index" class="btn btn-success cancel" >Finish</a>*@
+                <a class="btn btn-warning left" href="/CSVUpload/RevisedUploadData/DragAndDropFiles_meta_data">Upload Meta-data</a>
+                <a class="btn btn-info left" href="/CSVUpload/RevisedUploadData/DragAndDropFiles_data_values">Upload Data Values</a>
                 <a class="btn btn-success cancel">Finish</a>
             </div>
         </div>
@@ -71,8 +73,10 @@
                     <table id="tblRejectedItems" class="display" cellspacing="0" style="width: 100%;"></table>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" id="btnRejectedItemsModalDownload" class="btn btn-default btn-primary left disabled" >Download</button>
-                    <button type="button" id="btnRejectedItemsModalClose" class="btn btn-warning left" data-dismiss="modal">Close</button>
+                    @*<button type="button" id="btnRejectedItemsModalDownload" class="btn btn-default btn-primary pull-left disabled" >Download</button>*@
+                    <a href="" type="button" id="btnRejectedItemsModalDownload" class="btn btn-default btn-primary pull-left disabled">Download</a>
+                    @*<button type="button" id="btnRejectedItemsModalClose" class="btn btn-warning left" data-dismiss="modal">Close</button>*@
+                    <a id="btnRejectedItemsModalClose" class="btn btn-warning left" href="/CSVUpload/RevisedUploadData/DbSummaryReport">Close</a>
                     <button type="button" id="btnRejectedItemsModalReupload" class="btn btn-success left disabled" >Re-Upload</button>
                 </div>
             </div>
@@ -294,18 +298,26 @@
                     //Row ids exist - retrieve DataTables API...
                     var table = $('#' + 'tblRejectedItems').DataTable();
 
-                    //Select row(s) per row ids
-                    var rows = table.rows(rowIds);
+                    //For each row Id...
+                    // NOTE: The function called by forEach(...) provides a closure for each rowId value...
+                    // Source: http://www.datchley.name/loop-variable-gotcha/
+                    rowIds.forEach(function (rowId, index) {
+                        //Retrieve row <tr> element...
+                        var row = table.row(rowId);
+                        var node = row.node();
 
-                    //Fade rows via jQuery, re-draw table...
-                    rows.nodes().to$().fadeTo(1500, 0.5, function () {
-                        //$(this).remove();   //jQuery Remove...
-                        rows.remove();        //DataTables Remove...
+                        //Assign 'fade to' function to <tr> element
+                        $(node).fadeTo(1500, 0.5, function () {
+                            //Get the row again (due to other remove() calls, 'row' instance in outer scope may be invalid)
+                            //For more information see: 
+                            //  Bug: "Uncaught TypeError: Cannot read property '_aData' of undefined" when using row reference after removing other row #566
+                            //  https://github.com/DataTables/DataTables/issues/566 
+                            var myRow = table.row(rowId);
+                            myRow.remove();        //DataTables Remove...
                         table.draw();
                     });
-
+                    });
                 }
-
             }
         }
 
@@ -516,6 +528,10 @@
                 var button = $('#' + 'btnRejectedItemsModalReupload');
                 button.off('click', reloadRejectedItems);
                 button.on('click', { "currentUploadId": currentUploadId, "tableName": tableName }, reloadRejectedItems);
+
+                var anchor = $('#' + 'btnRejectedItemsModalDownload');
+                anchor.removeClass('disabled');
+                anchor.attr('href', '/api/revisedupload/get/rejecteditemsfile/' + currentUploadId + '/' + tableName + '/')
                 
                 //Retrieve rejected items for display...
                 var url = '/api/revisedupload/get/rejecteditems/' + currentUploadId + '/' +  tableName + '/';
@@ -707,7 +723,8 @@
 
                     //Redirect to home page, after a brief delay...
                     setTimeout(function () {
-                        window.location.href = "/home/index"
+                        //window.location.href = "/home/index"
+                        window.location.href = "/CSVUpload/RevisedUploadData/SelectUploadType"
                     }, 1000);
                 },
                 "error": function (xmlhttprequest, textStatus, message) {

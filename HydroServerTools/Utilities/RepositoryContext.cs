@@ -112,6 +112,49 @@ namespace HydroServerTools.Utilities
             return result;
         }
 
+        //For the input record object and header names, return a string of record values...
+        private static string GetRecordValues(object record, List<string> headerNames)
+        {
+            List<string> result = new List<string>();
+
+            string delimiter = ",";
+
+            //Validate/initialize input parameters...
+            if (null != record && null != headerNames)
+            {
+                //Input parameters valid - get input record type...
+                Type type = record.GetType();
+                PropertyInfo[] propInfos = type.GetProperties();
+
+                //For each input header name...
+                foreach (var headerName in headerNames)
+                {
+                    //For each property info...
+                    foreach (var propInfo in propInfos)
+                    {
+                        if (propInfo.Name.ToLowerInvariant() == headerName.ToLowerInvariant())
+                        {
+                            //Match - append property value to result...
+                            var propValueObj = propInfo.GetValue(record);                                  
+                            string propValue = (null == propValueObj) ? String.Empty : propValueObj.ToString();
+
+                            if (propValue.Contains(delimiter))
+                            {
+                                //Value contains delimiter character(s) - enclose in double quotes...
+                                propValue = String.Format("{0}{1}{2}", '"', propValue, '"');
+                            }
+
+                            result.Add(propValue);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            //Processing complete - return
+            return String.Join(delimiter, result);
+        }
+
 
         //Constructors...
         private RepositoryContext()
@@ -420,6 +463,12 @@ namespace HydroServerTools.Utilities
                                                 string recordType = paramNamesToRecordTypes[kvpair.Key];
                                                 System.Collections.IList recordList = paramNamesToLists[kvpair.Key];
 
+                                                ////To temporarily address BinaryFormatter memory error on serializing large data collections - skip correct records...
+                                                //if ("CorrectRecords" == recordType)
+                                                //{
+                                                //    continue;
+                                                //}
+
                                                 //Create a list of UpdateableItems for output to binary file...
                                                 Type updateableItemsListType = tGenericList.MakeGenericType(gUpdateableItem);
                                                 System.Collections.IList iUpdateableItemsList = (System.Collections.IList)Activator.CreateInstance(updateableItemsListType);
@@ -578,7 +627,25 @@ namespace HydroServerTools.Utilities
                                     string tableName = iUpdateableItems.TableName;
                                     if (!String.IsNullOrWhiteSpace(tableName))
                                     {
-                                        //Table name retrieved - commit new and updated records, if indicated...
+                                        //Table name retrieved - update load results...
+                                        using (await dbLoadContext.DbLoadSemaphore.UseWaitAsync())
+                                        {
+                                            var dbLoadResults = dbLoadContext.DbLoadResults;
+                                            foreach (var dbLoadResult in dbLoadResults)
+                                            {
+                                                if (tableName.ToLowerInvariant() == dbLoadResult.TableName.ToLowerInvariant())
+                                                {
+                                                    //Table name match - call update method...
+                                                    dbLoadResult.LoadCounts.UpdateCounts(paramNamesToLists["listOfCorrectRecords"].Count,
+                                                                                         paramNamesToLists["listOfEditedRecords"].Count,
+                                                                                         paramNamesToLists["listOfIncorrectRecords"].Count,
+                                                                                         paramNamesToLists["listOfDuplicateRecords"].Count);
+                                                    break;
+                                                }
+                                            }
+                                        }
+
+                                        //Commit new and updated records, if indicated...
                                         RepositoryUtils repositoryUtils = new RepositoryUtils();
                                         Type typeRepositoryUtils = typeof(RepositoryUtils);
                                         MethodInfo methodInfoCommit = typeRepositoryUtils.GetMethod("CommitNewRecords");
@@ -682,6 +749,77 @@ namespace HydroServerTools.Utilities
 
             //Processing complete - return result
             return result;
+        }
+
+        //Assign input 'items' to a list, stream list contents and return
+        public async Task<Stream> StreamItemsToModelList<tModelType>(List<UpdateableItem<tModelType>> iUpdateableItems,
+                                                                     System.Text.Encoding fileEncoding,
+                                                                     List<string> listRequiredPropertyNames,
+                                                                     List<string> listOptionalPropertyNames)
+        {
+            int count = 65536;
+            MemoryStream msResult = new MemoryStream(count);
+
+            //Validate/initialize input parameters...
+            if (null != iUpdateableItems && null != fileEncoding && null != listRequiredPropertyNames && null != listOptionalPropertyNames)
+            {
+                //Check model type...
+                Type modelType = typeof(tModelType);
+                if (modelTypesToRepositoryTypes.ContainsKey(modelType))
+                {
+                    //Known model type - create a generic list...
+                    Type tGenericList = typeof(List<>);
+                    Type modelListType = tGenericList.MakeGenericType(modelType);
+                    System.Collections.IList iList = (System.Collections.IList)Activator.CreateInstance(modelListType);
+
+                    //For each input updateable item...
+                    foreach (var updateableItem in iUpdateableItems)
+                    {
+                        //Add item to generic list...
+                        iList.Add(updateableItem.Item);
+                    }
+
+                    //Combine required and optional header names
+                    listOptionalPropertyNames.Add("Errors");    //Include 'Errors' header...
+                    var headerNames = listRequiredPropertyNames.Concat(listOptionalPropertyNames);
+                    string outputHeaderNames = String.Join(",", headerNames);
+
+                    //Create a memory stream...
+                    using (MemoryStream ms = new MemoryStream(count))
+                    {
+                        //Create a stream writer...
+                        using (StreamWriter sw = new StreamWriter(ms, fileEncoding))
+                        {
+                            //Create a CSV writer...
+                            var conf = new CsvHelper.Configuration.Configuration();
+                            conf.Encoding = fileEncoding;
+                            using (CsvHelper.CsvWriter csvW = new CsvHelper.CsvWriter(sw, conf))
+                            {
+                                //Write header to stream...
+                                await sw.WriteLineAsync(outputHeaderNames);
+                                await sw.FlushAsync();         //MUST flush the StreamWriter here to avoid truncation!!
+                                                               //Source: Example 7 at https://www.csharpcodi.com/csharp-examples/CsvHelper.CsvWriter.WriteRecords(System.Collections.Generic.IEnumerable)/ 
+
+                                //Write records to stream...
+                                foreach (var record in iList)
+                                {
+                                    var outputValues = GetRecordValues(record, headerNames.ToList());
+                                    await sw.WriteLineAsync(outputValues);
+                                    await sw.FlushAsync();         //MUST flush the StreamWriter here to avoid truncation!!
+                                                                   //Source: Example 7 at https://www.csharpcodi.com/csharp-examples/CsvHelper.CsvWriter.WriteRecords(System.Collections.Generic.IEnumerable)/ 
+                                }
+
+                                //Copy memory stream to result...
+                                ms.Position = 0;
+                                await ms.CopyToAsync(msResult, count);
+                            }
+                        }
+                    }
+                }
+            }
+
+            //Processing complete - return stream...
+            return msResult;
         }
 
     }

@@ -1,0 +1,108 @@
+
+HydroServer Redesign Part 7
+
+
+**** Summary ****
+ - Additions in the following areas:
+   - Add logic for download of rejected items file from Rejected Items dialog
+   - Add logic to update/display changes in DbSummary counts after successful rejected item(s) re-uploads
+   - Revise uploaded *.csv file validation logic to treat missing OPTIONAL file headers as valid
+   - Miscellaneous: Revise some UI return pathways add some additional pathways
+
+
+**** HydroServerTools ****
+ - Web.config
+    - <customErrors> off for debugging 
+
+
+**** HydroServerTools/App_Start ****
+ - WebApiConfig.cs
+   - New REST API route: api/revisedupload/get/rejecteditemsfile/{uploadId}/{tableName}
+
+
+**** HydroServerTools/Controllers ****
+ - CSVUploadController.cs
+   - method RevisedUploadData(...) - Comment out 'hack for previous bug - prevents display of upload data values page
+
+
+**** HydroServerTools/Controllers/api ****
+ - RevisedUploadController.cs
+   - New controller method: GetRejectedItemsFile(...)
+
+
+**** HydroServerTools/Utilities **** 
+ - DbLoadContext.cs 
+   - New method: DbLoadCounts.UpdateCounts(...)
+ - RepositoryContext.cs
+   - New methods: 
+     - RepositoryContext.GetRecordValues(...)
+     - RepositoryContext.StreamItemsToModelList<...>(...)
+   - Method: RepositoryContext.UpdateDbTable<...>(...)
+     - Add call to DbLoadResult.UpdateCounts(...)
+
+
+**** HydroServerTools/Validators **** 
+ - CsvValidator.cs
+   - Revise method: CsvValidator.reset()
+   - Revise method: CsvValidator.headerValidationCallback() to treat missing OPTIONAL headers as valid 
+   - New properties: CurrentModelType, FileEncoding
+   - Revise method: ValidateFileContents()
+
+
+**** HydroServerTools/Views/CSVUpload **** 
+ - DbSummaryReport.cshtml
+   - Add buttons: Upload Meta-data, Upload Data Values
+   - Rejected Items Dialog: 
+     - Convert btnRejectedItemsModalDownload from button '<button>' to anchor '<a>' 
+     - Convert btnRejectedItemsModalClose from button '<button>' to anchor '<a>'
+   - function updateRejectedItemsTable(...)
+     - Revise row deletion code to form a separate JavaScript 'closure' on each rowId value 
+   - function shownRejectedItems(...)
+     - set href for anchor 'btnRejectedItemsModalDownload' to download current rejected items
+   - function removeUploadId(...)
+     - change window.href value from '/home/index' to /.../SelectUploadType
+
+
+**** Test CSV Files **** 
+ - Changes to Martin's files
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
