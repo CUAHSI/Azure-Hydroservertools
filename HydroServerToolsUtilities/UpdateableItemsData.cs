@@ -21,6 +21,8 @@ namespace HydroServerToolsUtilities
             DuplicateItemIds = new List<int>();
             EditedItemIds = new List<int>();
             IncorrectItemIds = new List<int>();
+
+            ErrorMessages = new List<StatusMessage>();
         }
 
         //Initializing constructor...
@@ -42,6 +44,8 @@ namespace HydroServerToolsUtilities
         public List<int> DuplicateItemIds { get; private set; }
         public List<int> EditedItemIds { get; private set; }
         public List<int> IncorrectItemIds { get; private set; }
+
+        public List<StatusMessage> ErrorMessages { get; private set; }
     }
 
     //A simple class which associates an upload id with one or more table update result instances...

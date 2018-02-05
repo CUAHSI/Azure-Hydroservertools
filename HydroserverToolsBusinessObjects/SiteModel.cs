@@ -38,7 +38,5 @@ namespace HydroserverToolsBusinessObjects.Models
         [Required]
         public string SiteType { get; set; }
         public string Errors { get; set; }
-
-
     }
 }

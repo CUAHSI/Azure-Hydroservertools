@@ -18,6 +18,7 @@ using HydroServerToolsRepository.Repository;
 using HydroServerToolsUtilities;
 
 using ODM_1_1_1EFModel;
+using System.Collections.Concurrent;
 
 namespace HydroServerTools.Utilities
 {
@@ -67,7 +68,7 @@ namespace HydroServerTools.Utilities
         //Utilities...
 
         //Associate parameter names with IList instances...
-        private Dictionary<string, System.Collections.IList> MakeParamNamesToLists()
+        private static Dictionary<string, System.Collections.IList> MakeParamNamesToLists()
         {
             return new Dictionary<string, System.Collections.IList>
                                 { {"itemList", null},
@@ -78,7 +79,7 @@ namespace HydroServerTools.Utilities
         }
 
         //Associate parameter names with record types...
-        private Dictionary<string, string> MakeParamNamesToRecordTypes()
+        private static Dictionary<string, string> MakeParamNamesToRecordTypes()
         {
             return new Dictionary<string, string>
                                 { {"listOfIncorrectRecords", "IncorrectRecords" },
@@ -88,7 +89,7 @@ namespace HydroServerTools.Utilities
         }
 
         //Scan method info for the input repository type - return method info for the 'Add...' method
-        private MethodInfo GetRepositoryAddMethodInfo(Type repositoryType)
+        private static MethodInfo GetRepositoryAddMethodInfo(Type repositoryType)
         {
             MethodInfo result = null;
 
@@ -463,12 +464,6 @@ namespace HydroServerTools.Utilities
                                                 string recordType = paramNamesToRecordTypes[kvpair.Key];
                                                 System.Collections.IList recordList = paramNamesToLists[kvpair.Key];
 
-                                                ////To temporarily address BinaryFormatter memory error on serializing large data collections - skip correct records...
-                                                //if ("CorrectRecords" == recordType)
-                                                //{
-                                                //    continue;
-                                                //}
-
                                                 //Create a list of UpdateableItems for output to binary file...
                                                 Type updateableItemsListType = tGenericList.MakeGenericType(gUpdateableItem);
                                                 System.Collections.IList iUpdateableItemsList = (System.Collections.IList)Activator.CreateInstance(updateableItemsListType);
@@ -545,9 +540,9 @@ namespace HydroServerTools.Utilities
         //Update input database table with the contents of the input updated items, 
         // adjust input StatusContext and DbLoadContext instances accordingly
         public async Task<TableUpdateResult> UpdateDbTable<tModelType>(IUpdateableItemsData<tModelType> iUpdateableItems,
-                                                     string pathProcessed,
-                                                     StatusContext statusContext,
-                                                     DbLoadContext dbLoadContext)
+                                                                       string pathProcessed,
+                                                                       StatusContext statusContext,
+                                                                       DbLoadContext dbLoadContext)
         {
              TableUpdateResult result = null;
 
@@ -578,7 +573,40 @@ namespace HydroServerTools.Utilities
                     //Populate generic list from input...
                     foreach (var updateableItem in iUpdateableItems.UpdateableItems)
                     {
-                        iList.Add(updateableItem.Item);
+                        //Clear Errors property...
+                        var instance = updateableItem.Item;
+                        PropertyInfo pi = modelType.GetProperty("Errors");
+
+                        if (null != pi)
+                        {
+                            pi.SetValue(instance, String.Empty);
+                        }
+
+                        iList.Add(instance);
+
+                        //Clear associated status messages for current item...
+                        using (await statusContext.StatusMessagesSemaphore.UseWaitAsync())
+                        {
+                            if (statusContext.StatusMessages.ContainsKey(modelType.Name))
+                            {
+                                var  messageQueue = statusContext.StatusMessages[modelType.Name];
+                                var newMessageQueue = new ConcurrentQueue<StatusMessage>();
+                                StatusMessage smResult = null;
+                                //For each status message...
+                                while (messageQueue.TryDequeue(out smResult))
+                                {
+                                    if (updateableItem.ItemId == smResult.ItemId)
+                                    {
+                                        continue;   //Match on ItemId - continue to next status message...
+                                    }
+
+                                    newMessageQueue.Enqueue(smResult);  //No match on ItemId - add status message to new queue... 
+                                }
+
+                                //Assign new queue...
+                                statusContext.StatusMessages[modelType.Name] = newMessageQueue;
+                            }
+                        }
                     }
 
                     if (null != iList && 0 < iList.Count)
@@ -713,6 +741,7 @@ namespace HydroServerTools.Utilities
                                             foreach (var kvp in listKeysToItemIds)
                                             {
                                                 var recordsList = paramNamesToLists[kvp.Key];
+                                                int currentIndex = 0;
                                                 foreach (var record in recordsList)
                                                 {
                                                     //NOTE: Using default operator == for reference types here
@@ -725,20 +754,31 @@ namespace HydroServerTools.Utilities
                                                     {
                                                         var itemIds = kvp.Value;
                                                         itemIds.Add(itemId);
+
+                                                        if ("listOfIncorrectRecords" == kvp.Key)
+                                                        {
+                                                            //Incorrect records - update 'IsError' status message ItemIds...
+                                                            using (await statusContext.StatusMessagesSemaphore.UseWaitAsync())
+                                                            {
+                                                                if (statusContext.StatusMessages.ContainsKey(modelType.Name))
+                                                                {
+                                                                    var statusMessages = statusContext.StatusMessages[modelType.Name];
+                                                                    foreach (var statusMessage in statusMessages)
+                                                                    {
+                                                                        if (statusMessage.IsError && (currentIndex == statusMessage.ItemId))
+                                                                        {
+                                                                            statusMessage.ItemId = itemId;
+                                                                            result.ErrorMessages.Add(statusMessage);
+                                                                        }
+                                                                    }
+                                                                }
+                                                                ++currentIndex;
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             }
                                         }
-
-                                        int y = 10;
-
-                                        ++y;
-
-                                        //TO DO - Update the associated dbLoadResult in the input dbLoadContext
-
-                                        //TO DO - Update the binary files...
-
-                                        //TO DO - Update the statusContext...
                                     }
                                 }
                             }

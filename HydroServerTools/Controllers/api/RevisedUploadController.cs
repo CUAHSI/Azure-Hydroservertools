@@ -944,6 +944,17 @@ namespace HydroServerTools.Controllers.api
 
             StatusContext statusContext = statusContexts[uploadId];
 
+            //Retrieve associated file context..
+            var fileContexts = getFileContexts();
+            if (!fileContexts.ContainsKey(uploadId))
+            {
+                response.StatusCode = HttpStatusCode.BadRequest;    //Unknown uploadId - return early
+                response.ReasonPhrase = "Unknown upload id...";
+                return response;
+            }
+
+            FileContext fileContext = fileContexts[uploadId];
+
             //Find the associated repository context...
             var repositoryContexts = getRepositoryContexts();
             if (!repositoryContexts.ContainsKey(uploadId))
@@ -1001,6 +1012,18 @@ namespace HydroServerTools.Controllers.api
 
                             if ( null != tableUpdateResult)
                             {
+                                //Revise contents of binary files per method 'Add...' outcome
+                                Type fileContextType = fileContext.GetType();
+                                MethodInfo miUpdateBinaryFiles = fileContextType.GetMethod("UpdateBinaryFiles");
+                                MethodInfo miUpdateBinaryFiles_G = miUpdateBinaryFiles.MakeGenericMethod(modelType);
+
+                                //Call the async method via reflection...
+                                //Source: https://stackoverflow.com/questions/43426533/how-to-invoke-async-method-in-c-sharp-by-using-reflection-and-wont-cause-deadlo
+                                var task1 = (Task)miUpdateBinaryFiles_G.Invoke(fileContext, new object[] { iupdateableItemsData2,
+                                                                                                           pathProcessed,
+                                                                                                           tableUpdateResult});
+                                await task1;
+
                                 //Allocate update results, serialize to response content...
                                 updateResults = new UpdateResults(uploadId);
                                 updateResults.TableUpdateResults.Add(tableUpdateResult);

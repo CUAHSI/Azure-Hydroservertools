@@ -286,19 +286,25 @@
 
             //Validate/initialize input parameters...
             if ('undefined' !== typeof tableUpdateResult && null !== tableUpdateResult) {
-                //Input parameters valid - build row Ids array...
-                var correctItemIds = tableUpdateResult.CorrectItemIds;
-                var cLength = correctItemIds.length;
+                //Input parameters valid - build row Ids array for correct, duplicate and edited items items...
                 var rowIds = [];
-                for (var cI = 0; cI < cLength; ++cI) {
-                    rowIds.push('#' + correctItemIds[cI].toString());
+                var keys = ['CorrectItemIds', 'DuplicateItemIds', 'EditedItemIds']
+                var keysLength = keys.length;
+                for (var kI = 0; kI < keysLength; ++kI) {
+                    var currentKey = keys[kI];
+                    var currentItemIds = tableUpdateResult[currentKey];
+                    var cLength = currentItemIds.length;
+
+                    for (var cI = 0; cI < cLength; ++cI) {
+                        rowIds.push('#' + currentItemIds[cI].toString());
+                    }
                 }
 
                 if (0 < rowIds.length) {
-                    //Row ids exist - retrieve DataTables API...
+                    //Correct row ids exist - retrieve DataTables API...
                     var table = $('#' + 'tblRejectedItems').DataTable();
 
-                    //For each row Id...
+                    //For each correct row Id...
                     // NOTE: The function called by forEach(...) provides a closure for each rowId value...
                     // Source: http://www.datchley.name/loop-variable-gotcha/
                     rowIds.forEach(function (rowId, index) {
@@ -314,8 +320,48 @@
                             //  https://github.com/DataTables/DataTables/issues/566 
                             var myRow = table.row(rowId);
                             myRow.remove();        //DataTables Remove...
-                        table.draw();
+                            table.draw();
+                        });
                     });
+                }
+
+                var incorrectItemIds = tableUpdateResult.IncorrectItemIds;
+                var iLength = incorrectItemIds.length;
+                rowIds = [];
+                for (var iI = 0; iI < iLength; ++iI) {
+                    rowIds.push('#' + incorrectItemIds[iI].toString());
+                }
+
+                if (0 < rowIds.length) {
+                    //Incorrect row ids exist - retrieve DataTables API...
+                    table = $('#' + 'tblRejectedItems').DataTable();
+
+                    //For each incorrect row Id...
+                    // NOTE: The function called by forEach(...) provides a closure for each rowId value...
+                    // Source: http://www.datchley.name/loop-variable-gotcha/
+                    rowIds.forEach(function (rowId, index) {
+                        //Retrieve row <tr> element...
+                        var row = table.row(rowId);
+                        var rowData = row.data();
+                        var itemId = rowData.ItemId;
+                        var rowErrors = [];
+
+                        //Retrieve error message(s), if any...
+                        var statusMessages = tableUpdateResult.ErrorMessages;
+                        var smLength = statusMessages.length;
+
+                        for (var smI = 0; smI < smLength; ++smI) {
+                            var statusMessage = statusMessages[smI];
+                            if (statusMessage.IsError && (itemId === statusMessage.ItemId)) {
+                                rowErrors.push(statusMessage.Message);
+                            }
+                        }
+
+                        if (0 < rowErrors.length) {
+                            //Error message(s) found, update child row markup
+                            var markup = formatErrors(rowErrors);
+                            row.child(markup);
+                        }
                     });
                 }
             }
@@ -485,26 +531,32 @@
                         tr.removeClass('shown');
                     }
                     else {
-                        // Child row closed, retrieve row errors from StatusMessages... 
-                        var rowData = row.data();
-                        var itemId = rowData.ItemId;
-                        var rowErrors = [];
+                        // Child row closed, open...
+                        if ('undefined' === typeof (row.child())) {
+                            //No child rows - retrieve row errors from StatusMessages... 
+                            var rowData = row.data();
+                            var itemId = rowData.ItemId;
+                            var rowErrors = [];
 
-                        var statusMessages = rejectedItemsData.StatusMessages;
-                        var smLength = statusMessages.length;
+                            var statusMessages = rejectedItemsData.StatusMessages;
+                            var smLength = statusMessages.length;
 
-                        for (var smI = 0; smI < smLength; ++smI) {
-                            var statusMessage = statusMessages[smI];
-                            if (statusMessage.IsError && (itemId === statusMessage.ItemId)) {
-                                rowErrors.push(statusMessage.Message);
+                            for (var smI = 0; smI < smLength; ++smI) {
+                                var statusMessage = statusMessages[smI];
+                                if (statusMessage.IsError && (itemId === statusMessage.ItemId)) {
+                                    rowErrors.push(statusMessage.Message);
+                                }
                             }
+
+                            //Format errors...
+                            var markup = formatErrors(rowErrors);
+
+                            //Set child row markup...
+                            row.child(markup);
                         }
 
-                        //Format errors...
-                        var markup = formatErrors(rowErrors);
-
                         //Open child row, show errors...
-                        row.child(markup).show();
+                        row.child.show();
                         tr.addClass('shown');
                     }
                 });

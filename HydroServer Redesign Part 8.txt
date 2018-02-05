@@ -1,0 +1,88 @@
+
+HydroServer Redesign Part 8
+
+
+**** Summary ****
+ - Reload processing changes:
+   - Rejected Items Dialog: Add logic to update Rejected Items table for the following cases:
+     - Processing of reloaded item(s) succeeds: Item(s) are added to db
+     -				           Item(s) update existing db entries
+     - 			                           Item(s) are duplicates of existing db entries
+     - 'Successfully' uploaded items are removed from the Rejected Items table
+     - Processing of reloaded items(s) fails:   Rejected Items table entries and error message(s) updated
+     - Items which fail reload remain in the Rejected Items table
+  - On server: revise contents of 'correct', 'edited', 'duplicate' and 'incorrect' binary files per reload processing outcomes
+
+
+**** HydroServerTools/Controllers/api ****
+ - RevisedUploadController.cs
+   - PutRejectedItems()
+     - Add code to retrieve FileContext
+     - Add code to call FileContext.UpdateBinaryFiles(...)
+
+
+**** HydroServerTools/Utilities **** 
+ - FileContext.cs 
+   - New method: UpdateBinaryFiles(...)
+ - RepositoryContext.cs
+   - Make some utility methods 'static'
+   - Remove commented out code
+   - UpdateDbTable(...) - 
+     - Add code to remove error message(s) for 'to-be-reloaded' records
+     - Add code to add error message(s) for records which failed reload
+
+
+**** HydroServerTools/Views/CSVUpload **** 
+ - DbSummaryReport.cshtml
+   - updateRejectedItemsTable(...)
+     - Add code to remove table rows for all correct, duplicate and edited item ids
+     - Add code to update error messages for rejected items which fail reload
+  - buildRejectedItemsTable(...)
+    - Revise code to build child row(s) once for each record row
+
+
+**** HydroServerToolsUtilities ****
+ - UpdateableItemsData.cs 
+   - TableUpdateResult - add property: ErrorMessages
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
