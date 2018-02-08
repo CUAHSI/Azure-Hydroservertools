@@ -336,6 +336,7 @@ namespace HydroServerTools.Controllers.api
             Dictionary<String, Type> modelTypes = await repositoryContext.ModelTypeByTableName(tableName);
 
             Type modelType = modelTypes["tSourceType"];
+            Type proxyType = modelTypes["tProxyType"];
 
             //Retrieve the associated StatusContext...
             var statusContexts = getStatusContexts();
@@ -351,9 +352,10 @@ namespace HydroServerTools.Controllers.api
             List<StatusMessage> listStatusMessages = new List<StatusMessage>();
             using (await statusContext.StatusMessagesSemaphore.UseWaitAsync())
             {
-                if (statusContext.StatusMessages.ContainsKey(modelType.Name))
+                var keyVal = (null != proxyType) ? proxyType.Name : modelType.Name;
+                if (statusContext.StatusMessages.ContainsKey(keyVal))
                 {
-                    var msgQueue = statusContext.StatusMessages[modelType.Name];
+                    var msgQueue = statusContext.StatusMessages[keyVal];
                     foreach (var msg in msgQueue)
                     {
                         StatusMessage statMsg = new StatusMessage(msg);

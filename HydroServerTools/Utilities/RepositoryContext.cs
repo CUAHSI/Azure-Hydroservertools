@@ -666,9 +666,10 @@ namespace HydroServerTools.Utilities
                                                         //Processing incorrect records - update 'IsError' status message ItemIds...
                                                         using (await statusContext.StatusMessagesSemaphore.UseWaitAsync())
                                                         {
-                                                            if (statusContext.StatusMessages.ContainsKey(modelType.Name))
+                                                            var keyVal = useProxy ? proxyType.Name : modelType.Name;
+                                                            if (statusContext.StatusMessages.ContainsKey(keyVal))
                                                             {
-                                                                var statusMessages = statusContext.StatusMessages[modelType.Name];
+                                                                var statusMessages = statusContext.StatusMessages[keyVal];
                                                                 foreach (var statusMessage in statusMessages)
                                                                 {
                                                                     if (statusMessage.IsError && (currentIndex == statusMessage.ItemId))
@@ -785,9 +786,10 @@ namespace HydroServerTools.Utilities
                         //Clear associated status messages for current item...
                         using (await statusContext.StatusMessagesSemaphore.UseWaitAsync())
                         {
-                            if (statusContext.StatusMessages.ContainsKey(modelType.Name))
+                            var keyVal = (null != proxyType) ? proxyType.Name : modelType.Name;
+                            if (statusContext.StatusMessages.ContainsKey(keyVal))
                             {
-                                var  messageQueue = statusContext.StatusMessages[modelType.Name];
+                                var  messageQueue = statusContext.StatusMessages[keyVal];
                                 var newMessageQueue = new ConcurrentQueue<StatusMessage>();
                                 StatusMessage smResult = null;
                                 //For each status message...
@@ -802,7 +804,7 @@ namespace HydroServerTools.Utilities
                                 }
 
                                 //Assign new queue...
-                                statusContext.StatusMessages[modelType.Name] = newMessageQueue;
+                                statusContext.StatusMessages[keyVal] = newMessageQueue;
                             }
                         }
                     }

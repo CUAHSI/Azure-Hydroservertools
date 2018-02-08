@@ -1,0 +1,53 @@
+
+HydroServer Redesign Part 10
+
+
+**** Summary ****
+ - Miscellaneous changes to co-ordinate status message handling with Basic Template source and proxy types
+
+
+**** HydroServerTools/Controllers/api ****
+ - RevisedUploadController.cs 
+   - GetRejectedItems(...) 
+     - revise status message key references
+
+
+**** HydroServerTools/Utilities **** 
+ - RepositoryContext.cs
+   - LoadDb(...) - 
+     - revise status message key references
+   - UpdateDbTable(...)
+     - revise status message key references
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
