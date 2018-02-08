@@ -333,7 +333,9 @@ namespace HydroServerTools.Controllers.api
 
             //Retrieve the associated model type...
             RepositoryContext repositoryContext = repositoryContexts[uploadId];
-            Type modelType = await repositoryContext.ModelTypeByTableName(tableName);
+            Dictionary<String, Type> modelTypes = await repositoryContext.ModelTypeByTableName(tableName);
+
+            Type modelType = modelTypes["tSourceType"];
 
             //Retrieve the associated StatusContext...
             var statusContexts = getStatusContexts();
@@ -527,7 +529,9 @@ namespace HydroServerTools.Controllers.api
 
             //Retrieve the associated model type...
             RepositoryContext repositoryContext = repositoryContexts[uploadId];
-            Type modelType = await repositoryContext.ModelTypeByTableName(tableName);
+            Dictionary<String, Type> modelTypes = await repositoryContext.ModelTypeByTableName(tableName);
+
+            Type modelType = modelTypes["tSourceType"];
 
             //Retrieve required and optional property names for model type...
             Type tGenericMap = typeof(GenericMap<>);
@@ -966,7 +970,10 @@ namespace HydroServerTools.Controllers.api
 
             //Retrieve associated model type from table name...
             RepositoryContext repositoryContext = repositoryContexts[uploadId];
-            Type modelType = await repositoryContext.ModelTypeByTableName(tableName);
+            Dictionary<String, Type> modelTypes = await repositoryContext.ModelTypeByTableName(tableName);
+
+            Type modelType = modelTypes["tSourceType"];
+            Type proxyType = modelTypes["tProxyType"];
 
             //Set generic type for UpdatedItemsData for deserialization of request content...
             //NOTE: To correctly deserialize the <tModelType> items in the UpdatedItems list
@@ -1003,7 +1010,8 @@ namespace HydroServerTools.Controllers.api
                             var task = (Task)miUpdateDbTable_G.Invoke(repositoryContext, new object[] { iupdateableItemsData2,
                                                                                                         pathProcessed,
                                                                                                         statusContext,
-                                                                                                        dbLoadContext });
+                                                                                                        dbLoadContext,
+                                                                                                        proxyType });
                             await task;
 
                             //Retrieve result...

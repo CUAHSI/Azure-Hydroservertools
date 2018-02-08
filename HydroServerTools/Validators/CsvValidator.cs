@@ -158,22 +158,9 @@ namespace HydroServerTools.Validators
         //Dictionary of model types used in validation to class maps...
         private static Dictionary<Type, Type> validationTypesToClassMaps = new Dictionary<Type, Type>
                                                                                 {
-                                                                                  //{typeof(CategoriesModel), typeof(CategoriesModelMap)},
-                                                                                  //{typeof(DataValuesModel), typeof(DataValuesModelMap)},
-                                                                                  //{typeof(DerivedFromModel), typeof(DerivedFromModelMap)},
-                                                                                  //{typeof(GroupDescriptionModel), typeof(GroupDescriptionModelMap)},
-                                                                                  //{typeof(GroupsModel), typeof(GroupsModelMap)},
-                                                                                  //{typeof(LabMethodModel), typeof(LabMethodModelMap)},
-                                                                                  //{typeof(MethodModel), typeof(MethodModelMap)},
-                                                                                  //{typeof(OffsetTypesModel), typeof(OffsetTypesModelMap)},
-                                                                                  //{typeof(QualifiersModel), typeof(QualifiersModelMap)},
-                                                                                  //{typeof(QualityControlLevelModel), typeof(QualityControlLevelModelMap)},
-                                                                                  //{typeof(SampleModel), typeof(SampleModelMap)},
-                                                                                  //{typeof(SiteModel), typeof(SiteModelMap)},
-                                                                                  //{typeof(SourcesModel), typeof(SourcesModelMap)},
-                                                                                  //{typeof(VariablesModel), typeof(VariablesModelMap)}
                                                                                   {typeof(CategoriesModel), typeof(GenericMap<CategoriesModel>)},
-                                                                                  {typeof(DataValuesModel), typeof(GenericMap<DataValuesModel>)},
+                                                                                  //{typeof(DataValuesModel), typeof(GenericMap<DataValuesModel>)},
+                                                                                  {typeof(DataValuesModelBasicTemplate), typeof(GenericMap<DataValuesModelBasicTemplate>)},
                                                                                   {typeof(DerivedFromModel), typeof(GenericMap<DerivedFromModel>)},
                                                                                   {typeof(GroupDescriptionModel), typeof(GenericMap<GroupDescriptionModel>)},
                                                                                   {typeof(GroupsModel), typeof(GenericMap<GroupsModel>)},
@@ -183,9 +170,12 @@ namespace HydroServerTools.Validators
                                                                                   {typeof(QualifiersModel), typeof(GenericMap<QualifiersModel>)},
                                                                                   {typeof(QualityControlLevelModel), typeof(GenericMap<QualityControlLevelModel>)},
                                                                                   {typeof(SampleModel), typeof(GenericMap<SampleModel>)},
-                                                                                  {typeof(SiteModel), typeof(GenericMap<SiteModel>)},
-                                                                                  {typeof(SourcesModel), typeof(GenericMap<SourcesModel>)},
-                                                                                  {typeof(VariablesModel), typeof(GenericMap<VariablesModel>)}
+                                                                                  //{typeof(SiteModel), typeof(GenericMap<SiteModel>)},
+                                                                                  {typeof(SiteModelBasicTemplate), typeof(GenericMap<SiteModelBasicTemplate>) },
+                                                                                  //{typeof(SourcesModel), typeof(GenericMap<SourcesModel>)},
+                                                                                  {typeof(SourcesModelBasicTemplate), typeof(GenericMap<SourcesModelBasicTemplate>)},
+                                                                                  //{typeof(VariablesModel), typeof(GenericMap<VariablesModel>)},
+                                                                                  {typeof(VariablesModelBasicTemplate), typeof(GenericMap<VariablesModelBasicTemplate>)}
                                                                                 };
         //CSV file path and name...
         private string csvFilePathAndName;
@@ -435,6 +425,7 @@ namespace HydroServerTools.Validators
                                             if ("SuppressEmptyRequiredFieldsChecks" == fieldInfo.Name)
                                             {
                                                 enumValue = (int) Convert.ChangeType(fieldInfo.GetValue(null), typeof(int));
+                                                break;
                                             }
                                         }
 

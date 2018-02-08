@@ -1,0 +1,102 @@
+
+HydroServer Redesign Part 9
+
+
+**** Summary ****
+ - Changes to main processing logic for Basic Templates for:
+     - Data Values
+     - Sites
+     - Sources
+     - Variables
+
+
+**** HydroServerTools/Controllers/api ****
+ - RevisedUploadController.cs 
+   - GetRejectedItems(...)
+     - Modify for source and proxy types
+   - PutRejectedItems()
+     - Modify for source and proxy types
+
+
+**** HydroServerTools/Utilities **** 
+ - RepositoryContext.cs
+   - static members - update for source and proxy types
+   - ModelTypeByTableName(...)
+      - Revise return type to include source and proxy types
+   - LoadDb(...)
+     - Modify for source and proxy types
+   - UpdateDbTable(...)
+     - Modify for source and proxy types
+
+
+**** HydroServerTools/Validators **** 
+ - CsvValidator.cs 
+   - Update for source and proxy templates
+
+
+**** HydroServerTools/Views/CSVUpload **** 
+ - DbSummaryReport.cshtml
+   - Summary Report Page - add 'hidden' class to 'Upload...' buttons
+
+
+**** HydroserverToolsBusinessObjects ****
+ - New classes:
+    - DataValuesModelBasicTemplate.cs
+    - SiteModelBasicTemplate.cs
+    - SourcesModelBasicTemplate.cs
+    - VariablesModelBasicTemplate.cs
+
+
+**** HydroserverToolsBusinessObjects/ModelMaps ****
+ - GenericMap.cs
+    - Indentation change...
+
+
+**** Test CSV Files ****
+ - New Basic Template files
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

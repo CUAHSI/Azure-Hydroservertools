@@ -37,9 +37,10 @@ HydroServer Redesign Part 8
    - updateRejectedItemsTable(...)
      - Add code to remove table rows for all correct, duplicate and edited item ids
      - Add code to update error messages for rejected items which fail reload
-  - buildRejectedItemsTable(...)
-    - Revise code to build child row(s) once for each record row
-
+   - buildRejectedItemsTable(...)
+     - Revise code to build child row(s) once for each record row
+ - DragAndDropFiles.cshtml
+   - Update jQuery File Upload max chunk size to production value (2^23)
 
 **** HydroServerToolsUtilities ****
  - UpdateableItemsData.cs 

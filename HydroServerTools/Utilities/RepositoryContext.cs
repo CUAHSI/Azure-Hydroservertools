@@ -19,6 +19,7 @@ using HydroServerToolsUtilities;
 
 using ODM_1_1_1EFModel;
 using System.Collections.Concurrent;
+using HydroserverToolsBusinessObjects.Interfaces;
 
 namespace HydroServerTools.Utilities
 {
@@ -27,21 +28,33 @@ namespace HydroServerTools.Utilities
         //Dictionary of model types to repository types...
         //Listed in table load order!!!
         private static Dictionary<Type, Type> modelTypesToRepositoryTypes = new Dictionary<Type, Type>
-                                                                                { {typeof(SiteModel), typeof(SitesRepository)},
-                                                                                  {typeof(VariablesModel), typeof(VariablesRepository)},
+                                                                                { //{typeof(SiteModel), typeof(SitesRepository)},
+                                                                                  {typeof(SiteModelBasicTemplate), typeof(SitesRepository)},
+                                                                                  //{typeof(VariablesModel), typeof(VariablesRepository)},
+                                                                                  {typeof(VariablesModelBasicTemplate), typeof(VariablesRepository)},
                                                                                   {typeof(OffsetTypesModel), typeof(OffsetTypesRepository)},
-                                                                                  {typeof(SourcesModel), typeof(SourcesRepository)},
+                                                                                  //{typeof(SourcesModel), typeof(SourcesRepository)},
+                                                                                  {typeof(SourcesModelBasicTemplate), typeof(SourcesRepository)},
                                                                                   {typeof(MethodModel), typeof(MethodsRepository)},
                                                                                   {typeof(LabMethodModel), typeof(LabMethodsRepository)},
                                                                                   {typeof(SampleModel), typeof(SamplesRepository)},
                                                                                   {typeof(QualifiersModel), typeof(QualifiersRepository)},
                                                                                   {typeof(QualityControlLevelModel), typeof(QualityControlLevelsRepository)},
-                                                                                  {typeof(DataValuesModel), typeof(DataValuesRepository)},
+                                                                                  //{typeof(DataValuesModel), typeof(DataValuesRepository)},
+                                                                                  {typeof(DataValuesModelBasicTemplate), typeof(DataValuesRepository)},
                                                                                   {typeof(GroupDescriptionModel), typeof(GroupDescriptionsRepository)},
                                                                                   {typeof(GroupsModel), typeof(GroupsRepository)},
                                                                                   {typeof(DerivedFromModel), typeof(DerivedFromRepository)},
                                                                                   {typeof(CategoriesModel), typeof(CategoriesRepository)}
                                                                                 };
+        ////List of basic template model types...
+        //private static Dictionary<Type, Type> modelTypesBasicTemplate = new Dictionary<Type, Type>
+        //                                                        {   {typeof(DataValuesModelBasicTemplate), typeof(DataValuesModel)},
+        //                                                            {typeof(SiteModelBasicTemplate), typeof(SiteModel)},
+        //                                                            {typeof(SourcesModelBasicTemplate), typeof(SourcesModel)},
+        //                                                            {typeof(VariablesModelBasicTemplate), typeof(VariablesModel)}
+        //                                                        };
+
         //Dictionary of model types to Entity Framework types...
         private static Dictionary<Type, Type> modelTypesToEntityFrameworkTypes = new Dictionary<Type, Type>
                                                                                 { {typeof(SiteModel), typeof(Site)},
@@ -206,9 +219,10 @@ namespace HydroServerTools.Utilities
 
         //Retrieve the model type per the input table name...
         //Returns null if no such type found...
-        public async Task<Type> ModelTypeByTableName(string tableName)
+        public async Task<Dictionary<String, Type>> ModelTypeByTableName(string tableName)
         {
-            Type result = null;
+            Dictionary<String, Type> result = new Dictionary<String, Type>() { {"tSourceType", null },
+                                                                               {"tProxyType", null } };
             if (!String.IsNullOrWhiteSpace(tableName))
             {
                 //Create a DbContext...
@@ -258,7 +272,85 @@ namespace HydroServerTools.Utilities
                             if (tableName.ToLowerInvariant() == efMetadata.TableName.ToLowerInvariant())
                             {
                                 //Matching table name - return model type...
-                                result = modelType;
+                                result["tSourceType"] = modelType;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (null != result["tSourceType"])
+                    {
+                        //For Basic Templates - Check if model type (result) is used as a 'proxy'...
+
+                        //Retrieve assembly from result type 
+                        //ASSUMPTION: All Model Types exist in one assembly...
+                        //Source: https://haacked.com/archive/2012/07/23/get-all-types-in-an-assembly.aspx/
+                        Assembly mtAssembly = Assembly.GetAssembly(result["tSourceType"]);
+
+                        //Retrieve all types in the assembly...
+                        //Source: https://haacked.com/archive/2012/07/23/get-all-types-in-an-assembly.aspx/
+                        Type[] mtAssemblyTypes;
+                        try
+                        {
+                            mtAssemblyTypes = mtAssembly.GetTypes();
+                        }
+                        catch (ReflectionTypeLoadException ex)
+                        {
+                            mtAssemblyTypes = ex.Types;
+                        }
+
+                        //Scan types for IHydroserverRepositoryProxy interface...
+                        bool bFound = false;
+                        foreach (Type mtAssemblyType in mtAssemblyTypes)
+                        {
+                            var iHRPs = mtAssemblyType.GetInterfaces().Where(i => i.IsGenericType && 
+                                                                                  i.GetGenericTypeDefinition() == typeof(IHydroserverRepositoryProxy<,>));
+                            foreach (var iHRP in iHRPs)
+                            {
+                                //Retrieve interface data...
+                                var definition = iHRP.GetGenericTypeDefinition();
+                                var arguments = iHRP.GenericTypeArguments;
+                                var typeInfo = definition as TypeInfo;
+                                if (null != typeInfo)
+                                {
+                                    //Check interface type parameters and arguments...
+                                    var typeParams = typeInfo.GenericTypeParameters;
+                                    Type sourceType = null;
+                                    Type proxyType = null;
+                                    int index = 0;
+
+                                    foreach (var typeParam in typeParams)
+                                    {
+                                        if ("tSourceType" == typeParam.Name)
+                                        {
+                                            sourceType = arguments[index];
+                                        }
+
+                                        if ("tProxyType" == typeParam.Name)
+                                        {
+                                            proxyType = arguments[index];
+                                        }
+                                        ++index;
+                                    }
+
+                                    if (proxyType == result["tSourceType"] && null != sourceType)
+                                    {
+                                        //Proxy type found - set result values...
+                                        result["tSourceType"] = sourceType;
+                                        result["tProxyType"] = proxyType;
+
+                                        bFound = true;
+                                    }
+                                }
+
+                                if (bFound)
+                                {
+                                    break;
+                                }
+                            }
+
+                            if (bFound)
+                            {
                                 break;
                             }
                         }
@@ -293,7 +385,56 @@ namespace HydroServerTools.Utilities
                     //Source: https://blog.magnusmontin.net/2014/10/31/generic-type-parameters-and-dynamic-types-in-csharp/
                     Type modelType = kvp.Key;
                     Type repositoryType = kvp.Value;
-                    Type efType = modelTypesToEntityFrameworkTypes[modelType];  //Get associated entity framework type...
+
+                    //Check model type for support of interface: IHydroserverRepositoryProxy 
+                    //Source: https://stackoverflow.com/questions/18233390/check-if-a-type-implements-a-generic-interface-without-considering-the-generic-t
+                    bool useProxy = false;
+                    Type proxyType = null;
+                    Type efType = null;
+
+                    IEnumerable<Type> typesGenericInterfaces = modelType.GetInterfaces()
+                                                                .Where(i => i.IsGenericType && 
+                                                                            i.GetGenericTypeDefinition() == typeof(IHydroserverRepositoryProxy<,>));
+                    foreach ( var tgi in typesGenericInterfaces)
+                    {
+                        //Retrieve interface information...
+                        var definition = tgi.GetGenericTypeDefinition();
+                        var arguments = tgi.GenericTypeArguments;
+                        var typeInfo = definition as TypeInfo;
+
+                        if (null != typeInfo)
+                        {
+                            //Check interface type parameters and arguments...
+                            var typeParams = typeInfo.GenericTypeParameters;
+                            int index = 0;
+                            foreach (var typeParam in typeParams)
+                            {
+                                if ("tProxyType" == typeParam.Name)
+                                {
+                                    //ProxyType parameter found - retrieve corresponding proxy type from arguments...
+                                    proxyType = arguments[index];
+                                    useProxy = true;
+                                    break;
+                                }
+                                ++index;
+                            }
+                        }
+                        if (useProxy)
+                        {
+                            break;
+                        }
+                    }
+
+                    if (useProxy)
+                    {
+                        //Get associated entity framework type from proxy type...
+                        efType = modelTypesToEntityFrameworkTypes[proxyType];  
+                    }
+                    else
+                    {
+                        //Get associated entity framework type from model type...
+                        efType = modelTypesToEntityFrameworkTypes[modelType];  
+                    }
 
                     Type tGenericList = typeof(List<>);
                     Type modelListType = tGenericList.MakeGenericType(modelType);
@@ -307,7 +448,6 @@ namespace HydroServerTools.Utilities
                         try
                         {
                             //For the input file stream...
-                            //using (var fileStream = new FileStream(binFileNameAndPath, FileMode.Open, FileAccess.Read))
                             using (var fileStream = new FileStream(binFilePathAndName, FileMode.Open, FileAccess.Read, FileShare.Read, 65536, true))
                             {
                                 //De-serialize to generic list...
@@ -320,7 +460,19 @@ namespace HydroServerTools.Utilities
 
                                     if (null != methodAdd)
                                     {
-                                        //'Add...' method found - build parameters for method call...
+                                        //'Add...' method found - check for proxy usage... 
+                                        MethodInfo miInitializeProxy = null;
+                                        if (useProxy)
+                                        {
+                                            //Proxy usage - retrieve proxy methods, get InitializeProxy() information...
+                                            MethodInfo[] methods = modelType.GetMethods();
+                                            miInitializeProxy = methods.Single(mi => mi.Name == "InitializeProxy");
+
+                                            //Replace modeltype with proxytype in generic list...
+                                            modelListType = tGenericList.MakeGenericType(proxyType);
+                                        }
+
+                                        //Build parameters for method call...
                                         List<string> keys = paramNamesToLists.Keys.ToList();
                                         foreach (var key in keys)
                                         {
@@ -337,7 +489,15 @@ namespace HydroServerTools.Utilities
                                                 var itemList = paramNamesToLists[key];
                                                 foreach (var item in iList)
                                                 {
-                                                    itemList.Add(item);
+                                                    if (useProxy)
+                                                    {
+                                                        var proxy = miInitializeProxy.Invoke(item, new object[] { });
+                                                        itemList.Add(proxy);
+                                                    }
+                                                    else
+                                                    {
+                                                        itemList.Add(item);
+                                                    }
                                                 }
                                             }
                                         }
@@ -418,7 +578,7 @@ namespace HydroServerTools.Utilities
                                                 if (0 < iList2.Count)
                                                 {
                                                     //New records exist - invoke 'CommitNew...' method...
-                                                    methodInfo_G = methodInfoCommit.MakeGenericMethod(modelType);
+                                                    methodInfo_G = methodInfoCommit.MakeGenericMethod(((null != proxyType) ? proxyType : modelType));
                                                     object[] objArrayC = new object[] { entityConnectionString,
                                                                                         tableName,
                                                                                         iList2,
@@ -431,7 +591,7 @@ namespace HydroServerTools.Utilities
                                                 if (0 < iList2.Count)
                                                 {
                                                     //Updated records exist - invoke 'CommitUpdate...' method...
-                                                    methodInfo_G = methodInfoUpdate.MakeGenericMethod(modelType);
+                                                    methodInfo_G = methodInfoUpdate.MakeGenericMethod(((null != proxyType) ? proxyType : modelType));
                                                     object[] objArrayU = new object[] { entityConnectionString,
                                                                                         tableName,
                                                                                         iList2
@@ -456,7 +616,17 @@ namespace HydroServerTools.Utilities
                                             Type tUpdateableItem = typeof(UpdateableItem<>);
                                             Type gUpdateableItem = tUpdateableItem.MakeGenericType(modelType);
                                             ConstructorInfo ciUpdateableItem = gUpdateableItem.GetConstructor(new Type[] { modelType, typeof(int) });
-                                      
+
+                                            //Retrieve model type default constructor definition...
+                                            ConstructorInfo ciModelType = modelType.GetConstructor(Type.EmptyTypes);
+                                            MethodInfo miValueFromProxy = null;
+
+                                            if (useProxy)
+                                            {
+                                                MethodInfo[] methods = modelType.GetMethods();
+                                                miValueFromProxy = methods.Single(mi => mi.Name == "ValueFromProxy");
+                                            }
+
                                             //For each record type from the 'Add...' call...
                                             foreach (var kvpair in paramNamesToRecordTypes)
                                             {
@@ -472,8 +642,24 @@ namespace HydroServerTools.Utilities
 
                                                 foreach (var record in recordList)
                                                 {
-                                                    var updateableItem = ciUpdateableItem.Invoke(new object[] {record, ++initialId });
-                                                    iUpdateableItemsList.Add(updateableItem);
+                                                    if ( null != ciModelType)
+                                                    {
+                                                        //Create model type instance...
+                                                        if (useProxy)
+                                                        {
+                                                            //Create model type instance - value from proxy...
+                                                            var modelTypeInstance = ciModelType.Invoke(new object[] { });
+                                                            var modelTypeInstance2 = miValueFromProxy.Invoke(modelTypeInstance, new object[] { record });
+
+                                                            var updateableItem = ciUpdateableItem.Invoke(new object[] { modelTypeInstance2, ++initialId });
+                                                            iUpdateableItemsList.Add(updateableItem);
+                                                        }
+                                                        else
+                                                        {
+                                                            var updateableItem = ciUpdateableItem.Invoke(new object[] { record, ++initialId });
+                                                            iUpdateableItemsList.Add(updateableItem);
+                                                        }
+                                                    }
 
                                                     if ("IncorrectRecords" == recordType)
                                                     {
@@ -542,7 +728,8 @@ namespace HydroServerTools.Utilities
         public async Task<TableUpdateResult> UpdateDbTable<tModelType>(IUpdateableItemsData<tModelType> iUpdateableItems,
                                                                        string pathProcessed,
                                                                        StatusContext statusContext,
-                                                                       DbLoadContext dbLoadContext)
+                                                                       DbLoadContext dbLoadContext,
+                                                                       Type proxyType = null )
         {
              TableUpdateResult result = null;
 
@@ -558,7 +745,18 @@ namespace HydroServerTools.Utilities
                 {
                     //Known model type - retrieve associated repository and entity framework types...
                     Type repositoryType = modelTypesToRepositoryTypes[modelType];
-                    Type efType = modelTypesToEntityFrameworkTypes[modelType];
+                    Type efType = null;
+
+                    if (null != proxyType)
+                    {
+                        //Get associated entity framework type from proxy type...
+                        efType = modelTypesToEntityFrameworkTypes[proxyType];
+                    }
+                    else
+                    {
+                        //Get associated entity framework type from model type...
+                        efType = modelTypesToEntityFrameworkTypes[modelType];
+                    }
 
                     //Allocate dictionary of param names to generic lists for repository 'Add...' call...
                     Dictionary<string, System.Collections.IList> paramNamesToLists = MakeParamNamesToLists();
@@ -618,7 +816,19 @@ namespace HydroServerTools.Utilities
 
                             if (null != methodAdd)
                             {
-                                //'Add...' method found - build parameters for method call... 
+                                //'Add...' method found - check for proxy usage...
+                                MethodInfo miInitializeProxy = null;
+                                if (null != proxyType)
+                                {
+                                    //Proxy usage - retrieve proxy methods, get InitializeProxy() information...
+                                    MethodInfo[] methods = modelType.GetMethods();
+                                    miInitializeProxy = methods.Single(mi => mi.Name == "InitializeProxy");
+
+                                    //Replace modeltype with proxytype in generic list...
+                                    modelListType = tGenericList.MakeGenericType(proxyType);
+                                }
+
+                                //Build parameters for method call... 
                                 List<string> keys = paramNamesToLists.Keys.ToList();
                                 foreach (var key in keys)
                                 {
@@ -628,7 +838,24 @@ namespace HydroServerTools.Utilities
                                         paramNamesToLists[key] = null;
                                     }
 
-                                    paramNamesToLists[key] = ("itemList" == key) ? iList : (System.Collections.IList)Activator.CreateInstance(modelListType);
+                                    paramNamesToLists[key] = (System.Collections.IList)Activator.CreateInstance(modelListType);
+                                    if ("itemList" == key)
+                                    {
+                                        //Assign de-serialized items...
+                                        var itemList = paramNamesToLists[key];
+                                        foreach (var item in iList)
+                                        {
+                                            if (null != proxyType)
+                                            {
+                                                var proxy = miInitializeProxy.Invoke(item, new object[] { });
+                                                itemList.Add(proxy);
+                                            }
+                                            else
+                                            {
+                                                itemList.Add(item);
+                                            }
+                                        }
+                                    }
                                 }
 
                                 //Create repository instance...
@@ -684,7 +911,7 @@ namespace HydroServerTools.Utilities
                                         if (0 < iList2.Count)
                                         {
                                             //New records exist - invoke 'CommitNew...' method...
-                                            methodInfo_G = methodInfoCommit.MakeGenericMethod(modelType);
+                                            methodInfo_G = methodInfoCommit.MakeGenericMethod(((null != proxyType) ? proxyType : modelType));
                                             object[] objArrayC = new object[] { entityConnectionString,
                                                                                 tableName,
                                                                                 iList2,
@@ -697,7 +924,7 @@ namespace HydroServerTools.Utilities
                                         if (0 < iList2.Count)
                                         {
                                             //Updated records exist - invoke 'CommitUpdate...' method...
-                                            methodInfo_G = methodInfoUpdate.MakeGenericMethod(modelType);
+                                            methodInfo_G = methodInfoUpdate.MakeGenericMethod(((null != proxyType) ? proxyType : modelType));
                                             object[] objArrayU = new object[] { entityConnectionString,
                                                                                 tableName,
                                                                                 iList2
@@ -731,6 +958,13 @@ namespace HydroServerTools.Utilities
                                             }
                                         }
 
+                                        MethodInfo miCompareWithProxy = null;
+                                        if (null != proxyType)
+                                        {
+                                            MethodInfo[] methods = modelType.GetMethods();
+                                            miCompareWithProxy = methods.Single(mi => mi.Name == "CompareWithProxy");
+                                        }
+
                                         //For each input updateable item...
                                         foreach (var updateableItem in iUpdateableItems.UpdateableItems)
                                         {
@@ -744,35 +978,69 @@ namespace HydroServerTools.Utilities
                                                 int currentIndex = 0;
                                                 foreach (var record in recordsList)
                                                 {
-                                                    //NOTE: Using default operator == for reference types here
-                                                    // ASSUMPTION: Repository Method 'Add' implementations COPY model class references 
-                                                    //                   - from the input 'items' list 
-                                                    //                   - to the 'listOf...Records' lists!!
-                                                    // Thus use of the default operator == (which for reference types other than string 
-                                                    //  returns true if the two operands refer to the same object) is safe here... 
-                                                    if ((object)item == record)
+                                                    if (null != proxyType)
                                                     {
-                                                        var itemIds = kvp.Value;
-                                                        itemIds.Add(itemId);
-
-                                                        if ("listOfIncorrectRecords" == kvp.Key)
+                                                        //Value compare via interface method...
+                                                        bool compare = (bool)miCompareWithProxy.Invoke(item, new object[] { record });
+                                                        if (compare)
                                                         {
-                                                            //Incorrect records - update 'IsError' status message ItemIds...
-                                                            using (await statusContext.StatusMessagesSemaphore.UseWaitAsync())
+                                                            var itemIds = kvp.Value;
+                                                            itemIds.Add(itemId);
+
+                                                            if ("listOfIncorrectRecords" == kvp.Key)
                                                             {
-                                                                if (statusContext.StatusMessages.ContainsKey(modelType.Name))
+                                                                //Incorrect records - update 'IsError' status message ItemIds...
+                                                                using (await statusContext.StatusMessagesSemaphore.UseWaitAsync())
                                                                 {
-                                                                    var statusMessages = statusContext.StatusMessages[modelType.Name];
-                                                                    foreach (var statusMessage in statusMessages)
+                                                                    if (statusContext.StatusMessages.ContainsKey(proxyType.Name))
                                                                     {
-                                                                        if (statusMessage.IsError && (currentIndex == statusMessage.ItemId))
+                                                                        var statusMessages = statusContext.StatusMessages[proxyType.Name];
+                                                                        foreach (var statusMessage in statusMessages)
                                                                         {
-                                                                            statusMessage.ItemId = itemId;
-                                                                            result.ErrorMessages.Add(statusMessage);
+                                                                            if (statusMessage.IsError && (currentIndex == statusMessage.ItemId))
+                                                                            {
+                                                                                statusMessage.ItemId = itemId;
+                                                                                result.ErrorMessages.Add(statusMessage);
+                                                                            }
                                                                         }
                                                                     }
+                                                                    ++currentIndex;
                                                                 }
-                                                                ++currentIndex;
+                                                            }
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        //NOTE: Using default operator == for reference types here
+                                                        // ASSUMPTION: Repository Method 'Add' implementations COPY model class references 
+                                                        //                   - from the input 'items' list 
+                                                        //                   - to the 'listOf...Records' lists!!
+                                                        // Thus use of the default operator == (which for reference types other than string 
+                                                        //  returns true if the two operands refer to the same object) is safe here... 
+                                                        if ((object)item == record)
+                                                        {
+                                                            var itemIds = kvp.Value;
+                                                            itemIds.Add(itemId);
+
+                                                            if ("listOfIncorrectRecords" == kvp.Key)
+                                                            {
+                                                                //Incorrect records - update 'IsError' status message ItemIds...
+                                                                using (await statusContext.StatusMessagesSemaphore.UseWaitAsync())
+                                                                {
+                                                                    if (statusContext.StatusMessages.ContainsKey(modelType.Name))
+                                                                    {
+                                                                        var statusMessages = statusContext.StatusMessages[modelType.Name];
+                                                                        foreach (var statusMessage in statusMessages)
+                                                                        {
+                                                                            if (statusMessage.IsError && (currentIndex == statusMessage.ItemId))
+                                                                            {
+                                                                                statusMessage.ItemId = itemId;
+                                                                                result.ErrorMessages.Add(statusMessage);
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                    ++currentIndex;
+                                                                }
                                                             }
                                                         }
                                                     }

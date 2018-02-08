@@ -91,7 +91,7 @@ namespace HydroserverToolsBusinessObjects.ModelMaps
                             }
                             else
                             {
-                            Map(mappedType, memberInfo).Validate(field => !String.IsNullOrWhiteSpace(field));
+                                Map(mappedType, memberInfo).Validate(field => !String.IsNullOrWhiteSpace(field));
                             }
 
                             //Retain required property name...
