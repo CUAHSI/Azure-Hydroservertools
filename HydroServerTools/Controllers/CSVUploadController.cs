@@ -719,7 +719,8 @@ namespace HydroServerTools.Controllers
                    
                 
                 }
-
+                //
+                HydroServerToolsUtils.InsertTrackUpdates(userName);
                 //return Json(new { Success = false, Message = "Error timeout" });
                 return new HttpStatusCodeResult(HttpStatusCode.Gone, "The data has been removed due to inactivity. Please re-upload the file ");
                 //return Content("Error");

@@ -21,6 +21,7 @@ using HydroserverToolsBusinessObjects.ModelMaps;
 using HydroServerToolsRepository.Repository;
 using HydroServerToolsUtilities;
 using System.Xml.Serialization;
+using HydroServerTools.Models;
 
 namespace HydroServerTools.Controllers.api
 {
@@ -737,12 +738,12 @@ namespace HydroServerTools.Controllers.api
 
             var repositoryContexts = getRepositoryContexts();
             RepositoryContext repositoryContext = null;
-
+            var userName = HttpContext.Current.User.Identity.Name;
             //Retrieve/create associated context instance...
             if (!repositoryContexts.TryGetValue(uploadId, out repositoryContext))
             {
                 //Not found - Attempt to build connection string...
-                var userName = HttpContext.Current.User.Identity.Name;
+                
                 if (String.IsNullOrWhiteSpace(userName))
                 {
                     response.StatusCode = HttpStatusCode.BadRequest;    //Username not found - return early
@@ -851,8 +852,11 @@ namespace HydroServerTools.Controllers.api
                     response.Content = new StringContent(jsonData, System.Text.Encoding.UTF8, "application/json");
                 }
             }
+            //update updateTracking table to indicate changes
+            HydroServerToolsUtils.InsertTrackUpdates(userName);
 
             //Processing complete - return response
+
             return response;
         }
 

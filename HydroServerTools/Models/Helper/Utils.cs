@@ -21,7 +21,7 @@ namespace HydroServerTools
 {
     public class HydroServerToolsUtils
     {
-        
+
         const string EFMODEL = @"res://*/ODM_1_1_1EFModel.csdl|res://*/ODM_1_1_1EFModel.ssdl|res://*/ODM_1_1_1EFModel.msl";
 
         public static string BuildEFConnnectionString(ConnectionParameters model)
@@ -69,12 +69,12 @@ namespace HydroServerTools
         public static string GetConnectionNameByUserName(string userName)
         {
             string result = string.Empty;
-           
+
             //string path = "http://" + this.Request.RequestUri.Authority + "XML/users.xml";
             try
             {
-                string path = HttpContext.Current.Server.MapPath( "~/XML/users.xml");
-                XElement doc = XElement.Load(path); 
+                string path = HttpContext.Current.Server.MapPath("~/XML/users.xml");
+                XElement doc = XElement.Load(path);
                 IEnumerable<XElement> users = doc.Elements();
 
                 var e = from u in doc.Elements("user")
@@ -82,12 +82,12 @@ namespace HydroServerTools
                         select u;
                 result = e.FirstOrDefault().Element("connectionname").Value.ToString();
             }
-            catch (DirectoryNotFoundException ex) 
+            catch (DirectoryNotFoundException ex)
             {
                 throw ex;// return ex.Message;
             }
-           
-          
+
+
             return result;
         }
 
@@ -100,9 +100,9 @@ namespace HydroServerTools
             //string path = "http://" + this.Request.RequestUri.Authority + "XML/users.xml";
             try
             {
-                var userEmail = Db.Users.FirstOrDefault(u => u.UserName == userName).UserEmail; 
-            
-                
+                var userEmail = Db.Users.FirstOrDefault(u => u.UserName == userName).UserEmail;
+
+
                 string path = HttpContext.Current.Server.MapPath("~/XML/users.xml");
                 XElement doc = XElement.Load(path);
                 IEnumerable<XElement> users = doc.Elements();
@@ -122,7 +122,7 @@ namespace HydroServerTools
                 return string.Empty;
             }
             catch (Exception ex)
-            { 
+            {
                 throw ex;
             }
 
@@ -176,25 +176,46 @@ namespace HydroServerTools
             return userEmail;
         }
 
-        public static string getConnectionName(string userName)
+        public static string GetConnectionName(string userName)
         {
-            string connectionName = Resources.NOT_LINKED_TO_DATABASE; 
+            string connectionName = Resources.NOT_LINKED_TO_DATABASE;
             ApplicationDbContext context = new ApplicationDbContext();
 
             var p = (from c in context.ConnectionParametersUser
-                         where c.User.UserName == userName
-                         select new
-                         {
-                             c.ConnectionParameters.Name
-                         }).FirstOrDefault();
+                     where c.User.UserName == userName
+                     select new
+                     {
+                         c.ConnectionParameters.Name
+                     }).FirstOrDefault();
             if (p != null)
             {
                 connectionName = p.Name;
             }
-            
+
 
 
             return connectionName;
+        }
+
+        public static int GetConnectionId(string userName)
+        {
+            int connectionId = 0;
+            ApplicationDbContext context = new ApplicationDbContext();
+
+            var p = (from c in context.ConnectionParametersUser
+                     where c.User.UserName == userName
+                     select new
+                     {
+                         c.ConnectionParameters.Id
+                     }).FirstOrDefault();
+            if (p != null)
+            {
+                connectionId = p.Id;
+            }
+
+
+
+            return connectionId;
         }
 
         public static string BuildConnectionStringForUserName(string userName)
@@ -203,13 +224,13 @@ namespace HydroServerTools
 
             ApplicationDbContext context = new ApplicationDbContext();
             context.Database.CommandTimeout = 10000;
-           // var entityConnectionstringParameters = context.ConnectionParameters.Where(r => r.Name.Equals(userName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+            // var entityConnectionstringParameters = context.ConnectionParameters.Where(r => r.Name.Equals(userName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
 
             //var entityConnectionstringParameters = context.ConnectionParametersUser.Where(r => r.Name.Equals(userName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
 
             var p = (from c in context.ConnectionParametersUser
                      where c.User.UserName == userName
-                     select new 
+                     select new
                      {
                          c.ConnectionParameters.Name,
                          c.ConnectionParameters.DataSource,
@@ -217,8 +238,8 @@ namespace HydroServerTools
                          c.ConnectionParameters.UserId,
                          c.ConnectionParameters.Password
                      }).FirstOrDefault();
-            
-            
+
+
             var entityConnectionstringParameters = new ConnectionParameters();
 
             if (p != null)
@@ -235,6 +256,64 @@ namespace HydroServerTools
             return connectionString;
         }
 
+        public static string GetUserIdFromUserName(string userName)
+        {
+            string userId = null;
+            ApplicationDbContext context = new ApplicationDbContext();
+
+            var p = (from c in context.Users
+                     where c.UserName == userName
+                     select new
+                     {
+                         c.Id
+                     }).FirstOrDefault();
+            if (p != null)
+            {
+                userId = p.Id;
+            }
+
+
+
+            return userId;
+        }
+
+        public static bool GetSyncStatusFromUserId(string userId)
+        {
+            bool syncStatus = true;//assume is synchronized
+            ApplicationDbContext context = new ApplicationDbContext();
+
+            var p = (from c in context.TrackUpdates
+                     where c.UserId == userId
+                     select new
+                     {
+                         c.IsSynchronized
+                     }).FirstOrDefault();
+            if (p != null)
+            {
+                syncStatus = p.IsSynchronized;
+            }
+
+
+
+            return syncStatus;
+        }
+        /// <summary>
+        //insert data to track updates to the Datavalues tabel indicating a synchronization is required 
+        /// </summary>
+        /// <param name="userName"></param>
+
+        public static void InsertTrackUpdates(string userName)
+        {
+            var db = new ApplicationDbContext();
+            var trackUpdates = new TrackUpdates();
+            trackUpdates.ConnectionId = HydroServerToolsUtils.GetConnectionId(userName);
+            trackUpdates.UserId = HydroServerToolsUtils.GetUserIdFromUserName(userName);
+            trackUpdates.IsUpdated = true;
+            trackUpdates.UpdateDateTime = DateTime.Now;
+            trackUpdates.IsSynchronized = false;
+            trackUpdates.SynchronizedDateTime = DateTime.MinValue;
+            db.SaveChanges();
+        }
         public static List<string> ValidateFields<T>(List<string> columnHeaders)
         {
             //Sites

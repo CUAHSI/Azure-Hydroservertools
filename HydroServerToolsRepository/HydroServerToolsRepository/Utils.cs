@@ -822,5 +822,44 @@ namespace HydroServerToolsRepository.Repository
                         }
             
         }
+
+        public static void DeleteDuplicatesDatavalues(string entityConnectionstring)
+        {
+            try
+            {
+                //string entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(userName);
+                //string providerConnectionString = new EntityConnectionStringBuilder(entityConnectionString).ProviderConnectionString;
+
+
+
+                using (var conn = new SqlConnection(entityConnectionstring))
+                using (var command = new SqlCommand("spDeleteDuplicatesDatavalues", conn)
+                {
+                    CommandType = CommandType.StoredProcedure
+                })
+                {
+                    conn.Open();
+                    command.ExecuteNonQuery();
+                }
+
+                //ALTER TABLE[dbo].[DataValues] DROP CONSTRAINT[UNIQUE_DataValues]
+
+                //HttpContext.Response.ContentType = "text/plain";
+                //HttpContext.Response.StatusCode = 200;
+
+                // For compatibility with IE's "done" event we need to return a result as well as setting the context.response
+                return;
+                //return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                //HttpContext.Response.ContentType = "text/plain";
+                //Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                //return Json(new { success = false });
+                return;
+
+            }
+
+        }
     }
 }

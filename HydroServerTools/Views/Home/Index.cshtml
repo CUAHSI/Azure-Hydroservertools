@@ -4,7 +4,7 @@
 
     ViewBag.Message = TempData["message"];
 
-    Layout = "~/Views/Shared/_LayoutSimple.cshtml";
+    Layout = "~/Views/Shared/_LayoutBasic.cshtml";
 
 }
 
@@ -55,6 +55,8 @@
         
         <br />
         <br />
+        @if (User.IsInRole("Admin"))
+        {
         <div class="well">
             <h4>
                 Synchronize your Data <u>after</u> new data is saved to the database.                
@@ -64,8 +66,7 @@
                  This step may take several minutes to complete so we recommend that you synchronize at the end of your uploading session. 
             </h5>
         </div>
-        @if (User.IsInRole("Admin"))
-        {
+       
             <div class="well">
                 <h4>Set mode to insert. this removes index for unique datavalues.</h4>
                 @Html.ActionLink("Set Insert mode", "RemoveDatavalueIndex", "Home", new { @class = "btn btn-info active" })

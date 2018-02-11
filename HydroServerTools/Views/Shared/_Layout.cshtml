@@ -67,7 +67,7 @@
 
                             <li>@Html.ActionLink("Datatable1", "Datatable1", "Home")</li>
                             <li>@Html.ActionLink("Datatable2", "Datatable2", "Home", new { identifier = "Sites" }, null)</li>*@
-                        <li class="dropdown">
+                        <li class="dropdown hide">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Import CSV Data<b class="caret"></b></a>
                             <ul class="dropdown-menu">
                                 <li>@Html.ActionLink("Import Sites", "UploadData", "CSVUpload", new { area = "", id = "Sites" }, null)</li>
@@ -127,13 +127,10 @@
                         }
                     </ul>
                 }
-                @if (User.Identity.IsAuthenticated)
-                {
-                    @Html.Partial("_LoginPartial")
-
-                    @Html.ActionLink("Sign-out", "SignOut", "Account", new { @class = "btn btn-info", @id = "logout" })
-
-                }
+                <ul class="nav navbar-nav pull-right">
+                    <li>@Html.Partial("_LoginPartial")</li>
+                    <li>@Html.ActionLink("Sign-out", "SignOut", "Account", new { @class = "btn btn-secondary", @id = "logout" })</li>
+                </ul>
             </div>
         </div>
 

@@ -5,6 +5,12 @@
     Layout = "~/Views/Shared/_LayoutSimple.cshtml";
 }
 
+<style>
+    .button_loading {
+        background: url('images/loading.gif') no-repeat 50% 50%;
+        /* apply other styles to "loading" buttons */
+    }
+</style>
 <h2>Create Publishing Account </h2>
 <h3>Please fill in the form below to create an account to publish data with the CUAHSI Water Data Services. Fields with (*) are required. 
     After submitting it will take ~30s to create your account. You will receive an activation email in your google account.</h3>
@@ -101,7 +107,7 @@
         </div>
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default"  />
+                <input type="submit" id ="btnServiceRegistrationSubmit" value="Create" class="btn btn-default"  />
             </div>
         </div>
     </div>
@@ -126,3 +132,9 @@
 </div>
 
 }
+<script>
+    $("#btnServiceRegistrationSubmit").click(function () {
+        
+        $(this).addClass('disabled');
+});
+</script>

@@ -1,0 +1,387 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Jenkins.NET</name>
+    </assembly>
+    <members>
+        <member name="T:JenkinsNET.Exceptions.JenkinsNetException">
+            <summary>
+            Base-Class for all Jenkins.Net exceptions.
+            </summary>
+        </member>
+        <member name="T:JenkinsNET.IJenkinsContext">
+            <summary>
+            Describes the context of a Jenkins.NET client.
+            </summary>
+        </member>
+        <member name="P:JenkinsNET.IJenkinsContext.BaseUrl">
+            <summary>
+            The address of the Jenkins instance.
+            ie: http://localhost:8080
+            </summary>
+        </member>
+        <member name="P:JenkinsNET.IJenkinsContext.UserName">
+            <summary>
+            [optional] Jenkins Username.
+            </summary>
+        </member>
+        <member name="P:JenkinsNET.IJenkinsContext.Password">
+            <summary>
+            [optional] Jenkins Password.
+            </summary>
+        </member>
+        <member name="T:JenkinsNET.JenkinsBuildResult">
+            <summary>
+            Describes the result of a request to Build a Jenkins Job.
+            </summary>
+        </member>
+        <member name="P:JenkinsNET.JenkinsBuildResult.QueueItemUrl">
+            <summary>
+            The URL of the Queue reference item.
+            </summary>
+        </member>
+        <member name="M:JenkinsNET.JenkinsBuildResult.GetQueueItemNumber">
+            <summary>
+            Gets the unique item number for the Queue reference item.
+            </summary>
+        </member>
+        <member name="T:JenkinsNET.JenkinsClient">
+            <summary>
+            HTTP-Client for interacting with Jenkins API.
+            </summary>
+        </member>
+        <member name="P:JenkinsNET.JenkinsClient.BaseUrl">
+            <summary>
+            The address of the Jenkins instance.
+            ie: http://localhost:8080
+            </summary>
+        </member>
+        <member name="P:JenkinsNET.JenkinsClient.UserName">
+            <summary>
+            [optional] Jenkins Username.
+            </summary>
+        </member>
+        <member name="P:JenkinsNET.JenkinsClient.Password">
+            <summary>
+            [optional] Jenkins Password.
+            </summary>
+        </member>
+        <member name="P:JenkinsNET.JenkinsClient.Jobs">
+            <summary>
+            Group of methods for interacting with Jenkins Jobs.
+            </summary>
+        </member>
+        <member name="P:JenkinsNET.JenkinsClient.Builds">
+            <summary>
+            Group of methods for interacting with Jenkins Builds.
+            </summary>
+        </member>
+        <member name="P:JenkinsNET.JenkinsClient.Queue">
+            <summary>
+            Group of methods for interacting with the Jenkins Job-Queue.
+            </summary>
+        </member>
+        <member name="P:JenkinsNET.JenkinsClient.Artifacts">
+            <summary>
+            Group of methods for interacting with Jenkins Artifacts.
+            </summary>
+        </member>
+        <member name="M:JenkinsNET.JenkinsClient.#ctor">
+            <summary>
+            Creates a new Jenkins Client.
+            </summary>
+        </member>
+        <member name="T:JenkinsNET.JenkinsClientBuilds">
+            <summary>
+            A collection of methods used for interacting with Jenkins Builds.
+            </summary>
+            <remarks>
+            Used internally by <seealso cref="T:JenkinsNET.JenkinsClient"/>
+            </remarks>
+        </member>
+        <member name="M:JenkinsNET.JenkinsClientBuilds.Get(System.String,System.String)">
+            <summary>
+            Gets information describing a Jenkins Job Build.
+            </summary>
+            <param name="jobName">The name of the Job.</param>
+            <param name="buildNumber">The number of the build.</param>
+        </member>
+        <member name="M:JenkinsNET.JenkinsClientBuilds.GetAsync(System.String,System.String)">
+            <summary>
+            Gets information describing a Jenkins Job Build asynchronously.
+            </summary>
+            <param name="jobName">The name of the Job.</param>
+            <param name="buildNumber">The number of the build.</param>
+        </member>
+        <member name="M:JenkinsNET.JenkinsClientBuilds.GetLastSuccessful(System.String)">
+            <summary>
+            Gets information describing the last successful Build of a Jenkins Job.
+            </summary>
+            <param name="jobName">The name of the Job.</param>
+        </member>
+        <member name="M:JenkinsNET.JenkinsClientBuilds.GetLastSuccessfulAsync(System.String)">
+            <summary>
+            Gets information describing the last successful Build of a Jenkins Job asynchronously.
+            </summary>
+            <param name="jobName">The name of the Job.</param>
+        </member>
+        <member name="T:JenkinsNET.StatusChangedEventHandler">
+            <summary>
+            Represents the method that will handle an
+            event when the job status has changed.
+            </summary>
+        </member>
+        <member name="T:JenkinsNET.JenkinsJobRunner">
+            <summary>
+            Begins building a Jenkins Job, and polls the status
+            until the job has completed.
+            </summary>
+        </member>
+        <member name="E:JenkinsNET.JenkinsJobRunner.StatusChanged">
+            <summary>
+            Fired when the status of the JobRunner changes.
+            </summary>
+        </member>
+        <member name="P:JenkinsNET.JenkinsJobRunner.Status">
+            <summary>
+            The status of the Job.
+            </summary>
+        </member>
+        <member name="P:JenkinsNET.JenkinsJobRunner.PollInterval">
+            <summary>
+            Time in milliseconds to wait between requests.
+            Default value is 500.
+            </summary>
+        </member>
+        <member name="P:JenkinsNET.JenkinsJobRunner.QueueTimeout">
+            <summary>
+            Maximum time in seconds to wait for job to be queued.
+            Default value is 30.
+            </summary>
+        </member>
+        <member name="P:JenkinsNET.JenkinsJobRunner.BuildTimeout">
+            <summary>
+            Maximum time in seconds to wait for job to complete.
+            Default value is 60.
+            </summary>
+        </member>
+        <member name="M:JenkinsNET.JenkinsJobRunner.#ctor(JenkinsNET.JenkinsClient)">
+            <summary>
+            Creates a new JobRunner using the provided Jenkins-Client.
+            </summary>
+        </member>
+        <member name="M:JenkinsNET.JenkinsJobRunner.Run(System.String)">
+            <summary>
+            Run the Job.
+            </summary>
+            <param name="jobName">The name of the Job to run.</param>
+        </member>
+        <member name="M:JenkinsNET.JenkinsJobRunner.RunAsync(System.String)">
+            <summary>
+            Run the Job asynchronously.
+            </summary>
+            <param name="jobName">The name of the Job to run.</param>
+        </member>
+        <member name="M:JenkinsNET.JenkinsJobRunner.RunWithParameters(System.String,System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Run the Job with parameters.
+            </summary>
+            <param name="jobName">The name of the Job to run.</param>
+            <param name="jobParameters">The parameters used to start the Job.</param>
+        </member>
+        <member name="M:JenkinsNET.JenkinsJobRunner.RunWithParametersAsync(System.String,System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Run the Job asynchronously with parameters.
+            </summary>
+            <param name="jobName">The name of the Job to run.</param>
+            <param name="jobParameters">The parameters used to start the Job.</param>
+        </member>
+        <member name="T:JenkinsNET.JenkinsJobStatus">
+            <summary>
+            Describes the status of a Jenkins Job.
+            </summary>
+        </member>
+        <member name="F:JenkinsNET.JenkinsJobStatus.None">
+            <summary>
+            No status is defined.
+            </summary>
+        </member>
+        <member name="F:JenkinsNET.JenkinsJobStatus.Pending">
+            <summary>
+            The job request is pending.
+            </summary>
+        </member>
+        <member name="F:JenkinsNET.JenkinsJobStatus.Queued">
+            <summary>
+            The job has been queued to run.
+            </summary>
+        </member>
+        <member name="F:JenkinsNET.JenkinsJobStatus.Building">
+            <summary>
+            The job is running.
+            </summary>
+        </member>
+        <member name="F:JenkinsNET.JenkinsJobStatus.Complete">
+            <summary>
+            The job is complete.
+            </summary>
+        </member>
+        <member name="T:JenkinsNET.JenkinsClientArtifacts">
+            <summary>
+            A collection of methods used for interacting with Jenkins Artifacts.
+            </summary>
+            <remarks>
+            Used internally by <seealso cref="T:JenkinsNET.JenkinsClient"/>
+            </remarks>
+        </member>
+        <member name="M:JenkinsNET.JenkinsClientArtifacts.Get(System.String,System.String,System.String)">
+            <summary>
+            Retrieves an artifact from a completed Job.
+            </summary>
+            <param name="jobName">The name of the Job.</param>
+            <param name="buildNumber">The build number of the Job.</param>
+            <param name="filename">The relative path and file name of the artifact.</param>
+            <returns>A memory-stream containing the contents of the artifact.</returns>
+        </member>
+        <member name="M:JenkinsNET.JenkinsClientArtifacts.GetAsync(System.String,System.String,System.String)">
+            <summary>
+            Retrieves an artifact from a completed Job asynchronously.
+            </summary>
+            <param name="jobName">The name of the Job.</param>
+            <param name="buildNumber">The build number of the Job.</param>
+            <param name="filename">The relative path and file name of the artifact.</param>
+            <returns>A memory-stream containing the contents of the artifact.</returns>
+        </member>
+        <member name="T:JenkinsNET.JenkinsClientQueue">
+            <summary>
+            A collection of methods used for interacting with the Jenkins Job-Queue.
+            </summary>
+            <remarks>
+            Used internally by <seealso cref="T:JenkinsNET.JenkinsClient"/>
+            </remarks>
+        </member>
+        <member name="M:JenkinsNET.JenkinsClientQueue.GetItem(System.Int32)">
+            <summary>
+            Retrieves an item from the Job-Queue.
+            </summary>
+            <param name="itemNumber">The ID of the queue-item.</param>
+        </member>
+        <member name="M:JenkinsNET.JenkinsClientQueue.GetItemAsync(System.Int32)">
+            <summary>
+            Retrieves an item from the Job-Queue.
+            </summary>
+            <param name="itemNumber">The ID of the queue-item.</param>
+        </member>
+        <member name="T:JenkinsNET.JenkinsClientJobs">
+            <summary>
+            A collection of methods used for interacting with Jenkins Jobs API.
+            </summary>
+            <remarks>
+            Used internally by <seealso cref="T:JenkinsNET.JenkinsClient"/>
+            </remarks>
+        </member>
+        <member name="M:JenkinsNET.JenkinsClientJobs.Build(System.String)">
+            <summary>
+            Enqueues a Job to be built.
+            </summary>
+            <param name="jobName">The name of the Job.</param>
+        </member>
+        <member name="M:JenkinsNET.JenkinsClientJobs.BuildAsync(System.String)">
+            <summary>
+            Enqueues a Job to be built.
+            </summary>
+            <param name="jobName">The name of the Job.</param>
+        </member>
+        <member name="M:JenkinsNET.JenkinsClientJobs.BuildWithParameters(System.String,System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Enqueues a Job with parameters to be built.
+            </summary>
+            <param name="jobName">The name of the Job.</param>
+            <param name="jobParameters">The collection of parameters for building the job.</param>
+        </member>
+        <member name="M:JenkinsNET.JenkinsClientJobs.BuildWithParametersAsync(System.String,System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Enqueues a Job with parameters to be built.
+            </summary>
+            <param name="jobName">The name of the Job.</param>
+            <param name="jobParameters">The collection of parameters for building the job.</param>
+        </member>
+        <member name="M:JenkinsNET.JenkinsClientJobs.Delete(System.String)">
+            <summary>
+            Deletes a Job from Jenkins.
+            </summary>
+            <param name="jobName">The name of the Job to delete.</param>
+        </member>
+        <member name="M:JenkinsNET.JenkinsClientJobs.DeleteAsync(System.String)">
+            <summary>
+            Deletes a Job from Jenkins asynchronously.
+            </summary>
+            <param name="jobName">The name of the Job to delete.</param>
+        </member>
+        <member name="T:JenkinsNET.Models.JenkinsJob">
+            <summary>
+            Describes a Jenkins Job.
+            </summary>
+        </member>
+        <member name="P:JenkinsNET.Models.JenkinsJob.Name">
+            <summary>
+            Gets the name of the Job.
+            </summary>
+        </member>
+        <member name="P:JenkinsNET.Models.JenkinsJob.Url">
+            <summary>
+            Gets the full URL of the Job description.
+            </summary>
+        </member>
+        <member name="P:JenkinsNET.Models.JenkinsJob.Color">
+            <summary>
+            Gets the status color of the Job.
+            </summary>
+        </member>
+        <member name="T:JenkinsNET.Models.JenkinsBuild">
+            <summary>
+            Describes a Jenkins build.
+            </summary>
+        </member>
+        <member name="T:JenkinsNET.Models.JenkinsArtifact">
+            <summary>
+            Describes a Jenkins Artifact.
+            </summary>
+        </member>
+        <member name="T:JenkinsNET.Models.JenkinsParameter">
+            <summary>
+            Describes a Jenkins Job Parameter.
+            </summary>
+        </member>
+        <member name="P:JenkinsNET.Models.JenkinsParameter.Name">
+            <summary>
+            Gets the name of the Job parameter.
+            </summary>
+        </member>
+        <member name="P:JenkinsNET.Models.JenkinsParameter.Value">
+            <summary>
+            Gets the value of the Job parameter.
+            </summary>
+        </member>
+        <member name="T:JenkinsNET.Models.JenkinsPreviousBuild">
+            <summary>
+            Describes a previous Jenkins Job build.
+            </summary>
+        </member>
+        <member name="P:JenkinsNET.Models.JenkinsPreviousBuild.Number">
+            <summary>
+            The number of the Jenkins Build.
+            </summary>
+        </member>
+        <member name="P:JenkinsNET.Models.JenkinsPreviousBuild.Url">
+            <summary>
+            The URL of the Jenkins Build status.
+            </summary>
+        </member>
+        <member name="T:JenkinsNET.Models.JenkinsQueueItem">
+            <summary>
+            Describes an item in the Jenkins Build Queue.
+            </summary>
+        </member>
+    </members>
+</doc>

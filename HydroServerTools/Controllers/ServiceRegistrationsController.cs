@@ -57,7 +57,7 @@ namespace HydroServerTools.Controllers
         {
             var userName = User.Identity.GetUserName();
             //check if user has connected database
-            var connection = HydroServerToolsUtils.getConnectionName(userName);
+            var connection = HydroServerToolsUtils.GetConnectionName(userName);
             
             if (connection != Resources.NOT_LINKED_TO_DATABASE)
             {
@@ -195,9 +195,11 @@ namespace HydroServerTools.Controllers
             ViewBag.Message = "Invalid Activation code.";
             if (RouteData.Values["id"] != null)
             {
+                var activationEmail = RouteData.Values["email"].ToString();
                 Guid activationCode = new Guid(RouteData.Values["id"].ToString());
                 var userName = System.Web.HttpContext.Current.User.Identity.GetUserName();
-;
+
+                if (activationEmail.ToLower() != userName.ToLower()) return View("ActivationEmailError");
 
                 var userActivation = db.ServiceRegistrations.Where(p => p.ActivationGuid == activationCode).FirstOrDefault();
                 if (userActivation != null)
@@ -259,17 +261,22 @@ namespace HydroServerTools.Controllers
             //    ActivationCode = activationCode
             //});
             //usersEntities.SaveChanges();
+           
+
 
             using (MailMessage mm = new MailMessage("cuahsi.wdc@gmail.com", userEmail))
             {
                 mm.Subject = "Account Activation";
-                string body = "Hello " + userEmail + ",";
-                body += "<br /><br />Please click the following link to activate request for CUAHSI Data Hosting ";
-                body += "<br /><br />Please also find attached instructions on how to format your data before uploading it";
-                body += "<br /><a href = '" + string.Format("{0}://{1}/ServiceRegistrations/Activation/{2}", Request.Url.Scheme, Request.Url.Authority, activationCode) + "'>Click here to activate your account.</a>";
-                body += "<br /><br />Please don't hesitate to contact us at help.cuahsi.org if you encounter any problems.";
+                string body = "Hello ";
+                body += "<p />Welcome to CUAHSI Data Services. This email address " + userEmail + " was used to request an account on  </p>";
+                body += "<br /><br />http://hydroserver.cuahsi.org";
+                body += "<p>If you originated the request, please use the link below to verify your email address and activate your account.</p>";
+                body += "<p><a href = '" + string.Format("{0}://{1}/ServiceRegistrations/Activation/{2}/{3}", Request.Url.Scheme, Request.Url.Authority, activationCode, Server.UrlEncode(userEmail).Replace(".","%2E")) + "'>Click here to activate your account.</a></p>";//need to convert to allow routing to pick it up
+                body += "<p>Please find attached a guide to formatting data prior to uploading data.</p>"; 
+                body += "<p>Please don't hesitate to contact us at help.cuahsi.org if you encounter any problems.</p>";
                 body += "<br /><br />Thank you";
                 body += "<br /><br />The CUAHSI team";
+                //mm.BodyEncoding = System.Text.Encoding.UTF8;
                 mm.Body = body;
                 mm.IsBodyHtml = true;
 

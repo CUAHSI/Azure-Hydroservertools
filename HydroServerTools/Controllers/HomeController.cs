@@ -28,6 +28,7 @@ using System.Data;
 using ODM_1_1_1EFModel;
 
 using HydroServerToolsEFDerivedObjects;
+using Jobs;
 
 namespace HydroServerTools.Controllers
 {
@@ -40,10 +41,15 @@ namespace HydroServerTools.Controllers
         {
             var tableValueCounts = new DatabaseTableValueCountModel();
 
+            //test jenkins
+           
+            //j.Init();
+
+
             //string entityConnectionString = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name.ToString());
 
             //get connection name
-            string connectionName = HydroServerToolsUtils.getConnectionName(HttpContext.User.Identity.Name.ToString());
+            string connectionName = HydroServerToolsUtils.GetConnectionName(HttpContext.User.Identity.Name.ToString());
 
             if (connectionName == Resources.NOT_LINKED_TO_DATABASE)
             {
@@ -97,7 +103,7 @@ namespace HydroServerTools.Controllers
 
             var tableValueCounts = new DatabaseTableValueCountModel();
 
-            string connectionName = HydroServerToolsUtils.getConnectionName(HttpContext.User.Identity.Name.ToString());
+            string connectionName = HydroServerToolsUtils.GetConnectionName(HttpContext.User.Identity.Name.ToString());
 
             if (connectionName == Resources.NOT_LINKED_TO_DATABASE)
             {
@@ -223,9 +229,19 @@ namespace HydroServerTools.Controllers
         [Authorize]
         public ActionResult RecreateSeriescatalog()
         {
-            string entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name.ToString());
+            var userName = HttpContext.User.Identity.Name.ToString();
+            var userId = HydroServerToolsUtils.GetUserIdFromUserName(userName);
+            var syncStatus = HydroServerToolsUtils.GetSyncStatusFromUserId(userId);
+            if (!syncStatus) return RedirectToAction("Index");
+            
+            
+            string entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(userName);
+            string providerConnectionString = new EntityConnectionStringBuilder(entityConnectionString).ProviderConnectionString;
+            RepositoryUtils.DeleteDuplicatesDatavalues(providerConnectionString);
+            
 
             RepositoryUtils.recreateSeriescatalog(entityConnectionString);
+            Jobs.jenkinsJobs.Main(247, false);
             //return Json(new { success = true });
             return RedirectToAction("Index");
         }

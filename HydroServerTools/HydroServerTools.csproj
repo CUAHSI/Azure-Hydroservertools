@@ -869,6 +869,7 @@
     <Content Include="Views\TrackUpdates\Details.cshtml" />
     <Content Include="Views\TrackUpdates\Edit.cshtml" />
     <Content Include="Views\TrackUpdates\Index.cshtml" />
+    <Content Include="Views\ServiceRegistrations\ActivationEmailError.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -902,6 +903,10 @@
     <ProjectReference Include="..\HydroServerToolsUtilities\HydroServerToolsUtilities.csproj">
       <Project>{cff64114-d63e-4015-a460-862f7f22d857}</Project>
       <Name>HydroServerToolsUtilities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\jenkinsJobs\Jobs-Jenkins.csproj">
+      <Project>{82267D11-AE3F-4ABE-88D8-90A6346BEC3D}</Project>
+      <Name>Jobs-Jenkins</Name>
     </ProjectReference>
     <ProjectReference Include="..\jQuery.DataTables.Mvc\jQuery.DataTables.Mvc.csproj">
       <Project>{3383d0e2-c499-4f02-9d29-f744741aa999}</Project>
