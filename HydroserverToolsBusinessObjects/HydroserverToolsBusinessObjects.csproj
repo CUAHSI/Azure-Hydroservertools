@@ -95,6 +95,7 @@
     <Compile Include="LabMethodModel.cs" />
     <Compile Include="MethodModel.cs" />
     <Compile Include="ModelMaps\GenericMap.cs" />
+    <Compile Include="NoModel.cs" />
     <Compile Include="SiteModelBasicTemplate.cs" />
     <Compile Include="OffsetTypesModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

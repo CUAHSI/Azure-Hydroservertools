@@ -181,17 +181,6 @@ namespace HydroServerTools.Controllers.api
                 ValidationContext<CsvValidator> validationContext = validationContexts[uploadId];
                 using ( await validationContext.ValidationResultSemaphore.UseWaitAsync())
                 {
-                    //if (fileContext.FileNames.Count != validationContext.ValidationResults.Count)
-                    //{
-                    //    //Validation not yet complete - return 'partial content'
-                    //    response.StatusCode = HttpStatusCode.PartialContent;
-                    //    response.Content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject("{}"), 
-                    //                                         System.Text.Encoding.UTF8, 
-                    //                                         "application/json");
-
-                    //    return response;
-                    //}
-
                     //Note the difference in type between the two collections...
                     var valiDATORResults = validationContext.ValidationResults;                     //CsvValidator
                     var valiDATIONResults = new List<ValidationResult<CsvValidationResults>>();     //CsvValidationResults
@@ -200,19 +189,23 @@ namespace HydroServerTools.Controllers.api
                     HttpStatusCode httpStatusCode = HttpStatusCode.OK;  //Assume success...
                     foreach (var valiDATORResult in valiDATORResults)
                     {
-                        //if (valiDATORResult.ValidationComplete)
-                        //{
-                            //Validation complete - add to results...
-                            var csvValiDATIONResults = new CsvValidationResults(valiDATORResult.FileValidator);
+                        var csvValiDATIONResults = new CsvValidationResults(valiDATORResult.FileValidator.ValidationResults);
 
-                            valiDATIONResults.Add(new ValidationResult<CsvValidationResults>(valiDATORResult.FileName, csvValiDATIONResults));
-                        //}
-                        //else
-                        //{
-                        //    //Validation not yet complete - re-set status code...
-                        //    httpStatusCode = HttpStatusCode.PartialContent;     //206
-                        //    //break;
-                        //}
+                        valiDATIONResults.Add(new ValidationResult<CsvValidationResults>(valiDATORResult.FileName, csvValiDATIONResults));
+
+                        ////if (valiDATORResult.ValidationComplete)
+                        ////{
+                        //    //Validation complete - add to results...
+                        //    var csvValiDATIONResults = new CsvValidationResults(valiDATORResult.FileValidator);
+
+                        //    valiDATIONResults.Add(new ValidationResult<CsvValidationResults>(valiDATORResult.FileName, csvValiDATIONResults));
+                        ////}
+                        ////else
+                        ////{
+                        ////    //Validation not yet complete - re-set status code...
+                        ////    httpStatusCode = HttpStatusCode.PartialContent;     //206
+                        ////    //break;
+                        ////}
                     }
 
                     //Convert list to JSON, if indicated...

@@ -151,40 +151,45 @@ namespace HydroServerTools.Controllers
                 string idLower = id.ToLowerInvariant();
                 string idQualifier = String.Empty;
 
-                //BC - 30-Jan-2018 - Possible revision required...
-                ////hack for previous bug
-                //if (idLower.Contains("draganddropfiles"))  idLower = "draganddropfiles_meta_data"; 
                 switch (idLower)
                 {
                     case "dbsummaryreport":
-                    {
+                        {
                             viewName = "DbSummaryReport";
                             break;
-                    }
-                    case "draganddropfiles_meta_data":
-                    {
-                            viewName = "DragAndDropFiles";
-                            //Set temp data for qualifier...
-                            TempData["qualifier"] = "meta_data";
-                            break;
-                    }
-                    case "draganddropfiles_data_values":
+                        }
+                    case "draganddropfiles":                //Reverse button input...
+                    case "draganddropfiles_meta_data":      //Select Upload Type input...
+                    case "draganddropfiles_data_values":    //Select Upload Type input...
                         {
                             viewName = "DragAndDropFiles";
-                            //Set temp data for qualifier...
-                            TempData["qualifier"] = "data_values";
+                            //Set temp data for qualifier, if indicated
+                            switch (idLower)
+                            {
+                                case "draganddropfiles_meta_data":
+                                    TempData["qualifier"] = "meta_data";
+                                    break;
+                                case "draganddropfiles_data_values":
+                                    TempData["qualifier"] = "data_values";
+                                    break;
+                                default: //("draganddropfiles")
+                                    //Take no action - use current 'qualifier' value...
+                                    break;
+                            }
                             break;
                         }
                     case "selectuploadtype":
-                    {
+                        {
                             viewName = "SelectUploadType";
+                            //Re-set temp data for qualifier...
                             break;
-                    }
+                        }
                     case "validatefiles":
-                    {
+                        {
                             viewName = "ValidateFiles";
+                            //Re-set temp data for qualifier...
                             break;
-                    }
+                        }
                     default:
 #if (DEBUG)
                         //DEBUG only - throw an exception...

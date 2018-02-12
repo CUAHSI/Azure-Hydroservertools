@@ -1,0 +1,54 @@
+
+HydroServer Redesign Part 11
+
+
+**** Summary ****
+ - Server-side changes for improved file validation messages
+ - Sever-side changes (partial) for improved 'previous' button handling
+
+
+**** HydroServerTools/Controllers ****
+ - CSVUploadController.cs
+   - RevisedUploadData(...) 
+     - Revise 'drag and drop' case statments
+     - Miscellaneous indentation changes
+
+
+**** HydroServerTools/Controllers/api ****
+ - RevisedUploadController.cs 
+   - Get(...) 
+     - Revise returned data types...
+
+
+**** HydroServerTools/Validators **** 
+ - CsvValidator.cs 
+   - Class CsvValidationResults() 
+     - Refactor to allow use of multiple instances for one file validation attempt
+   - Class CsvValidator 
+     - Refactor class  - remove inheritance scheme 
+		- limit validation processing to Basic Template model/map types  
+		- add dictionary of CsvValidationResults to record validation outcomes
+		- Revise header validation logic to support improved validation messages
+		  including full and partial matches to know model types...
+
+
+**** HydroserverToolsBusinessObjects ****
+ - Add 'NoModel' class for internal purposes
+
+
+**** Test CSV Files ****
+ - Add some additional Basic Template test files
+
+
+
+
+
+
+
+
+
+
+
+
+
+
