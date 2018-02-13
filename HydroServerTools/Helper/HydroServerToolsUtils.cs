@@ -312,6 +312,7 @@ namespace HydroServerTools
             trackUpdates.UpdateDateTime = DateTime.Now;
             trackUpdates.IsSynchronized = false;
             trackUpdates.SynchronizedDateTime = DateTime.MinValue;
+            db.TrackUpdates.Add(trackUpdates);
             db.SaveChanges();
         }
         public static List<string> ValidateFields<T>(List<string> columnHeaders)

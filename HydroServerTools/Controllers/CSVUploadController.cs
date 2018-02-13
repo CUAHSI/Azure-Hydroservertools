@@ -724,8 +724,8 @@ namespace HydroServerTools.Controllers
                    
                 
                 }
-                //
-                HydroServerToolsUtils.InsertTrackUpdates(userName);
+                //Added to insert record into Track changes to run synchronization
+                HydroServerToolsUtils.InsertTrackUpdates(System.Web.HttpContext.Current.User.Identity.Name);
                 //return Json(new { Success = false, Message = "Error timeout" });
                 return new HttpStatusCodeResult(HttpStatusCode.Gone, "The data has been removed due to inactivity. Please re-upload the file ");
                 //return Content("Error");

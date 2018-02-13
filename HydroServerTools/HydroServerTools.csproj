@@ -307,7 +307,7 @@
     <Compile Include="Migrations\201408132012031_auth2.Designer.cs">
       <DependentUpon>201408132012031_auth2.cs</DependentUpon>
     </Compile>
-    <Compile Include="Models\Helper\Utils.cs" />
+    <Compile Include="Helper\HydroServerToolsUtils.cs" />
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ConnectionModel.cs" />
