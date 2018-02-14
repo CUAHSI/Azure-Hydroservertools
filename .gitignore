@@ -160,3 +160,6 @@ Uploads/*.bin
 Processed/*.bin
 Validated/*.bin
 
+
+# ignore connectionString
+connectionString.config

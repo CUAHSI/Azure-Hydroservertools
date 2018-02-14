@@ -571,6 +571,7 @@
     <Content Include="Content\DataTables-Editor-1.7.0\scss\mixins.scss" />
     <Content Include="Content\DataTables-Editor-1.7.0\scss\processing.scss" />
     <Content Include="Content\DataTables-Editor-1.7.0\scss\upload.scss" />
+    <Content Include="connectionString.config" />
     <None Include="Microsoft.WindowsAzure.Caching\ClientPerfCountersInstaller.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
