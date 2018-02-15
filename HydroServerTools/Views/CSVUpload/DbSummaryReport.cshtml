@@ -3,6 +3,8 @@
     ViewBag.Title = "DbSummaryReport";
     ViewBag.Name = "dbSummaryReport";
 
+    string qualifier = TempData.Peek("qualifier") as string;
+
     Layout = "~/Views/Shared/_LayoutBasic.cshtml";
 }
 
@@ -26,7 +28,10 @@
                         <tr>
                             <th class="col-md-6 text-center">Table Name</th>
                             <th class="col-md-2 text-center">Inserted</th>
+@if ("meta_data" == qualifier)
+{
                             <th class="col-md-2 text-center">Updated</th>
+}                        
                             <th class="col-md-2 text-center">Rejected</th>
                         </tr>
                     </thead>
@@ -39,10 +44,12 @@
                             <td class="col-md-2 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanInserted">0</span></td>
                             <td class="col-md-2 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-success buttonInserted">100</button></td>
 
+@if ("meta_data" == qualifier)
+{
                             <!-- If Updated === 0 show span else show button -->
                             <td class="col-md-2 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanUpdated">0</span></td>
                             <td class="col-md-2 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-primary buttonUpdated">50</button></td>
-
+}
                             <!-- If Rejected === 0 show span else show button -->
                             <td class="col-md-2 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanRejected">0</span></td>
                             <td class="col-md-2 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-danger buttonRejected" data-toggle="modal" data-target="#rejectedItemsModal">25</button></td>
@@ -60,7 +67,7 @@
         <div class="btn-group col-md-12" style="position: relative;">
             <div class="pull-right">
                 @*<a href="/home/index" class="btn btn-success cancel" >Finish</a>*@
-                <a class="btn btn-warning left hidden" href="/CSVUpload/RevisedUploadData/DragAndDropFiles_meta_data">Upload Meta-data</a>
+                <a class="btn btn-warning left hidden" href="/CSVUpload/RevisedUploadData/DragAndDropFiles_meta_data">Upload Metadata</a>
                 <a class="btn btn-info left hidden" href="/CSVUpload/RevisedUploadData/DragAndDropFiles_data_values">Upload Data Values</a>
                 <a class="btn btn-success cancel">Finish</a>
             </div>
@@ -712,7 +719,16 @@
                     newTableRow.find('.spanTableName').text(tableName);
 
                 //Set remaining columns...
-                var columns = ['Inserted', 'Updated', 'Rejected'];
+                //Note: For Razor code blocks within <script> tags, mark JavaScript with '<at sign>:' symbol
+                //Source: https://stackoverflow.com/questions/5614941/mix-razor-and-javascript-code
+@if ("meta_data" == qualifier)
+{
+                @:var columns = ['Inserted', 'Updated', 'Rejected'];
+}
+else
+{
+                @:var columns = ['Inserted', 'Rejected'];
+}
                 var columnsLength = columns.length;
 
                 //For each remaining column...
@@ -727,22 +743,22 @@
 
                     //Set/show column per associated db load count value...
                     var loadCount = dbLoadResult.LoadCounts[column];
-                        if (0 < loadCount && 'Rejected' === column) {
-                            //Positive count, Rejected Column - set and show the button
+                    if (0 < loadCount && 'Rejected' === column) {
+                        //Positive count, Rejected Column - set and show the button
                         tempButton.text(loadCount);
                         tempButton.parent().removeClass('hidden');
 
                         //Add click handler to write associated table name to session storage...
                         tempButton.on('click', function (event) {
-                                //From the current <button> tag navigate to the containing <tr> tag...
-                                var parent = $(this).parent();          //<td> tag
-                                var grandparent = $(parent).parent()    //<tr> tag
+                            //From the current <button> tag navigate to the containing <tr> tag...
+                            var parent = $(this).parent();          //<td> tag
+                            var grandparent = $(parent).parent()    //<tr> tag
 
-                                //Find the descendant span containing the table name...
-                                var span = $(grandparent).find('span.spanTableName');
-                                var tblName = span.text();
+                                                //Find the descendant span containing the table name...
+                            var span = $(grandparent).find('span.spanTableName');
+                            var tblName = span.text();
 
-                                sessionStorage.currentRejectedItemsTableName = tblName;
+                            sessionStorage.currentRejectedItemsTableName = tblName;
                         });
                     }
                     else {

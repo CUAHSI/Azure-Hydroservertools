@@ -3,6 +3,8 @@
     ViewBag.Title = "ValidateFiles";
     ViewBag.Name = "validateFiles";
 
+    string qualifier = TempData.Peek("qualifier") as string;
+
     Layout = "~/Views/Shared/_LayoutBasic.cshtml";
 }
 
@@ -23,7 +25,7 @@
     <div id="collapseTemplate" class="panel-collapse collapse">
         <div class="panel-body">
             <div class="pull-left">
-                <h4 class="h4Title">Validation Results<span class="badge spanTitleBadge hidden"></span></h4>
+                @*<h4 class="h4Title">Validation Results<span class="badge spanTitleBadge hidden"></span></h4>*@
                 <ul class="panelListTemplate list-group">
                     <!-- <li> list items markup goes here...</li> -->
                 </ul>
@@ -56,8 +58,16 @@
 
             <div class="pull-right">
                 <a href="/home/index" class="btn btn-warning cancel">Cancel</a>
-                <a href="/CSVUpload/RevisedUploadData/DragAndDropFiles" class="btn btn-info" style="margin-left: 0.5em;">Previous</a>
-                <button type="button" id="btnValidationSummaryContinue" class="btn btn-success" style="margin-left: 0.5em;">Complete Upload</button>
+@if ("meta_data" == qualifier)
+{
+                <a href="/CSVUpload/RevisedUploadData/DragAndDropFiles_meta_data" class="btn btn-info" style="margin-left: 0.5em;">Previous</a>
+}
+else
+{
+                <a href="/CSVUpload/RevisedUploadData/DragAndDropFiles_data_values" class="btn btn-info" style="margin-left: 0.5em;">Previous</a>
+}
+
+                <button type="button" id="btnValidationSummaryContinue" class="btn btn-success disabled" style="margin-left: 0.5em;">Complete Upload</button>
                 <a id="btnDbSummaryReport" class="btn btn-primary hidden" href="/CSVUpload/RevisedUploadData/DbSummaryReport" style="margin-left: 0.5em;">Upload Summary</a>
             </div>
         </div>
@@ -110,8 +120,14 @@
                     ? '<span class="badge" style="background-color: green;">OK</span>' : '<span class="badge"  style="background-color: red;">ERROR</span>');
                 msg += ' ' + fileName;
 
-                //toggle.text(msg);
                 toggle.html(msg);
+
+                //Disable toggle for 'OK' validations - enable 'Complete Upload' button for 'OK validations...
+                if ((0 >= validation.InvalidHeaderNames.length) && (0 >= validation.MissingRequiredHeaderNames.length)) {
+                    toggle.attr('data-toggle', '');
+
+                    $('#' + 'btnValidationSummaryContinue').removeClass('disabled');
+                }
 
                 //Update collapse id...
                 newPanel.find('.panel-collapse').attr('id', id);
@@ -139,20 +155,20 @@
                 var recordCount = validation.CandidateRecordCount;
                 var hMsg = '';
 
-                hMsg = ('unknown' !== modelType.toLowerCase())
-                    ? ('File contents map to model type: ' + modelType)
-                    : ('File contents map to no known model type');
-                panelList.append('<li class="list-group-item"> ' + hMsg + '</li>');
+                //hMsg = ('unknown' !== modelType.toLowerCase())
+                //    ? ('File contents map to model type: ' + modelType)
+                //    : ('File contents map to no known model type');
+                //panelList.append('<li class="list-group-item"> ' + hMsg + '</li>');
 
-                if (0 < vLength) {
-                    hMsg = 'Valid headers: ' + validHeaders.join(', ');
-                    panelList.append('<li class="list-group-item"> ' + hMsg + '</li>');
-                }
+                //if (0 < vLength) {
+                //    hMsg = 'Valid headers: ' + validHeaders.join(', ');
+                //    panelList.append('<li class="list-group-item"> ' + hMsg + '</li>');
+                //}
 
-                if (0 < recordCount) {
-                    hMsg = 'Records available for database load: ' + parseInt(recordCount).toLocaleString('en');
-                    panelList.append('<li class="list-group-item"> ' + hMsg + '</li>');
-                }
+                //if (0 < recordCount) {
+                //    hMsg = 'Records available for database load: ' + parseInt(recordCount).toLocaleString('en');
+                //    panelList.append('<li class="list-group-item"> ' + hMsg + '</li>');
+                //}
 
                 if ((0 < hLength) ||(0 < mLength)) {
                     //Header errors - show count...
