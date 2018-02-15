@@ -2,28 +2,27 @@
 @{
     ViewBag.Title = "SelectUploadType";
     ViewBag.Name = "selectUploadType";
+
+    Layout = "~/Views/Shared/_LayoutBasic.cshtml";
 }
 
 @*<h2>Select Upload Type</h2>*@
 
 <div class="container">
     <div class="col-md-6">
-
+        
         <div class="well">
-            <h4>Meta-data</h4>
-            <p>Our metadata templates will help you describe the “who”, “what”, “when”, “where”, and “why” of your data.</p>
-            @Html.ActionLink("Meta-data Upload", "RevisedUploadData", "CSVUpload", new { id = "DragAndDropFiles_meta_data" }, new { @class = "btn btn-primary" })
+            @Html.ActionLink("Metadata Upload", "RevisedUploadData", "CSVUpload", new { id = "DragAndDropFiles_meta_data" }, new { @class = "btn btn-primary" })
+            <h4>Upload Sites, Variables, Methods, Sources and Quality Control Levels</h4>
         </div>
 
         <div class="well">
-            <h4>Data Values</h4>
-            <p>Our data values template will help you format your observations and measurements. Upload all applicable metadata before uploading data values.</p>
             @Html.ActionLink("Data Values Upload", "RevisedUploadData", "CSVUpload", new { id = "DragAndDropFiles_data_values" }, new { @class = "btn btn-primary data-values-upload" })
-            <br />
+            <h4>Upload Observations &amp; Measurements after adding metadata</h4>
             <br />
             <div id="alertDataValuesUpload" class="alert alert-info fade in hidden" role="alert">
-                <span class="glyphicon glyphicon-alert"></span>
-                <span>Data values upload disabled.  Meta-data upload not yet complete!!</span>
+                <span class="glyphicon glyphicon-warning-sign"></span>
+                <span>Warning: Metadata needs to be uploaded before adding data values.</span>
             </div>
         </div>
 

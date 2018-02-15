@@ -2,12 +2,14 @@
 @{
     ViewBag.Title = "ValidateFiles";
     ViewBag.Name = "validateFiles";
+
+    Layout = "~/Views/Shared/_LayoutBasic.cshtml";
 }
 
 <link rel="stylesheet" href="~/Content/mvcfileupload/blueimp/jquery.fileupload.css" />
 
 
-<h2>File Validation Summary</h2>
+<h2>Upload Report</h2>
 
 <!-- Dynamic panel template -->
 <div class="panel panel-default templatePanelClass hidden">
@@ -21,9 +23,9 @@
     <div id="collapseTemplate" class="panel-collapse collapse">
         <div class="panel-body">
             <div class="pull-left">
-                <h4>Headers <span class="badge spanHeaders hidden"></span></h4>
-                <ul class="headerListTemplate list-group">
-                    <!-- <li> header markup goes here...</li> -->
+                <h4 class="h4Title">Validation Results<span class="badge spanTitleBadge hidden"></span></h4>
+                <ul class="panelListTemplate list-group">
+                    <!-- <li> list items markup goes here...</li> -->
                 </ul>
                 @*<h4>Data <span class="badge spanData hidden"></span></h4>
                 <ul class="dataListTemplate list-group">*@
@@ -55,8 +57,8 @@
             <div class="pull-right">
                 <a href="/home/index" class="btn btn-warning cancel">Cancel</a>
                 <a href="/CSVUpload/RevisedUploadData/DragAndDropFiles" class="btn btn-info" style="margin-left: 0.5em;">Previous</a>
-                <button type="button" id="btnValidationSummaryContinue" class="btn btn-success" style="margin-left: 0.5em;">Load Database</button>
-                <a id="btnDbSummaryReport" class="btn btn-primary hidden" href="/CSVUpload/RevisedUploadData/DbSummaryReport" style="margin-left: 0.5em;">DB Summary Report...</a>
+                <button type="button" id="btnValidationSummaryContinue" class="btn btn-success" style="margin-left: 0.5em;">Complete Upload</button>
+                <a id="btnDbSummaryReport" class="btn btn-primary hidden" href="/CSVUpload/RevisedUploadData/DbSummaryReport" style="margin-left: 0.5em;">Upload Summary</a>
             </div>
         </div>
     </div>
@@ -98,12 +100,15 @@
                 var fileName = validationResult.FileName
                 var validation = validationResult.FileValidator;
 
-                var msg = 'File: ' + fileName;
+                //var msg = 'File: ' + fileName;
+                var msg = '';
 
                 //msg += ' - Headers: ' + ((0 >= validation.InvalidHeaderNames.length) ? '<span class="btn-success">valid</span>' : '<span class="btn-danger">invalid</span>');
                 //msg += ' - Data: ' + ((0 >= validation.DataErrors.length) ? '<span class="btn-success">valid</span>' : '<span class="btn-danger">invalid</span>'); 
-                msg += ' - ' + ((0 >= validation.InvalidHeaderNames.length) ? '<span class="btn-success">valid</span>' : '<span class="btn-danger">invalid</span>');
-
+                msg = (((0 >= validation.InvalidHeaderNames.length) && (0 >= validation.MissingRequiredHeaderNames.length))
+                    //? '<span class="btn-success">OK</span>' : '<span class="btn-danger">ERROR</span>');
+                    ? '<span class="badge" style="background-color: green;">OK</span>' : '<span class="badge"  style="background-color: red;">ERROR</span>');
+                msg += ' ' + fileName;
 
                 //toggle.text(msg);
                 toggle.html(msg);
@@ -114,34 +119,65 @@
                 //If panel contains errors, open, if indicated...
                 if (openErrorPanel &&
                     //((0 < validation.InvalidHeaderNames.length) || (0 < validation.DataErrors.length))) {
-                    (0 < validation.InvalidHeaderNames.length)) {
+                    ((0 < validation.InvalidHeaderNames.length) || (0 < validation.MissingRequiredHeaderNames.length))) {
                     newPanel.find('.panel-collapse').addClass('in');
                     openErrorPanel = false;
                 }
 
                 //Add items to panel headers list...
-                var panelList = newPanel.find('.headerListTemplate');
-                var headerErrors = validation.InvalidHeaderNames
+                var panelList = newPanel.find('.panelListTemplate');
+                var headerErrors = validation.InvalidHeaderNames;
                 var hLength = headerErrors.length;
 
-                if (0 < hLength) {
+                var missingHeaders = validation.MissingRequiredHeaderNames;
+                var mLength = missingHeaders.length;
+
+                var validHeaders = validation.ValidHeaderNames;
+                var vLength = validHeaders.length;
+
+                var modelType = validation.CandidateTypeName;
+                var recordCount = validation.CandidateRecordCount;
+                var hMsg = '';
+
+                hMsg = ('unknown' !== modelType.toLowerCase())
+                    ? ('File contents map to model type: ' + modelType)
+                    : ('File contents map to no known model type');
+                panelList.append('<li class="list-group-item"> ' + hMsg + '</li>');
+
+                if (0 < vLength) {
+                    hMsg = 'Valid headers: ' + validHeaders.join(', ');
+                    panelList.append('<li class="list-group-item"> ' + hMsg + '</li>');
+                }
+
+                if (0 < recordCount) {
+                    hMsg = 'Records available for database load: ' + parseInt(recordCount).toLocaleString('en');
+                    panelList.append('<li class="list-group-item"> ' + hMsg + '</li>');
+                }
+
+                if ((0 < hLength) ||(0 < mLength)) {
                     //Header errors - show count...
-                    var spanHeaders = newPanel.find('.spanHeaders');
-                    spanHeaders.removeClass('hidden');
-                    spanHeaders.text(hLength);
-
+                    //var spanTitleBadge = newPanel.find('.spanTitleBadge');
+                    //spanTitleBadge.removeClass('hidden');
+                    //spanTitleBadge.text(hLength);
+                    //var h4Title = newPanel.find('.h4Title');
+                    //h4Title.text('Errors:');
                     //Add to list...
-                    for (var hI = 0; hI < hLength; ++hI) {
-                        var headerError = headerErrors[hI];
+                    if (0 < hLength) {
+                        hMsg = 'Invalid headers: ' + headerErrors.join(', ');
+                        panelList.append('<li class="list-group-item"> ' + hMsg + '</li>');
+                    }
 
-                        var hMsg = headerError;
+                    if (0 < mLength) {
+                        hMsg = 'Missing headers: ' + missingHeaders.join(', ');
                         panelList.append('<li class="list-group-item"> ' + hMsg + '</li>');
                     }
                 }
                 else {
-                        //No header errors - add headers OK message to list...
-                    panelList.append('<li class="list-group-item"> ' + 'No header validation errors reported...' + '</li>');
-                    }
+                    //No header errors - add headers OK message to list...
+                    //var h4Title = newPanel.find('.h4Title');
+                    //h4Title.text('No Errors:');
+                    panelList.append('<li class="list-group-item"> ' + 'No header validation errors reported' + '</li>');
+                }
 
 
                 ////Add items to panel data list...

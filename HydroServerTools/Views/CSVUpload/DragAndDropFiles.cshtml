@@ -4,16 +4,18 @@
     ViewBag.Name = "dragAndDropFiles";
 
     string qualifier = TempData["qualifier"] as string;
+
+    Layout = "~/Views/Shared/_LayoutBasic.cshtml";
 }
 <link rel="stylesheet" href="~/Content/mvcfileupload/blueimp/jquery.fileupload.css" />
 
 @if ("meta_data" == qualifier)
 {
-    <h2>Select Meta-data Files for Upload</h2>
+    <h2>Upload Metadata</h2>
 }
 else
 {
-    <h2>Select Data Values Files for Upload</h2>
+    <h2>Upload Data Values</h2>
 }
 
 <div class="container">
@@ -22,7 +24,7 @@ else
     <div class="row">
         <div class="col-md-12">
             <div id="divFilesForUpload" class="uploader">
-                <div><span class="glyphicon glyphicon-cloud-upload"></span>&nbsp; Drag &amp Drop Template Files Here</div>
+                <div><span class="glyphicon glyphicon-cloud-upload"></span>&nbsp; Drag &amp; Drop</div>
                 <ul id="lstFilesForUpload" class="list-group" style="">
                     <!--NOTE: The list items added here should look like...
                         <li class="list-group-item">Dapibus ac facilisis in</li>
@@ -45,7 +47,7 @@ else
             <div class="pull-right">
                 <a href="/home/index" class="btn btn-warning cancel">Cancel</a>
                 <!-- Need a button here - not a link - to keep the current page in place so to ensure all file 'chunks' make it to the server... -->
-                <button type="button" id="btnFilesForUploadContinue" class="btn btn-success" style="margin-left: 0.5em;">Upload Files</button>
+                <button type="button" id="btnFilesForUploadContinue" class="btn btn-success" style="margin-left: 0.5em;">Begin Upload</button>
                 <a id="btnValidationSummary" class="btn btn-primary hidden" href="/CSVUpload/RevisedUploadData/ValidateFiles" style="margin-left: 0.5em;">Continue</a>
             </div>
         </div>
@@ -165,18 +167,20 @@ else
                     collectionFileObjs.push(file);
 
                     //Append to markup...
-                    lstMarkup.append('<li class="list-group-item" data-file="' + file.name + '" >' +
-                        '<span style="width: 30%; position: relative; float: left">' + file.name + '</span>' +
+                    //Possbile data-status values: "notStarted", "inProgress", "complete", "error"
+                    lstMarkup.append('<li class="list-group-item" data-file="' + file.name + '" data-status="notStarted">' +
+                        '<span style="width: 40%; position: relative; float: left; font-size: 0.75em; margin-top: 0.25em;">' + file.name + '</span>' +
 
-                        '<div class="progress" style="width: 40%; display: inline-block; vertical-align: -webkit-baseline-middle;">' +
+                        '<div class="progress invisible" style="width: 45%; display: inline-block; margin-bottom: 0;">' +
                             '<div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%; display:inline-block;">' +
                                 '0%' +
                             '</div>' +
                         '</div>' + 
 
-                        '<div class="status" style="width: 20%; display: inline-block; ">Not started...</div>' +
+                        //'<div class="status" style="width: 20%; display: inline-block; ">Not started...</div>' +
+                        //'<div class="status" style="width: 15%; display: inline-block; font-size: 0.75em;"></div>' +
 
-                        '<button class="btn btn-warning delete" style=" width: 10%; position: relative; float: right;" data-file-name="' + file.name + '">Delete</button>' +
+                        '<button class="btn btn-danger delete" style=" width: 10%; position: relative; float: right;" data-file-name="' + file.name + '">Remove</button>' +
 
                         '</li>');
                 }
@@ -329,11 +333,10 @@ else
                     var listItems = '#' + 'lstFilesForUpload' + ' li';
 
                     $(listItems).each(function (index) {
-                        var divStatus = $(this).children('div.status');
-                        var statusText = divStatus.text().toLowerCase();
+                        var attrStatusValue = $(this).attr('data-status').toLowerCase();
 
-                        if ((-1 === statusText.indexOf('complete')) &&
-                            (-1 === statusText.indexOf('error'))) {
+                        if ((-1 === attrStatusValue.indexOf('complete')) &&
+                            (-1 === attrStatusValue.indexOf('error'))) {
                             final = false; 
                         }
                     });
@@ -391,11 +394,15 @@ else
 
                     var divBar = $(listItem + ' .bar');
                     var divPercent = $(listItem + ' .percent');
-                    var divStatus = $(listItem + ' .status');
+                    var divProgressBar = $(listItem + ' .progress-bar');
 
                     divBar.width('100%');
-                    divPercent.html('0%');
-                    divStatus.html('Error...');
+                    divPercent.html('Error');
+
+                    divProgressBar.addClass('bg-danger');
+
+                    //Set error status...
+                    $(listItem).attr('data-status', 'error');
                 },
                 //"send": function (event, data) {
                 //    console.log('jquery-file-upload - send called!!');
@@ -415,20 +422,23 @@ else
 
                     //var divBar = $(listItem + ' .bar');
                     //var divPercent = $(listItem + ' .percent');
-                    var divStatus = $(listItem + ' .status');
+                    var progressWrapper = $(listItem + ' .progress');
                     var progressBar = $(listItem + ' .progress-bar');
 
+                    progressWrapper.removeClass('invisible');
                     //divBar.width(percentage + '%');
                     //divPercent.html(percentage + '%');
                     progressBar.width(percentage.toString() + '%');
                     progressBar.text(percentage.toString()  + '%');
 
-                    var status = "Complete!!!";     //Assume completed...
                     if ( 100 > percentage) {
-                        status = "in progress...";  //Not yet completed...
+                        $(listItem).attr('data-status', 'inProgress');   //Not yet completed...
                     }
                     else {
                         //Upload complete - update session state variables...
+                        $(listItem).attr('data-status', 'complete');
+                        progressBar.text('Complete');
+
                         var fileUploadCount = 0;
                         var uploadedFileNames = [];
 
@@ -450,7 +460,6 @@ else
                         }
                     }
 
-                    divStatus.html(status);
                 },
                 "drop": function (event, data) {
                     //console.log('Dropped files:');

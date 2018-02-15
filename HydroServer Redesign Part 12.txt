@@ -1,0 +1,52 @@
+
+HydroServer Redesign Part 12
+
+
+**** Summary ****
+ - Miscellaneous UI changes per review meeting findings
+ - Updated file validation results added to Validation page
+ - Added a new test *.csv file
+
+
+**** HydroServerTools ****
+ - Web.config
+    - added <appSettings> key: InlineEditMaxRejectedItems
+
+
+**** HydroServerTools/Views/CSVUpload ****
+ - DbSummaryReport.cshtml
+ - DragAndDropFiles,cshtml
+ - SelectUploadType.cshtml
+ - ValidateFiles.cshtml
+
+
+**** HydroServerTools/Views/Home ****
+ - Index.cshtml
+ - Manage.cshtml
+
+
+**** HydroServerTools/Views/Shared ****
+ - _LoginPartial.cshtml
+
+
+**** Test CSV Files/Basic Template/Based on Martin - Swedish Test ****
+ - Methods-Rejects-More-Than-25.csv
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

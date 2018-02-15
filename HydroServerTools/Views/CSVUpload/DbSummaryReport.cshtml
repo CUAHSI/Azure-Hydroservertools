@@ -2,9 +2,16 @@
 @{
     ViewBag.Title = "DbSummaryReport";
     ViewBag.Name = "dbSummaryReport";
+
+    Layout = "~/Views/Shared/_LayoutBasic.cshtml";
 }
 
-<h2>Summary Report</h2>
+<h2>Upload Summary</h2>
+
+<script type="text/javascript">
+    //Retrieve inline editing max. rejected items value from web.config...
+    var appConfig_InlineEditMaxRejectedItems = parseInt('@System.Configuration.ConfigurationManager.AppSettings["InlineEditMaxRejectedItems"]');
+</script>
 
 
 <div class="container">
@@ -13,7 +20,7 @@
     <div class="row">
         <div class="col-md-12">
             <div id="divDbLoadResults" style="padding-left: 1.0em; padding-right: 1.0em;" class="uploader-border">
-                <h4>Data upload summary </h4>
+                @*<h4>Data upload summary </h4>*@
                 <table style="margin-top: 1.5em;" class="table table-bordered">
                     <thead>
                         <tr>
@@ -66,11 +73,18 @@
             <div class="modal-content modal-content-full">
                 <div class="modal-header">
                     <button type="button" id="btnRejectedItemsX" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h3 class="modal-title" id="myModalLabel">Rejected&nbsp;<span id="spanRejectedItemsTitle"></span></h3>
+                    <div class="row">
+                        <h3 class="modal-title col-md-2" id="myModalLabel" style="display: inline-block;">Rejected&nbsp;<span id="spanRejectedItemsTitle"></span></h3>
+                        <div id="tblRejectedItemsAlert" class="alert alert-warning hidden col-md-8" role="alert"
+                            style="text-align: center; font-weight: bold; margin-left: 2.0em;">
+                            There are more than @System.Configuration.ConfigurationManager.AppSettings["InlineEditMaxRejectedItems"] errors in your data, so editing has been disabled. Please download, fix the errors, and re-upload
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-body modal-body-full">
                     @*<p>Rejected items table goes here!!</p>*@
                     <table id="tblRejectedItems" class="display" cellspacing="0" style="width: 100%;"></table>
+
                 </div>
                 <div class="modal-footer">
                     @*<button type="button" id="btnRejectedItemsModalDownload" class="btn btn-default btn-primary pull-left disabled" >Download</button>*@
@@ -367,10 +381,11 @@
             }
         }
 
-        function buildRejectedItemsTable(rejectedItemsData) {
+        function buildRejectedItemsTable(rejectedItemsData, readOnly) {
 
             //Validate/initialize input parameters... 
-            if ('undefined' !== typeof rejectedItemsData && null !== rejectedItemsData) {
+            if ('undefined' !== typeof rejectedItemsData && null !== rejectedItemsData &&
+                'undefined' !== typeof readOnly && null !== readOnly) {
 
                 //Build table data...
                 var tblData = {
@@ -401,7 +416,7 @@
                 var pnLength = propertyNames.length;
                 for (pnI = 0; pnI < pnLength; ++pnI) {
                     var colDef = { "data": "", "title": "" };
-                    var editorDef = {"label": "", "name": ""};
+                    var editorDef = {"label": "", "name": "", "type": (readOnly ? "readonly" : "text")};
                     var propertyName = propertyNames[pnI];
 
                     //colDef.data = propertyName;
@@ -416,7 +431,10 @@
                 }
 
                 //Rejected items - add 'rejectedRowId' and 'rowUpdated' values to each data item...
-                var rjItems = rejectedItemsData.RejectedItems;
+                var rjLength = rejectedItemsData.RejectedItems.length;
+                var rjItems = (readOnly && (rjLength > appConfig_InlineEditMaxRejectedItems)) ? 
+                                                rejectedItemsData.RejectedItems.slice(0, appConfig_InlineEditMaxRejectedItems) :
+                                                rejectedItemsData.RejectedItems
                 var rjLength = rjItems.length;
 
                 for (var rjI = 0; rjI < rjLength; ++rjI) {
@@ -598,8 +616,24 @@
                         console.log('RevisedUpload GET/rejecteditems success!!');
                         var rejectedItemsData = data;
 
-                        //Build the rejected items table...
-                        buildRejectedItemsTable(rejectedItemsData);
+                        var rjItems = rejectedItemsData.RejectedItems;
+                        var rjLength = rjItems.length;
+
+                        if (rjLength <= appConfig_InlineEditMaxRejectedItems) {
+                            //Rejected items within inline editing limit - build/display table..
+                            //$('#' + 'tblRejectedItems_wrapper').removeClass('hidden');
+                            $('#' + 'tblRejectedItemsAlert').addClass('hidden');
+                            $('#' + 'btnRejectedItemsModalReupload').removeClass('hidden');
+                            buildRejectedItemsTable(rejectedItemsData, false);
+                        }
+                        else {
+                            //Rejected items beyond inline editing limit - hide table/display alert...
+                            //$('#' + 'tblRejectedItems_wrapper').addClass('hidden');
+                            $('#' + 'tblRejectedItemsAlert').removeClass('hidden');
+                            $('#' + 'btnRejectedItemsModalReupload').addClass('hidden');
+                            buildRejectedItemsTable(rejectedItemsData, true);
+                        }
+
                         var n = 5;
 
                         ++n;

@@ -9,7 +9,7 @@
 }
 
 <div class="container">
-    
+
 
     <div class="col-lg-8 ">
 
@@ -20,53 +20,53 @@
             @*<button class="btn btn-primary btn-lg btn-block" data-toggle="modal" data-target="#setConnection">Set Database Connection</button>*@
             @*<p><a href="/CSVUpload/Sites" class="btn btn-primary btn-lg active" role="button">Import Data into Hydroserver</a></p>*@
          @*   @Html.ActionLink("Import CSV Data into Hydroserver", "UploadData", "CSVUpload", new { id = "Sites" }, new { @class = "btn btn-primary btn active" })*@
-            
+
             <div class="row">
                 <div class="col-sm-5 " style="padding:5px">
-                    <h4><u>Please select</u> for uploading Sites, Variables, Methods, Sources and Datavalues</h4>
-                    
-                    <h5>
-                        Please click to download 
-
-                        @Html.ActionLink("Basic formatting guide", "DownloadFile", "Export", new { id = "ODMGuideBasic-Excel" }, new { target = "_blank" })
-                    </h5>   
                     <p>
-                        @Html.ActionLink("Basic CSV File Upload", "RevisedUploadData", "CSVUpload", new { id = "SelectUploadType" }, new { @class = "btn btn-primary center-block" })
-                    </p> 
-   </div>
+                        @Html.ActionLink("Standard Upload", "RevisedUploadData", "CSVUpload", new { id = "SelectUploadType" }, new { @class = "btn btn-primary center-block" })
+                    </p>
+                    <h4>Upload Sites, Variables, Methods, Sources, Quality Control Levels and Data Values</h4>
+
+                    <h5>
+                        @Html.ActionLink("Basic formatting guide", "DownloadFile", "Export", new { id = "ODMGuideBasic-Excel" }, new { target = "_blank" })
+                    </h5>
+                </div>
                 <div class="col-sm-5 col-sm-offset-1" style="padding:5px">
+                    <p> 
+                        @Html.ActionLink("Advanced Upload", "UploadData", "CSVUpload", new { id = "Sites" }, new { @class = "btn btn-primary center-block" })
+                    </p>
                     <h4>
-                        <u>Please select</u> for Upload other metadata than Sites, Variables, Methods, Sources and Datavalues                        
+                        Upload Sites, Variables, Methods, Sources, Quality Control Levels, Data Values &amp; additional optional metadata tables 
                     </h4>
-                    <h5>Please click to download
+                    <h5>
                         @Html.ActionLink("Advanced formatting guide", "DownloadFile", "Export", new { id = "ODMGuide-Excel" }, new { target = "_blank" })
                     </h5>
-                    <p> @Html.ActionLink("Advanced CSV File Upload", "UploadData", "CSVUpload", new { id = "Sites" }, new { @class = "btn btn-primary center-block" })</p>
                 </div>
             </div>
-            
+
             <h3></h3>
             @*<h3>you can allways start with the basic upload and add more comples metadata later.</h3>*@
-          
-          
+
+
 
         </div>
-       
-        
+
+
         <br />
         <br />
         @if (User.IsInRole("Admin"))
         {
         <div class="well">
             <h4>
-                Synchronize your Data <u>after</u> new data is saved to the database.                
+                Synchronize your Data <u>after</u> new data is saved to the database.
             </h4>
             @Html.ActionLink("Synchronize Data", "RecreateSeriescatalog", "Home", new { @class = "btn btn-info active " })
             <h5>
-                 This step may take several minutes to complete so we recommend that you synchronize at the end of your uploading session. 
+                 This step may take several minutes to complete so we recommend that you synchronize at the end of your uploading session.
             </h5>
         </div>
-       
+
             <div class="well">
                 <h4>Set mode to insert. this removes index for unique datavalues.</h4>
                 @Html.ActionLink("Set Insert mode", "RemoveDatavalueIndex", "Home", new { @class = "btn btn-info active" })
@@ -87,8 +87,8 @@
     @Html.Partial("_CountInTables")
 
 
-       
-       
-   
+
+
+
 </div>
    
