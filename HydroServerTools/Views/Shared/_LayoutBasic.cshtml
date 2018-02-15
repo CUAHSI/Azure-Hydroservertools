@@ -60,6 +60,29 @@
                             <li>@Html.ActionLink("Manage", "Manage", "Home", new { area = "" }, null)</li>
                             <li>@Html.ActionLink("Controlled Vocabularies", "ControlledVocabularies", "Home", new { area = "" }, null)</li>
                         </ul>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">View Data<b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li>@Html.ActionLink("View Sites", "ViewTableData", "ViewData", new { area = "", identifier = "Sites" }, null)</li>
+                                <li>@Html.ActionLink("View Variables", "ViewTableData", "ViewData", new { area = "", identifier = "Variables" }, null)</li>
+                                @*<li>@Html.ActionLink("View OffsetTypes", "ViewTableData", "ViewData", new { area = "", identifier = "OffsetTypes" }, null)</li>*@
+                                @* <li>@Html.ActionLink("View ISOMetadata", "ViewTableData", "ViewData", new { identifier = "ISOMetadata" }, null)</li>*@
+                                <li>@Html.ActionLink("View Sources", "ViewTableData", "ViewData", new { area = "", identifier = "Sources" }, null)</li>
+                                <li>@Html.ActionLink("View Methods", "ViewTableData", "ViewData", new { area = "", identifier = "Methods" }, null)</li>
+                                <li>@*@Html.ActionLink("View LabMethods", "ViewTableData", "ViewData", new { area = "", identifier = "LabMethods" }, null)*@</li>
+                                <li>@*@Html.ActionLink("View Samples", "ViewTableData", "ViewData", new { area = "", identifier = "Samples" }, null)*@</li>
+                                <li>@*@Html.ActionLink("View Qualifiers", "ViewTableData", "ViewData", new { area = "", identifier = "Qualifiers" }, null)*@</li>
+                                <li>@*@Html.ActionLink("View QualityControlLevels", "ViewTableData", "ViewData", new { area = "", identifier = "QualityControlLevels" }, null)*@</li>
+                                <li>@Html.ActionLink("View DataValues", "ViewTableData", "ViewData", new { area = "", identifier = "DataValues" }, null)</li>
+                                @*<li>@Html.ActionLink("View GroupDescriptions", "ViewTableData", "ViewData", new { area = "", identifier = "GroupDescriptions" }, null)</li>
+                                <li>@Html.ActionLink("View Groups", "ViewTableData", "ViewData", new { area = "", identifier = "Groups" }, null)</li>
+                                <li>@Html.ActionLink("View DerivedFrom", "ViewTableData", "ViewData", new { area = "", identifier = "DerivedFrom" }, null)</li>
+                                <li>@Html.ActionLink("View Categories", "ViewTableData", "ViewData", new { area = "", identifier = "Categories" }, null)</li>*@
+                                <li class="divider"></li>
+                                <li>@Html.ActionLink("View Timeseries", "ViewTableData", "ViewData", new { area = "", identifier = "SeriesCatalog" }, null)</li>
+
+                            </ul>
+                        </li>
                          <ul class="nav navbar-nav pull-right">
                              <li>@Html.Partial("_LoginPartial")</li>
                              <li>@Html.ActionLink("Sign-out", "SignOut", "Account", new { @class = "btn btn-secondary", @id = "logout" }, null)</li>
