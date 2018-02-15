@@ -1,12 +1,14 @@
 ﻿@model HydroserverToolsBusinessObjects.Models.DatabaseTableValueCountModel
 @{
-    ViewBag.Title = "Home Page";
+        ViewBag.Title = "Home Page";
 
-    ViewBag.Message = TempData["message"];
+        ViewBag.Message = TempData["message"];
+        ViewBag.UpdateDateTime = TempData["UpdateDateTime"];
+        ViewBag.SynchronizedDateTime = TempData["SynchronizedDateTime"];
 
-    Layout = "~/Views/Shared/_LayoutBasic.cshtml";
+        Layout = "~/Views/Shared/_LayoutBasic.cshtml";
 
-}
+    }
 
 <div class="container">
 

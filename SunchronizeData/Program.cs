@@ -259,11 +259,14 @@ namespace SynchronizeData
 
         private static void SendSupportInfoEmail(string action, string userName, string serviceName, string message)
         {
-
-            var userEmail = "mseul@cuahsi.org";
-            var now = DateTime.Now.ToString("s");
-            using (MailMessage mm = new MailMessage("cuahsi.wdc@gmail.com", userEmail))
+            
+            var userEmail = ConfigurationManager.AppSettings["SupportEmailRecipients"];
+            var userFromEmail = ConfigurationManager.AppSettings["SupportFromEmail"].ToString();
+            var now = DateTime.Now.ToString("s"); 
+            using (MailMessage mm = new MailMessage(userFromEmail, userEmail))
             {
+                
+                
                 if (action == "DeduplicationStarted")
                 {
 

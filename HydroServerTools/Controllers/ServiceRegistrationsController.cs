@@ -261,10 +261,10 @@ namespace HydroServerTools.Controllers
             //    ActivationCode = activationCode
             //});
             //usersEntities.SaveChanges();
-           
 
+            var userFromEmail = ConfigurationManager.ConnectionStrings["SupportFromEmail"].ToString();
 
-            using (MailMessage mm = new MailMessage("cuahsi.wdc@gmail.com", userEmail))
+            using (MailMessage mm = new MailMessage(userFromEmail, userEmail))
             {
                 mm.Subject = "Account Activation";
                 string body = "Hello ";
@@ -309,9 +309,10 @@ namespace HydroServerTools.Controllers
         private void SendSupportInfoEmail(string action,string userName, string serviceName)
         {
 
-            var userEmail = "mseul@cuahsi.org";
+            var userEmail = ConfigurationManager.AppSettings["SupportEmailRecipients"].ToString();
+            var userFromEmail = ConfigurationManager.AppSettings["SupportFromEmail"].ToString();
             var now = DateTime.Now.ToString("s");
-            using (MailMessage mm = new MailMessage("cuahsi.wdc@gmail.com", userEmail))
+            using (MailMessage mm = new MailMessage(userFromEmail, userEmail))
             {
                 if (action == "ActivationRequest")
                 { 
@@ -374,7 +375,7 @@ namespace HydroServerTools.Controllers
             //};
 
             string userName = "mseul@cuahsi.org";
-            string passWord = "!lonnig10";
+            string passWord = "";
 
             //byte[] credentialBuffer = new UTF8Encoding().GetBytes(userName + ":" + passWord);
             //request.Headers["Authorization"] = "Basic " + Convert.ToBase64String(credentialBuffer);

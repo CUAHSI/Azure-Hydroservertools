@@ -40,9 +40,11 @@ namespace HydroServerTools.Controllers
         public ActionResult Index()
         {
             var tableValueCounts = new DatabaseTableValueCountModel();
-
+            TempData["UpdateDateTime"] = "unknown";
+            TempData["SynchronizedDateTime"] = "unknown";
+            TempData["LastHarvested"] = "unknown";
             //test jenkins
-           
+
             //j.Init();
 
 
@@ -64,9 +66,41 @@ namespace HydroServerTools.Controllers
                 //var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
 
                 var databaseRepository = new DatabaseRepository();
-                
+
                 tableValueCounts = databaseRepository.GetDatabaseTableValueCount(entityConnectionString);
 
+                var userId = HydroServerToolsUtils.GetUserIdFromUserName(HttpContext.User.Identity.Name.ToString());
+
+                //get update stats
+                var db = new ApplicationDbContext();
+                var trackUpdates = new TrackUpdates();
+                var p = (from c in db.TrackUpdates
+                         where c.UserId == userId
+                         select new
+                         {
+                             c.IsUpdated,
+                             c.UpdateDateTime,
+                             c.IsSynchronized,
+                             c.SynchronizedDateTime
+
+                         }).FirstOrDefault();
+                if (p != null)
+                {
+                    //trackUpdates.IsUpdated = p.IsUpdated;
+                    //trackUpdates.UpdateDateTime = p.UpdateDateTime;
+                    //trackUpdates.IsSynchronized = p.IsSynchronized;
+                    //trackUpdates.SynchronizedDateTime = p.SynchronizedDateTime;
+
+                    TempData["UpdateDateTime"] = p.UpdateDateTime;
+                    if (p.IsSynchronized == true)
+                        TempData["SynchronizedDateTime"] = p.SynchronizedDateTime;
+                    else
+                    {
+                        TempData["SynchronizedDateTime"] = "scheduled";
+                    }
+                }
+
+                
                 TempData["message"] = Resources.CSV_FILES_HYDROSERVER;
                 return View(tableValueCounts);
                 
