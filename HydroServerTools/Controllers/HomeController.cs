@@ -309,6 +309,26 @@ namespace HydroServerTools.Controllers
         }
 
         [Authorize]
+        public ActionResult SynchonizeData()
+        {
+            var userName = HttpContext.User.Identity.Name.ToString();
+            var userId = HydroServerToolsUtils.GetUserIdFromUserName(userName);
+            var serviceName = HydroServerToolsUtils.GetConnectionNameByUserEmail(userName);
+            try
+            {
+                HydroServerToolsUtils.runSynchronizeJob();
+            }
+            
+            catch (Exception ex)
+            {
+                HydroServerToolsUtils.SendSupportInfoEmail("SynchonizeData", userName, serviceName, ex.Message);
+            }
+
+           
+            return RedirectToAction("Index");
+        }
+
+        [Authorize]
         public ActionResult RemoveDatavalueIndex()
         {
             try
