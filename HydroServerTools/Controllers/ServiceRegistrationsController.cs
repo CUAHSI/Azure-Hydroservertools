@@ -90,14 +90,17 @@ namespace HydroServerTools.Controllers
             //check if service name is allready used
             var registeredServices = serviceRegistrationHelper.GetWebServices();
             //check in registered services
-            bool serviceExists = registeredServices.Any(rs => rs.ServiceCode.ToLower() == serviceRegistration.ServiceName.ToLower());
-            //check in proposed services
-            if (!serviceExists)  serviceExists = db.ServiceRegistrations.Any(rs => rs.ServiceName.ToLower() == serviceRegistration.ServiceName.ToLower());
-            if (serviceExists)
+            if (serviceRegistration.ServiceName != null)
             {
-                ModelState.AddModelError("ServiceName", "The Service Name is already taken please choose a different name");
-            }
+                bool serviceExists = registeredServices.Any(rs => rs.ServiceCode.ToLower() == serviceRegistration.ServiceName.ToLower());
 
+                //check in proposed services
+                if (!serviceExists) serviceExists = db.ServiceRegistrations.Any(rs => rs.ServiceName.ToLower() == serviceRegistration.ServiceName.ToLower());
+                if (serviceExists)
+                {
+                    ModelState.AddModelError("ServiceName", "The Service Name is already taken please choose a different name");
+                }
+            }
             if (ModelState.IsValid)
             {
                 try
@@ -262,7 +265,7 @@ namespace HydroServerTools.Controllers
             //});
             //usersEntities.SaveChanges();
 
-            var userFromEmail = ConfigurationManager.ConnectionStrings["SupportFromEmail"].ToString();
+            var userFromEmail = ConfigurationManager.AppSettings["SupportFromEmail"].ToString();
 
             using (MailMessage mm = new MailMessage(userFromEmail, userEmail))
             {
@@ -271,7 +274,9 @@ namespace HydroServerTools.Controllers
                 body += "<p />Welcome to CUAHSI Data Services. This email address " + userEmail + " was used to request an account on  </p>";
                 body += "<br /><br />http://hydroserver.cuahsi.org";
                 body += "<p>If you originated the request, please use the link below to verify your email address and activate your account.</p>";
-                body += "<p><a href = '" + string.Format("{0}://{1}/ServiceRegistrations/Activation/{2}/{3}", Request.Url.Scheme, Request.Url.Authority, activationCode, Server.UrlEncode(userEmail).Replace(".","%2E")) + "'>Click here to activate your account.</a></p>";//need to convert to allow routing to pick it up
+                body += "<p><a href = '" + string.Format("{0}://{1}/ServiceRegistrations/Activation/{2}/{3}", Request.Url.Scheme, Request.Url.Authority, activationCode, Server.UrlEncode(userEmail).Replace(".", "%2E")) + "'>Click here to activate your account.</a></p>";//need to convert to allow routing to pick it up
+                //body += "<p><a href = '" + string.Format("{0}://{1}/ServiceRegistrations/Activation/{2}", Request.Url.Scheme, Request.Url.Authority, activationCode) + "'>Click here to activate your account.</a></p>";//need to convert to allow routing to pick it up
+
                 body += "<p>Please find attached a guide to formatting data prior to uploading data.</p>"; 
                 body += "<p>Please don't hesitate to contact us at help.cuahsi.org if you encounter any problems.</p>";
                 body += "<br /><br />Thank you";

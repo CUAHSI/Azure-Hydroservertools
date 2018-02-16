@@ -585,6 +585,7 @@
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\custom\CSVUploadHelper.js" />
+    <Content Include="Scripts\custom\jsHelper.js" />
     <Content Include="Scripts\custom\Manage.js" />
     <Content Include="Scripts\custom\RandomId.js" />
     <Content Include="Scripts\custom\UploadHelper.js" />

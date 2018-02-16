@@ -7,11 +7,13 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Configuration;
 using System.Data.Entity.Core.EntityClient;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Mail;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -296,6 +298,57 @@ namespace HydroServerTools
 
 
             return syncStatus;
+        }
+
+        public static void SendSupportInfoEmail(string action, string userName, string serviceName, string message)
+        {
+
+            var userEmail = ConfigurationManager.AppSettings["HelpEmailRecipients"];
+            var userFromEmail = ConfigurationManager.AppSettings["SupportFromEmail"].ToString();
+            var now = DateTime.Now.ToString("s");
+            using (MailMessage mm = new MailMessage(userFromEmail, userEmail))
+            {
+
+
+                if (action == "PublicationRequested")
+                {
+
+                    mm.Subject = "Publication has been requested:";
+                    string body = "For user " + userName + " and service: " + serviceName;
+                    body += "<br />" + DateTime.Now.ToString("s") + "<br /> ";
+                    body += "<br /><br />Thanks";
+                    mm.Body = body;
+                    mm.IsBodyHtml = true;
+                }
+
+                
+                if (action == "unknownException")
+                {
+
+                    mm.Subject = "Unknown Exception has occured:";
+                    //string body = "For user " + userName + " and service: " + serviceName;
+                    string body = "<br /> Exception:" + message;
+                    body += "<br />" + DateTime.Now.ToString("s") + "<br /> ";
+                    body += "<br /><br />Thanks";
+                    mm.Body = body;
+                    mm.IsBodyHtml = true;
+                }
+
+
+                try
+                {
+                    using (var smtp = new SmtpClient())
+                    {
+                        smtp.Send(mm);
+                        return;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    //Exception - for now take no action...
+                    var errMessage = ex.Message;
+                }
+            }
         }
         /// <summary>
         //insert data to track updates to the Datavalues tabel indicating a synchronization is required 

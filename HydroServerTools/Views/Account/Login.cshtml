@@ -42,7 +42,7 @@
 
         @*<ul class="thumbnails">*@
        
-            <div class="col-md-4 selectbox">
+            <div class="col-md-4 ">
                 <div class="thumbnail">
                     @*<img src="~/Images/request.png" alt="ALT NAME">*@
                     <div class="caption">
@@ -65,7 +65,7 @@
                         </div>
                 </div>
             </div>
-            <div class="col-md-4" selectbox>
+            <div class="col-md-4 " >
                 <div class="thumbnail">
                     @*<img src="http://placehold.it/320x200" alt="ALT NAME">*@
                     <div class="caption">
@@ -83,11 +83,12 @@
             <div class="col-md-4 selectbox">
                 <div class="thumbnail">
                     @*<img src="http://placehold.it/320x200" alt="ALT NAME">*@
-                    <div class="caption selectbox">
-                        <p align="center"><h2><u>More information</u></h2></p>
-                         <br />
-                         <br />
-                        <p align="right"><a href="#" class="btn btn-primary btn-block " id="dialog">Help</a></p><br />
+                    <div class="caption">
+                        <p align="center"><h2><u>More     Information</u></h2></p>
+                         <br />                         
+                    @*    <p align="right"><a href="#" class="btn btn-primary btn-block " id="dialog">Help</a></p><br />*@
+                        <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#modelWindow">Help</button>
+                        <br />
                     </div>
                 </div>
             </div>
@@ -141,11 +142,10 @@
                     <div class="modal-body">                      
                         
                             <h4>1. Request data hosting. (You will need a google account for the request. If you do not have a google account, please request one <a href="https://accounts.google.com/SignUpWithoutGmail?hl=en" target="_blank">here</a>.)</h4>
-                            <h4>2. While CUAHSI sets up, please begin formatting your data and metadata to fit with the Excel  <a href="~/Export/DownloadFile/ODMTemplateszip">Templates</a> according to the User <a href="~/Export/DownloadFile/UserGuide">guide</a></h4>
-                            <h4>3. Once you have received an email notification that your service is set up, navigate back to <a href="http://hydroserver.cuahsi.org">hydroserver.cuahsi.org</a> and choose the option: Login to access your database.</h4>
-                            <h4>4. Begin uploading the formatted data and metadata in CSV format</h4>
-                            <h4>5. When you are ready to make the data public, register your web service and database with the CUAHSI’s <a href="http://hiscentral.cuahsi.org" target="_blank">Catalog</a></h4>
-                            <h4>6. Either notify help@cuahsi.org that you are ready to publish your database, or, wait for CUASHI’s weekly publishing update typically that occurs every week</h4>
+                            <h4>2. An account will be set up and you can start formatting your data and metadata./h4>
+                            <h4>3. Begin uploading the formatted data and metadata in CSV format</h4>
+                            <h4>5. When you are ready to make the data public request publication for the CUAHSI <a  href="http://hiscentral.cuahsi.org" target="_blank">Catalog</a></h4>
+                            <h4>6. Notify help@cuahsi.org that you are ready to publish your database, or, wait for CUASHI’s weekly publishing update typically that occurs every week</h4>
                             <h4>7. Discover your data at <a href="http://data.cuahsi.org" target="_blank">data.cuahsi.org</a></h4>
                         
                         <h4>Questions? Contact CUAHSI support at <strong>help@cuahsi.org.</strong></h4> 

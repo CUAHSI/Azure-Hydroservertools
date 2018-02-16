@@ -22,7 +22,8 @@ namespace HydroserverToolsBusinessObjects
         public const string FILETYPE_NOT_CSV = "The uploaded file is not a CSV file. Please upload a correct file.";
         public const string FILETYPE_NOT_CSV_ZIP = "The uploaded file is not a CSV or ZIP file. Please upload a correct file.";
         public const string CSV_FILES_HYDROSERVER = "CSV Files into HydroServer...";
-       
+        public const string REQUESTPUBLICATION_FAILED = "The Request failed please contact help@cuahsi.org for support.";
+
         public const string UPLOAD_SITES_HELP = "Sites Help";
 
         public const string IMPORT_FAILED_NOVALIDDATA = "The import failed. The file {0} does not contain valid data.";

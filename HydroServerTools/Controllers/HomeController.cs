@@ -261,6 +261,31 @@ namespace HydroServerTools.Controllers
             return View();
         }
         [Authorize]
+        public ActionResult RequestPublication()
+        {
+            var userName = HttpContext.User.Identity.Name.ToString();
+            var serviceName = HydroServerToolsUtils.GetConnectionNameByUserEmail(userName);
+
+            try
+            {            
+                HydroServerToolsUtils.SendSupportInfoEmail("PublicationRequested", userName, serviceName,String.Empty);
+
+                // Now we need to wire up a response so that the calling script understands what happened
+                HttpContext.Response.ContentType = "text/plain";
+                HttpContext.Response.StatusCode = 200;
+
+                // For compatibility with IE's "done" event we need to return a result as well as setting the context.response
+                return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+                
+            }
+            catch (Exception ex)
+            {
+                HydroServerToolsUtils.SendSupportInfoEmail("PublicationRequested", userName, serviceName, ex.Message);
+                return Json(new { message = Resources.REQUESTPUBLICATION_FAILED }, "text/html");
+            }
+            
+        }
+        [Authorize]
         public ActionResult RecreateSeriescatalog()
         {
             var userName = HttpContext.User.Identity.Name.ToString();
@@ -275,7 +300,7 @@ namespace HydroServerTools.Controllers
             
 
             RepositoryUtils.recreateSeriescatalog(entityConnectionString);
-            Jobs.jenkinsJobs.Main(247, false);
+            //Jobs.jenkinsJobs.Main(247, false);
             //return Json(new { success = true });
             return RedirectToAction("Index");
         }
