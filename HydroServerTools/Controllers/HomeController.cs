@@ -91,9 +91,12 @@ namespace HydroServerTools.Controllers
                     //trackUpdates.IsSynchronized = p.IsSynchronized;
                     //trackUpdates.SynchronizedDateTime = p.SynchronizedDateTime;
 
-                    TempData["UpdateDateTime"] = p.UpdateDateTime;
+                    TimeZoneInfo estZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+
+
+                    TempData["UpdateDateTime"] = TimeZoneInfo.ConvertTimeFromUtc(p.UpdateDateTime, estZone).ToString("MM/dd/yy H:mm:ss zzz");
                     if (p.IsSynchronized == true)
-                        TempData["SynchronizedDateTime"] = p.SynchronizedDateTime;
+                        TempData["SynchronizedDateTime"] = TimeZoneInfo.ConvertTimeFromUtc(p.SynchronizedDateTime, estZone) ;
                     else
                     {
                         TempData["SynchronizedDateTime"] = "scheduled";

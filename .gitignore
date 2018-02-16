@@ -163,3 +163,7 @@ Validated/*.bin
 
 # ignore connectionString
 connectionString.config
+
+
+# ignore AppSettingsString
+AppSettings.config

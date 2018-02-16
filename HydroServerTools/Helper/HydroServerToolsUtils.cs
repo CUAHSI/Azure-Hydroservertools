@@ -13,6 +13,7 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Net.Mail;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -368,6 +369,7 @@ namespace HydroServerTools
             db.TrackUpdates.Add(trackUpdates);
             db.SaveChanges();
         }
+
         public static List<string> ValidateFields<T>(List<string> columnHeaders)
         {
             //Sites
@@ -457,7 +459,43 @@ namespace HydroServerTools
                 return strIn;
             }
         }
-       
+
+        private void sendCreateDbPlaceholderRequest()
+        {
+            try
+            {
+                //App Service Publish Profile Credentials 
+                string userName = "$dev-Hydroservertools"; //userName 
+                string userPassword = "utE8ryBlvqDfhExAxKcPF94kBGyYnkKzYCbjxumo2SETcL3pcJMZ5uPx83al"; //userPWD 
+
+                //change webJobName to your WebJob name 
+                // string webJobName = "WEBJOBNAME";
+
+                var unEncodedString = String.Format($"{userName}:{userPassword}");
+                var encodedString = Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(unEncodedString));
+                //var arg = "arguments= argtest1";
+                //Change this URL to your WebApp hosting the  
+                //string URL = "https://?.scm.azurewebsites.net/api/triggeredwebjobs/" + webJobName + "/run";
+                string URL = "https://dev-hydroservertools.scm.azurewebsites.net/api/triggeredwebjobs/CopyDBTemplate/run";
+                System.Net.WebRequest request = System.Net.WebRequest.Create(URL);
+                request.Method = "POST";
+                request.ContentLength = 0;
+                request.Headers["Authorization"] = "Basic " + encodedString;
+                System.Net.WebResponse response = request.GetResponse();
+                System.IO.Stream dataStream = response.GetResponseStream();
+                System.IO.StreamReader reader = new System.IO.StreamReader(dataStream);
+                string responseFromServer = reader.ReadToEnd();
+                reader.Close();
+                response.Close();
+                Console.WriteLine("OK");  //no response 
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message.ToString());
+            }
+        }
+
 
     }
 }
