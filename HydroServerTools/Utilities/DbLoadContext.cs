@@ -58,6 +58,7 @@ namespace HydroServerTools.Utilities
         //      c.) Updated: 3 + Updated: 2 = 5
         //      d.) Rejected: 2 + Rejected: 1 = 3
         //      e.) Duplicated: 0 + Duplicated: 1 = 1
+        //      
         //  5.) Resulting in Adjusted Record Counts: Inserted: 15, Updated: 5, Rejected: 3, Duplicated: 1  (total: 24)
         public void UpdateCounts(int insertedChange, int updatedChange, int rejectedChange, int duplicatedChange)
         {

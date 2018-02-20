@@ -95,8 +95,8 @@ namespace HydroserverToolsBusinessObjects.Models
                     Latitude == proxy.Latitude &&
                     Longitude == proxy.Longitude &&
                     LatLongDatumSRSName == proxy.LatLongDatumSRSName &&
-                    SiteType == proxy.SiteType &&
-                    Comments == proxy.Comments );
+                    SiteType == proxy.SiteType /*&&     
+                    Comments == proxy.Comments */);     //Omit optional fields from comparison...
         }
     }
 }

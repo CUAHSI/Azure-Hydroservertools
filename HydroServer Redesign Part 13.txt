@@ -1,0 +1,47 @@
+
+HydroServer Redesign Part 13
+
+
+**** Summary ****
+ - Miscellaneous QA bug fixes 
+ - Miscellaneous test files
+
+
+**** HydroServerTools/Utilities ****
+ - DbLoadContext.cs
+   - Comment change...
+
+
+**** HydroServerTools/CSVUpload ****
+ - DbSummaryReport.cshtml
+   - Revise markup/logic to include a 'Duplicated' column for metadata tables
+
+
+**** HydroserverToolsBusinessObjects ****
+ - SiteModelBasicTemplate.cs
+   - Method: CompareWithProxy(...) 
+     - Exclude optional field: Comments from comparison
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

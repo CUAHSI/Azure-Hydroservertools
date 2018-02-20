@@ -27,32 +27,53 @@
                     <thead>
                         <tr>
                             <th class="col-md-6 text-center">Table Name</th>
-                            <th class="col-md-2 text-center">Inserted</th>
 @if ("meta_data" == qualifier)
 {
-                            <th class="col-md-2 text-center">Updated</th>
-}                        
+                            <th class="col-md-1 text-center">Inserted</th>
+                            <th class="col-md-1 text-center">Updated</th>
+                            <th class="col-md-1 text-center" data-toggle="tooltip" data-placement="top" 
+                                title="Duplicated records do not appear in the database">Duplicated<span style="font-weight: bold;">&#42;</span></th>
+                            <th class="col-md-1 text-center">Rejected</th>
+}
+else
+{
+                            <th class="col-md-2 text-center">Inserted</th>
                             <th class="col-md-2 text-center">Rejected</th>
+}
                         </tr>
                     </thead>
                     <tbody>
                         <!-- Dynamic table row template -->
                         <tr class="templateTableRow hidden">
                             <td class="col-md-6 text-center"><span style="font-size: 1.5em; font-weight: bold;" class="spanTableName">Test Table Name</span></td>
-
-                            <!-- If Inserted === 0 show span else show button -->
-                            <td class="col-md-2 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanInserted">0</span></td>
-                            <td class="col-md-2 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-success buttonInserted">100</button></td>
-
 @if ("meta_data" == qualifier)
 {
+                            <!-- If Inserted === 0 show span else show button -->
+                            <td class="col-md-1 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanInserted">0</span></td>
+                            <td class="col-md-1 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-success buttonInserted">100</button></td>
+
                             <!-- If Updated === 0 show span else show button -->
-                            <td class="col-md-2 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanUpdated">0</span></td>
-                            <td class="col-md-2 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-primary buttonUpdated">50</button></td>
-}
+                            <td class="col-md-1 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanUpdated">0</span></td>
+                            <td class="col-md-1 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-primary buttonUpdated">50</button></td>
+
+                            <!-- If Duplicated === 0 show span else show button -->
+                            <td class="col-md-1 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanDuplicated">0</span></td>
+                            <td class="col-md-1 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-primary buttonDuplicated">50</button></td>
+
                             <!-- If Rejected === 0 show span else show button -->
-                            <td class="col-md-2 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanRejected">0</span></td>
-                            <td class="col-md-2 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-danger buttonRejected" data-toggle="modal" data-target="#rejectedItemsModal">25</button></td>
+                            <td class="col-md-1 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanRejected">0</span></td>
+                            <td class="col-md-1 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-danger buttonRejected" data-toggle="modal" data-target="#rejectedItemsModal">25</button></td>
+}
+else
+{
+                            <!-- If Inserted === 0 show span else show button -->
+                            <td class="col-md-1 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanInserted">0</span></td>
+                            <td class="col-md-1 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-success buttonInserted">100</button></td>
+
+                            <!-- If Rejected === 0 show span else show button -->
+                            <td class="col-md-1 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanRejected">0</span></td>
+                            <td class="col-md-1 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-danger buttonRejected" data-toggle="modal" data-target="#rejectedItemsModal">25</button></td>
+}
                         </tr>
 
                         <!-- DB Load Results go here... -->
@@ -723,7 +744,7 @@
                 //Source: https://stackoverflow.com/questions/5614941/mix-razor-and-javascript-code
 @if ("meta_data" == qualifier)
 {
-                @:var columns = ['Inserted', 'Updated', 'Rejected'];
+                @:var columns = ['Inserted', 'Updated', 'Duplicated', 'Rejected'];
 }
 else
 {
