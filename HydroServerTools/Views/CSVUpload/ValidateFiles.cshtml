@@ -113,10 +113,7 @@ else
                 //var msg = 'File: ' + fileName;
                 var msg = '';
 
-                //msg += ' - Headers: ' + ((0 >= validation.InvalidHeaderNames.length) ? '<span class="btn-success">valid</span>' : '<span class="btn-danger">invalid</span>');
-                //msg += ' - Data: ' + ((0 >= validation.DataErrors.length) ? '<span class="btn-success">valid</span>' : '<span class="btn-danger">invalid</span>'); 
                 msg = (((0 >= validation.InvalidHeaderNames.length) && (0 >= validation.MissingRequiredHeaderNames.length))
-                    //? '<span class="btn-success">OK</span>' : '<span class="btn-danger">ERROR</span>');
                     ? '<span class="badge" style="background-color: green;">OK</span>' : '<span class="badge"  style="background-color: red;">ERROR</span>');
                 msg += ' ' + fileName;
 
@@ -134,7 +131,6 @@ else
 
                 //If panel contains errors, open, if indicated...
                 if (openErrorPanel &&
-                    //((0 < validation.InvalidHeaderNames.length) || (0 < validation.DataErrors.length))) {
                     ((0 < validation.InvalidHeaderNames.length) || (0 < validation.MissingRequiredHeaderNames.length))) {
                     newPanel.find('.panel-collapse').addClass('in');
                     openErrorPanel = false;
@@ -155,70 +151,30 @@ else
                 var recordCount = validation.CandidateRecordCount;
                 var hMsg = '';
 
-                //hMsg = ('unknown' !== modelType.toLowerCase())
-                //    ? ('File contents map to model type: ' + modelType)
-                //    : ('File contents map to no known model type');
-                //panelList.append('<li class="list-group-item"> ' + hMsg + '</li>');
-
-                //if (0 < vLength) {
-                //    hMsg = 'Valid headers: ' + validHeaders.join(', ');
-                //    panelList.append('<li class="list-group-item"> ' + hMsg + '</li>');
-                //}
-
-                //if (0 < recordCount) {
-                //    hMsg = 'Records available for database load: ' + parseInt(recordCount).toLocaleString('en');
-                //    panelList.append('<li class="list-group-item"> ' + hMsg + '</li>');
-                //}
-
-                if ((0 < hLength) ||(0 < mLength)) {
-                    //Header errors - show count...
-                    //var spanTitleBadge = newPanel.find('.spanTitleBadge');
-                    //spanTitleBadge.removeClass('hidden');
-                    //spanTitleBadge.text(hLength);
-                    //var h4Title = newPanel.find('.h4Title');
-                    //h4Title.text('Errors:');
-                    //Add to list...
+                if ((0 < hLength) || (0 < mLength)) {
+                    //Header errors - add to list...
                     if (0 < hLength) {
                         hMsg = 'Invalid headers: ' + headerErrors.join(', ');
                         panelList.append('<li class="list-group-item"> ' + hMsg + '</li>');
                     }
 
-                    if (0 < mLength) {
-                        hMsg = 'Missing headers: ' + missingHeaders.join(', ');
+                    if ('unknown' !== modelType.toLowerCase()) {
+                        //Known model type - display missing headers, if any
+                        if (0 < mLength) {
+                            hMsg = 'Missing headers: ' + missingHeaders.join(', ');
+                            panelList.append('<li class="list-group-item"> ' + hMsg + '</li>');
+                        }
+                    }
+                    else {
+                        //Unknown model type - display message...
+                        hMsg = 'File contents map to no known model type';
                         panelList.append('<li class="list-group-item"> ' + hMsg + '</li>');
                     }
                 }
                 else {
                     //No header errors - add headers OK message to list...
-                    //var h4Title = newPanel.find('.h4Title');
-                    //h4Title.text('No Errors:');
                     panelList.append('<li class="list-group-item"> ' + 'No header validation errors reported' + '</li>');
                 }
-
-
-                ////Add items to panel data list...
-                //panelList = newPanel.find('.dataListTemplate');
-                //var dataErrors = validation.DataErrors;
-                //var dLength = dataErrors.length;
-
-                //if (0 < dLength) {
-                //    //Data errors - show count...
-                //    var spanData = newPanel.find('.spanData');
-                //    spanData.removeClass('hidden');
-                //    spanData.text(dLength);
-
-                //    //Add to list...
-                //    for (var dI = 0; dI < dLength; ++dI) {
-                //        var dataError = dataErrors[dI];
-
-                //        var dMsg = 'Row: ' + dataError.RowIndex + ', Column: ' + dataError.FieldIndex + ' - "' + dataError.Reason + '"';
-                //        panelList.append('<li class="list-group-item"> ' + dMsg + '</li>');
-                //    }
-                //}
-                //else {
-                //    //No data errors - add data OK message to list...
-                //    panelList.append('<li class="list-group-item"> ' + 'No data validation errors reported...' + '</li>');
-                //}
 
                 //Append to panel group...
                 jqPanelGroup.append(newPanel.fadeIn());

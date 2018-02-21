@@ -1,0 +1,41 @@
+
+HydroServer Redesign Part 15
+
+
+**** Summary ****
+ - QA bug fix for WDC-1583
+ - Miscellaneous test files
+
+
+**** HydroServerTools/Views/CSVUpload ****
+ - ValidateFiles.cshtml
+   - buildValidationResultsMarkup(...)
+      - Add logic to display message: 'File contents map to no known model type' when 
+         file header validation logic finds no headers matching any known model type
+      - Remove commented out code
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
