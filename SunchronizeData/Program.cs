@@ -39,14 +39,18 @@ namespace SynchronizeData
                 if (list.Count != 0)
                 { 
                 var connectionParameters = getConnectionParameters(userdbConnectionString, list[0].DatabaseName);
+                    
 
-                //build connection string from parameters
-                var connection = BuildConnnectionString(connectionParameters);
+                    //build connection string from parameters
+                    var connection = BuildConnnectionString(connectionParameters);
                     //get name of databse form list
                     foreach (var service in list)
                     {
                         try
                         {
+                            //log database name
+                            Console.WriteLine("processing: Database Name:" + service.DatabaseName + " UserName:" + service.UserName);
+
                             SendSupportInfoEmail("DeduplicationStarted", service.UserName, service.DatabaseName, string.Empty);
 
                             DeleteDuplicatesDatavalues(connection);
