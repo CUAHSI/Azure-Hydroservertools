@@ -16,7 +16,6 @@ The motivation for this project is the replacement of several windows desktop ba
 Prerequisites
 ---
 - Runs in the Microsoft Azure cloud as a Cloud Service. 
-- Requires a Cache worker role to store state information. 
 - Requires asp.net 4.5.
 - User database and ODM databases required to be SQl server 2008/2012 databases.
 
@@ -25,9 +24,10 @@ Current Features and Functionality
 - Built for Windows Azure Web deployment not suitable for local deployment 
 - Single Sign on with OpenID and Google account
 - View all tables in Database with sort and limited search functionality using jquery datatables. Data processing is implemented on backend to enable scaling to larger datasets  
-- Maintenance of state using azure caching 
 - Asynchronous upload of data to not block UI thread and prevent timeouts 
 - Visualization of results in 4 categories: New, Rejected, Updated and Duplicate
+- Basic and advanced mode for uploading
+- Inline editing for Basic upload
 
 Major Libraries
 --
@@ -37,7 +37,6 @@ Major Libraries
 - **CSV Parsing**: CSV Helper
 - **Ajax Upload**: Blueimp Jquery Upload
 - **Data visualisation**: jQuery Datatables
-- **Caching**: windows azure caching
 - **Data Access ORM**: Entity Framework 
 - **Object mapping**: Automapper
 - **Error handling**: ELMAH
@@ -61,15 +60,16 @@ Version
 
 1.1.2
 
+
 Contact
 --------
 
 **CUAHSI** 
 Consortium of Universities for the Advancement of Hydrologic Science, Inc.
 
-196 Boston Ave
+150 Cambridge Park Dr.
 
-Medford, MA 02155
+CAmbridge, MA 02130
 
 Phone(339) 221-5400
 
