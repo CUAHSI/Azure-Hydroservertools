@@ -1,0 +1,47 @@
+
+HydroServer Redesign Part 16
+
+
+**** Summary ****
+ - QA bug fix for WDC-1584
+
+
+**** HydroServerTools/Content ****
+ - Site.css
+   - td.collapse-control - change color from green to red
+
+**** HydroServerTools/Views/CSVUpload ****
+ - DbSummaryReport.cshtml
+   - updateRejectedItemsTable(...)
+     - Revise re-upload logic to:
+        - Display one of the following messages per each re-upload request:
+           - All records re-uploaded 
+           - x of y records re-uploaded
+           - No records re-uploaded
+        - Close 'Rejected Items' dialog if all records are re-uploaded
+     - remove miscellaneous instances of commented out code
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -115,11 +115,11 @@ else
 
                 </div>
                 <div class="modal-footer">
-                    @*<button type="button" id="btnRejectedItemsModalDownload" class="btn btn-default btn-primary pull-left disabled" >Download</button>*@
-                    <a href="" type="button" id="btnRejectedItemsModalDownload" class="btn btn-default btn-primary pull-left disabled">Download</a>
-                    @*<button type="button" id="btnRejectedItemsModalClose" class="btn btn-warning left" data-dismiss="modal">Close</button>*@
-                    <a id="btnRejectedItemsModalClose" class="btn btn-warning left" href="/CSVUpload/RevisedUploadData/DbSummaryReport">Close</a>
-                    <button type="button" id="btnRejectedItemsModalReupload" class="btn btn-success left disabled" >Re-Upload</button>
+                    <div class="row">
+                        <a href="" type="button" id="btnRejectedItemsModalDownload" class="btn btn-default btn-primary pull-left disabled">Download</a>
+                        <a id="btnRejectedItemsModalClose" class="btn btn-warning right" href="/CSVUpload/RevisedUploadData/DbSummaryReport">Close</a>
+                        <button type="button" id="btnRejectedItemsModalReupload" class="btn btn-success right disabled">Re-Upload</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -329,6 +329,7 @@ else
             //Validate/initialize input parameters...
             if ('undefined' !== typeof tableUpdateResult && null !== tableUpdateResult) {
                 //Input parameters valid - build row Ids array for correct, duplicate and edited items items...
+                var toBeRemovedCount = 0;   //Retain 'to-be-removed' row total...
                 var rowIds = [];
                 var keys = ['CorrectItemIds', 'DuplicateItemIds', 'EditedItemIds']
                 var keysLength = keys.length;
@@ -339,13 +340,15 @@ else
 
                     for (var cI = 0; cI < cLength; ++cI) {
                         rowIds.push('#' + currentItemIds[cI].toString());
+                        ++toBeRemovedCount;     //Increment 'to-be-removed' row total...
                     }
                 }
 
-                if (0 < rowIds.length) {
-                    //Correct row ids exist - retrieve DataTables API...
-                    var table = $('#' + 'tblRejectedItems').DataTable();
+                //Retrieve DataTables API...
+                var table = $('#' + 'tblRejectedItems').DataTable();
+                var totalRowCount = table.data().length;    //Retain total row count...
 
+                if (0 < rowIds.length) {
                     //For each correct row Id...
                     // NOTE: The function called by forEach(...) provides a closure for each rowId value...
                     // Source: http://www.datchley.name/loop-variable-gotcha/
@@ -367,17 +370,16 @@ else
                     });
                 }
 
+                var errorCount = 0;   //Retain error row total...
                 var incorrectItemIds = tableUpdateResult.IncorrectItemIds;
                 var iLength = incorrectItemIds.length;
                 rowIds = [];
                 for (var iI = 0; iI < iLength; ++iI) {
                     rowIds.push('#' + incorrectItemIds[iI].toString());
+                    ++errorCount;   //Increment error row total...
                 }
 
                 if (0 < rowIds.length) {
-                    //Incorrect row ids exist - retrieve DataTables API...
-                    table = $('#' + 'tblRejectedItems').DataTable();
-
                     //For each incorrect row Id...
                     // NOTE: The function called by forEach(...) provides a closure for each rowId value...
                     // Source: http://www.datchley.name/loop-variable-gotcha/
@@ -406,6 +408,48 @@ else
                         }
                     });
                 }
+
+                //Display and fade update message, if indicated...
+                if (0 < totalRowCount) {
+                    var updateMessage = '';
+                    var classes = ''
+                    if (toBeRemovedCount === totalRowCount) {
+                        updateMessage = 'All records re-uploaded';
+                        classes = 'alert-success';
+                    }
+                    else if (0 < toBeRemovedCount) {
+                        updateMessage = '' + toBeRemovedCount + ' of ' + totalRowCount + ' records re-uploaded';
+                        classes = 'alert-info';
+                    }
+                    else if (0 < errorCount) {
+                        updateMessage = 'No records re-uploaded'
+                        classes = 'alert-warning';
+                    }
+
+                    if ('' !== updateMessage) {
+                        //Display and fade update message...
+                        var uploadSummary = $('#' + 'uploadSummaryDiv');
+
+                        uploadSummary.removeClass('hidden');
+                        uploadSummary.addClass(classes);
+                        uploadSummary.text(updateMessage);
+
+                        uploadSummary.fadeTo(3000, 0.5, function () {
+                            uploadSummary.addClass('hidden');
+                            uploadSummary.removeClass('alert-success alert-info alert-warning');
+
+                            //Close dialog, if indicated...
+                            if (toBeRemovedCount === totalRowCount) {
+                                //Hide the dialog, navigate to (reload) the summary page...
+                                //Source: https://stackoverflow.com/questions/6068266/jquery-how-to-trigger-anchor-links-click-event
+                                $('#' + 'rejectedItemsModal').modal('hide');
+                                window.location = $('#' + 'btnRejectedItemsModalClose').attr('href');
+                            }
+                        });
+                    }
+
+
+                }
             }
         }
 
@@ -425,7 +469,6 @@ else
                             "defaultContent": ""
                         },
                         {
-                            //"data": "itemId",
                             "data": "ItemId",
                             "visible": false
                         },
@@ -544,7 +587,7 @@ else
                 //DataTables 1.10.16 Configuration...
                 var newTable = $('#tblRejectedItems').DataTable({
                     //"dom": "Bfrtip",
-                    "dom": "frtip",
+                    "dom": 'frti<"#uploadSummaryDiv">p',
                     "data": tblData.data,
                     //"rowId": "rejectedRowId",
                     "rowId": "ItemId",
@@ -564,6 +607,11 @@ else
                     //    { "extend": "remove", "editor": editor }
                     //]
                 });
+
+                //Set uploadSummaryDiv markup...
+                var uploadSummary = $('#' + 'uploadSummaryDiv'); 
+                uploadSummary.addClass('alert col-md-2 col-md-offset-4 hidden');
+                uploadSummary.css({ "margin-top": "0.5em", "margin-bottom": "0", "padding": "0", "text-align": "center" });
 
                 //Click handler for 'collapse control' column...
                 $('table#tblRejectedItems > tbody').on('click', 'td.collapse-control', function () {
