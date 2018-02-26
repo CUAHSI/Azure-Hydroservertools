@@ -19,10 +19,10 @@ $("#RequestPublication").click(function (e) {
         type: "POST",
         url: "/Home/RequestPublication/",
         success: function (result) {
-            alert('Request submitted successfully to help@cuahsi.org ');
+            bootbox.alert('Request submitted successfully to help@cuahsi.org ');
         },
         error: function (result) {
-            alert('Request Submission failed. Please contact help@cuahsi.org');
+            bootbox.alert('Request Submission failed. Please contact help@cuahsi.org');
         }
     });
 });

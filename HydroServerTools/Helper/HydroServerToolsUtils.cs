@@ -1,6 +1,7 @@
 ﻿using HydroServerTools.Models;
 using HydroserverToolsBusinessObjects;
 using HydroserverToolsBusinessObjects.Models;
+using HydroServerToolsRepository.Repository;
 using Microsoft.ApplicationServer.Caching;
 using Microsoft.AspNet.Identity;
 using Newtonsoft.Json.Linq;
@@ -351,6 +352,88 @@ namespace HydroServerTools
                 }
             }
         }
+
+        public static void SendUserInfoEmail(string action, string userName, string serviceName, string message)
+        {
+
+            var userEmail = userName;
+            var userFromEmail = ConfigurationManager.AppSettings["SupportFromEmail"].ToString();
+            var now = DateTime.Now.ToString("s");
+            using (MailMessage mm = new MailMessage(userFromEmail, userEmail))
+            {
+
+
+                if (action == "PublicationRequestedSupport")
+                {
+
+                    mm.Subject = "Publication has been requested:";
+                    string body = "For user " + userName + " and service: " + serviceName;
+                    body += "<br />" + DateTime.Now.ToString("s") + "<br /> ";
+                    body += "<br /><br />Thanks";
+                    mm.Body = body;
+                    mm.IsBodyHtml = true;
+                }
+                if (action == "PublicationRequestedUser")
+                {
+
+                    mm.Subject = "Publication has been requested:";
+                    string body = "Thank you for requesting publication for your service: " + serviceName;
+                    body += "<br />The request has been submitted successfully to help@cuahsi.org. You will receive an email on the next steps<br /> ";
+                    //body += "<br />" + DateTime.Now.ToString("s") + "<br /> ";
+                    body += "<br /><br />Thank you";
+                    body += "<br /><br />The CUAHSI Team";
+                    mm.Body = body;
+                    mm.IsBodyHtml = true;
+                }
+
+                if (action == "unknownException")
+                {
+
+                    mm.Subject = "Unknown Exception has occured:";
+                    //string body = "For user " + userName + " and service: " + serviceName;
+                    string body = "<br /> Exception:" + message;
+                    body += "<br />" + DateTime.Now.ToString("s") + "<br /> ";
+                    body += "<br /><br />Thanks";
+                    mm.Body = body;
+                    mm.IsBodyHtml = true;
+                }
+
+
+                try
+                {
+                    using (var smtp = new SmtpClient())
+                    {
+                        smtp.Send(mm);
+                        return;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    //Exception - for now take no action...
+                    var errMessage = ex.Message;
+                }
+            }
+        }
+
+
+        public static DatabaseTableValueCountModel getDatabaseTableValueCount(string userName)
+        {
+
+            var tableValueCounts = new DatabaseTableValueCountModel();
+
+            string entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(userName);
+
+
+            if (!String.IsNullOrEmpty(entityConnectionString))
+            {
+                //var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
+
+                var databaseRepository = new DatabaseRepository();
+
+                tableValueCounts = databaseRepository.GetDatabaseTableValueCount(entityConnectionString);
+            }
+                return tableValueCounts;
+        }
         /// <summary>
         //insert data to track updates to the Datavalues tabel indicating a synchronization is required 
         /// </summary>
@@ -498,6 +581,55 @@ namespace HydroServerTools
             }
         }
 
+        public static string GetServicenameForUserName(string userName)
+        {
+            string networkId = null;
+            ApplicationDbContext context = new ApplicationDbContext();
+
+            var p = ((from users in context.Users
+                      join connectionParametersUsers in context.ConnectionParametersUser on users.Id equals connectionParametersUsers.UserId
+                      join connectionParameters in context.ConnectionParameters on connectionParametersUsers.ConnectionParametersId equals connectionParameters.Id
+                      where (users.UserName.ToLower() == userName.ToLower())
+                      select new
+                      { connectionParameters.HIScentralNetworkId }).FirstOrDefault());
+            if (p != null)
+            {
+                networkId = p.HIScentralNetworkId;
+            }
+
+            return networkId;
+        }
+
+        //HISNETWORKS
+
+        public static HISNetwork getHISNetworksDataForServiceName(int networkId)
+        {
+            var context = new HiscentralDbContext();
+            var hisnetwork = new HISNetwork();
+
+            var p = (from c in context.HISNetwork
+                     where ( c.NetworkID == networkId)
+                     select new
+                     {
+                         c.NetworkID,
+                         c.NetworkName,
+                         c.IsPublic,
+                         c.LastHarvested,
+                         c.CreatedDate
+                         
+                     }).FirstOrDefault();
+            if (p != null)
+            {
+                hisnetwork.NetworkID = p.NetworkID;
+                hisnetwork.NetworkName = p.NetworkName;
+                hisnetwork.IsPublic = p.IsPublic;
+                hisnetwork.LastHarvested = p.LastHarvested;
+                hisnetwork.CreatedDate = p.CreatedDate;
+            }
+
+            return hisnetwork;
+
+        }
 
     }
 }

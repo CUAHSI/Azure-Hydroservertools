@@ -27,6 +27,12 @@
         <th>
             @Html.DisplayNameFor(model => model.Password)
         </th>
+        <th>
+            @Html.DisplayNameFor(model => model.HIScentralNetworkId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.HIScentralNetworkName)
+        </th>
         <th></th>
     </tr>
 
@@ -46,6 +52,12 @@
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.Password)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.HIScentralNetworkId)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.HIScentralNetworkName)
         </td>
         <td>
             @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |

@@ -40,9 +40,11 @@ namespace HydroServerTools.Controllers
         public ActionResult Index()
         {
             var tableValueCounts = new DatabaseTableValueCountModel();
+            HISNetwork hisNetwork = new HISNetwork();
             TempData["UpdateDateTime"] = "unknown";
             TempData["SynchronizedDateTime"] = "unknown";
             TempData["LastHarvested"] = "unknown";
+            TempData["NetworkId"] = "unknown";
             //test jenkins
 
             //j.Init();
@@ -60,6 +62,28 @@ namespace HydroServerTools.Controllers
             }
             string entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name.ToString());
 
+            //try to get status
+            try
+            {
+                var networkidString = HydroServerToolsUtils.GetServicenameForUserName(HttpContext.User.Identity.Name.ToString());
+                int networkId = -1;
+                bool res = int.TryParse(networkidString, out networkId);
+                if (res == true)
+                {
+                    hisNetwork = HydroServerToolsUtils.getHISNetworksDataForServiceName(networkId);
+                    TempData["LastHarvested"] = hisNetwork.LastHarvested;
+                    TempData["NetworkId"] = hisNetwork.NetworkID;
+                }
+                else
+                {
+                    //TODO
+                }
+            }
+            catch (Exception ex)
+            {
+                //TODO logging
+            }
+            
 
             if (!String.IsNullOrEmpty(entityConnectionString))
             {
@@ -96,14 +120,14 @@ namespace HydroServerTools.Controllers
 
                     TempData["UpdateDateTime"] = TimeZoneInfo.ConvertTimeFromUtc(p.UpdateDateTime, estZone).ToString("MM/dd/yy H:mm:ss zzz");
                     if (p.IsSynchronized == true)
-                        TempData["SynchronizedDateTime"] = TimeZoneInfo.ConvertTimeFromUtc(p.SynchronizedDateTime, estZone) ;
+                        TempData["SynchronizedDateTime"] = TimeZoneInfo.ConvertTimeFromUtc(p.SynchronizedDateTime, estZone).ToString("MM/dd/yy H:mm:ss zzz");
                     else
                     {
                         TempData["SynchronizedDateTime"] = "scheduled";
                     }
                 }
 
-                
+              
                 TempData["message"] = Resources.CSV_FILES_HYDROSERVER;
                 return View(tableValueCounts);
                 
@@ -270,8 +294,10 @@ namespace HydroServerTools.Controllers
             var serviceName = HydroServerToolsUtils.GetConnectionNameByUserEmail(userName);
 
             try
-            {            
-                HydroServerToolsUtils.SendSupportInfoEmail("PublicationRequested", userName, serviceName,String.Empty);
+            {
+                HydroServerToolsUtils.SendUserInfoEmail("PublicationRequestedUser", userName, serviceName, String.Empty);
+
+                HydroServerToolsUtils.SendSupportInfoEmail("PublicationRequestedSupport", userName, serviceName,String.Empty);
 
                 // Now we need to wire up a response so that the calling script understands what happened
                 HttpContext.Response.ContentType = "text/plain";

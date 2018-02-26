@@ -47,7 +47,7 @@ namespace HydroServerTools.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Name,DataSource,InitialCatalog,UserId,Password")] ConnectionParameters connectionParameters)
+        public ActionResult Create([Bind(Include = "Id,Name,DataSource,InitialCatalog,UserId,Password,HIScentralNetworkId,HIScentralNetworkName")] ConnectionParameters connectionParameters)
         {
             if (ModelState.IsValid)
             {
@@ -79,7 +79,7 @@ namespace HydroServerTools.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Name,DataSource,InitialCatalog,UserId,Password")] ConnectionParameters connectionParameters)
+        public ActionResult Edit([Bind(Include = "Id,Name,DataSource,InitialCatalog,UserId,Password,HIScentralNetworkId,HIScentralNetworkName")] ConnectionParameters connectionParameters)
         {
             if (ModelState.IsValid)
             {

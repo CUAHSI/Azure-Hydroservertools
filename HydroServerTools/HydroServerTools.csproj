@@ -714,6 +714,8 @@
     <None Include="Properties\PublishProfiles\local.pubxml" />
     <None Include="Properties\PublishProfiles\QA-HydroServer - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\QA-HydroServer - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\QA-HydroServer-staging - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\QA-HydroServer-staging - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\DataTables-1.9.4\extras\TableTools\media\js\ZeroClipboard.js" />
     <Content Include="Scripts\DataTables-1.9.4\media\js\jquery.dataTables.js" />
@@ -846,7 +848,7 @@
     <Content Include="Views\Shared\NoDBForm.cshtml" />
     <Content Include="Views\Home\Default.cshtml" />
     <Content Include="Templates\ODMTemplates.zip" />
-    <Content Include="Views\Home\_CountInTables.cshtml" />
+    <Content Include="Views\Shared\_CountInTables.cshtml" />
     <Content Include="Views\Shared\_LayoutSimple.cshtml" />
     <Content Include="Views\ServiceRegistrations\Create.cshtml" />
     <Content Include="Views\ServiceRegistrations\Delete.cshtml" />
@@ -871,6 +873,7 @@
     <Content Include="Views\TrackUpdates\Edit.cshtml" />
     <Content Include="Views\TrackUpdates\Index.cshtml" />
     <Content Include="Views\ServiceRegistrations\ActivationEmailError.cshtml" />
+    <Content Include="Templates\Standard Format Template.xlsx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

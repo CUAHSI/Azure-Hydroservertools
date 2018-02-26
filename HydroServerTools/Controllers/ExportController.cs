@@ -230,7 +230,7 @@ namespace HydroServerTools.Controllers
                         break;
                     case "ODMGuideBasic-Excel":
                         dir = "~/Templates/";
-                        filename = "ODM Guide Shortened 2017.xlsx";
+                        filename = "Standard Format Template.xlsx";
                         fileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
                         filePath = Server.MapPath(dir + filename);
                         break;

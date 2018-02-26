@@ -219,6 +219,8 @@ namespace HydroServerTools.Controllers
                         connectionParameters.InitialCatalog = "ODM_" + userActivation.ServiceName;
                         connectionParameters.UserId = ConfigurationManager.AppSettings["UserId"];
                         connectionParameters.Password = ConfigurationManager.AppSettings["Password"];
+                        connectionParameters.HIScentralNetworkId = null;
+                        connectionParameters.HIScentralNetworkName = null;
                         db.ConnectionParameters.Add(connectionParameters);
                          
                         //add user connection 
@@ -236,7 +238,7 @@ namespace HydroServerTools.Controllers
                     }
                     catch (Exception ex)
                     {
-                        ViewBag.Message = "Activation un successful. Error message " + ex.Message + ". Please contact <a href='mailto:help@cuahsi.org?Subject=Activation%20failed' target='_top'>help@cuahsi.org</a>";
+                        ViewBag.Message = "Activation un-successful. Error message " + ex.Message + ". Please contact <a href='mailto:help@cuahsi.org?Subject=Activation%20failed' target='_top'>help@cuahsi.org</a>";
                     }
                 }
             }
@@ -278,7 +280,7 @@ namespace HydroServerTools.Controllers
                 //body += "<p><a href = '" + string.Format("{0}://{1}/ServiceRegistrations/Activation/{2}", Request.Url.Scheme, Request.Url.Authority, activationCode) + "'>Click here to activate your account.</a></p>";//need to convert to allow routing to pick it up
 
                 body += "<p>Please find attached a guide to formatting data prior to uploading data.</p>"; 
-                body += "<p>Please don't hesitate to contact us at help.cuahsi.org if you encounter any problems.</p>";
+                body += "<p>Please do not hesitate to contact us at help.cuahsi.org if you encounter any problems.</p>";
                 body += "<br /><br />Thank you";
                 body += "<br /><br />The CUAHSI team";
                 //mm.BodyEncoding = System.Text.Encoding.UTF8;
@@ -286,7 +288,7 @@ namespace HydroServerTools.Controllers
                 mm.IsBodyHtml = true;
 
                 System.Net.Mail.Attachment attachment;
-                attachment = new System.Net.Mail.Attachment(Server.MapPath("~/Templates/ODM Guide Shortened 2017.xlsx"));
+                attachment = new System.Net.Mail.Attachment(Server.MapPath("~/Templates/Standard Format Template.xlsx"));
                 mm.Attachments.Add(attachment);
 
                 //smtp.Host = "smtp.gmail.com";
