@@ -164,6 +164,8 @@ Validated/*.bin
 # ignore connectionString
 connectionString.config
 
-
 # ignore AppSettingsString
 AppSettings.config
+
+# ignore SMTP settings
+smtp.config

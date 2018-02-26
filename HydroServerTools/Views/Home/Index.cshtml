@@ -26,15 +26,15 @@
          @*   @Html.ActionLink("Import CSV Data into Hydroserver", "UploadData", "CSVUpload", new { id = "Sites" }, new { @class = "btn btn-primary btn active" })*@
 
             <div class="row">
-                <div class="col-sm-5 " style="padding:5px">
+                <div class="col-sm-5 " style="padding:2px">
                     <p>
                         @Html.ActionLink("Standard Upload", "RevisedUploadData", "CSVUpload", new { id = "SelectUploadType" }, new { @class = "btn btn-primary center-block" })
                     </p>
                     <h4>Upload Sites, Variables, Methods, Sources, Quality Control Levels and Data Values</h4>
 
-                    <h5>
+                    <h4><span class="glyphicon glyphicon-download" aria-hidden="true"></span>
                         @Html.ActionLink("Standard formatting guide", "DownloadFile", "Export", new { id = "ODMGuideBasic-Excel" }, new { target = "_blank" })
-                    </h5>
+                    </h4>
                 </div>
                 <div class="col-sm-5 col-sm-offset-1" style="padding:5px">
                     <p> 
@@ -43,9 +43,10 @@
                     <h4>
                         Upload Sites, Variables, Methods, Sources, Quality Control Levels, Data Values &amp; additional optional metadata tables 
                     </h4>
-                    <h5>
+                    <h4>
+                        <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
                         @Html.ActionLink("Advanced formatting guide", "DownloadFile", "Export", new { id = "ODMGuide-Excel" }, new { target = "_blank" })
-                    </h5>
+                    </h4>
                 </div>
             </div>
 

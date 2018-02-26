@@ -72,7 +72,7 @@ namespace HydroServerTools.Controllers
                 {
                     hisNetwork = HydroServerToolsUtils.getHISNetworksDataForServiceName(networkId);
                     TempData["LastHarvested"] = hisNetwork.LastHarvested;
-                    TempData["NetworkId"] = hisNetwork.NetworkID;
+                    TempData["NetworkId"] = hisNetwork.NetworkID.ToString();
                 }
                 else
                 {

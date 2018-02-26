@@ -874,6 +874,7 @@
     <Content Include="Views\TrackUpdates\Index.cshtml" />
     <Content Include="Views\ServiceRegistrations\ActivationEmailError.cshtml" />
     <Content Include="Templates\Standard Format Template.xlsx" />
+    <Content Include="smtp.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
