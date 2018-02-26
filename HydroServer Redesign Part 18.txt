@@ -1,0 +1,44 @@
+
+HydroServer Redesign Part 18
+
+
+**** Summary ****
+ - QA bug fix for WDC-1578
+
+
+
+**** HydroServerTools/Views/CSVUpload ****
+ - DragAndDropFiles.cshtml
+   - function deleteListItem(...) 
+     - conditionalize 'delete' file calls to server on a non-null current upload id
+   - function $(document).ready(...)
+     - 'Change' event handler for file input element
+        - reset input's value to support multiple entries of the same file path and name...
+
+
+
+Also - to prevent a run-time error - commented out '_CountInTables' references in SelectUploadType.cshtml
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

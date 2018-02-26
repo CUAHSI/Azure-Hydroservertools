@@ -114,35 +114,37 @@ else
             }
         }
 
-        //Forward delete request to server...
-        var url = '/api/revisedupload/delete/file/' + currentUploadId + '/' + fileName + '/';
-        $.ajax({
-            "url": url,
-            "type": "DELETE",
-            "async": true,
-            "dataType": "json",
-            "cache": false, //So IE does not cache when calling the same URL - source: http://stackoverflow.com/questions/7846707/ie9-jquery-ajax-call-first-time-doing-well-second-time-not
-            "success": function (data, textStatus, jqXHR) {
-                console.log('RevisedUpload Delete/File success: "' + textStatus + '" (' + jqXHR.status.toString() + ')');
-                //if (200 === jqXHR.status || 206 === jqXHR.status) {
-                //    //Controller file processing complete - show Validation Summary button...
-                //    $('#' + 'alertFileUpload').fadeOut({
-                //        "duration": 1500,
-                //        "complete": function () {
-                //            $('#' + 'btnValidationSummary').removeClass('hidden');
-                //            ////BC - TEST - Click button as soon as shown to test possible timing issue...
-                //            //$('#' + 'btnValidationSummary')[0].click();
-                //        }
-                //    });
-                //    clearInterval(interval);
-                //}
-            },
-            "error": function (xmlhttprequest, textStatus, message) {
-                //Failure - Log messsage received from server...
-                console.log('RevisedUpload Delete/File reports error: ' + xmlhttprequest.status + ' (' + message + ')');
-                //clearInterval(interval);
-            }
-        });
+        //Forward delete request to server, if indicated...
+        if (null !== currentUploadId) {
+            var url = '/api/revisedupload/delete/file/' + currentUploadId + '/' + fileName + '/';
+            $.ajax({
+                "url": url,
+                "type": "DELETE",
+                "async": true,
+                "dataType": "json",
+                "cache": false, //So IE does not cache when calling the same URL - source: http://stackoverflow.com/questions/7846707/ie9-jquery-ajax-call-first-time-doing-well-second-time-not
+                "success": function (data, textStatus, jqXHR) {
+                    console.log('RevisedUpload Delete/File success: "' + textStatus + '" (' + jqXHR.status.toString() + ')');
+                    //if (200 === jqXHR.status || 206 === jqXHR.status) {
+                    //    //Controller file processing complete - show Validation Summary button...
+                    //    $('#' + 'alertFileUpload').fadeOut({
+                    //        "duration": 1500,
+                    //        "complete": function () {
+                    //            $('#' + 'btnValidationSummary').removeClass('hidden');
+                    //            ////BC - TEST - Click button as soon as shown to test possible timing issue...
+                    //            //$('#' + 'btnValidationSummary')[0].click();
+                    //        }
+                    //    });
+                    //    clearInterval(interval);
+                    //}
+                },
+                "error": function (xmlhttprequest, textStatus, message) {
+                    //Failure - Log messsage received from server...
+                    console.log('RevisedUpload Delete/File reports error: ' + xmlhttprequest.status + ' (' + message + ')');
+                    //clearInterval(interval);
+                }
+            });
+        }
     }
 
     //Add unique input candidate file objects to the input collection and (name) to markup list...
@@ -478,6 +480,10 @@ else
             //Check for file selections...
             var files = this.files;
             addFileObjects(files, fileObjectsForUpload, $('#' + 'lstFilesForUpload'));
+
+            //Reset input's value to support multiple entry of the same file path and name...
+            //Source: https://stackoverflow.com/questions/12030686/html-input-file-selection-event-not-firing-upon-selecting-the-same-file
+            this.value = null;
         });
 
         //'Click' handler for Files for Upload, Continue 
