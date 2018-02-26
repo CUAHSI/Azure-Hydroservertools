@@ -1143,8 +1143,10 @@ namespace HydroServerTools.Controllers.api
                 var contextFileNamesAndTypes = fileContext.FileNamesAndTypes;
                 foreach (var fileNameAndType in fileNamesAndTypes)
                 {
-                    if ( null == contextFileNamesAndTypes.Where(item => item.fileName == fileNameAndType.fileName && 
-                                                                        item.fileType == fileNameAndType.fileType) )
+
+                    var result = contextFileNamesAndTypes.Where(item => item.fileName == fileNameAndType.fileName &&
+                                                                        item.fileType == fileNameAndType.fileType);
+                    if ( (null != result) && (0 >= result.Count()))
                     {
                         contextFileNamesAndTypes.Add(fileNameAndType);
                     }

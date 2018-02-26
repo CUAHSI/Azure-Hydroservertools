@@ -1,0 +1,44 @@
+
+HydroServer Redesign Part 17
+
+
+**** Summary ****
+ - QA bug fix for WDC-1577
+
+
+**** HydroServerTools/Controllers/api ****
+ - RevisedUploadController.cs 
+    - method: Post()
+       - revise FileContext membership test for uploaded filenamesandtypes to detect additions 
+
+
+**** HydroServerTools/Views/CSVUpload ****
+ - DragAndDropFiles.cshtml
+   - function addFileObjects(...) 
+     - add logic to enable upload button on addition of new file reference...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
