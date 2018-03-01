@@ -370,6 +370,7 @@ namespace HydroServerTools
                     string body = "For user " + userName + " and service: " + serviceName;
                     body += "<br />" + DateTime.Now.ToString("s") + "<br /> ";
                     body += "<br /><br />Thanks";
+                    body += "<br /><br />The CUAHSI Water Data Services Team";
                     mm.Body = body;
                     mm.IsBodyHtml = true;
                 }
@@ -378,10 +379,10 @@ namespace HydroServerTools
 
                     mm.Subject = "Publication has been requested:";
                     string body = "Thank you for requesting publication for your service: " + serviceName;
-                    body += "<br />The request has been submitted successfully to help@cuahsi.org. You will receive an email on the next steps<br /> ";
-                    //body += "<br />" + DateTime.Now.ToString("s") + "<br /> ";
+                    body += "<br />We are reviewing the request. You will receive an email from help@cuahsi.org on the next steps on how to procced with the final steps before your data becomes available on data.cuahsi.org<br /> ";
+                    body += "<br />If you need immediate assistance please contact help@cuahsi.org. <br /> ";
                     body += "<br /><br />Thank you";
-                    body += "<br /><br />The CUAHSI Team";
+                    body += "<br /><br />The CUAHSI Water Data Services Team";
                     mm.Body = body;
                     mm.IsBodyHtml = true;
                 }
@@ -394,6 +395,7 @@ namespace HydroServerTools
                     string body = "<br /> Exception:" + message;
                     body += "<br />" + DateTime.Now.ToString("s") + "<br /> ";
                     body += "<br /><br />Thanks";
+                    body += "<br /><br />The CUAHSI Water Data Services Team";
                     mm.Body = body;
                     mm.IsBodyHtml = true;
                 }

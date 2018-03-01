@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Web.Mvc;
 
 namespace HydroServerTools.Models
 {
@@ -111,8 +112,10 @@ namespace HydroServerTools.Models
 
         [MaxLength(30)]
         [Required]
-        [RegularExpression("^[a-zA-Z]*$", ErrorMessage = "Please Enter Only Letters (no spaces)")]       
-        [Display(Name = "Service Name*")]        
+        
+        [RegularExpression("^[a-zA-Z]*$", ErrorMessage = "Please Enter Only Letters (no spaces, no foreign characters)")]       
+        [Display(Name = "Service Name*")]
+        [AllowHtml]
         public string ServiceName { get; set; }
         [MaxLength(30)]
         [Required]
@@ -121,6 +124,7 @@ namespace HydroServerTools.Models
         public string GoogleAccount { get; set; }
         [MaxLength(100)]
         [Required]
+        [AllowHtml]
         [Display(Name = "Service Title*")]
         public string ServiceTitle { get; set; }
         [MaxLength(500)]
@@ -128,31 +132,39 @@ namespace HydroServerTools.Models
        // [DataType(DataType.MultilineText)]
         //[RegularExpression("!/r/n", ErrorMessage = "Please remove carriage returns")]
         [Display(Name = "Service Abstract")]
+        [AllowHtml]
         public string ServiceDescription { get; set; }
         [MaxLength(50)]
         [Required]
+        [AllowHtml]
         [Display(Name = "Contact Name*")]
         public string ContactName { get; set; }
         [MaxLength(30)]
         [Required]
+        [AllowHtml]
         [Display(Name = "Contact Email*")]
         [RegularExpression(".+@.+\\..+", ErrorMessage = "Please Enter Correct Email Address")]
         public string ContactEmail { get; set; }
         [MaxLength(15)]
         //[Required]
+        [AllowHtml]
         [Display(Name = "Contact Phone")]
         public string ContactPhone { get; set; }
         [MaxLength(100)]
         [Required]
+        [AllowHtml]
         [Display(Name = "Organization*")]
         public string Organization { get; set; }
         [MaxLength(100)]
         [RegularExpression("^(http[s]?:\\/\\/(www\\.)?|ftp:\\/\\/(www\\.)?|www\\.){1}([0-9A-Za-z-\\.@:%_\\+~#=]+)+((\\.[a-zA-Z]{2,3})+)(/(.)*)?(\\?(.)*)?", ErrorMessage = "Please Enter Correct Website URL")]
+        [AllowHtml]
         [Display(Name = "Organization Website")]
         public string OrganizationUrl { get; set; }
         [DataType(DataType.Date)]
+        [AllowHtml]
         public System.DateTime RequestIssued { get; set; }
         [DataType(DataType.Date)]
+        [AllowHtml]
         public Nullable <DateTime> RequestConfirmed { get; set; }
         
         public Guid ActivationGuid { get; set; }

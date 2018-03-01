@@ -27,8 +27,6 @@ namespace SynchronizeData
         {
             try
             {
-
-
                 //get connection string to user DB
                 var userdbConnectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
 
@@ -76,7 +74,29 @@ namespace SynchronizeData
                             SendSupportInfoEmail("SeriescatalogCompletedFailure", service.UserName, service.DatabaseName, e.Message);
                             throw;
                         }
-                        //Execute recrerate seriescataolog
+                        //Execute recrerate seriescatalog
+                        //Execute deduplication
+                        try
+                        {
+                            //find networkid for given databse name to start harvest
+                            string networkId = GetNetworkId(userdbConnectionString, service.DatabaseName);
+                            if (networkId != null)
+                            {
+                                SendSupportInfoEmail("HarvestStarted", service.UserName, networkId.ToString(), string.Empty);
+                                HarvestNetwork(networkId);
+                                //update trackUpdates table with success
+                                //setTrackUpdates(userdbConnectionString, service.DatabaseName, service.ConnectionId);
+                                SendSupportInfoEmail("HarvestCompletedSuccess", networkId.ToString(), service.DatabaseName, string.Empty);
+
+                            }
+
+                        }
+                        catch (Exception e)
+                        {
+                            SendSupportInfoEmail("HarvestCompletedFailure", service.UserName, service.DatabaseName, e.Message);
+                            throw;
+                        }
+                        
                     }
                 }
             }
@@ -139,11 +159,15 @@ namespace SynchronizeData
 
         }
 
-        static async Task Harvest()
+        //static async Task HarvestNetwork(int networkId )
+        static void HarvestNetwork(string networkId)
         { 
          var client = new HttpClient();
         //public static void Run()
-        
+        //get name of jenkinsjob
+        var jenkinsJobName = ConfigurationManager.AppSettings["jenkinsJobName"].ToString();
+        //get job token
+        var token = ConfigurationManager.AppSettings["token"].ToString();
             try
             {
                 client.BaseAddress = new Uri("https://ci.cuahsi.org:8888");
@@ -151,7 +175,7 @@ namespace SynchronizeData
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Host = "ci.cuahsi.org";
                 client.DefaultRequestHeaders.Add("Authorization", "Basic amVua2luczphYmNAMTIzIQ==");
-                var response = await client.GetAsync("/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,\":\",//crumb).Result");
+                var response =  client.GetAsync("/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,\":\",//crumb)").Result;
 
 
                 //var response =  client.GetAsync("/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,\":\",//crumb)").Result;
@@ -164,8 +188,8 @@ namespace SynchronizeData
 
                     var tmp = responseString.ToString().Split(':');
                     client.DefaultRequestHeaders.Add(tmp[0], tmp[1]);
-                    var content = new StringContent("json={\"parameter\": [{\"name\":\"ID\", \"value\":\"247\"},{\"name\":\"PRODCORE\", \"value\":\"wof-prod-synonym2\"}]}", Encoding.UTF8, "application/x-www-form-urlencoded");
-                    var retvar = client.PostAsync("/job/QA%20-%20addORupdate//build?delay=0sec&token=abc123", content).Result;
+                    var content = new StringContent("json={\"parameter\": [{\"name\":\"ID\", \"value\":\""+ networkId +"\"},{\"name\":\"PRODCORE\", \"value\":\"wof-prod-synonym2\"}]}", Encoding.UTF8, "application/x-www-form-urlencoded");
+                    var retvar = client.PostAsync("/job/"+ jenkinsJobName + "//build?delay=0sec&token="+ token, content).Result;
                     if (retvar.IsSuccessStatusCode)
                     {
                         var responseContent2 = retvar.Content;
@@ -226,7 +250,7 @@ namespace SynchronizeData
 
                 con.Open();                
 
-                command.ExecuteNonQuery();
+                command.ExecuteScalar();
                 
                 con.Close();
             }
@@ -352,17 +376,24 @@ namespace SynchronizeData
                 {
                     using (var smtp = new SmtpClient())
                     {
+                        //smtp.UseDefaultCredentials = false;
+                        //smtp.Credentials = new System.Net.NetworkCredential("help@cuahsi.org", "1wH$L9Ec");
+                        //smtp.EnableSsl = true;
+                        smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
                         smtp.Send(mm);
+                        
                         return;
                     }
                 }
                 catch (Exception ex)
                 {
-                    //Exception - for now take no action...
+                    //Exception - for now take no action...TODO
                     var errMessage = ex.Message;
                 }
             }
         }
+
+
 
         public static string BuildConnnectionString(ConnectionParameters model)
         {
@@ -389,6 +420,32 @@ namespace SynchronizeData
             string providerString = sqlBuilder.ToString();
 
             return providerString;
+        }
+
+        public static string GetNetworkId(string connection, string databaseName)
+        {
+            string networkId = null;
+
+            var sql = "select hiscentralnetworkid from ConnectionParameters where name = '" + databaseName + "'";
+
+            using (var con = new SqlConnection(connection))
+            using (var command = new SqlCommand(sql, con)
+            {
+                CommandType = CommandType.Text,
+
+
+            })
+            {
+
+                con.Open();
+
+                networkId = Convert.ToString(command.ExecuteScalar());
+
+                con.Close();
+            }
+
+            return networkId;
+
         }
 
 

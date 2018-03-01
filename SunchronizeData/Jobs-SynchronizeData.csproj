@@ -85,6 +85,13 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <Content Include="AppSettings.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="connectionString.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="Jobs-SynchronizeData_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
@@ -93,6 +100,18 @@
     <None Include="Properties\PublishProfiles\QA-HydroServer - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\QA-HydroServer - Web Deploy.pubxml" />
     <None Include="Properties\webjob-publish-settings.json" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="smtp.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
