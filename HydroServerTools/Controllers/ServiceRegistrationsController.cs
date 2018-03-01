@@ -280,9 +280,9 @@ namespace HydroServerTools.Controllers
                 //body += "<p><a href = '" + string.Format("{0}://{1}/ServiceRegistrations/Activation/{2}", Request.Url.Scheme, Request.Url.Authority, activationCode) + "'>Click here to activate your account.</a></p>";//need to convert to allow routing to pick it up
 
                 body += "<p>Please find attached a guide to formatting data prior to uploading data.</p>"; 
-                body += "<p>Please do not hesitate to contact us at help.cuahsi.org if you encounter any problems.</p>";
+                body += "<p>Please do not hesitate to contact us at help@cuahsi.org if you encounter any problems.</p>";
                 body += "<br /><br />Thank you";
-                body += "<br /><br />The CUAHSI team";
+                body += "<br /><br />The CUAHSI Water Data Services Team";
                 //mm.BodyEncoding = System.Text.Encoding.UTF8;
                 mm.Body = body;
                 mm.IsBodyHtml = true;
@@ -364,117 +364,117 @@ namespace HydroServerTools.Controllers
             }
         }
 
-        private void sendCreateDbRequest()
-        {
-            // Create a request using a URL that can receive a post.
-            string Uri = "https://ci.cuahsi.org:8888/view/all/job/createNewSQLDB/build?delay=0sec&token=abc123";
+        //private void sendCreateDbRequest()
+        //{
+        //    // Create a request using a URL that can receive a post.
+        //    string Uri = "https://ci.cuahsi.org:8888/view/all/job/createNewSQLDB/build?delay=0sec&token=abc123";
 
-            var requestUri = new Uri(Uri);
-            //var request = (HttpWebRequest)WebRequest.Create("https://ci.cuahsi.org:8888/view/all/job/createNewSQLDB/build?delay=0sec&token=abc123");
-            // Set the Method property of the request to POST.  
-
-
-            //request.Credentials = new NetworkCredential()
-            //{
-            //    UserName = "jenkins",
-            //    Password = "abc@123!"
-
-            //};
-
-            string userName = "mseul@cuahsi.org";
-            string passWord = "";
-
-            //byte[] credentialBuffer = new UTF8Encoding().GetBytes(userName + ":" + passWord);
-            //request.Headers["Authorization"] = "Basic " + Convert.ToBase64String(credentialBuffer);
+        //    var requestUri = new Uri(Uri);
+        //    //var request = (HttpWebRequest)WebRequest.Create("https://ci.cuahsi.org:8888/view/all/job/createNewSQLDB/build?delay=0sec&token=abc123");
+        //    // Set the Method property of the request to POST.  
 
 
-            NetworkCredential nc =
-            new NetworkCredential(userName, passWord);
-            CredentialCache cache = new CredentialCache();
+        //    //request.Credentials = new NetworkCredential()
+        //    //{
+        //    //    UserName = "jenkins",
+        //    //    Password = "abc@123!"
 
-            cache.Add(requestUri, "Basic", nc);
+        //    //};
 
-            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(requestUri);
-            request.Method = "POST";
-            //String encoded = System.Convert.ToBase64String(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes("jenkins:abc@123!"));
-            //request.Headers.Add("Authorization", "Basic " + encoded);
-            //request.UseDefaultCredentials = true;
-            // Ignore Certificate validation failures (aka untrusted certificate + certificate chains)
-            ServicePointManager.ServerCertificateValidationCallback = ((sender, certificate, chain, sslPolicyErrors) => true);
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-            // Create POST data and convert it to a byte array.  
-            string postData = "\"parameter\": [{\"name\":\"copyDatabaseName\", \"value\":\"dbcopy_ms_test_1\"}," +
-                " {\"name\":\"subscriptionId\", \"value\":\"fbe9ed82-2c21-449e-b0d6-3093522e2459\"}, " +
-                "{\"name\":\"resourceGroupName\", \"value\":\"Default-SQL-EastUS\"}," +
-                " {\"name\":\"serverName\", \"value\":\"bhi5g2ajst\"}, " +
-                "{\"name\":\"copyServerName\", \"value\":\"bhi5g2ajst\"}," +
-                " {\"name\":\"poolName\", \"value\":\"Hydroportal-Pool-1\"}, " +
-                "{\"name\":\"databaseName\", \"value\":\"ODM_1_1_1_template\"}, " +
-                "{\"name\":\"copyResourceGroupName\", \"value\":\"Default-SQL-EastUS\"}]\"";
-            byte[] byteArray = Encoding.UTF8.GetBytes(postData);
-            // Set the ContentType property of the WebRequest.  
-            request.ContentType = "application/json";
-            // Set the ContentLength property of the WebRequest.  
-            request.ContentLength = byteArray.Length;
-            // Get the request stream.  
-            Stream dataStream = request.GetRequestStream();
-            // Write the data to the request stream.  
-            dataStream.Write(byteArray, 0, byteArray.Length);
-            // Close the Stream object.  
-            dataStream.Close();
-            // Get the response.  
-            WebResponse response = request.GetResponse();
-            // Display the status.  
-            Console.WriteLine(((HttpWebResponse)response).StatusDescription);
-            // Get the stream containing content returned by the server.  
-            dataStream = response.GetResponseStream();
-            // Open the stream using a StreamReader for easy access.  
-            StreamReader reader = new StreamReader(dataStream);
-            // Read the content.  
-            string responseFromServer = reader.ReadToEnd();
-            // Display the content.  
-            Console.WriteLine(responseFromServer);
-            // Clean up the streams.  
-            reader.Close();
-            dataStream.Close();
-            response.Close();
-        }
+        //    string userName = "mseul@cuahsi.org";
+        //    string passWord = "";
 
-        private void sendCreateDbRequest2()
-        {
-            string postData = "'parameter': [{'name':'copyDatabaseName', 'value':'dbcopy_ms_test_1'}," +
-                  " {'name':'subscriptionId', 'value':'fbe9ed82-2c21-449e-b0d6-3093522e2459'}, " +
-                  "{'name':'resourceGroupName', 'value':'Default-SQL-EastUS'}," +
-                  " {'name':'serverName', 'value':'bhi5g2ajst'}, " +
-                  "{'name':'copyServerName', 'value':'bhi5g2ajst'}," +
-                  " {'name':'poolName', 'value':'Hydroportal-Pool-1'}, " +
-                  "{'name':'databaseName', 'value':'ODM_1_1_1_template'}, " +
-                  "{'name':'copyResourceGroupName', 'value':'Default-SQL-EastUS'}]'";
-
-            var request = (HttpWebRequest)WebRequest.Create(new Uri("https://api.demo.peertransfer.com/v1/transfers"));
-            request.Method = "POST";
-            request.AllowAutoRedirect = false;
-            request.Accept = "*/*";
-            request.Headers.Add("X-Peertransfer-Digest", "zYUt+Pn0A06wsSbCrrbAZn68Aslq9CbSUAKBrUEwIzI=");
-            request.ContentType = "application/json";
-            request.ContentLength = postData.Length;
-            request.Proxy.Credentials = new NetworkCredential()
-            {
-                UserName = "jenkins",
-                Password = "abc@123!"
-
-            };
-            using (var reqStream = request.GetRequestStream())
-            using (var writer = new StreamWriter(reqStream))
-            {
-                writer.Write(postData);
-            }
-
-            var response = request.GetResponse();
-            //MessageBox.Show(response.Headers.ToString());
+        //    //byte[] credentialBuffer = new UTF8Encoding().GetBytes(userName + ":" + passWord);
+        //    //request.Headers["Authorization"] = "Basic " + Convert.ToBase64String(credentialBuffer);
 
 
-        }
+        //    NetworkCredential nc =
+        //    new NetworkCredential(userName, passWord);
+        //    CredentialCache cache = new CredentialCache();
+
+        //    cache.Add(requestUri, "Basic", nc);
+
+        //    HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(requestUri);
+        //    request.Method = "POST";
+        //    //String encoded = System.Convert.ToBase64String(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes("jenkins:abc@123!"));
+        //    //request.Headers.Add("Authorization", "Basic " + encoded);
+        //    //request.UseDefaultCredentials = true;
+        //    // Ignore Certificate validation failures (aka untrusted certificate + certificate chains)
+        //    ServicePointManager.ServerCertificateValidationCallback = ((sender, certificate, chain, sslPolicyErrors) => true);
+        //    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+        //    // Create POST data and convert it to a byte array.  
+        //    string postData = "\"parameter\": [{\"name\":\"copyDatabaseName\", \"value\":\"dbcopy_ms_test_1\"}," +
+        //        " {\"name\":\"subscriptionId\", \"value\":\"fbe9ed82-2c21-449e-b0d6-3093522e2459\"}, " +
+        //        "{\"name\":\"resourceGroupName\", \"value\":\"Default-SQL-EastUS\"}," +
+        //        " {\"name\":\"serverName\", \"value\":\"bhi5g2ajst\"}, " +
+        //        "{\"name\":\"copyServerName\", \"value\":\"bhi5g2ajst\"}," +
+        //        " {\"name\":\"poolName\", \"value\":\"Hydroportal-Pool-1\"}, " +
+        //        "{\"name\":\"databaseName\", \"value\":\"ODM_1_1_1_template\"}, " +
+        //        "{\"name\":\"copyResourceGroupName\", \"value\":\"Default-SQL-EastUS\"}]\"";
+        //    byte[] byteArray = Encoding.UTF8.GetBytes(postData);
+        //    // Set the ContentType property of the WebRequest.  
+        //    request.ContentType = "application/json";
+        //    // Set the ContentLength property of the WebRequest.  
+        //    request.ContentLength = byteArray.Length;
+        //    // Get the request stream.  
+        //    Stream dataStream = request.GetRequestStream();
+        //    // Write the data to the request stream.  
+        //    dataStream.Write(byteArray, 0, byteArray.Length);
+        //    // Close the Stream object.  
+        //    dataStream.Close();
+        //    // Get the response.  
+        //    WebResponse response = request.GetResponse();
+        //    // Display the status.  
+        //    Console.WriteLine(((HttpWebResponse)response).StatusDescription);
+        //    // Get the stream containing content returned by the server.  
+        //    dataStream = response.GetResponseStream();
+        //    // Open the stream using a StreamReader for easy access.  
+        //    StreamReader reader = new StreamReader(dataStream);
+        //    // Read the content.  
+        //    string responseFromServer = reader.ReadToEnd();
+        //    // Display the content.  
+        //    Console.WriteLine(responseFromServer);
+        //    // Clean up the streams.  
+        //    reader.Close();
+        //    dataStream.Close();
+        //    response.Close();
+        //}
+
+        //private void sendCreateDbRequest2()
+        //{
+        //    string postData = "'parameter': [{'name':'copyDatabaseName', 'value':'dbcopy_ms_test_1'}," +
+        //          " {'name':'subscriptionId', 'value':'fbe9ed82-2c21-449e-b0d6-3093522e2459'}, " +
+        //          "{'name':'resourceGroupName', 'value':'Default-SQL-EastUS'}," +
+        //          " {'name':'serverName', 'value':'bhi5g2ajst'}, " +
+        //          "{'name':'copyServerName', 'value':'bhi5g2ajst'}," +
+        //          " {'name':'poolName', 'value':'Hydroportal-Pool-1'}, " +
+        //          "{'name':'databaseName', 'value':'ODM_1_1_1_template'}, " +
+        //          "{'name':'copyResourceGroupName', 'value':'Default-SQL-EastUS'}]'";
+
+        //    var request = (HttpWebRequest)WebRequest.Create(new Uri("https://api.demo.peertransfer.com/v1/transfers"));
+        //    request.Method = "POST";
+        //    request.AllowAutoRedirect = false;
+        //    request.Accept = "*/*";
+        //    request.Headers.Add("X-Peertransfer-Digest", "zYUt+Pn0A06wsSbCrrbAZn68Aslq9CbSUAKBrUEwIzI=");
+        //    request.ContentType = "application/json";
+        //    request.ContentLength = postData.Length;
+        //    request.Proxy.Credentials = new NetworkCredential()
+        //    {
+        //        UserName = "jenkins",
+        //        Password = "abc@123!"
+
+        //    };
+        //    using (var reqStream = request.GetRequestStream())
+        //    using (var writer = new StreamWriter(reqStream))
+        //    {
+        //        writer.Write(postData);
+        //    }
+
+        //    var response = request.GetResponse();
+        //    //MessageBox.Show(response.Headers.ToString());
+
+
+        //}
 
         private void sendCreateDbPlaceholderRequest()
         {
