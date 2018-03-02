@@ -1,0 +1,63 @@
+
+HydroServer Redesign Part 20
+
+
+**** Summary ****
+ - Fix for WDC-1558 - Minor Bug Fixes
+
+     Fixed by these changes:   
+      - Ensure 'Finish' and 'Cancel' actions always start a new upload session 
+        (i.e., remove all client- and server-based temporary items for the current 
+        uploadId, generate a new uploadId)
+
+     Already fixed by previous changes for other issues:
+     - Fix previous button navigation issues - especially display of upload results 
+       for previously uploaded files on File Upload page   
+
+
+**** HydroServerTools ****
+ - HydroServerTools.csproj
+   - new file: Scripts\custom\revisedUploadUtils.js
+
+
+**** HydroServerTools/Scripts/custom ****
+ - new file: revisedUploadUtils.js
+
+
+**** HydroServerTools/Views/CSVUpload ****
+ - DbSummaryReport.cshtml
+   - remove commented out code
+   - add <script> tag for revisedUploadUtils.js
+   - remove function: removeUploadId(...)
+ - DragAndDropFiles.cshtml
+   - add <script> tag for revisedUploadUtils.js
+   - In Cancel 'anchor' click handler - add call to removeUploadId(...)
+ - ValidateFiles.cshtml
+   - add <script> tag for revisedUploadUtils.js
+   - In Cancel 'anchor' click handler - add call to removeUploadId(...)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

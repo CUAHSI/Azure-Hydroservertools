@@ -60,6 +60,7 @@ else
 <script src="~/Scripts/mvcfileupload/blueimp/jquery.iframe-transport.js"></script>
 <script src="~/Scripts/mvcfileupload/blueimp/jquery.fileupload-process.js"></script>
 <script src="~/Scripts/custom/RandomId.js"></script>
+<script src="~/Scripts/custom/revisedUploadUtils.js"></script>
 
 <style type="text/css">
     .bar {
@@ -517,6 +518,9 @@ else
             sessionStorage.removeItem('currentUploadId');
             sessionStorage.removeItem('uploadedFileNames');
             sessionStorage.removeItem('fileUploadCount');
+
+            //Queue remove request to server...
+            removeUploadId(currentUploadId);
         });
 
         //Create Random Id instance...

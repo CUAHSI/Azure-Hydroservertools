@@ -75,6 +75,8 @@ else
 
 </div>
 
+<script src="~/Scripts/custom/revisedUploadUtils.js"></script>
+
 <script type="text/javascript">
 
     //Build dynamic collapse(s) for file validation results...
@@ -287,6 +289,9 @@ else
             sessionStorage.removeItem('currentUploadId');
             sessionStorage.removeItem('uploadedFileNames');
             sessionStorage.removeItem('fileUploadCount');
+
+            //Queue remove request to server...
+            removeUploadId(currentUploadId);
         });
 
         //Queue retrieval of validation results...
