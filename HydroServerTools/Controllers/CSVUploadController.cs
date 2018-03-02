@@ -142,11 +142,89 @@ namespace HydroServerTools.Controllers
             return View();
         }
 
+        //A simple method to retrieve db table counts for the current user...
+        private DatabaseTableValueCountModel getTableValueCounts()
+        {
+            DatabaseTableValueCountModel tableValueCounts = null;
+
+            //Get connection name for current user...
+            var userName = HttpContext.User.Identity.Name.ToString();
+            string connectionName = HydroServerToolsUtils.GetConnectionName(userName);
+            if (connectionName != Resources.NOT_LINKED_TO_DATABASE)
+            {
+                //Get connection string for current user...
+                string entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(userName);
+                if (!String.IsNullOrEmpty(entityConnectionString))
+                {
+                    //Create repository instance, retrieve table value counts...
+                    var databaseRepository = new DatabaseRepository();
+                    tableValueCounts = databaseRepository.GetDatabaseTableValueCount(entityConnectionString);
+                }
+
+                //Retrieve service status...
+                try
+                {
+                    var networkidString = HydroServerToolsUtils.GetServicenameForUserName(userName);
+                    int networkId = -1;
+                    bool res = int.TryParse(networkidString, out networkId);
+                    if (res == true)
+                    {
+                        HISNetwork hisNetwork = HydroServerToolsUtils.getHISNetworksDataForServiceName(networkId);
+                        TempData["LastHarvested"] = hisNetwork.LastHarvested;
+                        TempData["NetworkId"] = hisNetwork.NetworkID;
+                    }
+
+                }
+                catch (Exception)
+                {
+                    //For now - take no action...
+                }
+
+                //Retrieve update stats...
+                if (!String.IsNullOrEmpty(entityConnectionString))
+                {
+                    var userId = HydroServerToolsUtils.GetUserIdFromUserName(userName);
+                    var db = new ApplicationDbContext();
+                    var trackUpdates = new TrackUpdates();
+                    var p = (from c in db.TrackUpdates
+                             where c.UserId == userId
+                             select new
+                             {
+                                 c.IsUpdated,
+                                 c.UpdateDateTime,
+                                 c.IsSynchronized,
+                                 c.SynchronizedDateTime
+
+                             }).FirstOrDefault();
+                    if (p != null)
+                    {
+                        TimeZoneInfo estZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+
+                        TempData["UpdateDateTime"] = TimeZoneInfo.ConvertTimeFromUtc(p.UpdateDateTime, estZone).ToString("MM/dd/yy H:mm:ss zzz");
+                        if (p.IsSynchronized == true)
+                            TempData["SynchronizedDateTime"] = TimeZoneInfo.ConvertTimeFromUtc(p.SynchronizedDateTime, estZone).ToString("MM/dd/yy H:mm:ss zzz");
+                        else
+                        {
+                            TempData["SynchronizedDateTime"] = "scheduled";
+                        }
+                    }
+                }
+            }
+
+            //Processing complete - return result
+            return tableValueCounts;
+        }
+
         public ActionResult RevisedUploadData(string id)
         {
             if (!String.IsNullOrEmpty(id))
             {
                 var viewName = String.Empty;
+                DatabaseTableValueCountModel tableValueCounts = null;
+                TempData["UpdateDateTime"] = "unknown";
+                TempData["SynchronizedDateTime"] = "unknown";
+                TempData["LastHarvested"] = "unknown";
+                TempData["NetworkId"] = "unknown";
 
                 string idLower = id.ToLowerInvariant();
                 string idQualifier = String.Empty;
@@ -180,8 +258,8 @@ namespace HydroServerTools.Controllers
                         }
                     case "selectuploadtype":
                         {
-                            
                             viewName = "SelectUploadType";
+                            tableValueCounts = getTableValueCounts();
                             //Re-set temp data for qualifier...
                             break;
                         }
@@ -201,7 +279,12 @@ namespace HydroServerTools.Controllers
 #endif
                 }
 
-                if (!String.IsNullOrEmpty(viewName))
+                if ((!String.IsNullOrEmpty(viewName)) && (null != tableValueCounts))
+                {
+                    //Known view name and table value counts - return associated view... 
+                    return View(viewName, tableValueCounts);
+                }
+                else if (!String.IsNullOrEmpty(viewName))
                 {
                     //Known view name - return associated view... 
                     return View(viewName);

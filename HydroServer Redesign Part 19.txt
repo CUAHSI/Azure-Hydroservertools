@@ -1,0 +1,49 @@
+
+HydroServer Redesign Part 19
+
+
+**** Summary ****
+ - Show table value counts on Select Upload Type page
+
+
+**** HydroServerTools/Controllers ****
+ - CSVUploadController.cs
+   - Add method: getTableValueCounts()
+   - Revise method: RevisedUploadData(...)
+
+
+**** HydroServerTools/Views/CSVUpload ****
+ - DbSummaryReport.cshtml
+   - Upload Summary table markup:
+      -  r: Duplicated w: Duplicates
+      - Revise tooltip text and display
+   - $(document).ready(...)
+      - Add 'tooltip()' call to initialize tooltip text
+ - SelectUploadType.cshtml
+   - Uncomment @model and @Html.Partial(...) statements
+   - Add ViewBag entries for display of table value counts
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

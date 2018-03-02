@@ -1,7 +1,12 @@
-﻿@*@model HydroserverToolsBusinessObjects.Models.DatabaseTableValueCountModel*@
+﻿@model HydroserverToolsBusinessObjects.Models.DatabaseTableValueCountModel
 @{
     ViewBag.Title = "SelectUploadType";
     ViewBag.Name = "selectUploadType";
+
+    ViewBag.UpdateDateTime = TempData["UpdateDateTime"];
+    ViewBag.SynchronizedDateTime = TempData["SynchronizedDateTime"];
+    ViewBag.LastHarvested = TempData["LastHarvested"];
+    ViewBag.NetworkId = TempData["NetworkId"];
 
     Layout = "~/Views/Shared/_LayoutBasic.cshtml";
 }
@@ -28,7 +33,7 @@
 
     </div>
     
-        @*@Html.Partial("_CountInTables")*@
+        @Html.Partial("_CountInTables")
     
     </div>
 <script type="text/javascript">
