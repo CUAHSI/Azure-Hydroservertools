@@ -65,7 +65,7 @@ namespace HydroServerTools.Controllers
             //try to get status
             try
             {
-                var networkidString = HydroServerToolsUtils.GetServicenameForUserName(HttpContext.User.Identity.Name.ToString());
+                var networkidString = HydroServerToolsUtils.GetNetworkIdForUserName(HttpContext.User.Identity.Name.ToString());
                 int networkId = -1;
                 bool res = int.TryParse(networkidString, out networkId);
                 if (res == true)
@@ -134,7 +134,7 @@ namespace HydroServerTools.Controllers
             }
             else
             {
-                return RedirectToAction("GoogleForm");
+                return RedirectToAction("Create", "ServiceRegistrations"); 
             }
             
         }
@@ -291,13 +291,16 @@ namespace HydroServerTools.Controllers
         public ActionResult RequestPublication()
         {
             var userName = HttpContext.User.Identity.Name.ToString();
-            var serviceName = HydroServerToolsUtils.GetConnectionNameByUserEmail(userName);
+            
+            var userId = HydroServerToolsUtils.GetUserIdFromUserName(HttpContext.User.Identity.Name.ToString());
+
+            var serviceName = HydroServerToolsUtils.GetServiceNameForUserID(userId);
 
             try
             {
-                HydroServerToolsUtils.SendUserInfoEmail("PublicationRequestedUser", userName, serviceName, String.Empty);
+                HydroServerToolsUtils.SendInfoEmail("PublicationRequestedUser", userName, serviceName, String.Empty);
 
-                HydroServerToolsUtils.SendSupportInfoEmail("PublicationRequestedSupport", userName, serviceName,String.Empty);
+                HydroServerToolsUtils.SendInfoEmail("PublicationRequestedSupport", userName, serviceName, String.Empty);
 
                 // Now we need to wire up a response so that the calling script understands what happened
                 HttpContext.Response.ContentType = "text/plain";
@@ -309,7 +312,7 @@ namespace HydroServerTools.Controllers
             }
             catch (Exception ex)
             {
-                HydroServerToolsUtils.SendSupportInfoEmail("PublicationRequested", userName, serviceName, ex.Message);
+                HydroServerToolsUtils.SendInfoEmail("PublicationRequested", userName, serviceName, ex.Message);
                 return Json(new { message = Resources.REQUESTPUBLICATION_FAILED }, "text/html");
             }
             
@@ -347,7 +350,7 @@ namespace HydroServerTools.Controllers
             
             catch (Exception ex)
             {
-                HydroServerToolsUtils.SendSupportInfoEmail("SynchonizeData", userName, serviceName, ex.Message);
+                HydroServerToolsUtils.SendInfoEmail("SynchonizeData", userName, serviceName, ex.Message);
             }
 
            

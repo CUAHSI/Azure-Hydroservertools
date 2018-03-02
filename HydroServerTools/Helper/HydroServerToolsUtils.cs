@@ -104,7 +104,7 @@ namespace HydroServerTools
             //string path = "http://" + this.Request.RequestUri.Authority + "XML/users.xml";
             try
             {
-                var userEmail = Db.Users.FirstOrDefault(u => u.UserName == userName).UserEmail;
+                var userEmail = Db.Users.FirstOrDefault(u => u.UserName == userName).Id;
 
 
                 string path = HttpContext.Current.Server.MapPath("~/XML/users.xml");
@@ -281,6 +281,28 @@ namespace HydroServerTools
             return userId;
         }
 
+        public static string GetServiceNameForUserID(string userId)
+        {
+            string serviceName = null;
+
+            ApplicationDbContext context = new ApplicationDbContext();
+
+            var p = ((from users in context.Users
+                     join connectionParametersUsers in context.ConnectionParametersUser on users.Id equals connectionParametersUsers.UserId
+                     join connectionParameters in context.ConnectionParameters on connectionParametersUsers.ConnectionParametersId equals connectionParameters.Id
+                     where (users.Id == userId)
+                     select new
+                     { connectionParameters.Name }).FirstOrDefault());
+
+            if (p != null)
+            {
+                serviceName = p.Name;
+            }
+
+
+            return serviceName;
+        }
+
         public static bool GetSyncStatusFromUserId(string userId)
         {
             bool syncStatus = true;//assume is synchronized
@@ -312,7 +334,7 @@ namespace HydroServerTools
             {
 
 
-                if (action == "PublicationRequested")
+                if (action == "PublicationRequestedSupport")
                 {
 
                     mm.Subject = "Publication has been requested:";
@@ -353,19 +375,22 @@ namespace HydroServerTools
             }
         }
 
-        public static void SendUserInfoEmail(string action, string userName, string serviceName, string message)
+        public static void SendInfoEmail(string action, string userName, string serviceName, string message)
         {
 
             var userEmail = userName;
-            var userFromEmail = ConfigurationManager.AppSettings["SupportFromEmail"].ToString();
-            var now = DateTime.Now.ToString("s");
-            using (MailMessage mm = new MailMessage(userFromEmail, userEmail))
-            {
+            var userFromEmail = ConfigurationManager.AppSettings["SupportFromEmail"];
+            var helpEmail = ConfigurationManager.AppSettings["HelpEmailRecipients"];
 
+            var now = DateTime.Now.ToString("s");
+            using (MailMessage mm = new MailMessage())
+            {
 
                 if (action == "PublicationRequestedSupport")
                 {
-
+                    mm.From = new MailAddress(userFromEmail);
+                    mm.To.Add(helpEmail);
+                   
                     mm.Subject = "Publication has been requested:";
                     string body = "For user " + userName + " and service: " + serviceName;
                     body += "<br />" + DateTime.Now.ToString("s") + "<br /> ";
@@ -376,9 +401,10 @@ namespace HydroServerTools
                 }
                 if (action == "PublicationRequestedUser")
                 {
-
+                    mm.From = new MailAddress(userFromEmail);
+                    mm.To.Add(userEmail);
                     mm.Subject = "Publication has been requested:";
-                    string body = "Thank you for requesting publication for your service: " + serviceName;
+                    string body = "Thank you for requesting publication for your service: " + serviceName ;
                     body += "<br />We are reviewing the request. You will receive an email from help@cuahsi.org on the next steps on how to procced with the final steps before your data becomes available on data.cuahsi.org<br /> ";
                     body += "<br />If you need immediate assistance please contact help@cuahsi.org. <br /> ";
                     body += "<br /><br />Thank you";
@@ -389,7 +415,8 @@ namespace HydroServerTools
 
                 if (action == "unknownException")
                 {
-
+                    mm.From = new MailAddress(userFromEmail);
+                    mm.To.Add(helpEmail);
                     mm.Subject = "Unknown Exception has occured:";
                     //string body = "For user " + userName + " and service: " + serviceName;
                     string body = "<br /> Exception:" + message;
@@ -583,7 +610,7 @@ namespace HydroServerTools
             }
         }
 
-        public static string GetServicenameForUserName(string userName)
+        public static string GetNetworkIdForUserName(string userName)
         {
             string networkId = null;
             ApplicationDbContext context = new ApplicationDbContext();
