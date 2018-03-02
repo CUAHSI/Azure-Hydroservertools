@@ -164,7 +164,7 @@ namespace HydroServerTools.Controllers
                 //Retrieve service status...
                 try
                 {
-                    var networkidString = HydroServerToolsUtils.GetServicenameForUserName(userName);
+                    var networkidString = HydroServerToolsUtils.GetNetworkIdForUserName(userName);
                     int networkId = -1;
                     bool res = int.TryParse(networkidString, out networkId);
                     if (res == true)
