@@ -118,14 +118,16 @@ namespace HydroServerTools.Controllers
                     string ODMDBName = "ODM_" + serviceRegistration.ServiceName;
                     setupDatabase(ODMDBName);
                     SendActivationEmail(user.Identity.Name, activationCode);
-                    SendSupportInfoEmail("ActivationRequest",  user.Identity.Name, serviceRegistration.ServiceName);
+                    HydroServerToolsUtils.SendInfoEmail("ActivationRequest",  user.Identity.Name, serviceRegistration.ServiceName,string.Empty);
                     // copyAzureDatatabaseTemplate(serviceRegistration.ServiceName);
 
                     return RedirectToAction("ActivationInProcess");
                 }
                 catch (Exception ex)
                 {
-                    return RedirectToAction("Index");
+                    HydroServerToolsUtils.SendInfoEmail("unknownException", user.Identity.Name, serviceRegistration.ServiceName,ex.Message);
+
+                    return RedirectToAction("Error","Home");
                 }
 
             }
@@ -234,7 +236,8 @@ namespace HydroServerTools.Controllers
                         db.ConnectionParametersUser.Add(connectionParametersUser);
                         db.SaveChanges();
                         ViewBag.Message = "Activation successful.";
-                        SendSupportInfoEmail("ActivationConfirmed", user.UserName, userActivation.ServiceName);
+                        //send info to 
+                        HydroServerToolsUtils.SendInfoEmail("ActivationConfirmed", user.UserName, userActivation.ServiceName, string.Empty);
                     }
                     catch (Exception ex)
                     {
@@ -313,56 +316,67 @@ namespace HydroServerTools.Controllers
             }
         }
 
-        private void SendSupportInfoEmail(string action,string userName, string serviceName)
-        {
+        //private void SendSupportInfoEmail(string action,string userName, string serviceName)
+        //{
 
-            var userEmail = ConfigurationManager.AppSettings["SupportEmailRecipients"].ToString();
-            var userFromEmail = ConfigurationManager.AppSettings["SupportFromEmail"].ToString();
-            var now = DateTime.Now.ToString("s");
-            using (MailMessage mm = new MailMessage(userFromEmail, userEmail))
-            {
-                if (action == "ActivationRequest")
-                { 
+        //    var userEmail = ConfigurationManager.AppSettings["SupportEmailRecipients"].ToString();
+        //    var userFromEmail = ConfigurationManager.AppSettings["SupportFromEmail"].ToString();
+        //    var now = DateTime.Now.ToString("s");
+        //    using (MailMessage mm = new MailMessage(userFromEmail, userEmail))
+        //    {
+        //        if (action == "ActivationRequest")
+        //        { 
 
-                    mm.Subject = "Account Activation has been requested:";
-                    string body = "For user " + userName + " and service: "+ serviceName;
-                    body += "<br />"+ DateTime.Now.ToString("s") +"<br /> ";
-                    body += "<br /><br />Thanks";
-                    mm.Body = body;
-                    mm.IsBodyHtml = true;
-                }
+        //            mm.Subject = "Account Activation has been requested:";
+        //            string body = "For user " + userName + " and service: "+ serviceName;
+        //            body += "<br />"+ DateTime.Now.ToString("s") +"<br /> ";
+        //            body += "<br /><br />Thanks";
+        //            mm.Body = body;
+        //            mm.IsBodyHtml = true;
+        //        }
 
-                if (action == "ActivationConfirmed")
-                {
+        //        if (action == "ActivationConfirmed")
+        //        {
 
-                    mm.Subject = "Account Activation has been confirmed:";
-                    string body = "For user " + userName + " and service: " + serviceName;
-                    body += "<br />" + DateTime.Now.ToString("s") + "<br /> ";
-                    body += "<br /><br />Thanks";
-                    mm.Body = body;
-                    mm.IsBodyHtml = true;
-                }
-                //smtp.Host = "smtp.gmail.com";
-                //smtp.EnableSsl = true;
-                //NetworkCredential NetworkCred = new NetworkCredential("sender@gmail.com", "<password>");
-                //smtp.UseDefaultCredentials = true;
-                //smtp.Credentials = NetworkCred;
-                //smtp.Port = 587;
-                try
-                {
-                    using (var smtp = new SmtpClient())
-                    {
-                        smtp.Send(mm);
-                        return;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    //Exception - for now take no action...
-                    var errMessage = ex.Message;
-                }
-            }
-        }
+        //            mm.Subject = "Account Activation has been confirmed:";
+        //            string body = "For user " + userName + " and service: " + serviceName;
+        //            body += "<br />" + DateTime.Now.ToString("s") + "<br /> ";
+        //            body += "<br /><br />Thanks";
+        //            mm.Body = body;
+        //            mm.IsBodyHtml = true;
+        //        }
+        //        if (action == "unknownException")
+        //        {
+
+        //            mm.Subject = "Unknown Exception has occured:";
+        //            //string body = "For user " + userName + " and service: " + serviceName;
+        //            string body = "<br /> Exception:" + message;
+        //            body += "<br />" + DateTime.Now.ToString("s") + "<br /> ";
+        //            body += "<br /><br />Thanks";
+        //            mm.Body = body;
+        //            mm.IsBodyHtml = true;
+        //        }
+        //        //smtp.Host = "smtp.gmail.com";
+        //        //smtp.EnableSsl = true;
+        //        //NetworkCredential NetworkCred = new NetworkCredential("sender@gmail.com", "<password>");
+        //        //smtp.UseDefaultCredentials = true;
+        //        //smtp.Credentials = NetworkCred;
+        //        //smtp.Port = 587;
+        //        try
+        //        {
+        //            using (var smtp = new SmtpClient())
+        //            {
+        //                smtp.Send(mm);
+        //                return;
+        //            }
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            //Exception - for now take no action...
+        //            var errMessage = ex.Message;
+        //        }
+        //    }
+        //}
 
         //private void sendCreateDbRequest()
         //{

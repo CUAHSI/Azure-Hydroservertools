@@ -324,56 +324,56 @@ namespace HydroServerTools
             return syncStatus;
         }
 
-        public static void SendSupportInfoEmail(string action, string userName, string serviceName, string message)
-        {
+        //public static void SendSupportInfoEmail(string action, string userName, string serviceName, string message)
+        //{
 
-            var userEmail = ConfigurationManager.AppSettings["HelpEmailRecipients"];
-            var userFromEmail = ConfigurationManager.AppSettings["SupportFromEmail"].ToString();
-            var now = DateTime.Now.ToString("s");
-            using (MailMessage mm = new MailMessage(userFromEmail, userEmail))
-            {
+        //    var userEmail = ConfigurationManager.AppSettings["HelpEmailRecipients"];
+        //    var userFromEmail = ConfigurationManager.AppSettings["SupportFromEmail"].ToString();
+        //    var now = DateTime.Now.ToString("s");
+        //    using (MailMessage mm = new MailMessage(userFromEmail, userEmail))
+        //    {
 
 
-                if (action == "PublicationRequestedSupport")
-                {
+        //        if (action == "PublicationRequestedSupport")
+        //        {
 
-                    mm.Subject = "Publication has been requested:";
-                    string body = "For user " + userName + " and service: " + serviceName;
-                    body += "<br />" + DateTime.Now.ToString("s") + "<br /> ";
-                    body += "<br /><br />Thanks";
-                    mm.Body = body;
-                    mm.IsBodyHtml = true;
-                }
+        //            mm.Subject = "Publication has been requested:";
+        //            string body = "For user " + userName + " and service: " + serviceName;
+        //            body += "<br />" + DateTime.Now.ToString("s") + "<br /> ";
+        //            body += "<br /><br />Thanks";
+        //            mm.Body = body;
+        //            mm.IsBodyHtml = true;
+        //        }
 
                 
-                if (action == "unknownException")
-                {
+        //        if (action == "unknownException")
+        //        {
 
-                    mm.Subject = "Unknown Exception has occured:";
-                    //string body = "For user " + userName + " and service: " + serviceName;
-                    string body = "<br /> Exception:" + message;
-                    body += "<br />" + DateTime.Now.ToString("s") + "<br /> ";
-                    body += "<br /><br />Thanks";
-                    mm.Body = body;
-                    mm.IsBodyHtml = true;
-                }
+        //            mm.Subject = "Unknown Exception has occured:";
+        //            //string body = "For user " + userName + " and service: " + serviceName;
+        //            string body = "<br /> Exception:" + message;
+        //            body += "<br />" + DateTime.Now.ToString("s") + "<br /> ";
+        //            body += "<br /><br />Thanks";
+        //            mm.Body = body;
+        //            mm.IsBodyHtml = true;
+        //        }
 
 
-                try
-                {
-                    using (var smtp = new SmtpClient())
-                    {
-                        smtp.Send(mm);
-                        return;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    //Exception - for now take no action...
-                    var errMessage = ex.Message;
-                }
-            }
-        }
+        //        try
+        //        {
+        //            using (var smtp = new SmtpClient())
+        //            {
+        //                smtp.Send(mm);
+        //                return;
+        //            }
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            //Exception - for now take no action...
+        //            var errMessage = ex.Message;
+        //        }
+        //    }
+        //}
 
         public static void SendInfoEmail(string action, string userName, string serviceName, string message)
         {
@@ -386,12 +386,36 @@ namespace HydroServerTools
             using (MailMessage mm = new MailMessage())
             {
 
+                if (action == "ActivationRequest")
+                {
+                    mm.From = new MailAddress(userFromEmail);
+                    mm.To.Add(helpEmail);
+                    mm.Subject = "Account Activation has been requested";
+                    string body = "For user " + userName + " and service: " + serviceName;
+                    body += "<br />" + DateTime.Now.ToString("s") + "<br /> ";
+                    body += "<br /><br />Thanks";
+                    mm.Body = body;
+                    mm.IsBodyHtml = true;
+                }
+
+                if (action == "ActivationConfirmed")
+                {
+                    mm.From = new MailAddress(userFromEmail);
+                    mm.To.Add(helpEmail);
+                    mm.Subject = "Account Activation has been confirmed";
+                    string body = "For user " + userName + " and service: " + serviceName;
+                    body += "<br />" + DateTime.Now.ToString("s") + "<br /> ";
+                    body += "<br /><br />Thanks";
+                    mm.Body = body;
+                    mm.IsBodyHtml = true;
+                }
+
                 if (action == "PublicationRequestedSupport")
                 {
                     mm.From = new MailAddress(userFromEmail);
                     mm.To.Add(helpEmail);
                    
-                    mm.Subject = "Publication has been requested:";
+                    mm.Subject = "Publication has been requested";
                     string body = "For user " + userName + " and service: " + serviceName;
                     body += "<br />" + DateTime.Now.ToString("s") + "<br /> ";
                     body += "<br /><br />Thanks";
@@ -403,7 +427,7 @@ namespace HydroServerTools
                 {
                     mm.From = new MailAddress(userFromEmail);
                     mm.To.Add(userEmail);
-                    mm.Subject = "Publication has been requested:";
+                    mm.Subject = "Publication has been requested";
                     string body = "Thank you for requesting publication for your service: " + serviceName ;
                     body += "<br />We are reviewing the request. You will receive an email from help@cuahsi.org on the next steps on how to procced with the final steps before your data becomes available on data.cuahsi.org<br /> ";
                     body += "<br />If you need immediate assistance please contact help@cuahsi.org. <br /> ";
@@ -412,12 +436,13 @@ namespace HydroServerTools
                     mm.Body = body;
                     mm.IsBodyHtml = true;
                 }
+               
 
                 if (action == "unknownException")
                 {
                     mm.From = new MailAddress(userFromEmail);
                     mm.To.Add(helpEmail);
-                    mm.Subject = "Unknown Exception has occured:";
+                    mm.Subject = "Unknown Exception has occured";
                     //string body = "For user " + userName + " and service: " + serviceName;
                     string body = "<br /> Exception:" + message;
                     body += "<br />" + DateTime.Now.ToString("s") + "<br /> ";

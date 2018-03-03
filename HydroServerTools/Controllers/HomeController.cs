@@ -35,7 +35,6 @@ namespace HydroServerTools.Controllers
     [Authorize]
     public class HomeController : Controller
     {
-
         
         public ActionResult Index()
         {
@@ -48,7 +47,6 @@ namespace HydroServerTools.Controllers
             //test jenkins
 
             //j.Init();
-
 
             //string entityConnectionString = HydroServerToolsUtils.GetConnectionNameByUserEmail(HttpContext.User.Identity.Name.ToString());
 
