@@ -80,7 +80,8 @@ namespace SynchronizeData
                         {
                             //find networkid for given databse name to start harvest
                             string networkId = GetNetworkId(userdbConnectionString, service.DatabaseName);
-                            if (networkId != null)
+                            
+                            if (!String.IsNullOrEmpty(networkId))
                             {
                                 SendSupportInfoEmail("HarvestStarted", service.UserName, networkId.ToString(), string.Empty);
                                 HarvestNetwork(networkId);

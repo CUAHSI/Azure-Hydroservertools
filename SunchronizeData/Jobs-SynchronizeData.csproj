@@ -97,6 +97,8 @@
     <None Include="Properties\app.manifest" />
     <None Include="Properties\PublishProfiles\dev-Hydroservertools - Web Deploy %282%29.pubxml" />
     <None Include="Properties\PublishProfiles\dev-Hydroservertools - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\hydroserver - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\hydroserver - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\QA-HydroServer - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\QA-HydroServer - Web Deploy.pubxml" />
     <None Include="Properties\webjob-publish-settings.json" />
