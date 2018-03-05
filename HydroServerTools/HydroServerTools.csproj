@@ -874,8 +874,12 @@
     <Content Include="Views\TrackUpdates\Edit.cshtml" />
     <Content Include="Views\TrackUpdates\Index.cshtml" />
     <Content Include="Views\ServiceRegistrations\ActivationEmailError.cshtml" />
-    <Content Include="Templates\Standard Format Template.xlsx" />
     <Content Include="smtp.config" />
+    <Content Include="Templates\Advanced Formatting Template.xlsx" />
+    <Content Include="Templates\Standard Formatting Template.xlsx" />
+    <Content Include="Templates\Advanced Uploading Guide.pdf" />
+    <Content Include="Templates\CUAHSI Formatting Guide.pdf" />
+    <Content Include="Templates\Standard Uploading Guide.pdf" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

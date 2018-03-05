@@ -198,45 +198,81 @@ namespace HydroServerTools.Controllers
                 string fileType = string.Empty;
                 switch (id)
                 {
-                    case "ODMGuide-Excel":
-                         dir = "~/Templates/";
-                         filename = id + ".xlsx";
-                         filePath = Server.MapPath(dir + filename);
-                         fileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                         break;                
-                    case "UserGuide":
-                         dir = "~/Templates/";
-                         filename = id + ".pdf";
-                         fileType = "application/pdf";
-                         filePath = Server.MapPath(dir + filename);
-                         break;
-                    case "DataUploadTutorial":
-                         dir = "~/Templates/";
-                         filename = id + ".pdf";
-                         fileType = "application/pdf";
-                         filePath = Server.MapPath(dir + filename);
-                         break;
-                    case "ODMGuide-OpenOffice":
-                         dir = "~/Templates/";
-                         filename = id + ".ods";
-                         fileType = "application/vnd.oasis.opendocument.spreadsheet";
-                         filePath = Server.MapPath(dir + filename);
-                         break;
-                    case "ODMTemplateszip":
+                    //case "ODMGuide-Excel":
+                    //     dir = "~/Templates/";
+                    //     //filename = id + ".xlsx";
+                    //     filename = "Advanced Formatting Template.xlsx";
+                    //     filePath = Server.MapPath(dir + filename);
+                    //     fileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                    //     break;                
+                    //case "UserGuide":
+                    //     dir = "~/Templates/";
+                    //     filename = id + ".pdf";
+                    //     fileType = "application/pdf";
+                    //     filePath = Server.MapPath(dir + filename);
+                    //     break;
+                    //case "DataUploadTutorial":
+                    //     dir = "~/Templates/";
+                    //     filename = id + ".pdf";
+                    //     fileType = "application/pdf";
+                    //     filePath = Server.MapPath(dir + filename);
+                    //     break;
+                    //case "ODMGuide-OpenOffice":
+                    //     dir = "~/Templates/";
+                    //     filename = id + ".ods";
+                    //     fileType = "application/vnd.oasis.opendocument.spreadsheet";
+                    //     filePath = Server.MapPath(dir + filename);
+                    //     break;
+                    //case "ODMTemplateszip":
+                    //    dir = "~/Templates/";
+                    //    filename = "ODMTemplates.zip";
+                    //    fileType = "application/zip";
+                    //    filePath = Server.MapPath(dir + filename);
+                    //    break;
+                    //case "ODMGuideBasic-Excel":
+                    //    dir = "~/Templates/";
+                    //    filename = "Standard Formatting Template.xlsx";
+                    //    fileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                    //    filePath = Server.MapPath(dir + filename);
+                    //    break;
+                    case "Standard_Formatting_Template":
                         dir = "~/Templates/";
-                        filename = "ODMTemplates.zip";
-                        fileType = "application/zip";
-                        filePath = Server.MapPath(dir + filename);
-                        break;
-                    case "ODMGuideBasic-Excel":
-                        dir = "~/Templates/";
-                        filename = "Standard Format Template.xlsx";
+                        filename = "Standard Formatting Template.xlsx";
                         fileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
                         filePath = Server.MapPath(dir + filename);
                         break;
+                     case "Standard_Formatting_Guide":
+                        dir = "~/Templates/";
+                        filename = "CUAHSI Formatting Guide.pdf";//only one guide aailable 
+                        fileType = "application/pdf";
+                        filePath = Server.MapPath(dir + filename);
+                        break;
+                    case "Standard_Uploading_Guide":
+                        dir = "~/Templates/";
+                        filename = "Standard Uploading Guide.pdf";
+                        fileType = "application/pdf";
+                        filePath = Server.MapPath(dir + filename);
+                        break;
+                     case "Advanced_Formatting_Template":
+                        dir = "~/Templates/";
+                        filename = "Advanced Formatting Template.xlsx";
+                        fileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                        filePath = Server.MapPath(dir + filename);
+                        break;
+                    case "Advanced_Formatting_Guide":
+                        dir = "~/Templates/";
+                        filename = "CUAHSI Formatting Guide.pdf";
+                        fileType = "application/pdf";
+                        filePath = Server.MapPath(dir + filename);
+                        break;
+                    case "Advanced_Uploading_Guide":
+                        dir = "~/Templates/";
+                        filename = "Advanced Uploading Guide.pdf";
+                        fileType = "application/pdf";
+                        filePath = Server.MapPath(dir + filename);
+                        break;
 
 
-                        
                 }
                if (System.IO.File.Exists(filePath))
                    return base.File(filePath, fileType, filename);

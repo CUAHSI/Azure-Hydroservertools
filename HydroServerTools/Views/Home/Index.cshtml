@@ -31,9 +31,17 @@
                         @Html.ActionLink("Standard Upload", "RevisedUploadData", "CSVUpload", new { id = "SelectUploadType" }, new { @class = "btn btn-primary center-block" })
                     </p>
                     <h5>Upload Sites, Variables, Methods, Sources, Quality Control Levels and Data Values</h5>
-
-                    <h4><span class="glyphicon glyphicon-download" aria-hidden="true"></span>
-                        @Html.ActionLink("Standard formatting guide", "DownloadFile", "Export", new { id = "ODMGuideBasic-Excel" }, new { target = "_blank" })
+                    
+                    <h4 style="padding-top:10px"><span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                        @Html.ActionLink("Formatting Template", "DownloadFile", "Export", new { id = "Standard_Formatting_Template" }, new { target = "_blank" })
+                    </h4>
+                    <h4>
+                        <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                        @Html.ActionLink("Formatting Guide", "DownloadFile", "Export", new { id = "Standard_Formatting_Guide" }, new { target = "_blank" })
+                    </h4>
+                    <h4>
+                        <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                        @Html.ActionLink("Uploading Guide", "DownloadFile", "Export", new { id = "Standard_Uploading_Guide" }, new { target = "_blank" })
                     </h4>
                 </div>
                 <div class="col-sm-5 col-sm-offset-1" style="padding:5px">
@@ -43,9 +51,18 @@
                     <h5>
                         Upload Sites, Variables, Methods, Sources, Quality Control Levels, Data Values &amp; additional optional metadata tables 
                     </h5>
+                    
+                    <h4 style="padding-top:10px">
+                        <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                        @Html.ActionLink("Formatting Template", "DownloadFile", "Export", new { id = "Advanced_Formatting_Template" }, new { target = "_blank" })
+                    </h4>
                     <h4>
                         <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
-                        @Html.ActionLink("Advanced formatting guide", "DownloadFile", "Export", new { id = "ODMGuide-Excel" }, new { target = "_blank" })
+                        @Html.ActionLink("Formatting Guide", "DownloadFile", "Export", new { id = "Advanced_Formatting_Guide" }, new { target = "_blank" })
+                    </h4>
+                    <h4>
+                        <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                        @Html.ActionLink("Uploading Guide", "DownloadFile", "Export", new { id = "Advanced_Uploading_Guide" }, new { target = "_blank" })
                     </h4>
                 </div>
             </div>

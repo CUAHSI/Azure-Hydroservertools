@@ -145,22 +145,14 @@
                         <ol>
                             <li>Create a publishing account</li>
                             <li>Verify your account using the activation email</li>
-                            <li>Format your data by downloading the CUAHSI Standard Formatting Template and Formatting Guide.  <br />These documents can be found on the Homepage and in the activation email</li>
-                            <li>Upload metadata, fix any errors found, and complete the upload</li>
-                            <li>Upload data values, fix any errors found, and complete the upload</li>
-                            <li>When you are ready to make your data public for the first time, click Request Publication on the HydroServer Homepage. <br />
-                            There is no need to request for publication after subsequent uploads, as CUAHSI will automatically make any new data public on a weekly basis. <br />
-                            If for any reason you need data to be made public immediately, please click "Request Publication" and Help@cuahsi.org will respond to confirm that immediate publication is required.</li>
-                            <li>For first time publishers, CUAHSI publishes all data to a private version of http://data.cuahsi.org/ for previewing</li>
-                            <li>For all subsequent uploads, data is published automatically to the public http://data.cuahsi.org/ unless a preview version is requested</li>
-                            <li> Publisher confirms with Help@cuahsi.org that data displays correctly</li>
-                            <li>CUAHSI makes data public on <a href="http://data.cuahsi.org" target="_blank">http://data.cuahsi.org/</a></li>
-                        </ol>
-                        
+                            <li>Format your data: Follow the @Html.ActionLink("Guide", "DownloadFile", "Export", new { id = "Advanced_Uploading_Guide" }, new { target = "_blank" }) and fill in the Excel Templates (@Html.ActionLink("Standard", "DownloadFile", "Export", new { id = "Standard_Formatting_Template" }, new { target = "_blank" }) or @Html.ActionLink("Advanced", "DownloadFile", "Export", new { id = "Advanced_Formatting_Template" }, new { target = "_blank" }))</li>
+                            <li>Upload your data: Follow the Guide using the @Html.ActionLink("Standard", "DownloadFile", "Export", new { id = "Standard_Uploading_Guide" }, new { target = "_blank" }) or @Html.ActionLink("Advanced", "DownloadFile", "Export", new { id = "Advanced_Uploading_Guide" }, new { target = "_blank" }) uploading option</li>
+                            <li>Request Publication: Click Request Publication on the HydroServer Homepage to make your data service accessible to the public on http://data.cuahsi.org/</li>
+                            <li>For all subsequent uploads, data is automatically published every Saturday unless requested otherwise <br />
+                         </ol>
                            
                         <p>Questions? Contact CUAHSI support at <a href="mailto:help@cuahsi.org">help@cuahsi.org</a></p> 
 
-                      
 
                     </div>
                     <div class="modal-footer">
