@@ -390,6 +390,10 @@ namespace HydroServerTools.Validators
             }
         }
 
+        //Validation Qualifier
+        //Post construction qualifier referenced during validation processing...
+        public String ValidationQualifier { get; set; }
+
         //Methods 
 
         //Validate the associated CSV file...
@@ -554,7 +558,7 @@ namespace HydroServerTools.Validators
 
                                     if (bRequiredHeadersPresent)
                                     {
-                                        //Successful validation - set validated type...
+                                        //Successful validation - set validated type, break...
                                         ValidatedModelType = modelType;
                                         break;
                                     }
@@ -562,7 +566,36 @@ namespace HydroServerTools.Validators
 
                                 if (null != ValidatedModelType)
                                 {
-                                    //Successful header validation - scan and validate records...
+                                    //Successful header validation - check for data values in metadata submission --OR-- 
+                                    //                                          metadata in data values submission...
+                                    if (("meta_data" == ValidationQualifier &&
+                                         typeof(DataValuesModelBasicTemplate) == ValidatedModelType) || 
+                                        ("data_values" == ValidationQualifier &&
+                                         typeof(DataValuesModelBasicTemplate) != ValidatedModelType))
+                                    {
+                                        //Metadata validation only - validation finds Data Values --OR-- 
+                                        //Data values validation only - validation finds Metadata 
+                                        // - set validation indicators...
+                                        if (validationTypesToValidationResults.ContainsKey(ValidatedModelType))
+                                        {
+                                            var validationResults = validationTypesToValidationResults[ValidatedModelType];
+
+                                            //Set candidate type name to allow easy identification of error on client...
+                                            if ("meta_data" == ValidationQualifier)
+                                            {
+                                                validationResults.CandidateTypeName = "DataValuesSubmittedAsMetadata";
+                                            }
+                                            else if ("data_values" == ValidationQualifier)
+                                            {
+                                                validationResults.CandidateTypeName = "MetadataSubmittedAsDataValues";
+                                            }
+                                        }
+
+                                        result = false; //Set return value...
+                                    }
+                                    else
+                                    {
+                                        //Scan and validate records...
                                     while (await csvReader.ReadAsync())
                                     {
                                         try
@@ -594,8 +627,9 @@ namespace HydroServerTools.Validators
                                             //DataErrors.Add(csvDataError);
                                         }
                                     }
+                                    }
 
-                                    //Record scan complete - set results candidate record count...
+                                    //Set results candidate record count...
                                     csvValidationResults.CandidateRecordCount = ValidatedRecords.Count;
 
                                     //Remove validation results for types other than ValidatedModelType...
@@ -613,9 +647,6 @@ namespace HydroServerTools.Validators
                                     var IOrderedEnumerable = validationTypesToValidationResults.OrderBy(kvp => kvp.Value.MissingRequiredHeaderNames.Count);
                                     var kvpValidationResults = IOrderedEnumerable.FirstOrDefault();
 
-                                    ////NOTE: Since KeyValuePair is a struct - must compare result to the default value...
-                                    ////Source: https://stackoverflow.com/questions/1641392/the-default-for-keyvaluepair
-                                    //if (kvpValidationResults.Equals(default(KeyValuePair<Type, CsvValidationResults>)))
                                     if (0 >= kvpValidationResults.Value.ValidHeaderNames.Count)
                                     {
                                         //No match - clear validation results, set no match type and validation result

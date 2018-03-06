@@ -3,7 +3,6 @@
     ViewBag.Title = "DragAndDropFiles";
     ViewBag.Name = "dragAndDropFiles";
 
-    //string qualifier = TempData["qualifier"] as string;
     string qualifier = TempData.Peek("qualifier") as string;
 
     Layout = "~/Views/Shared/_LayoutBasic.cshtml";
@@ -290,15 +289,18 @@ else
                     if (0 < fileObjectsForUpload.length) {
                         //List entries exist - retrieve file names as 'form' data...
                         $.each(fileObjectsForUpload, function (index, file) {
-                            fileNamesAndTypes.push({ "fileName": file.name,
-                                                     "fileType": file.type
-                                                   });
+                            fileNamesAndTypes.push({
+                                "fileName": file.name,
+                                "fileType": file.type
+                             });
                         });
                     }
 
                     //Send current data to server (start the upload manually)...
-                    data.formData = { "fileNamesAndTypes": JSON.stringify(fileNamesAndTypes),
-                                      "currentUploadId": currentUploadId
+                    data.formData = {
+                        "fileNamesAndTypes": JSON.stringify(fileNamesAndTypes),
+                        "currentUploadId": currentUploadId,
+                        "validationQualifier": "@qualifier"
                                     };
 
                     var dropDiv = $('#' + 'divFilesForUpload');
@@ -456,7 +458,7 @@ else
                         }
                         sessionStorage.fileUploadCount = (++fileUploadCount).toString();
 
-                        //Retrieve/update file names array.. 
+                        //Retrieve/update file names array... 
                         if ('undefined' !== typeof sessionStorage.uploadedFileNames && null !== sessionStorage.uploadedFileNames) {
                             uploadedFileNames = (sessionStorage.uploadedFileNames).split(',');
                         }

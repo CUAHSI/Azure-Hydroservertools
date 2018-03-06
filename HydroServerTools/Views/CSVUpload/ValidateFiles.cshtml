@@ -114,15 +114,28 @@ else
 
                 //var msg = 'File: ' + fileName;
                 var msg = '';
+                var validationOK = true;   //Assume success...
 
-                msg = (((0 >= validation.InvalidHeaderNames.length) && (0 >= validation.MissingRequiredHeaderNames.length))
-                    ? '<span class="badge" style="background-color: green;">OK</span>' : '<span class="badge"  style="background-color: red;">ERROR</span>');
+                if ('datavaluessubmittedasmetadata' === validation.CandidateTypeName.toLowerCase() || 
+                    'metadatasubmittedasdatavalues' === validation.CandidateTypeName.toLowerCase() ||
+                    'unknown' === validation.CandidateTypeName.toLowerCase() || 
+                    0 < validation.InvalidHeaderNames.length || 
+                    0 < validation.MissingRequiredHeaderNames.length) 
+                {
+                    //Error - set error markup
+                    msg = '<span class="badge"  style="background-color: red;">ERROR</span>';
+                    validationOK = false;
+                }
+                else if ((0 >= validation.InvalidHeaderNames.length) && (0 >= validation.MissingRequiredHeaderNames.length)) {
+                    //No error - set OK markup
+                    msg = '<span class="badge" style="background-color: green;">OK</span>';
+                }
                 msg += ' ' + fileName;
 
                 toggle.html(msg);
 
                 //Disable toggle for 'OK' validations - enable 'Complete Upload' button for 'OK validations...
-                if ((0 >= validation.InvalidHeaderNames.length) && (0 >= validation.MissingRequiredHeaderNames.length)) {
+                if (validationOK) {
                     toggle.attr('data-toggle', '');
 
                     $('#' + 'btnValidationSummaryContinue').removeClass('disabled');
@@ -132,8 +145,7 @@ else
                 newPanel.find('.panel-collapse').attr('id', id);
 
                 //If panel contains errors, open, if indicated...
-                if (openErrorPanel &&
-                    ((0 < validation.InvalidHeaderNames.length) || (0 < validation.MissingRequiredHeaderNames.length))) {
+                if (openErrorPanel && (!validationOK)) {
                     newPanel.find('.panel-collapse').addClass('in');
                     openErrorPanel = false;
                 }
@@ -153,23 +165,35 @@ else
                 var recordCount = validation.CandidateRecordCount;
                 var hMsg = '';
 
-                if ((0 < hLength) || (0 < mLength)) {
+                if ((0 < hLength) ||
+                    (0 < mLength) ||
+                    ('datavaluessubmittedasmetadata' === modelType.toLowerCase()) ||
+                    ('metadatasubmittedasdatavalues' === modelType.toLowerCase()) ||
+                    ('unknown' === modelType.toLowerCase())) {
                     //Header errors - add to list...
                     if (0 < hLength) {
                         hMsg = 'Invalid headers: ' + headerErrors.join(', ');
                         panelList.append('<li class="list-group-item"> ' + hMsg + '</li>');
                     }
 
-                    if ('unknown' !== modelType.toLowerCase()) {
-                        //Known model type - display missing headers, if any
-                        if (0 < mLength) {
-                            hMsg = 'Missing headers: ' + missingHeaders.join(', ');
+                    if ('datavaluessubmittedasmetadata' === modelType.toLowerCase()) {
+                        //Data values submitted as metadata 
+                        hMsg = 'Data values submitted with metadata.  Please submit data values after metadata';
                             panelList.append('<li class="list-group-item"> ' + hMsg + '</li>');
                         }
+                    else if ('metadatasubmittedasdatavalues' === modelType.toLowerCase()) {
+                        //Data values submitted as metadata 
+                        hMsg = 'Metadata submitted with data values.  Please submit metadata before data values';
+                        panelList.append('<li class="list-group-item"> ' + hMsg + '</li>');
                     }
-                    else {
+                    else if ('unknown' === modelType.toLowerCase()) {
                         //Unknown model type - display message...
                         hMsg = 'File contents map to no known model type';
+                        panelList.append('<li class="list-group-item"> ' + hMsg + '</li>');
+                    } 
+                    else if (0 < mLength) {
+                        //Known model type - display missing headers, if any
+                        hMsg = 'Missing headers: ' + missingHeaders.join(', ');
                         panelList.append('<li class="list-group-item"> ' + hMsg + '</li>');
                     }
                 }

@@ -130,6 +130,7 @@ namespace HydroServerTools.Controllers.api
         private struct DebugData
         {
             public string currentUploadId { get; set; }
+            public string validationQualifier { get; set; }
             //public string fileNames { get; set; }
             public string fileName { get; set; }
             public bool isFirstChunk { get; set; }
@@ -141,8 +142,8 @@ namespace HydroServerTools.Controllers.api
 
             public override String ToString()
             {
-                return String.Format("uploadId: {0}, file: {1}, first: {2}, last: {3}, from: {4}, to: {5}, length: {6}, path: {7}",
-                                        currentUploadId, fileName, isFirstChunk, isLastChunk, from, to, length, filePathAndName);
+                return String.Format("uploadId: {0}, qualifier: {1}, file: {2}, first: {3}, last: {4}, from: {5}, to: {6}, length: {7}, path: {8}",
+                                        currentUploadId, validationQualifier, fileName, isFirstChunk, isLastChunk, from, to, length, filePathAndName);
             }
 
         }
@@ -1079,10 +1080,12 @@ namespace HydroServerTools.Controllers.api
             //Retrieve form data via request context...
             List<FileNameAndType> fileNamesAndTypes = null;
             string currentUploadId = String.Empty;
+            string validationQualifier = String.Empty;
             if ( HttpContext.Current.Request.Form.HasKeys() )
             {
                 var form = HttpContext.Current.Request.Form;
                 currentUploadId = form["currentUploadId"];
+                validationQualifier = form["validationQualifier"];
                 try
                 {
                     fileNamesAndTypes = Newtonsoft.Json.JsonConvert.DeserializeObject<List<FileNameAndType>>(form["fileNamesAndTypes"]);
@@ -1106,6 +1109,7 @@ namespace HydroServerTools.Controllers.api
             }
 #if (DEBUG)
             debugData.currentUploadId = currentUploadId;
+            debugData.validationQualifier = validationQualifier;
 #endif
             var fileContexts = getFileContexts();
             FileContext fileContext = null;
@@ -1203,7 +1207,9 @@ namespace HydroServerTools.Controllers.api
                         {
                             //Skip 'form' data...
                             var name = content.Headers.ContentDisposition.Name.Trim(charArray);
-                            if ("fileNamesAndTypes" == name || "currentUploadId" == name)
+                            if ("fileNamesAndTypes" == name || 
+                                "currentUploadId" == name   ||
+                                "validationQualifier" == name)
                             {
                                 continue;
                             }
@@ -1264,7 +1270,7 @@ namespace HydroServerTools.Controllers.api
                                 //If the last chunk, queue a validation task for the completed file
                                 if (isLastChunk)
                                 {
-                                    await ValidateFileContentsAsync(currentUploadId, contentType, fileName, filePathAndName);
+                                    await ValidateFileContentsAsync(currentUploadId, contentType, fileName, filePathAndName, validationQualifier);
                                 }
                             }
                         }
@@ -1523,7 +1529,7 @@ namespace HydroServerTools.Controllers.api
         //Source: https://www.dotnetperls.com/async
         //private static async void ValidateFileContentsAsync(string uploadId, string fileName, string filePathAndName)
         //private static async Task ValidateFileContentsAsync(string uploadId, string fileName, string filePathAndName)
-        private async Task ValidateFileContentsAsync(string uploadId, string contentType, string fileName, string filePathAndName)
+        private async Task ValidateFileContentsAsync(string uploadId, string contentType, string fileName, string filePathAndName, string validationQualifier)
         {
             //Await a task to ensure this method runs asynchronously
             await Task.Run( async () =>
@@ -1534,7 +1540,8 @@ namespace HydroServerTools.Controllers.api
                 //NOTE: input contentType may be empty...
                 if ((!String.IsNullOrWhiteSpace(uploadId)) && 
                     (!String.IsNullOrWhiteSpace(fileName)) && 
-                    (!String.IsNullOrWhiteSpace(filePathAndName)))
+                    (!String.IsNullOrWhiteSpace(filePathAndName)) &&
+                    (!String.IsNullOrWhiteSpace(validationQualifier)))
                 {
                     //Input parameters valid - retrieve/create associated context instance...
                     if ( !validationContexts.TryGetValue(uploadId, out validationContext))
@@ -1578,7 +1585,10 @@ namespace HydroServerTools.Controllers.api
                             var csvValidator = validationResult.FileValidator;
                             if (null != csvValidator)
                             {
-                                //Validator found - validate file contents...
+                                //Validator found - set validation qualifier...
+                                csvValidator.ValidationQualifier = validationQualifier;
+
+                                //Validate file contents...
                                 try
                                 {
                                     bool vfcResult = await csvValidator.ValidateFileContents();

@@ -1,0 +1,66 @@
+
+HydroServer Redesign Part 21
+
+
+**** Summary ****
+ - Fix for WDC-1416 - Revise server-side checks for separation of metadata and data uploads
+
+ - Introduce a 'ValidationQualifier' property in the validator class to characterize the current process - meta_data or data_values
+ - In validation processing refer to qualifier value to a.) exclude data values from metadata uploads and b.) exclude metadata from data values uploads
+
+ NOTE: The current implementation uploads each file prior to separation processing.  If, for example, the user includes a very large data values file as in a metadata upload, the uploader will require a second upload of the file during data values upload
+
+
+**** HydroServerTools/Controllers/api ****
+ - RevisedUploadController.cs 
+   - class DebugData - add property: validationQualifier  
+   - method Post() 
+     - Add logic to retrieve 'validationQualifier' from submitted form 
+     - Add validationQualifier argument to ValidateFileContentsAsync(...) call
+   - method ValidateFileContentsAsync(...) 
+     - Assign validationQualifier argument to validator's ValidationQualifier property
+
+**** HydroServerTools/Validators ****
+ - CsvValidator.cs
+   - Add property: ValidationQualifier
+   - method ValidateFileContents() 
+     - Add logic to reference property value during validation processing
+
+
+**** HydroServerTools/Views/CSVUpload ****
+ - DragAndDropFiles.cshtml
+   - remove some commented out code, update some comments
+   - jQuery File Upload configuration:
+     - include 'validationQualifier' (as valued on server during page build) in submitted form data
+ - SelectUploadType.cshtml
+  - $(document).ready(...) 
+    - Increase setTimeout delay to 500 milliseconds for smoother screen transitions...
+ - ValidateFiles.cshtml
+   - function buildValidationResultsMarkup(...) 
+     - Revise markup creation logic to recognize the following validation errors:
+       - DataValuesSubmittedAsMetadata 
+       - MetadataSubmittedAsDataValues  
+
+
+*** Test Files ****
+ - Add some more data values test files
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
