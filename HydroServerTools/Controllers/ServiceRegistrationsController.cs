@@ -291,7 +291,7 @@ namespace HydroServerTools.Controllers
                 mm.IsBodyHtml = true;
 
                 System.Net.Mail.Attachment attachment;
-                attachment = new System.Net.Mail.Attachment(Server.MapPath("~/Templates/Standard Format Template.xlsx"));
+                attachment = new System.Net.Mail.Attachment(Server.MapPath("~/Templates/Standard Formatting Template.xlsx"));
                 mm.Attachments.Add(attachment);
 
                 //smtp.Host = "smtp.gmail.com";

@@ -149,6 +149,12 @@ namespace HydroServerTools.Controllers
             return View();
         }
 
+        public ActionResult Error()
+        {
+            ViewBag.Message = "";
+
+            return View();
+        }
         public ActionResult Contact()
         {
             ViewBag.Message = "";
