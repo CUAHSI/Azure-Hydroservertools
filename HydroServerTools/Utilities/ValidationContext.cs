@@ -10,7 +10,7 @@ using HydroServerTools.Validators;
 namespace HydroServerTools.Utilities
 {
     //A simple generic class for the association of file validator instances with an access semaphore...
-    public class ValidationContext<TValidator>
+    public class ValidationContext<TValidator> where TValidator: class, IValidationComplete
     {
         //Constructors...
 

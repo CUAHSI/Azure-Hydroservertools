@@ -1,0 +1,1039 @@
+﻿@{
+    ViewBag.Title = "DragAndDropFiles";
+    ViewBag.Name = "dragAndDropFiles";
+
+    string qualifier = TempData.Peek("qualifier") as string;
+
+    Layout = "~/Views/Shared/_LayoutBasic.cshtml";
+}
+
+<link rel="stylesheet" href="~/Content/mvcfileupload/blueimp/jquery.fileupload.css" />
+
+<!-- Dynamic panel template 
+     NOTE: Keep the templatePanelClass unique to the template markup only !!-->
+<div class="panel panel-default templatePanelClass hidden"> 
+    <div class="panel-heading">
+        <div class="panel-title">
+            <a style="font-weight: bold; " class="accordion-toggle" data-toggle="collapse" data-parent="#pnlgrpFiles" href="#collapseTemplate">
+                Panel Template
+            </a>
+        </div>
+    </div>
+    <div id="collapseTemplate" class="panel-collapse collapse">
+        <div class="panel-body">
+            <div class="pull-left">
+                <ul class="panelListTemplate list-group" style="font-size: 60%;">
+                    <!-- <li> list items markup goes here...</li> -->
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if ("meta_data" == qualifier)
+{
+    <h2>Upload Metadata</h2>
+}
+else
+{
+    <h2>Upload Data Values</h2>
+}
+
+<div class="container">
+
+    <!-- Dynamic collapse for 'to-be-uploaded' files -->
+    <div class="row">
+        <div class="col_md_12">
+            <div id="divFilesForUpload" class="uploader" data-panel-count="0">
+                <div><span class="glyphicon glyphicon-cloud-upload"></span>&nbsp; Drag &amp; Drop</div>
+                <div style="padding-left: 1.0em; padding-right: 1.0em;" class="panel-group uploader-border" id="pnlgrpFiles"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="btn-group col-md-12" style="position: relative;">
+            <div class="fileinput-button pull-left">
+                <button type="button" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span>&nbsp;Add Files</button>
+                <input id="inpFilesForUpload" type="file" multiple="multiple" class="required" name="fileupload" accept=".csv,.zip" />
+            </div>
+            <div id="alertFileUpload" class="alert alert-info fade in hidden col-md-5 col-md-offset-3" role="alert">
+                <span class="glyphicon glyphicon-refresh spin"></span>
+                <span>File upload in progress.  Please do not close the current page!!</span>
+            </div>
+            <div id="alertFileValidation" class="alert alert-info fade in hidden col-md-5 col-md-offset-3" role="alert">
+                <span class="glyphicon glyphicon-refresh spin"></span>
+                <span>File validation in progress.  Please do not close the current page!!</span>
+            </div>
+            <div id="alertDbLoad" class="alert alert-info fade in hidden col-md-6 col-md-offset-2" role="alert">
+                <span class="glyphicon glyphicon-refresh spin"></span>
+                <span>Database loading in progress.  Please do not close the current page!!</span>
+            </div>
+            <div class="pull-right">
+                <a href="/home/index" class="btn btn-warning cancel">Cancel</a>
+                <!-- Need a button here - not a link - to keep the current page in place so to ensure all file 'chunks' make it to the server... -->
+                <button type="button" id="btnUploadFiles" class="btn btn-success" style="margin-left: 0.5em;">Upload</button>
+                <button type="button" id="btnDbInsert" class="btn btn-info hidden" style="margin-left: 0.5em;">Insert</button>
+                @*<a id="btnDragAndDropContinue" class="btn btn-primary hidden" href="/CSVUpload/RevisedUploadData/ValidateFiles" style="margin-left: 0.5em;">Continue</a>*@
+                <a id="btnDragAndDropContinue" class="btn btn-primary hidden" href="/CSVUpload/RevisedUploadData/DbSummaryReport" style="margin-left: 0.5em;">Continue</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/mvcfileupload/blueimp/jquery.fileupload.js"></script>
+<script src="~/Scripts/mvcfileupload/blueimp/jquery.fileupload-ui.js"></script>
+<script src="~/Scripts/mvcfileupload/blueimp/jquery.iframe-transport.js"></script>
+<script src="~/Scripts/mvcfileupload/blueimp/jquery.fileupload-process.js"></script>
+<script src="~/Scripts/custom/RandomId.js"></script>
+<script src="~/Scripts/custom/revisedUploadUtils.js"></script>
+<script src="~/Scripts/custom/workerMonitor.js"></script>
+
+<style type="text/css">
+    .bar {
+        background-color: #4298c8;
+    }
+</style>
+
+<script type="text/javascript">
+    var fileObjectsForUpload = [];
+    var currentUploadId = null;
+    var randomId = null;
+
+    var workerValidation = null;
+    var workerMonitorValidation = null;
+
+    var workerDbLoadStatus = null;
+    var workerMonitorDbLoadStatus = null;
+
+    function getFileNames(fileObjects) {
+        var fileNames = [];
+
+        if ('undefined' !== typeof fileObjects && null !== fileObjects) {
+            var fLength = fileObjects.length;
+
+            for (var fI = 0; fI < fLength; ++fI) {
+                var file = fileObjects[fI];
+                fileNames.push(file.name);
+            }
+        }
+
+        //Processing complete - return
+        return fileNames;
+    }
+
+    //'click' event handler for collapse panel removal...
+    function deleteCollapsePanel(event) {
+        console.log('deleteCollapsePanel(...) called!!')
+
+        //Retrieve file name attribute...
+        var fileName = $(this).attr('data-file-name');
+
+        //Find/remove 'panel' parent
+        var panelParent = $(this).parents('div.panel.panel-default');
+
+        if (0 < panelParent.length) {
+            panelParent.remove();
+        }
+
+        //Remove/update associated sessionStorage items, if applicable..
+        if ('undefined' !== typeof sessionStorage.uploadedFileNames && null !== sessionStorage.uploadedFileNames) {
+            //Uploaded file names...
+            var uploadedFileNames = (sessionStorage.uploadedFileNames).split(',');
+
+            var index = uploadedFileNames.indexOf(fileName);
+            if (-1 !== index) {
+                uploadedFileNames.splice(index, 1);
+                if (0 < uploadedFileNames.length) {
+                    //File names NOT empty - retain in session storage...
+                    sessionStorage.uploadedFileNames = uploadedFileNames.toString();
+                }
+                else {
+                    //File names empty - remove from session storage
+                    sessionStorage.removeItem('uploadedFileNames');
+                }
+
+                if ('undefined' !== typeof sessionStorage.fileUploadCount && null !== sessionStorage.fileUploadCount) {
+                    //File upload count
+                    var fileUploadCount = parseInt(sessionStorage.fileUploadCount);
+                    sessionStorage.fileUploadCount = (--fileUploadCount).toString();
+                }
+            }
+        }
+
+        //Remove the associated file object, if applicable...
+        var foLength = fileObjectsForUpload.length;
+        for (var foI = 0; foI < foLength; ++foI) {
+            var fo = fileObjectsForUpload[foI];
+            if (fileName === fo.name) {
+                fileObjectsForUpload.splice(foI, 1);
+                break;
+            }
+        }
+
+        //Forward delete request to server, if indicated...
+        if (null !== currentUploadId) {
+            var url = '/api/revisedupload/delete/file/' + currentUploadId + '/' + fileName + '/';
+            $.ajax({
+                "url": url,
+                "type": "DELETE",
+                "async": true,
+                "dataType": "json",
+                "cache": false, //So IE does not cache when calling the same URL - source: http://stackoverflow.com/questions/7846707/ie9-jquery-ajax-call-first-time-doing-well-second-time-not
+                "success": function (data, textStatus, jqXHR) {
+                    console.log('RevisedUpload Delete/File success: "' + textStatus + '" (' + jqXHR.status.toString() + ')');
+                },
+                "error": function (xmlhttprequest, textStatus, message) {
+                    //Failure - Log messsage received from server...
+                    console.log('RevisedUpload Delete/File reports error: ' + xmlhttprequest.status + ' (' + message + ')');
+                }
+            });
+        }
+    }
+
+    //Add unique input candidate file objects to the input collection and (name) to markup collection...
+    function addFileObjects(candidateFileObjs, collectionFileObjs, panelGroupId) {
+
+        //Validate/initialize input parameters...
+        if ('undefined' !== typeof candidateFileObjs && null !== candidateFileObjs &&
+            'undefined' !== typeof collectionFileObjs && null !== collectionFileObjs &&
+            'undefined' !== typeof panelGroupId && null !== panelGroupId) {
+            //Input parameters valid - for each input candidate...
+            $.each(candidateFileObjs, function (index, file) {
+                //Check for presence in collection...
+                var bFound = false;
+                $.each(collectionFileObjs, function (indexCol, fileCol) {
+                    if (file.name.toLowerCase() === fileCol.name.toLowerCase() &&
+                        file.size === fileCol.size) {
+                        //Found - set indicator, return early...
+                        bFound = true;  
+                        return false;
+                    }
+                });
+
+                if (!bFound) {
+                    //Candidate not found - add to collection...
+                    collectionFileObjs.push(file);
+
+                    //Create/append panel markup...
+                    var jqPanelGroup = $('#' + panelGroupId);
+                    var jqPanelTemplate = $('.templatePanelClass');
+                    var idCount = parseInt($('#' + 'divFilesForUpload').attr('data-panel-count'));
+
+                    //Increment/retain panel count...
+                    if (isNaN(idCount)) {
+                        idCount = 0;
+                    }
+                    else {
+                        ++idCount;
+                    }
+
+                    $('#' + 'divFilesForUpload').attr('data-panel-count', idCount.toString());
+
+                    //Clone panel template...
+                    var newPanel = jqPanelTemplate.clone();
+
+                    //Remove template class name from clone - 
+                    //  to maintain a unique association of class name with the template markup only!!
+                    newPanel.removeClass('templatePanelClass'); 
+                    newPanel.removeClass('hidden');
+                    newPanel.find('.collapse').removeClass('in');
+
+                    //Update anchor href...
+                    var toggle = newPanel.find('a.accordion-toggle');
+                    var id = 'collapse-' + idCount.toString();
+                    toggle.attr('href', '#' + id);
+
+                    //Update collapse id...
+                    newPanel.find('.panel-collapse').attr('id', id);
+
+                    //Initialize file entry - (assume successful file download and validation)...
+                    // Add file name, progress bar and remove button markup...
+                    //Possbile data-upload-status values: "notStarted", "inProgress", "complete", "error"
+                    //Possbile data-validation-status values: "notStarted", "inProgress", "complete", "error"
+                    var msg = '<div class="row" data-file="' + file.name + '" data-upload-status="notStarted" data-validation-status="notStarted">';
+
+                    //msg +=      '<div class="badge col-md-1 invisible" style="position: relative; float: left; margin-left: 0.5em; margin-top: 0.25em; background-color: green; ">OK</div>'
+                    //msg +=      '<div class="col-md-4" style="margin-top: 0.25em;">' + file.name + '</div>';
+                    msg +=      '<div class="col-md-5" style="margin-top: 0.25em; text-overflow: ellipsis;">' + file.name + '</div>';
+                    msg +=      '<div class="col-md-6 progress" style="margin-top: 0.25em; margin-bottom: 0;">';
+                    msg +=          '<div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">';
+                    msg +=          '0%';
+                    msg +=          '</div>'
+                    msg +=      '</div>'
+                    //msg +=      '<button class="btn btn-danger delete"  data-file-name="' + file.name + '">Remove</button>';
+                    msg += '<input type="button" class="btn btn-danger delete" style="font-size: 0.75em; font-weight: bold;" data-file-name="' + file.name + '" value="Remove">';
+
+                    msg += '</div>';
+
+                    //Append to 'accordion-toggle'...
+                    toggle.html(msg);
+
+                    //Append to panel group...
+                    jqPanelGroup.append(newPanel.fadeIn());
+
+                    //Add remove button 'click' handler...
+                    var removeButton = $('input.btn.delete[data-file-name="' + file.name + '"]');
+                    removeButton.off('click', deleteCollapsePanel);
+                    removeButton.on('click', deleteCollapsePanel);
+
+                    //Enable button...
+                    $('#' + 'btnUploadFiles').removeClass('disabled');
+                }
+            });
+        }
+    }
+
+    //Open the first error collapse, if any...
+    function openFirstErrorCollapse() {
+        var anchor = $('a.accordion-toggle div.badge:contains("ERROR"):first');     //First error badge...
+        if (0 < anchor.length) {
+            var panelParent = anchor.parents('div.panel.panel-default');
+            var collapse = $(panelParent).find('div.panel-collapse.collapse');
+            $(collapse).addClass('in');
+        }
+    }
+
+    //Find the first successful validation, if any
+    function anyValidationSuccessful() {
+        var result = false;  //Assume NO validation successful
+
+        var panelItems = $('a.accordion-toggle > div[data-validation-status]');
+        var pLength = panelItems.length;
+        for (var pI = 0; pI < pLength; ++pI) {
+            var panelItem = panelItems[pI];
+            var validationStatus = $(panelItem).attr('data-validation-status').toLowerCase();
+
+            if ('complete' === validationStatus) {
+                result = true;  //Validation successful - set indicator...
+                break;
+            }
+        }
+
+        //Processing complete - return result
+        return result;
+    }
+
+    //Check validation status for all panels...
+    // All panels bear 'final' status ('complete' or 'error') - return true - otherwise, return false
+    function allValidationComplete() {
+        var result = true;  //Assume all validation processing is complete
+
+        var panelItems = $('a.accordion-toggle > div[data-validation-status]');
+        var pLength = panelItems.length;
+        for (var pI = 0; pI < pLength; ++pI) {
+            var panelItem = panelItems[pI];
+            var validationStatus = $(panelItem).attr('data-validation-status').toLowerCase();
+
+            if ('complete' !== validationStatus && 'error' !== validationStatus) {
+                result = false;
+                break;
+            }
+        }
+
+        //Processing complete - return result
+        return result;
+    }
+
+    //Send a request via the input worker monitor to validate the input file name
+    //function requestFileValidation(uploadId, fileName, workerMonitor, dataToggle, jqBadge, jqProgressWrapper, jqProgressBar, jqCollapse) {
+    function requestFileValidation(uploadId, fileName, workerMonitor, dataToggle, jqProgressWrapper, jqProgressBar, jqCollapse) {
+
+        //Validate/initialize input parameters...
+        if ('undefined' !== typeof uploadId && null !== uploadId &&
+            'undefined' !== typeof fileName && null !== fileName &&
+            'undefined' !== typeof workerMonitor && null !== workerMonitor &&
+            'undefined' !== typeof dataToggle && null !== dataToggle &&
+            //'undefined' !== typeof jqBadge && null !== jqBadge &&
+            'undefined' !== typeof jqProgressWrapper && null !== jqProgressWrapper &&
+            'undefined' !== typeof jqProgressBar && null !== jqProgressBar &&
+            'undefined' !== typeof jqCollapse && null !== jqCollapse) {
+            //Input parameters valid - check current validation status...
+            var panelItem = $('div#pnlgrpFiles div[data-file="' + fileName + '"]');
+            var validationStatus = panelItem.attr('data-validation-status').toLowerCase();
+
+            if ('notstarted' !== validationStatus) {
+                //Validation already in progress --OR-- finished - return early...
+                return;
+            }
+
+            //Update progress bar for file validation...
+            //Fade out, make some changes, fade in...
+            jqProgressBar.fadeOut(1500, function () {
+                jqProgressWrapper.addClass('active progress-striped');    //Animated stripes
+                jqProgressBar.removeClass('progress-bar-info');           //Change color
+                jqProgressBar.addClass('progress-bar-success');
+                jqProgressBar.text('File validation in progress...');     //Update text
+                jqProgressBar.fadeIn(1500, function () {
+                    //Update validation status...
+                    panelItem.attr('data-validation-status', 'inProgress');
+
+                    //Request to worker for file validation results...
+                    var request = {
+                        "requestId": uploadId + "_" + fileName,
+                        "inputData": {
+                            "action": "get",
+                            "uploadId": currentUploadId,
+                            "fileName": fileName
+                        }
+                    };
+
+                    var promise = workerMonitor.sendWorkerMessage(request);
+                    if (null !== promise) {
+                        //Request submitted - set promise's 'then' and 'catch'
+                        promise.then(function (message) {
+                            console.log('requestFileValidation(' + fileName + ') - Validation success!!!');
+                            jqProgressWrapper.removeClass('active');    //Stop progress-bar animation 
+                            var namesToResults = message.outputData.fileNamesToValidationResults;
+
+                            var bFound = false;
+                            var bError = false;
+                            for (var fn in namesToResults) {
+                                var validationResults = namesToResults[fn];
+                                if (fileName === fn) {
+                                    //Validation results found - display outcome...
+                                    bFound = true;
+
+                                    var typeName = validationResults.CandidateTypeName.toLowerCase();
+                                    var friendlyName = validationResults.CandidateTypeFriendlyName;
+                                    var recordCount = validationResults.CandidateRecordCount;
+                                    var invalidHeadersCount = validationResults.InvalidHeaderNames.length;
+                                    var missingHeadersCount = validationResults.MissingRequiredHeaderNames.length;
+
+                                    var validationMessage = '';
+                                    if ('datavaluessubmittedasmetadata' === typeName ||
+                                        'metadatasubmittedasdatavalues' === typeName ||
+                                        'unknown' === typeName ||
+                                        0 < invalidHeadersCount ||
+                                        0 < missingHeadersCount ||
+                                        0 >= recordCount ) {
+                                        //Error - set indicator and 'ERROR' markup...
+                                        bError = true;
+                                        //jqBadge.removeClass('btn-success');
+                                        //jqBadge.addClass('btn-danger');
+                                        //jqBadge.text('ERROR');
+                                        //jqBadge.removeClass('invisible');
+
+                                        //Set error message per first error condition found...
+                                        if ('datavaluessubmittedasmetadata' === typeName) {
+                                            validationMessage = 'Data values submitted with metadata.  Please submit data values after metadata';
+                                        }
+                                        else if ('metadatasubmittedasdatavalues' === typeName) {
+                                            validationMessage = 'Metadata submitted with data values.  Please submit metadata before data values';
+                                        } if ('unknown' === typeName) {
+                                            validationMessage = 'File contents map to no known model type';
+                                        }
+                                        else if (('' === validationMessage) && (0 < invalidHeadersCount)) {
+                                            validationMessage = 'Validates as: "' + friendlyName + '" with ' + invalidHeadersCount + ' invalid column name(s).'
+                                        }
+                                        else if (('' === validationMessage) && (0 < missingHeadersCount)) {
+                                            validationMessage = 'Validates as: "' + friendlyName + '" with ' + missingHeadersCount + ' missing column name(s).'
+                                        }
+                                        else if (('' === validationMessage) && (0 >= recordCount)) {
+                                            validationMessage = 'Validates as: "' + friendlyName + '" with zero (' + recordCount + ') record(s).'
+                                        }
+                                    }
+                                    else {
+                                        //Known type - check record count
+                                        //if (0 < recordCount) {
+                                            //Records exist - successful validation - set 'OK' markup
+                                            validationMessage = 'Validates as: "' + friendlyName + '" with ' + recordCount.toLocaleString() + ' record(s).'
+                                            //jqBadge.addClass('btn-success');
+                                            //jqBadge.removeClass('btn-danger');
+                                            //jqBadge.text('OK');
+                                            //jqBadge.removeClass('invisible');
+                                        //}
+                                    }
+
+                                    //Set validation message into progress bar...
+                                    jqProgressBar.text(validationMessage);
+
+                                    //Build collapsible panel list...
+                                    var panelList = jqCollapse.find('.panelListTemplate');
+                                    var hMsg = '';
+                                    if (bError) {
+                                        //Error exists - change progress bar color...
+                                        jqProgressBar.removeClass('progress-bar-success');
+                                        jqProgressBar.addClass('progress-bar-danger');
+
+                                        if (0 < invalidHeadersCount) {
+                                            hMsg = 'Invalid headers: ' + validationResults.InvalidHeaderNames.join(', ');
+                                            panelList.append('<li class="list-group-item"> ' + hMsg + '</li>');
+                                        }
+
+                                        if ('datavaluessubmittedasmetadata' === typeName) {
+                                            //Data values submitted as metadata
+                                            hMsg = 'Data values submitted with metadata.  Please submit data values after metadata';
+                                            panelList.append('<li class="list-group-item"> ' + hMsg + '</li>');
+                                        } else if ('metadatasubmittedasdatavalues' === typeName) {
+                                            //Metadata submitted as Data Values
+                                            hMsg = 'Metadata submitted with data values.  Please submit metadata before data values';
+                                            panelList.append('<li class="list-group-item"> ' + hMsg + '</li>');
+                                        } else if ('unknown' === typeName) {
+                                            //Unknown model type - display message...
+                                            hMsg = 'File contents map to no known model type';
+                                            panelList.append('<li class="list-group-item"> ' + hMsg + '</li>');
+                                        } else if (0 < missingHeadersCount) {
+                                            hMsg = 'Missing headers: ' + validationResults.MissingRequiredHeaderNames.join(', ');
+                                            panelList.append('<li class="list-group-item"> ' + hMsg + '</li>');
+                                        }
+                                    }
+                                    else {
+                                        //No header errors - add headers OK message to list...
+                                        panelList.append('<li class="list-group-item"> ' + 'No header validation errors reported' + '</li>');
+                                        dataToggle.attr('data-toggle', '');     //Disable collapse
+                                    }
+                                    break;
+                                }
+                            }
+
+                            if (!bFound) {
+                                //Validation results not found...
+                                bError = true;
+
+                                jqProgressBar.text('Cannot find validation results.');
+                            }
+
+                            //Update validation status...
+                            panelItem.attr('data-validation-status', (bError ? 'error' : 'complete'));
+
+                            //Check for validation completion
+                            if (allValidationComplete()) {
+                                openFirstErrorCollapse();
+                                if (anyValidationSuccessful()) {
+                                    $('#' + 'btnDbInsert').removeClass('hidden');  //Show 'Insert' button
+                                }
+
+                                $('#' + 'alertFileValidation').fadeOut({
+                                    "duration": 500 //,
+                                    //"complete": function () {
+                                    //}
+                                });
+                            }
+
+                        }).catch(function (message) {
+                            jqProgressWrapper.removeClass('active');    //Stop progress-bar animation 
+                            var outputData = message.outputData;
+                            var errorMsg = message.message;
+                            if ('undefined' !== typeof outputData && null !== outputData) {
+                                console.log('requestFileValidation(' + fileName + ') - server error: ' + outputData.statusText);
+                            }
+                            else if ('undefined' !== typeof errorMsg && null !== errorMsg) {
+                                console.log('requestFileValidation(' + fileName + ') - error: ' + errorMsg);
+                            }
+                            else {
+                                console.log('requestFileValidation(' + fileName + ') - unspecified error.');
+                            }
+
+                            //Set error message progress bar...
+                            jqProgressBar.text('File validation: error');
+
+                            //Update validation status...
+                            panelItem.attr('data-validation-status', 'error');
+
+                            //Check for validation completion
+                            if (allValidationComplete()) {
+                                openFirstErrorCollapse();
+                                if (anyValidationSuccessful()) {
+                                    $('#' + 'btnDbInsert').removeClass('hidden');  //Show 'Insert' button
+                                }
+
+                                $('#' + 'alertFileValidation').fadeOut({
+                                    "duration": 500 //,
+                                    //"complete": function () {
+                                    //}
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+        }
+    }
+
+    function requestDbStatusMonitoring(uploadId, fileName, workerMonitor, jqProgressWrapper, jqProgressBar, jqCollapse) {
+        //Validate/initialize input parameters...
+        if ('undefined' !== typeof uploadId && null !== uploadId &&
+            'undefined' !== typeof fileName && null !== fileName &&
+            'undefined' !== typeof workerMonitor && null !== workerMonitor &&
+            //'undefined' !== typeof dataToggle && null !== dataToggle &&
+            //'undefined' !== typeof jqBadge && null !== jqBadge &&
+            'undefined' !== typeof jqProgressWrapper && null !== jqProgressWrapper &&
+            'undefined' !== typeof jqProgressBar && null !== jqProgressBar &&
+            'undefined' !== typeof jqCollapse && null !== jqCollapse) {
+            //Input parameters valid - check current validation status...
+            console.log('requestDbStatusMonitoring(' + fileName + ') called!!');
+
+            ////Check for end condition...
+            ////TO DO - devise end condition indicator...
+            //console.log('TO DO - devise end condition indicator...');
+            //if (true) {
+                //End condition not set - create db status worker message...
+                var request = {
+                    "requestId": uploadId + "_" + fileName,
+                    "inputData": {
+                        "action": "get",
+                        "uploadId": currentUploadId,
+                        "fileName": fileName
+                    }
+                };
+
+                var promise = workerMonitor.sendWorkerMessage(request);
+                if (null !== promise) {
+                    //Request submitted - set promise's 'then' and 'catch'
+                    var endCondition = false;   //Assume end condition not set...
+                    promise.then(function (message) {
+                        console.log('requestDbStatusMonitoring(' + fileName + ') - success!!!');
+
+                        //check for output data...
+                        var outputData = message.outputData;
+                        if ('undefined' !== typeof outputData && null !== outputData) {
+                            //Output data found - check for end condition...
+                            endCondition = outputData.endCondition;
+
+                            //Check for file name...
+                            var filesToModels = outputData.fileNamesToModelNames;
+                            var modelName = '';
+                            for (var fName in filesToModels) {
+                                if (fileName === fName) {
+                                    //File name found - retrieve model name...
+                                    modelName = filesToModels[fName];
+                                    break;
+                                }
+                            }
+
+                            if ('' !== modelName) {
+                                //Model name found - check for status messages...
+                                var modelsToMessages = outputData.modelNamesToStatusMessages;
+                                var statusMessages = []
+                                for (var mName in modelsToMessages) {
+                                    if (modelName === mName) {
+                                        //Status messages found 
+                                        statusMessages = modelsToMessages[mName];
+                                        break;
+                                    }
+                                }
+
+                                //For each status message...
+                                var panelList = jqCollapse.find('.panelListTemplate');
+                                var sLength = statusMessages.length;
+                                for (var sI = 0; sI < sLength; ++sI) {
+                                    var statusMessage = statusMessages[sI];
+                                    panelList.append('<li class="list-group-item"> ' + statusMessage.Message + '</li>');
+                                }
+
+                                //if (0 < sLength) {
+                                //    jqProgressBar.text('DB status monitoring: success');
+                                //}
+
+                                jqProgressBar.text('Database loading: ' + (endCondition ? 'completed' : 'in progress'));
+                            }
+
+                            //If indicated, repeat the call to request the next available status message(s), if any
+                            //Introduce a brief delay between calls to avoid race conditions...
+                            setTimeout(function (ndCndtn, upldId, flNm, wrkrMntr, jqPrgrssWrpr, jqPrgrssBr, jqCllps) {
+                                if (!ndCndtn) {
+                                    requestDbStatusMonitoring(upldId, flNm, wrkrMntr, jqPrgrssWrpr, jqPrgrssBr, jqCllps);
+                                }
+                            }, 1500, endCondition, uploadId, fileName, workerMonitor, jqProgressWrapper, jqProgressBar, jqCollapse);
+                        }
+                    }).catch(function (message) {
+                        //Error - set end condition...
+                        endCondition = true;
+                        jqProgressWrapper.removeClass('active');    //Stop progress-bar animation 
+                        var outputData = message.outputData;
+                        var errorMsg = outputData.message;
+                        if ('undefined' !== typeof outputData && null !== outputData) {
+                            console.log('requestDbStatusMonitoring(' + fileName + ') - server error: ' + errorMsg);
+                        }
+                        else if ('undefined' !== typeof errorMsg && null !== errorMsg) {
+                            console.log('requestDbStatusMonitoring(' + fileName + ') - error: ' + errorMsg);
+                        }
+                        else {
+                            console.log('requestDbStatusMonitoring(' + fileName + ') - unspecified error.');
+                        }
+
+                        //Set error message progress bar...
+                        jqProgressBar.text('DB status monitoring: error');
+                    });
+                }
+            //}
+        }
+    }
+
+    //Start DB processing of the validated CSV files...
+    function startDbProcessing(currentUploadId) {
+        //console.log('startDbProcessing(' + currentUploadId + ') called!!');
+
+        //Validate/initialize input parameters...
+        if ('undefined' !== typeof currentUploadId && null !== currentUploadId) {
+            //Input parameters valid...
+
+            //For each successful file upload...
+            var panelItemsSelector = 'div#pnlgrpFiles div[data-validation-status="complete"]';
+            var panelItems = $(panelItemsSelector);
+            var pLength = panelItems.length;
+            for (var pI = 0; pI < pLength; ++pI) {
+                var panelItem = panelItems[pI];
+
+                //Retrieve file name...
+                var fileName = $(panelItem).attr('data-file');
+
+                //Set jQuery objects for later reference...
+                var progressWrapper = $(panelItem).children('div.progress');
+                var progressBar = $(progressWrapper).children('div.progress-bar');
+
+                var panelItemParent = $(panelItem).parent();    //Enclosing anchor...
+                //var dataToggle = panelItemParent;             //Contains attribute: data-toggle="collapse"
+                var collapseId = panelItemParent.attr('href');
+                var collapse = $(collapseId);
+
+                //Restore 'toggle' for collapse...
+                panelItemParent.attr('data-toggle', 'collapse');
+
+                //Set progress bar text, start progress-bar animation...
+                progressBar.text('Database loading: started...');
+                progressWrapper.addClass('active');
+
+                //Remove collapse list entries...
+                var listItems = collapse.find('ul.panelListTemplate li');
+                $(listItems).remove();
+                collapse = $(collapseId);   //Reset collapse since DOM has changed...
+
+                //Request DB status monitoring...
+                requestDbStatusMonitoring(currentUploadId, fileName, workerMonitorDbLoadStatus, progressWrapper, progressBar, collapse);
+            }
+
+            //Set PUT url for server call...
+            var url = '/api/revisedupload/put/' + currentUploadId + '/';
+
+            //Call to server...
+            $.ajax({
+                "url": url,
+                "type": "PUT",
+                "async": true,
+                "dataType": "json",
+                "cache": false, //So IE does not cache when calling the same URL - source: http://stackoverflow.com/questions/7846707/ie9-jquery-ajax-call-first-time-doing-well-second-time-not
+                "success": function (data, textStatus, jqXHR) {
+                    console.log('RevisedUpload PUT success!!');
+                    var dbResults = data;
+
+                    //Controller db load process complete - fade out db load alert...
+                    $('#' + 'alertDbLoad').fadeOut({
+                        "duration": 1000,
+                        "complete": function () {
+                            //Show DB Summary Report button...
+                            $('#' + 'btnDragAndDropContinue').removeClass('hidden');
+                        }
+                    });
+                },
+                "error": function (xmlhttprequest, textStatus, message) {
+                    //Failure - Log messsage received from server...
+                    console.log('RevisedUpload PUT reports error: ' + xmlhttprequest.status + ' (' + message + ')');
+                }
+            });
+        }
+    }
+
+    $(document).ready(function () {
+
+        //Hide the upload file alert...
+        $('#' + 'alertFileUpload').removeClass('hidden').hide();
+        $('#' + 'alertFileValidation').removeClass('hidden').hide();
+        $('#' + 'alertDbLoad').removeClass('hidden').hide();
+
+        //TO DO - Check session storage for existing items...
+        console.log('>>>>>>>>>>>>>>>');
+        console.log('>>>>>>>>>>>>>>> Missing functionality: check session storage for existing items <<<<<<<<<<<<<<<<<<<<<<');
+        console.log('>>>>>>>>>>>>>>>');
+
+        //Initialization code for jQuery-File-Upload...
+        var dropDiv = $('#' + 'divFilesForUpload');
+        dropDiv.fileupload({
+            //Identifiers/operating values...
+            "dataType": "json",
+            "dropZone": dropDiv,
+            "maxChunkSize": 8388608,              //Production value (2^23)
+            //Upload-related...
+            "autoUpload": false,
+            "multipart": true,                  //Send uploads as multipart/form-data
+            "type": "POST",
+            "url": "/api/revisedupload/post",
+            "singleFileUploads": true,          //Upload each file in a separate XHR request
+            "sequentialUploads": false,         //Issue file upload requests simultaneously
+            "limitConcurrentUploads": 20,       //Limit the number of concurrent uploads
+            //Callbacks...
+            "add": function (event, data) {
+                //File(s) added for upload - check event type...
+                if ('undefined' !== typeof event.originalEvent && null !== event.originalEvent) {
+                    if ('add' === event.originalEvent.type.toLowerCase() &&
+                        (!event.originalEvent.delegatedEvent)) {
+                        //Event is a call to jquery-file-upload 'add' method (NOT a file 'drop' or 'browse')
+
+                        //Submit current data to server...
+                        data.submit();
+                    }
+                }
+            },
+            "submit": function (event, data) {
+                //Include file names as 'form' data...
+                var fileNamesAndTypes = [];
+                if (0 < fileObjectsForUpload.length) {
+                    //List entries exist - retrieve file names as 'form' data...
+                    $.each(fileObjectsForUpload, function (index, file) {
+                        fileNamesAndTypes.push({
+                            "fileName": file.name,
+                            "fileType": file.type
+                            });
+                    });
+                }
+
+                //Send current data to server (start the upload manually)...
+                data.formData = {
+                    "fileNamesAndTypes": JSON.stringify(fileNamesAndTypes),
+                    "currentUploadId": currentUploadId,
+                    "validationQualifier": "@qualifier"
+                                };
+
+                var dropDiv = $('#' + 'divFilesForUpload');
+                dropDiv.fileupload('send', data);
+
+                //Return false to stop the submit call from starting the upload....
+                return false;
+            },
+            //File 'chunk' callbacks...
+            //"chunkalways": function(event, data) {
+            //    console.log('jquery-file-upload - chunkalways called!!');
+            //},
+            //"chunkdone": function(event, data) {
+            //    console.log('jquery-file-upload - chunkdone called!!');
+            //},
+            "chunkfail": function (event, data) {
+                console.log('jquery-file-upload - chunkfail called!!');
+                var n = 5;
+
+                ++n;
+            },
+            //"chunksend": function(event, data) {
+            //    console.log('jquery-file-upload - chunksend called!!');
+            //},
+            "always": function (event, data) {
+                //console.log('jquery-file-upload - always called!!');
+
+                //Check for final status ('completed' or 'error') on all panel items...
+                var final = true;   //Assume all statuses are final
+                var panelItems = 'div#pnlgrpFiles div[data-file]';
+
+                $(panelItems).each(function (index) {
+                    var attrStatusValue = $(this).attr('data-upload-status').toLowerCase();
+
+                    if ((-1 === attrStatusValue.indexOf('complete')) &&
+                        (-1 === attrStatusValue.indexOf('error'))) {
+                        final = false;
+                    }
+                });
+
+                if (final) {
+                    //Final status for all panel items - show Validation Summary button...
+                    $('#' + 'alertFileUpload').fadeOut({
+                        "duration": 500,
+                        "complete": function () {
+                            //Show Validation Summary button...
+                            //Moved this call to validation complete checks...
+                            //$('#' + 'btnDragAndDropContinue').removeClass('hidden');
+                            $('#' + 'alertFileValidation').fadeIn({ "duration": 500 });
+                        }
+                    });
+                }
+            },
+            //"done": function (event, data) {
+            //    console.log('jquery-file-upload - done called!!');
+            //},
+            "fail": function (event, data) {
+                //console.log('jquery-file-upload - fail called!!');
+
+                //Update status for associated panel item...
+                var fileName = data.files[0].name;
+                var panelItem = 'div#pnlgrpFiles div[data-file="' + fileName + '"]';
+
+                var divBar = $(panelItem + ' .bar');
+                var divPercent = $(panelItem + ' .percent');
+                var divProgressBar = $(panelItem + ' .progress-bar');
+
+                divBar.width('100%');
+                divPercent.html('Error');
+
+                divProgressBar.addClass('bg-danger');
+
+                //Set error status...
+                $(panelItem).attr('data-upload-status', 'error');
+            },
+            //"send": function (event, data) {
+            //    console.log('jquery-file-upload - send called!!');
+            //},
+            "progress": function (event, data) {
+                //console.log('jquery-file-upload - progress called!!');
+                var fileName = data.files[0].name;
+                var percentage = Math.round((data.loaded / data.total) * 100);  //Rounds to the nearest whole number...
+
+                //Update progress bar...
+                var panelItem = 'div#pnlgrpFiles div[data-file="' + fileName + '"]';
+
+                //Set jQuery objects for later reference...
+                var progressWrapper = $(panelItem + ' .progress');
+                var progressBar = $(panelItem + ' .progress-bar');
+                //var badge = $(panelItem + ' .badge');
+
+                var panelItemParent = $(panelItem).parent();    //Enclosing anchor...
+                var dataToggle = panelItemParent;               //Contains attribute: data-toggle="collapse"
+                var collapseId = panelItemParent.attr('href');
+                var collapse = $(collapseId);
+
+                progressWrapper.removeClass('invisible');
+
+                progressBar.width(percentage.toString() + '%');
+                progressBar.text('File Upload: ' + percentage.toString() + '%');
+
+                if (100 > percentage) {
+                    $(panelItem).attr('data-upload-status', 'inProgress');   //Not yet completed...
+                }
+                else {
+                    //Upload complete - update session state variables...
+                    $(panelItem).attr('data-upload-status', 'complete');
+                    progressBar.text('File Upload: Complete');
+
+                    var fileUploadCount = 0;
+                    var uploadedFileNames = [];
+
+                    //Retrieve/update file upload count
+                    if ('undefined' !== typeof sessionStorage.fileUploadCount && null !== sessionStorage.fileUploadCount) {
+                        fileUploadCount = parseInt(sessionStorage.fileUploadCount);
+                    }
+                    sessionStorage.fileUploadCount = (++fileUploadCount).toString();
+
+                    //Retrieve/update file names array...
+                    if ('undefined' !== typeof sessionStorage.uploadedFileNames && null !== sessionStorage.uploadedFileNames) {
+                        uploadedFileNames = (sessionStorage.uploadedFileNames).split(',');
+                    }
+
+                    //Store unique file names only (in case of chunking)
+                    if (-1 == uploadedFileNames.indexOf(fileName)) {
+                        uploadedFileNames.push(fileName);
+                        sessionStorage.uploadedFileNames = uploadedFileNames.toString();
+                    }
+
+                    //Remove the associated file object, if applicable...
+                    var foLength = fileObjectsForUpload.length;
+                    for (var foI = 0; foI < foLength; ++foI) {
+                        var fo = fileObjectsForUpload[foI];
+                        if (fileName === fo.name) {
+                            fileObjectsForUpload.splice(foI, 1);
+                            break;
+                        }
+                    }
+
+                    //Request file validation...
+                    //requestFileValidation(currentUploadId, fileName, workerMonitorValidation, dataToggle, badge, progressWrapper, progressBar, collapse);
+                    requestFileValidation(currentUploadId, fileName, workerMonitorValidation, dataToggle, progressWrapper, progressBar, collapse);
+                }
+            },
+            "drop": function (event, data) {
+                var fileNames = getFileNames(data.files);
+                console.log('jquery-file-upload - dropped files: ' + fileNames.join());
+
+                //Add dropped files...
+                addFileObjects(data.files, fileObjectsForUpload, 'pnlgrpFiles');
+            }
+        });
+
+        //'Change' handler for multiple file input...
+        $('#' + 'inpFilesForUpload').on('change', function (event) {
+            //Check for file selections...
+            var files = this.files;
+
+            var fileNames = getFileNames(files);
+            console.log('File input - on change - files: ' + fileNames.join());
+
+            //Add new files...
+            addFileObjects(files, fileObjectsForUpload, 'pnlgrpFiles');
+
+            //Reset input's value to support multiple entry of the same file path and name...
+            //Source: https://stackoverflow.com/questions/12030686/html-input-file-selection-event-not-firing-upon-selecting-the-same-file
+            this.value = null;
+        });
+
+        //'Click' handler for Files for Upload, Continue
+        $('#' + 'btnUploadFiles').on('click', function (event) {
+            //Retrieve list of files for upload
+            if (0 < fileObjectsForUpload.length) {
+                //List entries exist - generate upload Id, if indicated...
+                if (null == currentUploadId) {
+                    currentUploadId = randomId.generateId();
+                }
+
+                //Retain in session storage...
+                sessionStorage.currentUploadId = currentUploadId;                           //current upload Id
+
+                //Invoke jQuery File Uploader 'add' method...
+                var dropDiv = $('#' + 'divFilesForUpload');
+                dropDiv.fileupload('add', { "files": fileObjectsForUpload });
+
+                //Disable button...
+                $('#' + 'btnUploadFiles').addClass('disabled');
+
+                //Display 'file upload' alert...
+                //Source: http://www.java2s.com/Tutorials/HTML_CSS/Bootstrap_Example/Alert/Show_alert_block_with_fade_in.htm
+                $('#' + 'alertFileUpload').fadeIn({ "duration": 500 });
+            }
+        });
+
+        //'Click' handler for Insert button
+        $('#' + 'btnDbInsert').on('click', function (event) {
+            //console.log('Upload handler called!!);
+
+            //Disable button...
+            $('#' + 'btnDbInsert').addClass('disabled');
+
+            //Display 'DB load' alert...
+            //Source: http://www.java2s.com/Tutorials/HTML_CSS/Bootstrap_Example/Alert/Show_alert_block_with_fade_in.htm
+            $('#' + 'alertDbLoad').fadeIn({ "duration": 500 });
+
+            //Invoke db load process...
+            startDbProcessing(currentUploadId);
+        });
+
+        //'Click' handler for Cancel 'anchor'
+        $('a.cancel').on('click', function (event) {
+            //Clear session storage items...
+            sessionStorage.removeItem('currentUploadId');
+            sessionStorage.removeItem('uploadedFileNames');
+            sessionStorage.removeItem('fileUploadCount');
+
+            //Queue remove request to server...
+            removeUploadId(currentUploadId);
+        });
+
+        //Create Random Id instance...
+        randomId = new RandomId({
+            'iterationCount': 10,
+            'characterSets': ['alpha', 'numeric']
+        });
+
+        //Start a validation worker and create a monitor instance...
+        workerValidation = new Worker("/Scripts/custom/workers/workerCsvValidationResults.js");
+
+        workerMonitorValidation = new WorkerMonitor();
+        workerMonitorValidation.startMonitoring(workerValidation);
+
+        //Start a db load status worker and create a monitor instance...
+        workerDbLoadStatus = new Worker("/Scripts/custom/workers/workerDbLoadStatus.js");
+
+        workerMonitorDbLoadStatus = new WorkerMonitor();
+        workerMonitorDbLoadStatus.startMonitoring(workerDbLoadStatus);
+
+    });
+
+</script>
+
+
+
