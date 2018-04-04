@@ -16,11 +16,11 @@
 <!-- Dynamic panel template -->
 <div class="panel panel-default templatePanelClass hidden">
     <div class="panel-heading">
-        <h3 class="panel-title">
+        <div class="panel-title">
             <a style="font-weight: bold; " class="accordion-toggle" data-toggle="collapse" data-parent="#pnlgrpFiles" href="#collapseTemplate">
                 Panel Template
             </a>
-        </h3>
+        </div>
     </div>
     <div id="collapseTemplate" class="panel-collapse collapse">
         <div class="panel-body">
@@ -43,7 +43,6 @@
     <!-- Dynamic collapse for validated files -->
     <div class="row">
         <div class="col_md_12">
-            @*<div class="panel-group uploader" id="pnlgrpFiles"></div>*@
             <div  style="padding-left: 1.0em; padding-right: 1.0em;" class="panel-group uploader-border" id="pnlgrpFiles"></div>
         </div>
     </div>
@@ -58,14 +57,14 @@
 
             <div class="pull-right">
                 <a href="/home/index" class="btn btn-warning cancel">Cancel</a>
-@if ("meta_data" == qualifier)
-{
+                @if ("meta_data" == qualifier)
+                {
                 <a href="/CSVUpload/RevisedUploadData/DragAndDropFiles_meta_data" class="btn btn-info" style="margin-left: 0.5em;">Previous</a>
-}
-else
-{
+                }
+                else
+                {
                 <a href="/CSVUpload/RevisedUploadData/DragAndDropFiles_data_values" class="btn btn-info" style="margin-left: 0.5em;">Previous</a>
-}
+                }
 
                 <button type="button" id="btnValidationSummaryContinue" class="btn btn-success disabled" style="margin-left: 0.5em;">Complete Upload</button>
                 <a id="btnDbSummaryReport" class="btn btn-primary hidden" href="/CSVUpload/RevisedUploadData/DbSummaryReport" style="margin-left: 0.5em;">Upload Summary</a>
@@ -73,11 +72,23 @@ else
         </div>
     </div>
 
+    <div class="row">
+        <!--BC - TEST - For temporary display of status messages -->
+        <div class="col-md-8">
+            <textarea id="statusMessages" style="font-weight: bold; overflow-y: scroll; display:block; margin-top: 0.5em; width: 100%; height: 100%" readonly rows="20"
+                      placeholder="Status messages go here temporarily..."></textarea>
+        </div>
+    </div>
+
 </div>
 
 <script src="~/Scripts/custom/revisedUploadUtils.js"></script>
+<script src="~/Scripts/custom/workerMonitor.js"></script>
 
 <script type="text/javascript">
+
+    var workerStatus = null;
+    var workerMonitor = null;
 
     //Build dynamic collapse(s) for file validation results...
     function buildValidationResultsMarkup(panelGroupId, validationResults) {
@@ -108,21 +119,35 @@ else
                 var id = 'collapse-' + (idCount++);
                 toggle.attr('href', '#' + id);
 
-                //Display file name and validation information... 
+                //Display file name and validation information...
                 var fileName = validationResult.FileName
                 var validation = validationResult.FileValidator;
 
                 //var msg = 'File: ' + fileName;
-                var msg = '';
+                var msg = '<div class="row">';
+                var validationOK = true;   //Assume success...
 
-                msg = (((0 >= validation.InvalidHeaderNames.length) && (0 >= validation.MissingRequiredHeaderNames.length))
-                    ? '<span class="badge" style="background-color: green;">OK</span>' : '<span class="badge"  style="background-color: red;">ERROR</span>');
-                msg += ' ' + fileName;
+                if ('datavaluessubmittedasmetadata' === validation.CandidateTypeName.toLowerCase() ||
+                    'metadatasubmittedasdatavalues' === validation.CandidateTypeName.toLowerCase() ||
+                    'unknown' === validation.CandidateTypeName.toLowerCase() ||
+                    0 < validation.InvalidHeaderNames.length ||
+                    0 < validation.MissingRequiredHeaderNames.length) {
+                    //Error - set error markup
+                    msg += '<div class="badge" style="position: relative; float: left; margin-left: 1.0em; background-color: red;">ERROR</div>';
+                    validationOK = false;
+                }
+                else if ((0 >= validation.InvalidHeaderNames.length) && (0 >= validation.MissingRequiredHeaderNames.length)) {
+                    //No error - set OK markup
+                    msg += '<div class="badge" style="position: relative; float: left; margin-left: 1.0em; background-color: green; ">OK</div>';
+                }
+                msg += '<div class="col-md-4">' + fileName + '</div>';
+                msg += '<div class="col-md-7 divStatus">Status messages go here!!!</div>';
+                msg += '</div>';
 
                 toggle.html(msg);
 
                 //Disable toggle for 'OK' validations - enable 'Complete Upload' button for 'OK validations...
-                if ((0 >= validation.InvalidHeaderNames.length) && (0 >= validation.MissingRequiredHeaderNames.length)) {
+                if (validationOK) {
                     toggle.attr('data-toggle', '');
 
                     $('#' + 'btnValidationSummaryContinue').removeClass('disabled');
@@ -132,8 +157,7 @@ else
                 newPanel.find('.panel-collapse').attr('id', id);
 
                 //If panel contains errors, open, if indicated...
-                if (openErrorPanel &&
-                    ((0 < validation.InvalidHeaderNames.length) || (0 < validation.MissingRequiredHeaderNames.length))) {
+                if (openErrorPanel && (!validationOK)) {
                     newPanel.find('.panel-collapse').addClass('in');
                     openErrorPanel = false;
                 }
@@ -153,23 +177,35 @@ else
                 var recordCount = validation.CandidateRecordCount;
                 var hMsg = '';
 
-                if ((0 < hLength) || (0 < mLength)) {
+                if ((0 < hLength) ||
+                    (0 < mLength) ||
+                    ('datavaluessubmittedasmetadata' === modelType.toLowerCase()) ||
+                    ('metadatasubmittedasdatavalues' === modelType.toLowerCase()) ||
+                    ('unknown' === modelType.toLowerCase())) {
                     //Header errors - add to list...
                     if (0 < hLength) {
                         hMsg = 'Invalid headers: ' + headerErrors.join(', ');
                         panelList.append('<li class="list-group-item"> ' + hMsg + '</li>');
                     }
 
-                    if ('unknown' !== modelType.toLowerCase()) {
-                        //Known model type - display missing headers, if any
-                        if (0 < mLength) {
-                            hMsg = 'Missing headers: ' + missingHeaders.join(', ');
-                            panelList.append('<li class="list-group-item"> ' + hMsg + '</li>');
-                        }
+                    if ('datavaluessubmittedasmetadata' === modelType.toLowerCase()) {
+                        //Data values submitted as metadata
+                        hMsg = 'Data values submitted with metadata.  Please submit data values after metadata';
+                        panelList.append('<li class="list-group-item"> ' + hMsg + '</li>');
                     }
-                    else {
+                    else if ('metadatasubmittedasdatavalues' === modelType.toLowerCase()) {
+                        //Metadata submitted as Data Values
+                        hMsg = 'Metadata submitted with data values.  Please submit metadata before data values';
+                        panelList.append('<li class="list-group-item"> ' + hMsg + '</li>');
+                    }
+                    else if ('unknown' === modelType.toLowerCase()) {
                         //Unknown model type - display message...
                         hMsg = 'File contents map to no known model type';
+                        panelList.append('<li class="list-group-item"> ' + hMsg + '</li>');
+                    }
+                    else if (0 < mLength) {
+                        //Known model type - display missing headers, if any
+                        hMsg = 'Missing headers: ' + missingHeaders.join(', ');
                         panelList.append('<li class="list-group-item"> ' + hMsg + '</li>');
                     }
                 }
@@ -243,10 +279,82 @@ else
                         }
                     });
 
+                    ////BC - TEST - Try sending a worker message here...
+                    //var promise = workerMonitor.sendWorkerMessage({
+                    //    "requestId": "bctest",
+                    //    "inputData": {
+                    //        "action": "get",
+                    //        "uploadId": currentUploadId
+                    //    }
+                    //});
 
+                    ////Test promise 'then' and 'catch'
+                    //if (null !== promise) {
+                    //    promise.then(function (message) {
+                    //        console.log('Promise then fires!!!');
+                    //    }).catch(function (message) {
+                    //        console.log('Promise catch fires!!!');
+                    //    });
+                    //}
+
+
+                    //var n = 5;
+                    //++n;
+
+                    ////BC - test - call for dbLoadStatus via XMLHttpRequest...
+                    //var myUrl = '/api/revisedupload/get/dbloadstatus/' + currentUploadId + '/';
+                    //var xhr = new XMLHttpRequest();
+
+                    //xhr.open('GET', myUrl, true);   //Asynchronous call...
+                    //xhr.responseType = 'json';      //Specify response type after open call and before send call...
+                    //xhr.onload = function (event) {
+                    //    console.log('dbloadstatus onload: readyState:' + xhr.readyState.toString() + ', status: ' + xhr.status.toString());
+
+                    //    if (4 === xhr.readyState) {     //Transaction complete...
+                    //        if (200 === xhr.status) {   //Success...
+                    //            //Retrieve status messages...
+                    //            var statusMessages = xhr.response;
+                    //            var jqTextArea = $('#' + 'statusMessages');
+
+                    //            jqTextArea.val('');
+                    //            for (var modelName in statusMessages) {
+                    //                var newLine = '>> Model: ' + modelName + ' <<';
+
+                    //                var val = jqTextArea.val();
+                    //                jqTextArea.val((0 < val.length) ? (val + '\n' + newLine) : (newLine));
+
+                    //                var messages = statusMessages[modelName];
+                    //                var length = messages.length;
+
+                    //                for (var mI = 0; mI < length; ++mI) {
+                    //                    var message = messages[mI];
+                    //                    newLine = '\t>> ' + message.Message + ' <<';
+
+                    //                    if (message.IsError) {
+                    //                        newLine += ' >>> ERROR!! <<<';
+                    //                    }
+
+                    //                    val = jqTextArea.val();
+
+                    //                    jqTextArea.val((0 < val.length) ? (val + '\n' + newLine) : (newLine));
+                    //                }
+                    //            }
+                    //        }
+                    //    }
+
+                    //    var n = 5;
+
+                    //    ++n;
+                    //};
+
+                    //xhr.onerror = function (event) {
+                    //    console.log('dbloadstatus error: ' + xhr.statusText);
+                    //};
+
+                    //xhr.send(null);
 
                     //TO DO - disable continue button
-                    //        show show DB Summary Report button...
+                    //        show DB Summary Report button...
                 },
                 "error": function (xmlhttprequest, textStatus, message) {
                     //Failure - Log messsage received from server...
@@ -283,7 +391,7 @@ else
             startDbProcessing(currentUploadId);
         });
 
-        //'Click' handler for Cancel 'anchor' 
+        //'Click' handler for Cancel 'anchor'
         $('a.cancel').on('click', function (event) {
             //Clear session storage items...
             sessionStorage.removeItem('currentUploadId');
@@ -298,6 +406,16 @@ else
         setTimeout(function () {
             getValidationResults(currentUploadId);
         }, 100);
+
+        //Start a worker and create a monitor instance...
+        workerStatus = new Worker("/Scripts/custom/workers/workerDbLoadStatus.js");
+
+        workerMonitor = new WorkerMonitor();
+        workerMonitor.startMonitoring(workerStatus);
+
+        var m = 6;
+
+        ++m;
     });
 
         ////For now - set an interval to request validation data...
@@ -329,7 +447,7 @@ else
         //            //Failure - Log messsage received from server...
         //            console.log('RevisedUpload GET reports error: ' + xmlhttprequest.status + ' (' + message + ')');
         //            clearInterval(intervalId);  //Clear the interval...
-        //        }                
+        //        }
         //    });
         //}, 100);
 

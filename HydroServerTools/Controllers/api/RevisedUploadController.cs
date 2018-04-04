@@ -22,6 +22,7 @@ using HydroServerToolsRepository.Repository;
 using HydroServerToolsUtilities;
 using System.Xml.Serialization;
 using HydroServerTools.Models;
+using HydroserverToolsBusinessObjects.Interfaces;
 
 namespace HydroServerTools.Controllers.api
 {
@@ -32,6 +33,16 @@ namespace HydroServerTools.Controllers.api
 
             //Properties...
             public List<string> tableNames { get; set; }
+        }
+
+        public class DbLoadStatus
+        {
+            //Properties...
+            public string uploadId { get; set; }
+
+            public Dictionary<string, string> fileNamesToModelNames { get; set; }
+
+            public Dictionary<string, List<StatusMessage>> modelNamesToStatusMessages { get; set; }
         }
 
         //NOTE: Static members are thread-specific in web api!!
@@ -130,6 +141,7 @@ namespace HydroServerTools.Controllers.api
         private struct DebugData
         {
             public string currentUploadId { get; set; }
+            public string validationQualifier { get; set; }
             //public string fileNames { get; set; }
             public string fileName { get; set; }
             public bool isFirstChunk { get; set; }
@@ -141,8 +153,8 @@ namespace HydroServerTools.Controllers.api
 
             public override String ToString()
             {
-                return String.Format("uploadId: {0}, file: {1}, first: {2}, last: {3}, from: {4}, to: {5}, length: {6}, path: {7}",
-                                        currentUploadId, fileName, isFirstChunk, isLastChunk, from, to, length, filePathAndName);
+                return String.Format("uploadId: {0}, qualifier: {1}, file: {2}, first: {3}, last: {4}, from: {5}, to: {6}, length: {7}, path: {8}",
+                                        currentUploadId, validationQualifier, fileName, isFirstChunk, isLastChunk, from, to, length, filePathAndName);
             }
 
         }
@@ -152,7 +164,12 @@ namespace HydroServerTools.Controllers.api
         //GET api/revisedupload/get/{uploadId}
         //Web API feature: Have to name the input variable 'uploadId' to satisfy the router!!!
         //See WebApiConfig.cs for custom route...
-        [HttpGet]
+
+        //Returns validation results for the input uploadId)
+        //Use the web.api versions of the attributes
+        //Source: https://stackoverflow.com/questions/12765636/the-requested-resource-does-not-support-http-method-get
+        [System.Web.Http.AcceptVerbs("GET", "POST")]
+        [System.Web.Http.HttpGet]
         public async Task<HttpResponseMessage> Get(string uploadId)
         {
             HttpResponseMessage response = new HttpResponseMessage();
@@ -209,7 +226,63 @@ namespace HydroServerTools.Controllers.api
                     }
 
                     //Convert list to JSON, if indicated...
-                    //string jsonData = (HttpStatusCode.OK == httpStatusCode) ? Newtonsoft.Json.JsonConvert.SerializeObject(valiDATIONResults) : Newtonsoft.Json.JsonConvert.SerializeObject("{}");
+                    string jsonData = (0 < valiDATIONResults.Count) ? Newtonsoft.Json.JsonConvert.SerializeObject(valiDATIONResults) : Newtonsoft.Json.JsonConvert.SerializeObject("{}");
+
+                    response.StatusCode = httpStatusCode;
+                    response.Content = new StringContent(jsonData, System.Text.Encoding.UTF8, "application/json");
+                }
+            }
+
+            //Processing complete - return response
+            return response;
+        }
+
+        //Get File Validation Results method...
+        //GET api/revisedupload/get/filevalidationresults/{uploadId}/{fileName}
+        //See WebApiConfig.cs for custom route...
+        [System.Web.Http.AcceptVerbs("GET", "POST")]
+        [System.Web.Http.HttpGet]
+        public async Task<HttpResponseMessage> GetFileValidationResults(string uploadId, string fileName)
+        {
+            HttpResponseMessage response = new HttpResponseMessage();
+            HttpStatusCode httpStatusCode = HttpStatusCode.OK;  //Assume success...
+
+            //Validate/initialize input parameters
+            if (String.IsNullOrWhiteSpace(uploadId) || String.IsNullOrWhiteSpace(fileName))
+            {
+                response.StatusCode = HttpStatusCode.BadRequest;    //Missing/invalid parameter(s) - return early
+                response.ReasonPhrase = "Invalid parameter(s)";
+                return response;
+            }
+
+            var fileContexts = getFileContexts();
+            var validationContexts = getValidationContexts();
+            if ((!fileContexts.ContainsKey(uploadId)) || (!validationContexts.ContainsKey(uploadId)))
+            {
+                response.StatusCode = HttpStatusCode.BadRequest;    //Unknown uploadId - return early
+                response.ReasonPhrase = "Unknown upload id...";
+                return response;
+            }
+
+            //Input parameter(s) valid - retrieve file and validation context...
+            FileContext fileContext = fileContexts[uploadId];
+            using (await fileContext.FileSemaphore.UseWaitAsync())
+            {
+                ValidationContext<CsvValidator> validationContext = validationContexts[uploadId];
+                using (await validationContext.ValidationResultSemaphore.UseWaitAsync())
+                {
+                    //Note the difference in type (CsvValidator vs. CsvValidationResults)
+                    ValidationResult<CsvValidator> valiDATORResults =
+                            validationContext.ValidationResults.FirstOrDefault(vr => fileName.ToLowerInvariant() == vr.FileName.ToLowerInvariant());
+                    var valiDATIONResults = new List<ValidationResult<CsvValidationResults>>();
+
+                    if ( null != valiDATORResults)
+                    {
+                        var csvValiDATIONResults = new CsvValidationResults(valiDATORResults.FileValidator.ValidationResults);
+                        valiDATIONResults.Add(new ValidationResult<CsvValidationResults>(valiDATORResults.FileName, csvValiDATIONResults));
+                    }
+
+                    //Convert result to JSON, if indicated...
                     string jsonData = (0 < valiDATIONResults.Count) ? Newtonsoft.Json.JsonConvert.SerializeObject(valiDATIONResults) : Newtonsoft.Json.JsonConvert.SerializeObject("{}");
 
                     response.StatusCode = httpStatusCode;
@@ -225,7 +298,8 @@ namespace HydroServerTools.Controllers.api
         //GET api/revisedupload/get/dbloadresults/{uploadId}
         //Web API feature: Have to name the input variable 'uploadId' to satisfy the router!!!
         //See WebApiConfig.cs for custom route...
-        [HttpGet]
+        [System.Web.Http.AcceptVerbs("GET", "POST")]
+        [System.Web.Http.HttpGet]
         public async Task<HttpResponseMessage> GetDbLoadResults(string uploadId)
         {
             HttpResponseMessage response = new HttpResponseMessage();
@@ -263,10 +337,325 @@ namespace HydroServerTools.Controllers.api
             return response;
         }
 
+        //Get DB Status method...
+        //GET api/revisedupload/get/dbloadstatus/{uploadId}
+        //Web API feature: Have to name the input variable 'uploadId' to satisfy the router!!!
+        //See WebApiConfig.cs for custom route...
+        [System.Web.Http.AcceptVerbs("GET", "POST")]
+        [System.Web.Http.HttpGet]
+        public async Task<HttpResponseMessage> GetDbLoadStatus(string uploadId)
+        {
+            HttpResponseMessage response = new HttpResponseMessage();
+            HttpStatusCode httpStatusCode = HttpStatusCode.OK;  //Assume success...
+            DbLoadStatus dbLoadStatus = new DbLoadStatus();
+
+            //Validate/initialize input parameters
+            if (String.IsNullOrWhiteSpace(uploadId))
+            {
+                response.StatusCode = HttpStatusCode.BadRequest;    //Missing/invalid parameter(s) - return early
+                response.ReasonPhrase = "Invalid parameter(s)";
+                return response;
+            }
+
+            var validationContexts = getValidationContexts();
+            var statusContexts = getStatusContexts();
+            if ((!validationContexts.ContainsKey(uploadId)) || (!statusContexts.ContainsKey(uploadId)))
+            {
+                //response.StatusCode = HttpStatusCode.BadRequest;    //Unknown uploadId - return early
+                response.StatusCode = HttpStatusCode.NotFound;    //Unknown uploadId - return early
+                response.ReasonPhrase = "Unknown upload id...";
+                return response;
+            }
+
+            //Input parameter(s) valid - retrieve file names and model names...
+            dbLoadStatus.uploadId = uploadId;
+            ValidationContext<CsvValidator> validationContext = validationContexts[uploadId];
+
+            dbLoadStatus.fileNamesToModelNames = new Dictionary<string, string>();
+            using (await validationContext.ValidationResultSemaphore.UseWaitAsync())
+            {
+                foreach (var validatorResult in validationContext.ValidationResults )
+                {
+                    dbLoadStatus.fileNamesToModelNames.Add(validatorResult.FileName, validatorResult.FileValidator.ValidatedModelType.Name);
+                }
+            }
+
+            //Retrieve status message context
+            StatusContext statusContext = statusContexts[uploadId];
+
+            dbLoadStatus.modelNamesToStatusMessages = new Dictionary<string, List<StatusMessage>>();
+            using (await statusContext.StatusMessagesSemaphore.UseWaitAsync())
+            {
+                //Scan status messages for current model names...
+                foreach (string modelName in statusContext.StatusMessages.Keys)
+                {
+                    //Select unreported status messages for return to caller...
+                    var statusMessages = statusContext.StatusMessages[modelName].Where(sm => (!sm.Reported));
+                    List<StatusMessage> newList = new List<StatusMessage>();
+                    
+                    foreach (var sm in statusMessages)
+                    {
+                        newList.Add(new StatusMessage(sm));
+                    }
+
+                    dbLoadStatus.modelNamesToStatusMessages[modelName] = newList;
+
+                    //Scan queue entries - update 'Reported' flag as indicated... 
+                    ConcurrentQueue<StatusMessage> newQueue = new ConcurrentQueue<StatusMessage>();
+                    var oldQueue = statusContext.StatusMessages[modelName];
+                    StatusMessage currentSm = null;
+
+                    while (oldQueue.TryDequeue(out currentSm))
+                    {
+                        if (!currentSm.Reported)
+                        {
+                            currentSm.Reported = true;
+                        }
+
+                        newQueue.Enqueue(currentSm);
+                    }
+
+                    //Replace queue... 
+                    statusContext.StatusMessages[modelName] = newQueue;
+                }
+
+                //Convert 'to report' collection to JSON - add to response 
+                string jsonData = Newtonsoft.Json.JsonConvert.SerializeObject(dbLoadStatus); 
+
+                response.StatusCode = httpStatusCode;
+                response.Content = new StringContent(jsonData, System.Text.Encoding.UTF8, "application/json");
+            }
+
+            //Processing complete - return response
+            return response;
+        }
+
+        //GET api/revisedupload/get/dbloadstatusforfile/{uploadId}/{filename}
+        //Web API feature: Have to name the input variable 'uploadId' to satisfy the router!!!
+        //See WebApiConfig.cs for custom route...
+        [System.Web.Http.AcceptVerbs("GET", "POST")]
+        [System.Web.Http.HttpGet]
+        public async Task<HttpResponseMessage> GetDbLoadStatusForFile(string uploadId, string filename)
+        {
+            HttpResponseMessage response = new HttpResponseMessage();
+            HttpStatusCode httpStatusCode = HttpStatusCode.OK;  //Assume success...
+            DbLoadStatus dbLoadStatus = new DbLoadStatus();
+
+            //Validate/initialize input parameters
+            if (String.IsNullOrWhiteSpace(uploadId) || String.IsNullOrWhiteSpace(filename))
+            {
+                response.StatusCode = HttpStatusCode.BadRequest;    //Missing/invalid parameter(s) - return early
+                response.ReasonPhrase = "Invalid parameter(s)";
+                return response;
+            }
+
+            var validationContexts = getValidationContexts();
+            var statusContexts = getStatusContexts();
+            if ((!validationContexts.ContainsKey(uploadId)) || (!statusContexts.ContainsKey(uploadId)))
+            {
+                if (!validationContexts.ContainsKey(uploadId))
+                {
+                    //No validation results - return early with not found...
+                    response.StatusCode = HttpStatusCode.NotFound;
+                    response.ReasonPhrase = "Unknown upload id...";
+                    return response;
+                }
+                else if (!statusContexts.ContainsKey(uploadId))
+                {
+                    //No status results - create a new entry...
+                    StatusContext sc = null;
+                    if (!statusContexts.TryGetValue(uploadId, out sc))
+                    {
+                        //Not found - create new instance...
+                        sc = new StatusContext();
+                        statusContexts.TryAdd(uploadId, sc);
+
+                        //Get the instance again...
+                        // IIS threading alert... Since the TryAdd(...) call occurs outside  
+                        // any Semaphore 'using' block it is not thread-safe!!  Thus another 
+                        // IIS thread may have already added a context for the uploadId.  
+                        // Getting the instance again ensures all IIS threads reference the 
+                        // ***same*** context...
+                        statusContexts.TryGetValue(uploadId, out sc);
+                    }
+
+                    //Check for status context...
+                    if (null == sc)
+                    {
+                        response.StatusCode = HttpStatusCode.BadRequest;    //No repository context - return early
+                        response.ReasonPhrase = "Cannot find/create status context for current upload Id... (from get/dbloadstatusforfile/)";
+                        return response;
+                    }
+                }
+            }
+
+            //Input uploadId valid - retrieve validation context... 
+            dbLoadStatus.uploadId = uploadId;
+            ValidationContext<CsvValidator> validationContext = validationContexts[uploadId];
+
+            dbLoadStatus.fileNamesToModelNames = new Dictionary<string, string>();
+            using (await validationContext.ValidationResultSemaphore.UseWaitAsync())
+            {
+                //Scan validation results for input file name...
+                var valiDATORResults = validationContext.ValidationResults;                     //CsvValidator
+
+                var validatorResult = valiDATORResults.FirstOrDefault(vr => vr.FileName.ToLowerInvariant() == filename.ToLowerInvariant());
+                if ( default(ValidationResult<CsvValidator>) == validatorResult )
+                {
+                    //Validation result not found...
+                    response.StatusCode = HttpStatusCode.BadRequest;    //Unknown file name - return early
+                    response.ReasonPhrase = "Unknown file name...";
+                    return response;
+                }
+
+                //File name found - retrieve associated model type...
+                CsvValidator csvValidator = validatorResult.FileValidator;
+                Type modelType = csvValidator.ValidatedModelType;
+
+                if ( null == modelType)
+                {
+                    //Model Type not found...
+                    response.StatusCode = HttpStatusCode.BadRequest;    //Unknown model type - return early
+                    response.ReasonPhrase = "File contents not validated...";
+                    return response;
+                }
+
+                //Model type found - retrieve associated status message(s), if any...
+                var modelTypeName = modelType.Name;
+
+                //dbLoadStatus.fileNamesToModelNames.Add(validatorResult.FileName, modelTypeName);
+
+                //Check if model type implements IHydroserverRepositoryProxy<,>...
+                Type sourceType = null;
+                Type proxyType = null;
+
+                var iHRPs = modelType.GetInterfaces().Where(i => i.IsGenericType &&
+                                                      i.GetGenericTypeDefinition() == typeof(IHydroserverRepositoryProxy<,>));
+                foreach (var iHRP in iHRPs)
+                {
+                    var definition = iHRP.GetGenericTypeDefinition();
+                    var arguments = iHRP.GenericTypeArguments;
+                    var typeInfo = definition as TypeInfo;
+                    if (null != typeInfo)
+                    {
+                        //Check interface type parameters and arguments...
+                        var typeParams = typeInfo.GenericTypeParameters;
+                        int index = 0;
+
+                        foreach (var typeParam in typeParams)
+                        {
+                            if ("tSourceType" == typeParam.Name)
+                            {
+                                sourceType = arguments[index];
+                            }
+
+                            if ("tProxyType" == typeParam.Name)
+                            {
+                                proxyType = arguments[index];
+                            }
+                            ++index;
+                        }
+
+                        if (sourceType == modelType && null != proxyType)
+                        {
+                            //Proxy type found - update model type name...
+                            modelTypeName = proxyType.Name;
+                            break;
+                        }
+                    }
+                }
+
+                dbLoadStatus.fileNamesToModelNames.Add(validatorResult.FileName, modelTypeName);
+
+                //retrieve status message context
+                StatusContext statusContext = statusContexts[uploadId];
+
+                dbLoadStatus.modelNamesToStatusMessages = new Dictionary<string, List<StatusMessage>>();
+                using (await statusContext.StatusMessagesSemaphore.UseWaitAsync())
+                {
+                    if (statusContext.StatusMessages.ContainsKey(modelTypeName))
+                    {
+                        //Status Messages for model type found - select unreported messages for return to caller...
+                        var statusMessages = statusContext.StatusMessages[modelTypeName].Where(sm => (!sm.Reported));
+                        List<StatusMessage> newList = new List<StatusMessage>();
+
+                        foreach (var sm in statusMessages)
+                        {
+                            newList.Add(new StatusMessage(sm));
+                        }
+
+                        dbLoadStatus.modelNamesToStatusMessages[modelTypeName] = newList;
+                        if ( 0 < newList.Count)
+                        {
+                            //Unreported message exist - return 206 - partial content
+                            httpStatusCode = HttpStatusCode.PartialContent;
+
+                            //Scan queue entries - update 'Reported' flag as indicated... 
+                            ConcurrentQueue<StatusMessage> newQueue = new ConcurrentQueue<StatusMessage>();
+                            var oldQueue = statusContext.StatusMessages[modelTypeName];
+                            StatusMessage currentSm = null;
+
+                            while (oldQueue.TryDequeue(out currentSm))
+                            {
+                                if (!currentSm.Reported)
+                                {
+                                    currentSm.Reported = true;
+                                }
+
+                                newQueue.Enqueue(currentSm);
+                            }
+
+                            //Replace queue... 
+                            statusContext.StatusMessages[modelTypeName] = newQueue;
+                        }
+                        else
+                        {
+                            //No unreported messages exist - check for reported messages
+                            var allCount = statusContext.StatusMessages[modelTypeName].Count;
+                            var reportedCount = statusContext.StatusMessages[modelTypeName].Count(sm => sm.Reported);
+
+                            if ((0 < allCount ) && (allCount == reportedCount))
+                            {
+                                //Reported message exist - all messages reported - return 'OK' (aka on client as 'end condition')
+                                httpStatusCode = HttpStatusCode.OK;
+                            }
+                            else if (0 >= allCount)
+                            {
+                                //No messages exist - return 204 - 'no content'
+                                httpStatusCode = HttpStatusCode.NoContent;
+                            }
+                            else if (allCount != reportedCount)
+                            {
+                                //NOTE: Should probably never happen...
+                                //No all messge reported - return 206 - 'partial content'
+                                httpStatusCode = HttpStatusCode.PartialContent;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //No status message exist - return 204 - 'no content'
+                        httpStatusCode = HttpStatusCode.NoContent;
+                    }
+
+                    //Convert 'to report' collection to JSON - add to response 
+                    string jsonData = Newtonsoft.Json.JsonConvert.SerializeObject(dbLoadStatus);
+
+                    response.StatusCode = httpStatusCode;
+                    response.Content = new StringContent(jsonData, System.Text.Encoding.UTF8, "application/json");
+                }
+            }
+
+            //Processing complete - return response
+            return response;
+        }
+
+
         //Get Rejected Items method...
         //GET api/revisedupload/get/rejecteditems/{uploadId}/{tableName}
         //See WebApiConfig.cs for custom route...
-        [HttpGet]
+        [System.Web.Http.AcceptVerbs("GET", "POST")]
+        [System.Web.Http.HttpGet]
         public async Task<HttpResponseMessage> GetRejectedItems(string uploadId, string tableName)
         {
             HttpResponseMessage response = new HttpResponseMessage();
@@ -464,7 +853,8 @@ namespace HydroServerTools.Controllers.api
         //Get Rejected Items File method...
         //GET api/revisedupload/get/rejecteditemsfile/{uploadId}/{tableName}
         //See WebApiConfig.cs for custom route...
-        [HttpGet]
+        [System.Web.Http.AcceptVerbs("GET", "POST")]
+        [System.Web.Http.HttpGet]
         public async Task<HttpResponseMessage> GetRejectedItemsFile(string uploadId, string tableName)
         {
             HttpResponseMessage response = new HttpResponseMessage();
@@ -650,7 +1040,8 @@ namespace HydroServerTools.Controllers.api
         //Request DB Table Counts method...
         //Post api/revisedupload/post/requestdbtablecounts/{tablenames}
         //See WebApiConfig.cs for custom route...
-        [HttpPost]
+        [System.Web.Http.AcceptVerbs("GET", "POST")]
+        [System.Web.Http.HttpPost]
         public async Task<HttpResponseMessage> RequestDbTableCounts()
         {
             HttpResponseMessage response = new HttpResponseMessage();
@@ -711,7 +1102,8 @@ namespace HydroServerTools.Controllers.api
         //PUT api/revisedupload/put/{uploadId}
         //Web API feature: Have to name the input variable 'uploadId' to satisfy the router!!!
         //See WebApiConfig.cs for custom route...
-        [HttpPut]
+        [System.Web.Http.AcceptVerbs("GET", "POST")]
+        [System.Web.Http.HttpPut]
         public async Task<HttpResponseMessage> Put(string uploadId)
         {
             HttpResponseMessage response = new HttpResponseMessage();
@@ -833,6 +1225,9 @@ namespace HydroServerTools.Controllers.api
 
             //Invoke DB load processing on validated binary files...
             //NOTE: Member semaphore is referenced periodically within the LoadDb(...) call...
+
+            //dbLoadContext.DbLoadState = DbLoadContext.enumDbLoadState.dbls_Started;     //Set 'started' state
+
             await repositoryContext.LoadDb(uploadId, pathValidated, pathProcessed, statusContext, dbLoadContext);
 
             //Retrieve db load results, if any - return to client in response data...
@@ -845,6 +1240,9 @@ namespace HydroServerTools.Controllers.api
                     response.Content = new StringContent(jsonData, System.Text.Encoding.UTF8, "application/json");
                 }
             }
+
+            //dbLoadContext.DbLoadState = DbLoadContext.enumDbLoadState.dbls_Complete;     //Set 'complete' state
+
             //update updateTracking table to indicate changes
             HydroServerToolsUtils.InsertTrackUpdates(userName);
 
@@ -856,7 +1254,8 @@ namespace HydroServerTools.Controllers.api
         //Put (updated) Rejected Items method...
         //PUT api/revisedupload/put/rejecteditems/
         //See WebApiConfig.cs for custom route...
-        [HttpPut]
+        [System.Web.Http.AcceptVerbs("GET", "POST")]
+        [System.Web.Http.HttpPut]
         public async Task<HttpResponseMessage> PutRejectedItems()
         {
             HttpResponseMessage response = new HttpResponseMessage();
@@ -1061,6 +1460,8 @@ namespace HydroServerTools.Controllers.api
         }
 
         //Post method...
+        [System.Web.Http.AcceptVerbs("GET", "POST")]
+        [System.Web.Http.HttpPost]
         public async Task<HttpResponseMessage> Post()
         {
             HttpResponseMessage response = new HttpResponseMessage();
@@ -1079,10 +1480,12 @@ namespace HydroServerTools.Controllers.api
             //Retrieve form data via request context...
             List<FileNameAndType> fileNamesAndTypes = null;
             string currentUploadId = String.Empty;
+            string validationQualifier = String.Empty;
             if ( HttpContext.Current.Request.Form.HasKeys() )
             {
                 var form = HttpContext.Current.Request.Form;
                 currentUploadId = form["currentUploadId"];
+                validationQualifier = form["validationQualifier"];
                 try
                 {
                     fileNamesAndTypes = Newtonsoft.Json.JsonConvert.DeserializeObject<List<FileNameAndType>>(form["fileNamesAndTypes"]);
@@ -1106,6 +1509,7 @@ namespace HydroServerTools.Controllers.api
             }
 #if (DEBUG)
             debugData.currentUploadId = currentUploadId;
+            debugData.validationQualifier = validationQualifier;
 #endif
             var fileContexts = getFileContexts();
             FileContext fileContext = null;
@@ -1203,7 +1607,9 @@ namespace HydroServerTools.Controllers.api
                         {
                             //Skip 'form' data...
                             var name = content.Headers.ContentDisposition.Name.Trim(charArray);
-                            if ("fileNamesAndTypes" == name || "currentUploadId" == name)
+                            if ("fileNamesAndTypes" == name || 
+                                "currentUploadId" == name   ||
+                                "validationQualifier" == name)
                             {
                                 continue;
                             }
@@ -1264,7 +1670,7 @@ namespace HydroServerTools.Controllers.api
                                 //If the last chunk, queue a validation task for the completed file
                                 if (isLastChunk)
                                 {
-                                    await ValidateFileContentsAsync(currentUploadId, contentType, fileName, filePathAndName);
+                                    await ValidateFileContentsAsync(currentUploadId, contentType, fileName, filePathAndName, validationQualifier);
                                 }
                             }
                         }
@@ -1324,7 +1730,7 @@ namespace HydroServerTools.Controllers.api
 
         //Delete the input file per the input uploadId...
         //DELETE api/revisedupload/delete/file/{uploadId}/{fileName}
-        [HttpDelete]
+        [System.Web.Http.HttpDelete]
         public async Task<HttpResponseMessage> DeleteFile(string uploadId, string fileName)
         {
             HttpResponseMessage response = new HttpResponseMessage();
@@ -1443,7 +1849,7 @@ namespace HydroServerTools.Controllers.api
 
         //Delete all entries and files associated with the input uploadId...
         //DELETE api/revisedupload/delete/uploadId/{uploadId}
-        [HttpDelete]
+        [System.Web.Http.HttpDelete]
         public async Task<HttpResponseMessage> DeleteUploadId(string uploadId)
         {
             HttpResponseMessage response = new HttpResponseMessage();
@@ -1521,9 +1927,7 @@ namespace HydroServerTools.Controllers.api
         //An asynchronous method for file content validation...
         //ASSUMPTION: Referenced file is available for read access
         //Source: https://www.dotnetperls.com/async
-        //private static async void ValidateFileContentsAsync(string uploadId, string fileName, string filePathAndName)
-        //private static async Task ValidateFileContentsAsync(string uploadId, string fileName, string filePathAndName)
-        private async Task ValidateFileContentsAsync(string uploadId, string contentType, string fileName, string filePathAndName)
+        private async Task ValidateFileContentsAsync(string uploadId, string contentType, string fileName, string filePathAndName, string validationQualifier)
         {
             //Await a task to ensure this method runs asynchronously
             await Task.Run( async () =>
@@ -1534,7 +1938,8 @@ namespace HydroServerTools.Controllers.api
                 //NOTE: input contentType may be empty...
                 if ((!String.IsNullOrWhiteSpace(uploadId)) && 
                     (!String.IsNullOrWhiteSpace(fileName)) && 
-                    (!String.IsNullOrWhiteSpace(filePathAndName)))
+                    (!String.IsNullOrWhiteSpace(filePathAndName)) &&
+                    (!String.IsNullOrWhiteSpace(validationQualifier)))
                 {
                     //Input parameters valid - retrieve/create associated context instance...
                     if ( !validationContexts.TryGetValue(uploadId, out validationContext))
@@ -1578,7 +1983,10 @@ namespace HydroServerTools.Controllers.api
                             var csvValidator = validationResult.FileValidator;
                             if (null != csvValidator)
                             {
-                                //Validator found - validate file contents...
+                                //Validator found - set validation qualifier...
+                                csvValidator.ValidationQualifier = validationQualifier;
+
+                                //Validate file contents...
                                 try
                                 {
                                     bool vfcResult = await csvValidator.ValidateFileContents();

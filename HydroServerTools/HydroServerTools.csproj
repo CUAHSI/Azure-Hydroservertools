@@ -328,6 +328,7 @@
     <Compile Include="Utilities\RepositoryContext.cs" />
     <Compile Include="Utilities\ValidationContext.cs" />
     <Compile Include="Validators\CsvValidator.cs" />
+    <Compile Include="Validators\IValidationComplete.cs" />
     <Compile Include="Validators\ValidationResult.cs" />
     <Compile Include="Utilities\ServiceRegistrationHelper.cs" />
   </ItemGroup>
@@ -590,8 +591,11 @@
     <Content Include="Scripts\custom\Manage.js" />
     <Content Include="Scripts\custom\RandomId.js" />
     <Content Include="Scripts\custom\revisedUploadUtils.js" />
+    <Content Include="Scripts\custom\workerMonitor.js" />
     <Content Include="Scripts\custom\UploadHelper.js" />
     <Content Include="Scripts\custom\ViewDataHelper.js" />
+    <Content Include="Scripts\custom\workers\workerDbLoadStatus.js" />
+    <Content Include="Scripts\custom\workers\workerCsvValidationResults.js" />
     <Content Include="Scripts\DataTables-1.9.4\docs\media\js\doc.js" />
     <Content Include="Scripts\DataTables-1.9.4\docs\media\js\jquery.js" />
     <Content Include="Scripts\DataTables-1.9.4\docs\media\js\shBrushJScript.js" />
@@ -880,6 +884,7 @@
     <Content Include="Templates\Advanced Uploading Guide.pdf" />
     <Content Include="Templates\CUAHSI Formatting Guide.pdf" />
     <Content Include="Templates\Standard Uploading Guide.pdf" />
+    <Content Include="Views\CSVUpload\DragAndDropFilesRevised.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

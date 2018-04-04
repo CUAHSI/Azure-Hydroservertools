@@ -240,7 +240,8 @@ namespace HydroServerTools.Controllers
                     case "draganddropfiles_meta_data":      //Select Upload Type input...
                     case "draganddropfiles_data_values":    //Select Upload Type input...
                         {
-                            viewName = "DragAndDropFiles";
+                            //viewName = "DragAndDropFiles";
+                            viewName = "DragAndDropFilesRevised";
                             //Set temp data for qualifier, if indicated
                             switch (idLower)
                             {

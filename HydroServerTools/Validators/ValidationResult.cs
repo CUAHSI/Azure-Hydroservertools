@@ -6,7 +6,7 @@ using System.Web;
 namespace HydroServerTools.Validators
 {
     //A simple generic class for the association of a validator with a file name
-    public class ValidationResult<TValidator>
+    public class ValidationResult<TValidator> where TValidator : class, IValidationComplete
     {
         //Constructors...
 
@@ -14,7 +14,7 @@ namespace HydroServerTools.Validators
         private ValidationResult() { }
 
         //Initializing...
-        public ValidationResult( string fileName, TValidator fileValidator)
+        public ValidationResult(string fileName, TValidator fileValidator)
         {
 #if (DEBUG)
             if (String.IsNullOrWhiteSpace(fileName) || null == fileValidator)
@@ -34,6 +34,12 @@ namespace HydroServerTools.Validators
 
         public TValidator FileValidator { get; private set; }
 
-        //public bool ValidationComplete { get; set; }
+        public bool ValidationComplete
+        {
+            get
+            {
+                return FileValidator.ValidationComplete;
+            }
+        }
     }
 }
