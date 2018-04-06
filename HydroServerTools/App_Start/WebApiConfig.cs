@@ -57,6 +57,12 @@ namespace HydroServerTools
                 routeTemplate: "api/revisedupload/get/dbloadstatusforfile/{uploadId}/{fileName}",
                 defaults: new { controller = "RevisedUpload", action = "GetDbLoadStatusForFile" });
 
+            //Get DB Record Counts for File Route
+            config.Routes.MapHttpRoute(
+                name: "RevisedUploadApiGetDbRecordCountsForFile",
+                routeTemplate: "api/revisedupload/get/dbrecordcountsforfile/{uploadId}/{fileName}",
+                defaults: new { controller = "RevisedUpload", action = "GetDbRecordCountsForFile" });
+
             //Get Rejected Items Route...
             config.Routes.MapHttpRoute(
                 name: "RevisedUploadApiGetRejectedItems",

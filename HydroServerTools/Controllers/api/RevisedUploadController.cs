@@ -45,6 +45,18 @@ namespace HydroServerTools.Controllers.api
             public Dictionary<string, List<StatusMessage>> modelNamesToStatusMessages { get; set; }
         }
 
+        public class DbRecordCountStatus
+        {
+            //Properties...
+            public string uploadId { get; set; }
+
+            public Dictionary<string, string> fileNamesToModelNames { get; set; }
+
+            public Dictionary<string, RecordCountMessage> modelNamesToProcessedMessages { get; set; }
+
+            public Dictionary<string, RecordCountMessage> modelNamesToLoadedMessages { get; set; }
+        }
+
         //NOTE: Static members are thread-specific in web api!!
         //      One HttpRuntime.Cache instance exists for the Application Domain...
 
@@ -650,6 +662,193 @@ namespace HydroServerTools.Controllers.api
             return response;
         }
 
+        //GET api/revisedupload/get/dbrecordcountsforfile/{uploadId}/{fileName}
+        //Web API feature: Have to name the input variable 'uploadId' to satisfy the router!!!
+        //See WebApiConfig.cs for custom route...
+        [System.Web.Http.AcceptVerbs("GET", "POST")]
+        [System.Web.Http.HttpGet]
+        public async Task<HttpResponseMessage> GetDbRecordCountsForFile(string uploadId, string filename)
+        {
+            HttpResponseMessage response = new HttpResponseMessage();
+            HttpStatusCode httpStatusCode = HttpStatusCode.OK;  //Assume success...
+            DbRecordCountStatus dbRecordCountStatus = new DbRecordCountStatus();
+
+            //Validate/initialize input parameters
+            if (String.IsNullOrWhiteSpace(uploadId) || String.IsNullOrWhiteSpace(filename))
+            {
+                response.StatusCode = HttpStatusCode.BadRequest;    //Missing/invalid parameter(s) - return early
+                response.ReasonPhrase = "Invalid parameter(s)";
+                return response;
+            }
+
+            var validationContexts = getValidationContexts();
+            var statusContexts = getStatusContexts();
+            if ((!validationContexts.ContainsKey(uploadId)) || (!statusContexts.ContainsKey(uploadId)))
+            {
+                if (!validationContexts.ContainsKey(uploadId))
+                {
+                    //No validation results - return early with not found...
+                    response.StatusCode = HttpStatusCode.NotFound;
+                    response.ReasonPhrase = "Unknown upload id...";
+                    return response;
+                }
+                else if (!statusContexts.ContainsKey(uploadId))
+                {
+                    //No status results - create a new entry...
+                    StatusContext sc = null;
+                    if (!statusContexts.TryGetValue(uploadId, out sc))
+                    {
+                        //Not found - create new instance...
+                        sc = new StatusContext();
+                        statusContexts.TryAdd(uploadId, sc);
+
+                        //Get the instance again...
+                        // IIS threading alert... Since the TryAdd(...) call occurs outside  
+                        // any Semaphore 'using' block it is not thread-safe!!  Thus another 
+                        // IIS thread may have already added a context for the uploadId.  
+                        // Getting the instance again ensures all IIS threads reference the 
+                        // ***same*** context...
+                        statusContexts.TryGetValue(uploadId, out sc);
+                    }
+
+                    //Check for status context...
+                    if (null == sc)
+                    {
+                        response.StatusCode = HttpStatusCode.BadRequest;    //No repository context - return early
+                        response.ReasonPhrase = "Cannot find/create status context for current upload Id... (from get/dbloadstatusforfile/)";
+                        return response;
+                    }
+
+                }
+            }
+
+            //Input uploadId valid - retrieve validation context... 
+            dbRecordCountStatus.uploadId = uploadId;
+            ValidationContext<CsvValidator> validationContext = validationContexts[uploadId];
+
+            dbRecordCountStatus.fileNamesToModelNames = new Dictionary<string, string>();
+            using (await validationContext.ValidationResultSemaphore.UseWaitAsync())
+            {
+                //Scan validation results for input file name...
+                var valiDATORResults = validationContext.ValidationResults;                     //CsvValidator
+
+                var validatorResult = valiDATORResults.FirstOrDefault(vr => vr.FileName.ToLowerInvariant() == filename.ToLowerInvariant());
+                if (default(ValidationResult<CsvValidator>) == validatorResult)
+                {
+                    //Validation result not found...
+                    response.StatusCode = HttpStatusCode.BadRequest;    //Unknown file name - return early
+                    response.ReasonPhrase = "Unknown file name...";
+                    return response;
+                }
+
+                //File name found - retrieve associated model type...
+                CsvValidator csvValidator = validatorResult.FileValidator;
+                Type modelType = csvValidator.ValidatedModelType;
+
+                if (null == modelType)
+                {
+                    //Model Type not found...
+                    response.StatusCode = HttpStatusCode.BadRequest;    //Unknown model type - return early
+                    response.ReasonPhrase = "File contents not validated...";
+                    return response;
+                }
+
+                //Model type found - retrieve associated status message(s), if any...
+                var modelTypeName = modelType.Name;
+
+                //dbLoadStatus.fileNamesToModelNames.Add(validatorResult.FileName, modelTypeName);
+
+                //Check if model type implements IHydroserverRepositoryProxy<,>...
+                Type sourceType = null;
+                Type proxyType = null;
+
+                var iHRPs = modelType.GetInterfaces().Where(i => i.IsGenericType &&
+                                                      i.GetGenericTypeDefinition() == typeof(IHydroserverRepositoryProxy<,>));
+                foreach (var iHRP in iHRPs)
+                {
+                    var definition = iHRP.GetGenericTypeDefinition();
+                    var arguments = iHRP.GenericTypeArguments;
+                    var typeInfo = definition as TypeInfo;
+                    if (null != typeInfo)
+                    {
+                        //Check interface type parameters and arguments...
+                        var typeParams = typeInfo.GenericTypeParameters;
+                        int index = 0;
+
+                        foreach (var typeParam in typeParams)
+                        {
+                            if ("tSourceType" == typeParam.Name)
+                            {
+                                sourceType = arguments[index];
+                            }
+
+                            if ("tProxyType" == typeParam.Name)
+                            {
+                                proxyType = arguments[index];
+                            }
+                            ++index;
+                        }
+
+                        if (sourceType == modelType && null != proxyType)
+                        {
+                            //Proxy type found - update model type name...
+                            modelTypeName = proxyType.Name;
+                            break;
+                        }
+                    }
+                }
+
+                dbRecordCountStatus.fileNamesToModelNames.Add(validatorResult.FileName, modelTypeName);
+
+                //retrieve status message context
+                StatusContext statusContext = statusContexts[uploadId];
+
+                dbRecordCountStatus.modelNamesToProcessedMessages = new Dictionary<string, RecordCountMessage>();
+                dbRecordCountStatus.modelNamesToLoadedMessages = new Dictionary<string, RecordCountMessage>();
+
+                //Retrieve processed and loaded messages...
+                RecordCountMessage processedMessage = await statusContext.GetCountsMessage(StatusContext.enumCountType.ct_DbProcess, modelTypeName);
+                RecordCountMessage loadedMessage = await statusContext.GetCountsMessage(StatusContext.enumCountType.ct_DbLoad, modelTypeName);
+
+                //Add to collections...
+                bool bFinal = (null == processedMessage && null == loadedMessage) ? false     //No counts exist, set final indicator 
+                                                                                  : true;     //One (or both) records exist - assume all record counting complete...
+                httpStatusCode = (null == processedMessage && null == loadedMessage) ? HttpStatusCode.NoContent         //No counts exist, set no content code
+                                                                                     : HttpStatusCode.PartialContent;   //One (or both) records exist - set partial content code
+                if (null != processedMessage)
+                {
+                    dbRecordCountStatus.modelNamesToProcessedMessages[modelTypeName] = processedMessage;
+                    if (!processedMessage.Final)
+                    {
+                        bFinal = false; //Processed message not final - set indicator
+                    }
+                }
+
+                if (null != loadedMessage)
+                {
+                    dbRecordCountStatus.modelNamesToLoadedMessages[modelTypeName] = loadedMessage;
+                    if (!loadedMessage.Final)
+                    {
+                        bFinal = false; //Processed message not final - set indicator
+                    }
+                }
+
+                if (bFinal)
+                {
+                    //All record counts final - update http status code
+                    httpStatusCode = HttpStatusCode.OK;
+                }
+
+                //Convert record count status to JSON - add to response
+                string jsonData = Newtonsoft.Json.JsonConvert.SerializeObject(dbRecordCountStatus);
+
+                response.StatusCode = httpStatusCode;
+                response.Content = new StringContent(jsonData, System.Text.Encoding.UTF8, "application/json");
+            }
+
+            //Processing complete - return response
+            return response;
+        }
 
         //Get Rejected Items method...
         //GET api/revisedupload/get/rejecteditems/{uploadId}/{tableName}

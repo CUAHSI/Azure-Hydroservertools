@@ -107,7 +107,7 @@ self.onmessage = function (event) {
                     //Get response data...
                     var dbLoadStatus = xhr.response;    
                     if (204 === xhr.status && null === dbLoadStatus) {
-                        //'No content', 204, received and null response - return early...
+                        //'No content', 204, received and null response...
                         console.log('workerDbLoadStatus - null === xhr.response!!');
                     }
 
@@ -171,7 +171,6 @@ self.onmessage = function (event) {
                         "outputData": { "message": xhr.statusText }
                     });                    
                 }
-
             }
         }
 

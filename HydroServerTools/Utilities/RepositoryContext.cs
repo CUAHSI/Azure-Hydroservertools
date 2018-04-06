@@ -577,7 +577,10 @@ namespace HydroServerTools.Utilities
                                                 System.Collections.IList iList2 = paramNamesToLists["listOfCorrectRecords"];
                                                 if (0 < iList2.Count)
                                                 {
-                                                    //New records exist - invoke 'CommitNew...' method...
+                                                    //New records exist - set substitute key in statusContext...
+                                                    await statusContext.AddSubstituteKey(efType.Name, (useProxy ? proxyType.Name : modelType.Name));
+
+                                                    //Invoke 'CommitNew...' method...
                                                     methodInfo_G = methodInfoCommit.MakeGenericMethod(((null != proxyType) ? proxyType : modelType));
                                                     object[] objArrayC = new object[] { entityConnectionString,
                                                                                         tableName,

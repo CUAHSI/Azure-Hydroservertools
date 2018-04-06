@@ -597,57 +597,51 @@ namespace HydroServerToolsRepository.Repository
         {
             try 
             { 
-            //connection = "Data Source=tcp:bhi5g2ajst.database.windows.net,1433;Database=hydroservertest2;User ID=HisCentralAdmin@bhi5g2ajst;Password=f3deratedResearch;Integrated Security=false;Trusted_Connection=False;Encrypt=True;Connection Timeout=30;Persist Security Info = true";
+                //connection = "Data Source=tcp:bhi5g2ajst.database.windows.net,1433;Database=hydroservertest2;User ID=HisCentralAdmin@bhi5g2ajst;Password=f3deratedResearch;Integrated Security=false;Trusted_Connection=False;Encrypt=True;Connection Timeout=30;Persist Security Info = true";
 
+                //bulkCopy.BatchSize = list.Count;
+                // bulkCopy.DestinationTableName = tableName;
+                var table = new DataTable();
+                var props = TypeDescriptor.GetProperties(typeof(targetType))
+                    //Dirty hack to make sure we only have system data types 
+                    //i.e. filter out the relationships/collections
+                                           .Cast<PropertyDescriptor>()
+                                           .Where(propertyInfo => propertyInfo.PropertyType.Namespace.Equals("System"))
+                                           .ToArray();
+                var sortedProps = props.OrderBy(x => x.Name).ToArray();
 
-
-            //bulkCopy.BatchSize = list.Count;
-            // bulkCopy.DestinationTableName = tableName;
-
-
-            var table = new DataTable();
-            var props = TypeDescriptor.GetProperties(typeof(targetType))
-                //Dirty hack to make sure we only have system data types 
-                //i.e. filter out the relationships/collections
-                                       .Cast<PropertyDescriptor>()
-                                       .Where(propertyInfo => propertyInfo.PropertyType.Namespace.Equals("System"))
-                                       .ToArray();
-            var sortedProps = props.OrderBy(x => x.Name).ToArray();
-
-            foreach (var propertyInfo in props)
-            {
-                if (propertyInfo.Name != "ValueID")
+                foreach (var propertyInfo in props)
                 {
-                    //bulkCopy.ColumnMappings.Add(propertyInfo.Name, propertyInfo.Name);
-                }
-                table.Columns.Add(propertyInfo.Name, Nullable.GetUnderlyingType(propertyInfo.PropertyType) ?? propertyInfo.PropertyType);
+                    if (propertyInfo.Name != "ValueID")
+                    {
+                        //bulkCopy.ColumnMappings.Add(propertyInfo.Name, propertyInfo.Name);
+                    }
+                    table.Columns.Add(propertyInfo.Name, Nullable.GetUnderlyingType(propertyInfo.PropertyType) ?? propertyInfo.PropertyType);
 
-            }
-
-            var values = new object[props.Length];
-            foreach (var item in list)
-            {
-
-                for (var i = 0; i < values.Length; i++)
-                {
-                    values[i] = props[i].GetValue(item);
                 }
 
-                table.Rows.Add(values);
-            }
+                var values = new object[props.Length];
+                foreach (var item in list)
+                {
 
+                    for (var i = 0; i < values.Length; i++)
+                    {
+                        values[i] = props[i].GetValue(item);
+                    }
 
+                    table.Rows.Add(values);
+                }
 
-            // open the destination data
-            using (SqlConnection destinationConnection =
-                            new SqlConnection(connection))
-            {
-                // open the connection
-                destinationConnection.Open();
+                // open the destination data
+                using (SqlConnection destinationConnection =
+                                new SqlConnection(connection))
+                {
+                    // open the connection
+                    destinationConnection.Open();
 
                     using (SqlBulkCopy bulkCopy =
                                 new SqlBulkCopy(destinationConnection.ConnectionString, SqlBulkCopyOptions.KeepNulls))//| SqlBulkCopyOptions.CheckConstraints ))
-                {
+                    {
 
                         //bulkCopy.SqlRowsCopied += new SqlRowsCopiedEventHandler(OnSqlRowsTransfer, instanceIdentifier, CacheName);
                         bulkCopy.SqlRowsCopied += async (s, e) =>
@@ -661,21 +655,46 @@ namespace HydroServerToolsRepository.Repository
                             else
                             {
                                 await statusContext.AddStatusMessage(typeof (targetType).Name, statusMessage);
+
+                                int inserted = 0;
+                                try
+                                {
+                                    inserted = Convert.ToInt32(e.RowsCopied);
+                                }
+                                catch (Exception )
+                                {
+                                    inserted = Int32.MaxValue;  //Failure of long to int conversion...
+                                }
+
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbLoad, typeof(targetType).Name, inserted, 0, 0, 0);
                             }
 
                         };
+
                         //bulkCopy.SqlRowsCopied += (sender, e) => { = instanceIdentifier, CacheName};
                         bulkCopy.NotifyAfter = 5000;
-                    bulkCopy.BatchSize = 10000;
-                    // Set the timeout.
-                    bulkCopy.BulkCopyTimeout = 6000;
+                        bulkCopy.BatchSize = 10000;
+                        // Set the timeout.
+                        bulkCopy.BulkCopyTimeout = 6000;
 
-                    // bulkCopy.ColumnMappings.Add("OrderID", "NewOrderID");     
-                    bulkCopy.DestinationTableName = tableName;
-                    bulkCopy.WriteToServer(table);
+                        // bulkCopy.ColumnMappings.Add("OrderID", "NewOrderID");     
+                        bulkCopy.DestinationTableName = tableName;
+                        bulkCopy.WriteToServer(table);
+
+                        int totalRows = table.Rows.Count;
+                        if (null != statusContext)
+                        {
+                            await statusContext.SetRecordCount(StatusContext.enumCountType.ct_DbLoad, typeof(targetType).Name, totalRows);
+                        }
+                        if ((totalRows < bulkCopy.NotifyAfter) && (null != statusContext))
+                        {
+                            //Bulk copy will not call SqlRowCopied callback - write once to status context to record db load... 
+                            await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbLoad, typeof(targetType).Name, totalRows, 0, 0, 0);
+                            await statusContext.Finalize(StatusContext.enumCountType.ct_DbLoad, typeof(targetType).Name);
+                        }
+                    }
                 }
             }
-                }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
@@ -691,6 +710,7 @@ namespace HydroServerToolsRepository.Repository
                 else
                 {
                     await statusContext.AddStatusMessage(typeof(targetType).Name, statusMessage);
+                    await statusContext.Finalize(StatusContext.enumCountType.ct_DbLoad, typeof(targetType).Name);
                 }
             }
             //bulkCopy.WriteToServer(table);
