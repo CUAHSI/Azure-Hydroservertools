@@ -436,7 +436,6 @@ namespace HydroServerToolsRepository.Repository
             var maxCount = itemList.Count;
             var count = 0;
 
-            //var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
             var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING_RECORDS, maxCount, "Sites");
             if (null == statusContext)
             {
@@ -445,6 +444,7 @@ namespace HydroServerToolsRepository.Repository
             else
             {
                 await statusContext.AddStatusMessage(typeof (SiteModel).Name, statusMessage);
+                await statusContext.SetRecordCount(StatusContext.enumCountType.ct_DbProcess, typeof(SiteModel).Name, itemList.Count);
             }
 
             foreach (var item in itemList)
@@ -907,6 +907,11 @@ namespace HydroServerToolsRepository.Repository
                         }
                         item.Errors = sb.ToString();
                         listOfIncorrectRecords.Add(item);
+                        if (null != statusContext)
+                        {
+                            await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(SiteModel).Name, 0, 0, 1, 0);
+                        }
+
                         continue;
                     }
                     //check for duplicates first in database then in upload if a duplicate site is found the record will be rejected.
@@ -927,11 +932,20 @@ namespace HydroServerToolsRepository.Repository
                             //context.Sites.Add(model);
                         //context.SaveChanges();
                             listOfCorrectRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(SiteModel).Name, 1, 0, 0, 0);
+                            }
                         }
                         else
                         {
                             var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_ISDUPLICATE,"SiteCode")); listOfErrors.Add(err); isRejected = true;
                             listOfIncorrectRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(SiteModel).Name, 0, 0, 1, 0);
+                            }
+
                             item.Errors += err.ErrorMessage + ";";
                             if (null != statusContext)
                             {
@@ -968,6 +982,11 @@ namespace HydroServerToolsRepository.Repository
                         {
 
                             listOfEditedRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(SiteModel).Name, 0, 1, 0, 0);
+                            }
+
                             var sb = new StringBuilder();
                             foreach (var u in listOfUpdates)
                             {
@@ -985,6 +1004,10 @@ namespace HydroServerToolsRepository.Repository
                         else
                         {
                             listOfDuplicateRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(SiteModel).Name, 0, 0, 0, 1);
+                            }
                         }
                         //var modifiedEntries = this.ObjectStateManager.GetObjectStateEntries(EntityState.Modified);
 
@@ -1028,15 +1051,29 @@ namespace HydroServerToolsRepository.Repository
                 {
 
                     listOfIncorrectRecords.Add(item);
+                    if (null != statusContext)
+                    {
+                        await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(SiteModel).Name, 0, 0, 1, 0);
+                    }
                 }
                 //catch (Exception ex)
                 catch (Exception)
                 {
                     listOfIncorrectRecords.Add(item);
+                    if (null != statusContext)
+                    {
+                        await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(SiteModel).Name, 0, 0, 1, 0);
+                    }
                 }
 
             }
-          
+
+            //Finalize status context...
+            if (null != statusContext)
+            {
+                await statusContext.Finalize(StatusContext.enumCountType.ct_DbProcess, typeof(SiteModel).Name);
+            }
+
             return;
         }
 
@@ -1311,7 +1348,6 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            //var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
             var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING_RECORDS, maxCount, "Variables");
             if (null == statusContext)
             {
@@ -1320,6 +1356,7 @@ namespace HydroServerToolsRepository.Repository
             else
             {
                 await statusContext.AddStatusMessage(typeof (VariablesModel).Name, statusMessage);
+                await statusContext.SetRecordCount(StatusContext.enumCountType.ct_DbProcess, typeof(VariablesModel).Name, itemList.Count);
             }
 
             foreach (var item in itemList)
@@ -1678,6 +1715,11 @@ namespace HydroServerToolsRepository.Repository
                         }
                         item.Errors = sb.ToString();
                         listOfIncorrectRecords.Add(item);
+                        if (null != statusContext)
+                        {
+                            await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(VariablesModel).Name, 0, 0, 1, 0);
+                        }
+
                         continue;
                     }
                                         
@@ -1695,11 +1737,20 @@ namespace HydroServerToolsRepository.Repository
                             //context.Sites.Add(model);
                             //context.SaveChanges();
                             listOfCorrectRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(VariablesModel).Name, 1, 0, 0, 0);
+                            }
                         }
                         else
                         {
                             var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_ISDUPLICATE, "VariableCode")); listOfErrors.Add(err); isRejected = true;
                             listOfIncorrectRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(VariablesModel).Name, 0, 0, 1, 0);
+                            }
+
                             item.Errors += err.ErrorMessage + ";";
                             if (null != statusContext)
                             {
@@ -1731,6 +1782,10 @@ namespace HydroServerToolsRepository.Repository
                         if (listOfUpdates.Count() > 0)
                         {
                             listOfEditedRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(VariablesModel).Name, 0, 1, 0, 0);
+                            }
                             var sb = new StringBuilder();
                             foreach (var u in listOfUpdates)
                             {
@@ -1748,6 +1803,10 @@ namespace HydroServerToolsRepository.Repository
                         else
                         {
                             listOfDuplicateRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(VariablesModel).Name, 0, 0, 0, 1);
+                            }
                         }
 
                     }
@@ -1756,7 +1815,17 @@ namespace HydroServerToolsRepository.Repository
                 catch (Exception)
                 {
                     listOfIncorrectRecords.Add(item);
+                    if (null != statusContext)
+                    {
+                        await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(VariablesModel).Name, 0, 0, 1, 0);
+                    }
                 }
+            }
+
+            //Finalize status context...
+            if (null != statusContext)
+            {
+                await statusContext.Finalize(StatusContext.enumCountType.ct_DbProcess, typeof(VariablesModel).Name);
             }
 
             return;
@@ -1940,7 +2009,6 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            //var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
             var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING_RECORDS, maxCount, "OffsetTypes");
             if (null == statusContext)
             {
@@ -1949,6 +2017,7 @@ namespace HydroServerToolsRepository.Repository
             else
             {
                 await statusContext.AddStatusMessage(typeof (OffsetTypesModel).Name, statusMessage);
+                await statusContext.SetRecordCount(StatusContext.enumCountType.ct_DbProcess, typeof(OffsetTypesModel).Name, itemList.Count);
             }
 
             foreach (var item in itemList)
@@ -2069,6 +2138,11 @@ namespace HydroServerToolsRepository.Repository
                         }
                         item.Errors = sb.ToString();
                         listOfIncorrectRecords.Add(item);
+                        if (null != statusContext)
+                        {
+                            await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(OffsetTypesModel).Name, 0, 0, 1, 0);
+                        }
+
                         continue;
                     }
 
@@ -2084,11 +2158,20 @@ namespace HydroServerToolsRepository.Repository
                             //context.Sites.Add(model);
                             //context.SaveChanges();
                             listOfCorrectRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(OffsetTypesModel).Name, 1, 0, 0, 0);
+                            }
                         }
                         else
                         {
                             var err = new ErrorModel("AddOffsetType", string.Format(Resources.IMPORT_VALUE_ISDUPLICATE, "OffsetTypeCode")); listOfErrors.Add(err); isRejected = true;
                             listOfIncorrectRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(OffsetTypesModel).Name, 0, 0, 1, 0);
+                            }
+
                             item.Errors += err.ErrorMessage + ";";
                             if (null != statusContext)
                             {
@@ -2108,6 +2191,11 @@ namespace HydroServerToolsRepository.Repository
                         if (listOfUpdates.Count() > 0)
                         {
                             listOfEditedRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(OffsetTypesModel).Name, 0, 1, 0, 0);
+                            }
+
                             var sb = new StringBuilder();
                             foreach (var u in listOfUpdates)
                             {
@@ -2125,6 +2213,10 @@ namespace HydroServerToolsRepository.Repository
                         else
                         {
                             listOfDuplicateRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(OffsetTypesModel).Name, 0, 0, 0, 1);
+                            }
                         }
                     }
 
@@ -2133,9 +2225,20 @@ namespace HydroServerToolsRepository.Repository
                 catch (Exception)
                 {
                     listOfIncorrectRecords.Add(item);
+                    if (null != statusContext)
+                    {
+                        await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(OffsetTypesModel).Name, 0, 0, 1, 0);
+                    }
                 }
 
             }
+
+            //Finalize status context...
+            if (null != statusContext)
+            {
+                await statusContext.Finalize(StatusContext.enumCountType.ct_DbProcess, typeof(OffsetTypesModel).Name);
+            }
+
             return;
         }
 
@@ -2495,7 +2598,6 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            //var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
             var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING_RECORDS, maxCount, "Sources");
 
             if ( null == statusContext)
@@ -2503,6 +2605,7 @@ namespace HydroServerToolsRepository.Repository
             else
             {
                 await statusContext.AddStatusMessage(typeof (SourcesModel).Name, statusMessage);
+                await statusContext.SetRecordCount(StatusContext.enumCountType.ct_DbProcess, typeof(SourcesModel).Name, itemList.Count);
             }
 
             foreach (var item in itemList)
@@ -2836,6 +2939,11 @@ namespace HydroServerToolsRepository.Repository
                         }
                         item.Errors = sb.ToString();
                         listOfIncorrectRecords.Add(item);
+                        if (null != statusContext)
+                        {
+                            await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(SourcesModel).Name, 0, 0, 1, 0);
+                        }
+
                         continue;
                     }
 
@@ -2901,11 +3009,20 @@ namespace HydroServerToolsRepository.Repository
                             //context.SaveChanges();                     
 
                             listOfCorrectRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(SourcesModel).Name, 1, 0, 0, 0);
+                            }
                         }
                         else
                         {
                             var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_ISDUPLICATE, "SourceCode")); listOfErrors.Add(err); isRejected = true;
                             listOfIncorrectRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(SourcesModel).Name, 0, 0, 1, 0);
+                            }
+
                             item.Errors += err.ErrorMessage + ";";
                             if (null != statusContext)
                             {
@@ -2941,6 +3058,11 @@ namespace HydroServerToolsRepository.Repository
                         if (listOfUpdates.Count() > 0)
                         {
                             listOfEditedRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(SourcesModel).Name, 0, 1, 0, 0);
+                            }
+
                             var sb = new StringBuilder();
                             foreach (var u in listOfUpdates)
                             {
@@ -2958,6 +3080,10 @@ namespace HydroServerToolsRepository.Repository
                         else
                         {
                             listOfDuplicateRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(SourcesModel).Name, 0, 0, 0, 1);
+                            }
                         }
                     }
                    
@@ -2967,7 +3093,17 @@ namespace HydroServerToolsRepository.Repository
                 catch (Exception)
                 {
                     listOfIncorrectRecords.Add(item);
+                    if (null != statusContext)
+                    {
+                        await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(SourcesModel).Name, 0, 0, 1, 0);
+                    }
                 }
+            }
+
+            //Finalize status context...
+            if (null != statusContext)
+            {
+                await statusContext.Finalize(StatusContext.enumCountType.ct_DbProcess, typeof(SourcesModel).Name);
             }
 
             return;
@@ -3144,7 +3280,6 @@ namespace HydroServerToolsRepository.Repository
             //var objContext = ((IObjectContextAdapter)context).ObjectContext;
             var maxCount = itemList.Count;
             var count = 0;
-            //var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
             var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING_RECORDS, maxCount, "Method");
 
             if (null == statusContext)
@@ -3154,6 +3289,7 @@ namespace HydroServerToolsRepository.Repository
             else
             {
                 await statusContext.AddStatusMessage(typeof (MethodModel).Name, statusMessage);
+                await statusContext.SetRecordCount(StatusContext.enumCountType.ct_DbProcess, typeof(MethodModel).Name, itemList.Count);
             }
 
             foreach (var item in itemList)
@@ -3241,6 +3377,12 @@ namespace HydroServerToolsRepository.Repository
                         }
                         item.Errors = sb.ToString();
                         listOfIncorrectRecords.Add(item);
+                        if (null != statusContext)
+                        {
+                            await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(MethodModel).Name, 0, 0, 1, 0);
+
+                        }
+
                         continue;
                     }
 
@@ -3258,11 +3400,20 @@ namespace HydroServerToolsRepository.Repository
                             //context.Sites.Add(model);
                             //context.SaveChanges();
                             listOfCorrectRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(MethodModel).Name, 1, 0, 0, 0);
+                            }
                         }
                         else
                         {
                             var err = new ErrorModel("AddMethod", string.Format(Resources.IMPORT_VALUE_ISDUPLICATE, "MethodCode")); listOfErrors.Add(err); isRejected = true;
                             listOfIncorrectRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(MethodModel).Name, 0, 0, 1, 0);
+                            }
+
                             item.Errors += err.ErrorMessage + ";";
                             if (null != statusContext)
                             {
@@ -3282,6 +3433,11 @@ namespace HydroServerToolsRepository.Repository
                         if (listOfUpdates.Count() > 0)
                         {
                             listOfEditedRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(MethodModel).Name, 0, 1, 0, 0);
+                            }
+
                             var sb = new StringBuilder();
                             foreach (var u in listOfUpdates)
                             {
@@ -3299,6 +3455,10 @@ namespace HydroServerToolsRepository.Repository
                         else
                         {
                             listOfDuplicateRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(MethodModel).Name, 0, 0, 0, 1);
+                            }
                         }
                     }
 
@@ -3306,8 +3466,18 @@ namespace HydroServerToolsRepository.Repository
                 catch (Exception)
                 {
                     listOfIncorrectRecords.Add(item);
+                    if (null != statusContext)
+                    {
+                        await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(MethodModel).Name, 0, 0, 1, 0);
+                    }
                 }
 
+            }
+
+            //Finalize status context...
+            if (null != statusContext)
+            {
+                await statusContext.Finalize(StatusContext.enumCountType.ct_DbProcess, typeof(MethodModel).Name);
             }
 
             return;
@@ -3489,7 +3659,6 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            //var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
             var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING_RECORDS, maxCount, "LabMethods");
 
             if (null == statusContext)
@@ -3499,6 +3668,7 @@ namespace HydroServerToolsRepository.Repository
             else
             {
                 await statusContext.AddStatusMessage(typeof (LabMethodModel).Name, statusMessage);
+                await statusContext.SetRecordCount(StatusContext.enumCountType.ct_DbProcess, typeof(LabMethodModel).Name, itemList.Count);
             }
 
             foreach (var item in itemList)
@@ -3641,6 +3811,11 @@ namespace HydroServerToolsRepository.Repository
                         }
                         item.Errors = sb.ToString();
                         listOfIncorrectRecords.Add(item);
+                        if (null != statusContext)
+                        {
+                            await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(LabMethodModel).Name, 0, 0, 1, 0);
+                        }
+
                         continue;
                     }
 
@@ -3658,11 +3833,20 @@ namespace HydroServerToolsRepository.Repository
                             //context.Sites.Add(model);
                             //context.SaveChanges();
                             listOfCorrectRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(LabMethodModel).Name, 1, 0, 0, 0);
+                            }
                         }
                         else
                         {
                             var err = new ErrorModel("AddLabMethods", string.Format(Resources.IMPORT_VALUE_ISDUPLICATE, "LabMethodName")); listOfErrors.Add(err); isRejected = true;
                             listOfIncorrectRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(LabMethodModel).Name, 0, 0, 1, 0);
+                            }
+
                             item.Errors += err.ErrorMessage + ";";
                             if (null != statusContext)
                             {
@@ -3686,6 +3870,11 @@ namespace HydroServerToolsRepository.Repository
                         if (listOfUpdates.Count() > 0)
                         {
                             listOfEditedRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(LabMethodModel).Name, 0, 1, 0, 0);
+                            }
+
                             var sb = new StringBuilder();
                             foreach (var u in listOfUpdates)
                             {
@@ -3703,6 +3892,10 @@ namespace HydroServerToolsRepository.Repository
                         else
                         {
                             listOfDuplicateRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(LabMethodModel).Name, 0, 0, 0, 1);
+                            }
                         }
                     }
 
@@ -3711,9 +3904,19 @@ namespace HydroServerToolsRepository.Repository
                 catch (Exception)
                 {
                     listOfIncorrectRecords.Add(item);
+                    if (null != statusContext)
+                    {
+                        await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(LabMethodModel).Name, 0, 0, 1, 0);
+                    }
                 }
-
             }
+
+            //Finalize status context...
+            if (null != statusContext)
+            {
+                await statusContext.Finalize(StatusContext.enumCountType.ct_DbProcess, typeof(LabMethodModel).Name);
+            }
+
             return;
         }
 
@@ -3917,7 +4120,6 @@ namespace HydroServerToolsRepository.Repository
             var labMethods = context.LabMethods.ToDictionary(p => p.LabMethodName, p => p.LabMethodID);
             var maxCount = itemList.Count;
             var count = 0;
-            //var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
             var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING_RECORDS, maxCount, "Samples");
             if (null == statusContext)
             {
@@ -3926,6 +4128,7 @@ namespace HydroServerToolsRepository.Repository
             else
             {
                 await statusContext.AddStatusMessage(typeof(SampleModel).Name, statusMessage);
+                await statusContext.SetRecordCount(StatusContext.enumCountType.ct_DbProcess, typeof(SampleModel).Name, itemList.Count);
             }
 
             foreach (var item in itemList)
@@ -4040,6 +4243,11 @@ namespace HydroServerToolsRepository.Repository
                         }
                         item.Errors = sb.ToString();
                         listOfIncorrectRecords.Add(item);
+                        if (null != statusContext)
+                        {
+                            await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(SampleModel).Name, 0, 0, 1, 0);
+                        }
+
                         continue;
                     }
                     //need to look up Id's for LabMethodId
@@ -4093,11 +4301,20 @@ namespace HydroServerToolsRepository.Repository
                             //context.Sites.Add(model);
                             //context.SaveChanges();
                             listOfCorrectRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(SampleModel).Name, 1, 0, 0, 0);
+                            }
                         }
                         else
                         {
                             var err = new ErrorModel("AddSample", string.Format(Resources.IMPORT_VALUE_ISDUPLICATE, "LabSampleCode")); listOfErrors.Add(err); isRejected = true;
                             listOfIncorrectRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(SampleModel).Name, 0, 0, 1, 0);
+                            }
+
                             item.Errors += err.ErrorMessage + ";";
                             if (null != statusContext)
                             {
@@ -4117,6 +4334,11 @@ namespace HydroServerToolsRepository.Repository
                         if (listOfUpdates.Count() > 0)
                         {
                             listOfEditedRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(SampleModel).Name, 0, 1, 0, 0);
+                            }
+
                             var sb = new StringBuilder();
                             foreach (var u in listOfUpdates)
                             {
@@ -4134,6 +4356,10 @@ namespace HydroServerToolsRepository.Repository
                         else
                         {
                             listOfDuplicateRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(SampleModel).Name, 0, 0, 0, 1);
+                            }
                         }
                     }
 
@@ -4142,9 +4368,20 @@ namespace HydroServerToolsRepository.Repository
                 catch (Exception)
                 {
                     listOfIncorrectRecords.Add(item);
+                    if (null != statusContext)
+                    {
+                        await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(SampleModel).Name, 0, 0, 1, 0);
+                    }
                 }
 
             }
+
+            //Finalize status context...
+            if (null != statusContext)
+            {
+                await statusContext.Finalize(StatusContext.enumCountType.ct_DbProcess, typeof(SampleModel).Name);
+            }
+
             return;
         }
 
@@ -4301,7 +4538,6 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            //var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
             var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING_RECORDS, maxCount, "Qualifiers");
             if ( null == statusContext)
             {
@@ -4310,6 +4546,7 @@ namespace HydroServerToolsRepository.Repository
             else
             {
                 await statusContext.AddStatusMessage(typeof (QualifiersModel).Name, statusMessage);
+                await statusContext.SetRecordCount(StatusContext.enumCountType.ct_DbProcess, typeof(QualifiersModel).Name, itemList.Count);
             }
 
             foreach (var item in itemList)
@@ -4386,6 +4623,11 @@ namespace HydroServerToolsRepository.Repository
                         }
                         item.Errors = sb.ToString();
                         listOfIncorrectRecords.Add(item);
+                        if (null != statusContext)
+                        {
+                            await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(QualifiersModel).Name, 0, 0, 1, 0);
+                        }
+
                         continue;
                     }
 
@@ -4400,11 +4642,20 @@ namespace HydroServerToolsRepository.Repository
                             context.Qualifiers.Add(model);
                             //context.SaveChanges();
                             listOfCorrectRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(QualifiersModel).Name, 1, 0, 0, 0);
+                            }
                         }
                         else
                         {
                             var err = new ErrorModel("AddQualifiers", string.Format(Resources.IMPORT_VALUE_ISDUPLICATE, "QualifierCode")); listOfErrors.Add(err); isRejected = true;
                             listOfIncorrectRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(QualifiersModel).Name, 0, 0, 1, 0);
+                            }
+
                             item.Errors += err.ErrorMessage + ";";
                             if (null != statusContext)
                             {
@@ -4425,6 +4676,11 @@ namespace HydroServerToolsRepository.Repository
                         if (listOfUpdates.Count() > 0)
                         {
                             listOfEditedRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(QualifiersModel).Name, 0, 1, 0, 0);
+                            }
+
                             var sb = new StringBuilder();
                             foreach (var u in listOfUpdates)
                             {
@@ -4442,6 +4698,10 @@ namespace HydroServerToolsRepository.Repository
                         else
                         {
                             listOfDuplicateRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(QualifiersModel).Name, 0, 0, 0, 1);
+                            }
                         }
                     }
 
@@ -4450,9 +4710,20 @@ namespace HydroServerToolsRepository.Repository
                 catch (Exception)
                 {
                     listOfIncorrectRecords.Add(item);
+                    if (null != statusContext)
+                    {
+                        await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(QualifiersModel).Name, 0, 0, 1, 0);
+                    }
                 }
 
             }
+
+            //Finalize status context...
+            if (null != statusContext)
+            {
+                await statusContext.Finalize(StatusContext.enumCountType.ct_DbProcess, typeof(QualifiersModel).Name);
+            }
+
             return;
         }
 
@@ -4608,7 +4879,6 @@ namespace HydroServerToolsRepository.Repository
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
             var maxCount = itemList.Count;
             var count = 0;
-            //var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
             var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING_RECORDS, maxCount, "QualityControlLevels");
 
             if (null == statusContext)
@@ -4618,6 +4888,7 @@ namespace HydroServerToolsRepository.Repository
             else
             {
                 await statusContext.AddStatusMessage(typeof (QualityControlLevelModel).Name, statusMessage);
+                await statusContext.SetRecordCount(StatusContext.enumCountType.ct_DbProcess, typeof(QualityControlLevelModel).Name, itemList.Count);
             }
 
             foreach (var item in itemList)
@@ -4712,6 +4983,11 @@ namespace HydroServerToolsRepository.Repository
                         }
                         item.Errors = sb.ToString();
                         listOfIncorrectRecords.Add(item);
+                        if (null != statusContext)
+                        {
+                            await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(QualityControlLevelModel).Name, 0, 0, 1, 0);
+                        }
+
                         continue;
                     }
 
@@ -4729,11 +5005,20 @@ namespace HydroServerToolsRepository.Repository
                             context.QualityControlLevels.Add(model);
                             //context.SaveChanges();
                             listOfCorrectRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(QualityControlLevelModel).Name, 1, 0, 0, 0);
+                            }
                         }
                         else
                         {
                             var err = new ErrorModel("AddQualityControlLevel", string.Format(Resources.IMPORT_VALUE_ISDUPLICATE, "QualityControlLevelCode")); listOfErrors.Add(err); isRejected = true;
                             listOfIncorrectRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(QualityControlLevelModel).Name, 0, 0, 1, 0);
+                            }
+
                             item.Errors += err.ErrorMessage + ";";
                             if (null != statusContext)
                             {
@@ -4753,6 +5038,11 @@ namespace HydroServerToolsRepository.Repository
                         if (listOfUpdates.Count() > 0)
                         {
                             listOfEditedRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(QualityControlLevelModel).Name, 0, 1, 0, 0);
+                            }
+
                             var sb = new StringBuilder();
                             foreach (var u in listOfUpdates)
                             {
@@ -4770,6 +5060,10 @@ namespace HydroServerToolsRepository.Repository
                         else
                         {
                             listOfDuplicateRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(QualityControlLevelModel).Name, 0, 0, 0, 1);
+                            }
                         }
                     }
 
@@ -4778,9 +5072,20 @@ namespace HydroServerToolsRepository.Repository
                 catch (Exception)
                 {
                     listOfIncorrectRecords.Add(item);
+                    if (null != statusContext)
+                    {
+                        await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(QualityControlLevelModel).Name, 0, 0, 1, 0);
+                    }
                 }
 
             }
+
+            //Finalize status context...
+            if (null != statusContext)
+            {
+                await statusContext.Finalize(StatusContext.enumCountType.ct_DbProcess, typeof(QualityControlLevelModel).Name);
+            }
+
             return;
         }
 
@@ -5284,6 +5589,7 @@ namespace HydroServerToolsRepository.Repository
                     else
                     {
                         await statusContext.AddStatusMessage(typeof (DataValuesModel).Name, statusMessage);
+                        await statusContext.SetRecordCount(StatusContext.enumCountType.ct_DbProcess, typeof(DataValuesModel).Name, maxCount);
                     }
 
                     BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount, listOfCorrectRecords.Count(), listOfIncorrectRecords.Count(), listOfDuplicateRecords.Count()));
@@ -5788,6 +6094,11 @@ namespace HydroServerToolsRepository.Repository
                                 }
                                 item.Errors = sb.ToString();
                                 listOfIncorrectRecords.Add(item);
+                                if (null != statusContext)
+                                {
+                                    await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(DataValuesModel).Name, 0, 0, 1, 0);
+                                }
+
                                 continue;
                             }
 
@@ -5863,6 +6174,10 @@ namespace HydroServerToolsRepository.Repository
                             {
                                 if (count % 100 == 0) Debug.WriteLine(count);
                                 listOfCorrectRecords.Add(item);
+                                if (null != statusContext)
+                                {
+                                    await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(DataValuesModel).Name, 1, 0, 0, 0);
+                                }
                             }
                             else
                             {
@@ -5874,6 +6189,10 @@ namespace HydroServerToolsRepository.Repository
                                 }
 
                                 listOfDuplicateRecords.Add(item);
+                                if (null != statusContext)
+                                {
+                                    await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(DataValuesModel).Name, 0, 0, 0, 1);
+                                }
                             }
 
                         }
@@ -5885,11 +6204,22 @@ namespace HydroServerToolsRepository.Repository
                         catch (Exception)
                         {
                             listOfIncorrectRecords.Add(item);
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(DataValuesModel).Name, 0, 0, 1, 0);
+                            }
                         }
 
+                        //Finalize status context...
+                        if (null != statusContext)
+                        {
+                            await statusContext.Finalize(StatusContext.enumCountType.ct_DbProcess, typeof(DataValuesModel).Name);
+                        }
 
                     }
                     #endregion
+
+
                 }
             }
             catch (OperationCanceledException ex)
@@ -6084,7 +6414,6 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            //var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
             var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING_RECORDS, maxCount, "GroupDescriptions");
 
             if (null == statusContext)
@@ -6094,6 +6423,7 @@ namespace HydroServerToolsRepository.Repository
             else
             {
                 await statusContext.AddStatusMessage(typeof (GroupDescriptionModel).Name, statusMessage);
+                await statusContext.SetRecordCount(StatusContext.enumCountType.ct_DbProcess, typeof(GroupDescriptionModel).Name, itemList.Count);
             }
 
             foreach (var item in itemList)
@@ -6148,6 +6478,11 @@ namespace HydroServerToolsRepository.Repository
                         }
                         item.Errors = sb.ToString();
                         listOfIncorrectRecords.Add(item);
+                        if (null != statusContext)
+                        {
+                            await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(GroupDescriptionModel).Name, 0, 0, 1, 0);
+                        }
+
                         continue;
                     }
 
@@ -6160,11 +6495,19 @@ namespace HydroServerToolsRepository.Repository
                         context.GroupDescriptions.Add(model);
                         //context.SaveChanges();
                         listOfCorrectRecords.Add(item);
+                        if (null != statusContext)
+                        {
+                            await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(GroupDescriptionModel).Name, 1, 0, 0, 0);
+                        }
                     }
                     else
                     {
                         //no editing possible no unique field in upload
-                        listOfDuplicateRecords.Add(item); 
+                        listOfDuplicateRecords.Add(item);
+                        if (null != statusContext)
+                        {
+                            await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(GroupDescriptionModel).Name, 0, 0, 0, 1);
+                        }
                     }
 
                 }
@@ -6173,9 +6516,19 @@ namespace HydroServerToolsRepository.Repository
                 catch (Exception)
                 {
                     listOfIncorrectRecords.Add(item);
+                    if (null != statusContext)
+                    {
+                        await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(GroupDescriptionModel).Name, 0, 0, 1, 0);
+                    }
                 }
-
             }
+
+            //Finalize status context...
+            if (null != statusContext)
+            {
+                await statusContext.Finalize(StatusContext.enumCountType.ct_DbProcess, typeof(GroupDescriptionModel).Name);
+            }
+
             return;
         }
 
@@ -6331,7 +6684,6 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            //var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
             var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING_RECORDS, maxCount, "Groups");
 
             if (null == statusContext)
@@ -6341,6 +6693,7 @@ namespace HydroServerToolsRepository.Repository
             else
             {
                 await statusContext.AddStatusMessage(typeof (GroupsModel).Name, statusMessage);
+                await statusContext.SetRecordCount(StatusContext.enumCountType.ct_DbProcess, typeof( GroupsModel).Name, itemList.Count);
             }
 
             foreach (var item in itemList)
@@ -6443,6 +6796,11 @@ namespace HydroServerToolsRepository.Repository
                         }
                         item.Errors = sb.ToString();
                         listOfIncorrectRecords.Add(item);
+                        if (null != statusContext)
+                        {
+                            await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(GroupsModel).Name, 0, 0, 1, 0);
+                        }
+
                         continue;
                     }
 
@@ -6457,11 +6815,19 @@ namespace HydroServerToolsRepository.Repository
                         context.Groups.Add(model);
                         //context.SaveChanges();
                         listOfCorrectRecords.Add(item);
+                        if (null != statusContext)
+                        {
+                            await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(GroupsModel).Name, 1, 0, 0, 0);
+                        }
                     }
                     else
                     {
                         //no editing possible no unique field in upload
-                        listOfDuplicateRecords.Add(item); 
+                        listOfDuplicateRecords.Add(item);
+                        if (null != statusContext)
+                        {
+                            await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(GroupsModel).Name, 0, 0, 0, 1);
+                        }
                     }
 
                 }
@@ -6469,9 +6835,20 @@ namespace HydroServerToolsRepository.Repository
                 catch (Exception)
                 {
                     listOfIncorrectRecords.Add(item);
+                    if (null != statusContext)
+                    {
+                        await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(GroupsModel).Name, 0, 0, 1, 0);
+                    }
                 }
 
             }
+
+            //Finalize status context...
+            if (null != statusContext)
+            {
+                await statusContext.Finalize(StatusContext.enumCountType.ct_DbProcess, typeof(GroupsModel).Name);
+            }
+
             return;
         }
 
@@ -6611,7 +6988,6 @@ namespace HydroServerToolsRepository.Repository
 
             var maxCount = itemList.Count;
             var count = 0;
-            //var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
             var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING_RECORDS, maxCount, "DerivedFrom");
 
             if (null == statusContext)
@@ -6621,6 +6997,7 @@ namespace HydroServerToolsRepository.Repository
             else
             {
                 await statusContext.AddStatusMessage(typeof(DerivedFromModel).Name, statusMessage);
+                await statusContext.SetRecordCount(StatusContext.enumCountType.ct_DbProcess, typeof(DerivedFromModel).Name, itemList.Count);
             }
 
             foreach (var item in itemList)
@@ -6722,6 +7099,11 @@ namespace HydroServerToolsRepository.Repository
                         }
                         item.Errors = sb.ToString();
                         listOfIncorrectRecords.Add(item);
+                        if (null != statusContext)
+                        {
+                            await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(DerivedFromModel).Name, 0, 0, 1, 0);
+                        }
+
                         continue;
                     }
 
@@ -6736,11 +7118,19 @@ namespace HydroServerToolsRepository.Repository
                         context.DerivedFroms.Add(model);
                         //context.SaveChanges();
                         listOfCorrectRecords.Add(item);
+                        if (null != statusContext)
+                        {
+                            await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(DerivedFromModel).Name, 1, 0, 0, 0);
+                        }
                     }
                     else
                     {
                         //no editing possible no unique field in upload
-                        listOfDuplicateRecords.Add(item); 
+                        listOfDuplicateRecords.Add(item);
+                        if (null != statusContext)
+                        {
+                            await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(DerivedFromModel).Name, 0, 0, 0, 1);
+                        }
                     }
 
                 }
@@ -6748,8 +7138,18 @@ namespace HydroServerToolsRepository.Repository
                 catch (Exception)
                 {
                     listOfIncorrectRecords.Add(item);
+                    if (null != statusContext)
+                    {
+                        await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(DerivedFromModel).Name, 0, 0, 1, 0);
+                    }
                 }
 
+            }
+
+            //Finalize status context...
+            if (null != statusContext)
+            {
+                await statusContext.Finalize(StatusContext.enumCountType.ct_DbProcess, typeof(DerivedFromModel).Name);
             }
 
             return;
@@ -6914,7 +7314,6 @@ namespace HydroServerToolsRepository.Repository
           
             var maxCount = itemList.Count;
             var count = 0;
-            //var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount);
             var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING_RECORDS, maxCount, "Categories");
 
             if (null == statusContext)
@@ -6924,6 +7323,7 @@ namespace HydroServerToolsRepository.Repository
             else
             {
                 await statusContext.AddStatusMessage(typeof(CategoriesModel).Name, statusMessage);
+                await statusContext.SetRecordCount(StatusContext.enumCountType.ct_DbProcess, typeof(CategoriesModel).Name, itemList.Count);
             }
 
             foreach (var item in itemList)
@@ -7039,6 +7439,11 @@ namespace HydroServerToolsRepository.Repository
                         }
                         item.Errors = sb.ToString();
                         listOfIncorrectRecords.Add(item);
+                        if (null != statusContext)
+                        {
+                            await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(CategoriesModel).Name, 0, 0, 1, 0);
+                        }
+
                         continue;
                     }
                     //lookup duplicates
@@ -7053,11 +7458,19 @@ namespace HydroServerToolsRepository.Repository
                         context.Categories.Add(model);
                         //context.SaveChanges();
                         listOfCorrectRecords.Add(item);
+                        if (null != statusContext)
+                        {
+                            await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(CategoriesModel).Name, 1, 0, 0, 0);
+                        }
                     }
                     else
                     {
                         //no editing possible no unique field in upload
-                        listOfDuplicateRecords.Add(item); 
+                        listOfDuplicateRecords.Add(item);
+                        if (null != statusContext)
+                        {
+                            await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(CategoriesModel).Name, 0, 0, 0, 1);
+                        }
                     }
 
                 }
@@ -7065,9 +7478,20 @@ namespace HydroServerToolsRepository.Repository
                 catch (Exception)
                 {
                     listOfIncorrectRecords.Add(item);
+                    if (null != statusContext)
+                    {
+                        await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(CategoriesModel).Name, 0, 0, 1, 0);
+                    }
                 }
 
             }
+
+            //Finalize status context...
+            if (null != statusContext)
+            {
+                await statusContext.Finalize(StatusContext.enumCountType.ct_DbProcess, typeof(CategoriesModel).Name);
+            }
+
 
             return;
         }
