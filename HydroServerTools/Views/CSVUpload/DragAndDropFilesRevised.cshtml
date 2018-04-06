@@ -107,6 +107,9 @@ else
     var workerDbLoadStatus = null;
     var workerMonitorDbLoadStatus = null;
 
+    var workerDbRecordCountStatus = null;
+    var workerMonitorDbRecordCountStatus = null;
+
     function getFileNames(fileObjects) {
         var fileNames = [];
 
@@ -295,6 +298,29 @@ else
             $(collapse).addClass('in');
         }
     }
+
+    //Check upload status for all panels...
+    // All panels bear 'final' status ('complete' or 'error') - return true - otherwise, return false
+    function allUploadComplete() {
+        var result = true;  //Assume all validation processing is complete
+
+        var panelItems = $('a.accordion-toggle > div[data-validation-status]');
+        var pLength = panelItems.length;
+        for (var pI = 0; pI < pLength; ++pI) {
+            var panelItem = panelItems[pI];
+            var uploadStatus = $(panelItem).attr('data-upload-status').toLowerCase();
+
+            if ('complete' !== uploadStatus && 'error' !== uploadStatus) {
+                result = false;
+                break;
+            }
+        }
+
+        //Processing complete - return result
+        return result;
+    }
+
+
 
     //Find the first successful validation, if any
     function anyValidationSuccessful() {
@@ -553,6 +579,7 @@ else
         }
     }
 
+    //Request db status monitoring via the input worker monitor, display results in the input UI elements...
     function requestDbStatusMonitoring(uploadId, fileName, workerMonitor, jqProgressWrapper, jqProgressBar, jqCollapse) {
         //Validate/initialize input parameters...
         if ('undefined' !== typeof uploadId && null !== uploadId &&
@@ -655,7 +682,7 @@ else
                             console.log('requestDbStatusMonitoring(' + fileName + ') - unspecified error.');
                         }
 
-                        //Set error message progress bar...
+                        //Set error message in progress bar...
                         jqProgressBar.text('DB status monitoring: error');
                     });
                 }
@@ -663,6 +690,155 @@ else
         }
     }
 
+    //Request db record count monitoring via the input worker monitor, display results in the input UI elements...
+    function requestDbRecordCountMonitoring(uploadId, fileName, workerMonitor, jqProgressWrapper, jqProgressBar, jqCollapse) {
+        //Validate/initialize input parameters...
+        if ('undefined' !== typeof uploadId && null !== uploadId &&
+            'undefined' !== typeof fileName && null !== fileName &&
+            'undefined' !== typeof workerMonitor && null !== workerMonitor &&
+            'undefined' !== typeof jqProgressWrapper && null !== jqProgressWrapper &&
+            'undefined' !== typeof jqProgressBar && null !== jqProgressBar &&
+            'undefined' !== typeof jqCollapse && null !== jqCollapse) {
+            //Input parameters valid - check current validation status...
+            console.log('requestDbRecordCountMonitoring(' + fileName + ') called!!');
+
+            //Create db record count worker message...
+            var request = {
+                "requestId": uploadId + "_" + fileName,
+                "inputData": {
+                    "action": "get",
+                    "uploadId": currentUploadId,
+                    "fileName": fileName
+                }
+            };
+
+            //Submit request to worker monitor...
+            var promise = workerMonitor.sendWorkerMessage(request);
+            if (null !== promise) {
+                //Request submitted - set promise's 'then' and 'catch'
+                var endCondition = false;   //Assume end condition not set...
+                promise.then(function (message) {
+                    console.log('requestDbRecordCountMonitoring(' + fileName + ') - success!!!');
+
+                    //check for output data...
+                    var outputData = message.outputData;
+                    if ('undefined' !== typeof outputData && null !== outputData) {
+                        //Output data found - check for end condition...
+                        endCondition = outputData.endCondition;
+
+                        //Check for file name...
+                        var filesToModels = outputData.fileNamesToModelNames;
+                        var modelName = '';
+                        for (var fName in filesToModels) {
+                            if (fileName === fName) {
+                                //File name found - retrieve model name...
+                                modelName = filesToModels[fName];
+                                break;
+                            }
+                        }
+
+                        if ('' !== modelName) {
+                            //Model name found - check for 'process' and 'load' count messages...
+                            var modelsToProcessed = outputData.modelNamesToProcessedMessages;
+                            var modelsToLoaded = outputData.modelNamesToLoadedMessages;
+
+                            var recordCountProcessed = null;
+                            var recordCountLoaded = null;
+
+                            for (var mName in modelsToProcessed) {
+                                if (modelName === mName) {
+                                    //Processed counts found...
+                                    recordCountProcessed = modelsToProcessed[mName];
+                                    break;
+                                }
+                            }
+
+                            for (mName in modelsToLoaded) {
+                                if (modelName === mName) {
+                                    //Loaded counts found...
+                                    recordCountLoaded = modelsToLoaded[mName];
+                                    break;
+                                }
+                            }
+
+                            var percentageProcessed = 0;
+
+                            if (null !== recordCountProcessed) {
+                                //Display 'processed' progress...
+
+                                //Reset progress bar width...
+                                jqProgressBar.width('0%');
+
+                                var currentCount = recordCountProcessed.Inserted +
+                                    recordCountProcessed.Updated +
+                                    recordCountProcessed.Rejected +
+                                    recordCountProcessed.Duplicated;
+                                var totalCount = recordCountProcessed.RecordCount;
+
+                                percentageProcessed = Math.round((currentCount / totalCount) * 100);  //Rounds to the nearest whole number...
+                                percentageProcessed /= 2;   //Max width of 50%...
+
+                                jqProgressBar.width(percentageProcessed.toString() + '%');
+                            }
+
+                            if ( recordCountProcessed.Final && (null !== recordCountLoaded)) {
+                                //Display 'loaded' progress after a brief delay...
+
+                                setTimeout(function (jqPrgrsBr, rcrdCntLdd) {
+                                    //Initialize progress bar width...
+                                    var percentageProcessed = 50;       //Assume processing is complete...
+                                    //jqPrgrsBr.width('50%');
+
+                                    var currentCount = rcrdCntLdd.Inserted +
+                                                        rcrdCntLdd.Updated +
+                                                        rcrdCntLdd.Rejected +
+                                                        rcrdCntLdd.Duplicated;
+                                    var totalCount = rcrdCntLdd.RecordCount;
+
+                                    var percentageLoaded = Math.round((currentCount / totalCount) * 100);  //Rounds to the nearest whole number...
+                                    percentageLoaded /= 2;   //Max width of 50%...
+
+                                    var width = percentageProcessed + percentageLoaded;
+                                    var percentWidth = width.toString() + '%';
+
+                                    jqPrgrsBr.width(percentWidth);
+                                }, 1000, jqProgressBar, recordCountLoaded);
+                            }
+
+                            jqProgressBar.text('Database loading: ' + (endCondition ? 'completed' : 'in progress'));
+                        }
+
+                        //If indicated, repeat the call to request the next available record count(s), if any
+                        //Introduce a brief delay between calls to avoid race conditions...
+                        setTimeout(function (ndCndtn, upldId, flNm, wrkrMntr, jqPrgrssWrpr, jqPrgrssBr, jqCllps) {
+                            if (!ndCndtn) {
+                                requestDbRecordCountMonitoring(upldId, flNm, wrkrMntr, jqPrgrssWrpr, jqPrgrssBr, jqCllps);
+                            }
+                        }, 1500, endCondition, uploadId, fileName, workerMonitor, jqProgressWrapper, jqProgressBar, jqCollapse);
+                    }
+                }).catch(function (message) {
+                    //Error - set end condition...
+                    endCondition = true;
+                    jqProgressWrapper.removeClass('active');    //Stop progress-bar animation
+                    var outputData = message.outputData;
+                    var errorMsg = outputData.message;
+                    if ('undefined' !== typeof outputData && null !== outputData) {
+                        console.log('requestDbRecordCountMonitoring(' + fileName + ') - server error: ' + errorMsg);
+                    }
+                    else if ('undefined' !== typeof errorMsg && null !== errorMsg) {
+                        console.log('requestDbRecordCountMonitoring(' + fileName + ') - error: ' + errorMsg);
+                    }
+                    else {
+                        console.log('requestDbRecordCountMonitoring(' + fileName + ') - unspecified error.');
+                    }
+
+                    //Set error message in progress bar...
+                    jqProgressBar.text('DB record count monitoring: error');
+                });
+            }
+        }
+    }
+    
     //Show the validation errors dialog for the input file names...
     function showValidationErrorDialog(fileNames) {
         //Validate/initialize input parameters...
@@ -765,8 +941,11 @@ else
                 $(listItems).remove();
                 collapse = $(collapseId);   //Reset collapse since DOM has changed...
 
-                //Request DB status monitoring...
-                requestDbStatusMonitoring(currentUploadId, fileName, workerMonitorDbLoadStatus, progressWrapper, progressBar, collapse);
+                ////Request DB status monitoring...
+                //requestDbStatusMonitoring(currentUploadId, fileName, workerMonitorDbLoadStatus, progressWrapper, progressBar, collapse);
+
+                //Request DB record count monitoring...
+                requestDbRecordCountMonitoring(currentUploadId, fileName, workerMonitorDbRecordCountStatus, progressWrapper, progressBar, collapse);
             }
 
             //Set PUT url for server call...
@@ -885,7 +1064,7 @@ else
             "always": function (event, data) {
                 //console.log('jquery-file-upload - always called!!');
 
-                //Check for final status ('completed' or 'error') on all panel items...
+                //Check for file upload final status ('completed' or 'error') on all panel items...
                 var final = true;   //Assume all statuses are final
                 var panelItems = 'div#pnlgrpFiles div[data-file]';
 
@@ -899,14 +1078,13 @@ else
                 });
 
                 if (final) {
-                    //Final status for all panel items - show Validation Summary button...
+                    //Final status for all panel items - show validation alert...
                     $('#' + 'alertFileUpload').fadeOut({
                         "duration": 500,
                         "complete": function () {
-                            //Show Validation Summary button...
-                            //Moved this call to validation complete checks...
-                            //$('#' + 'btnDragAndDropContinue').removeClass('hidden');
-                            $('#' + 'alertFileValidation').fadeIn({ "duration": 500 });
+                            //var jqAlert = $('#' + 'alertFileValidation');
+
+                            //jqAlert.fadeIn({ "duration": 500 });
                         }
                     });
                 }
@@ -997,9 +1175,27 @@ else
                         }
                     }
 
-                    //Request file validation...
-                    //requestFileValidation(currentUploadId, fileName, workerMonitorValidation, dataToggle, badge, progressWrapper, progressBar, collapse);
-                    requestFileValidation(currentUploadId, fileName, workerMonitorValidation, dataToggle, progressWrapper, progressBar, collapse);
+                    //Queue file validation request via a self-executing anonymous function...
+                    (function () {
+                        //For the defined interval...
+                        var intervalId = setInterval(function (crntUpldId, flNm, wrkrMntrVldtn, dtTgl, prgrsWrpr, prgrsBr, clps) {
+                            //Check for file upload final status ('completed' or 'error') on all panel items...
+                            if (allUploadComplete()) {
+                                //Final status for all panel items - end the interval, show alert, request file validation...
+                                $('#' + 'alertFileUpload').fadeOut({
+                                    "duration": 500,
+                                    "complete": function () {
+                                        var jqAlert = $('#' + 'alertFileValidation');
+                                        jqAlert.fadeIn({ "duration": 500 });
+                                    }
+                                });
+
+                                clearInterval(intervalId);
+                                requestFileValidation(crntUpldId, flNm, wrkrMntrVldtn, dtTgl, prgrsWrpr, prgrsBr, clps);
+                            }
+
+                        }, 1000, currentUploadId, fileName, workerMonitorValidation, dataToggle, progressWrapper, progressBar, collapse);
+                    })();
                 }
             },
             "drop": function (event, data) {
@@ -1097,6 +1293,12 @@ else
 
         workerMonitorDbLoadStatus = new WorkerMonitor();
         workerMonitorDbLoadStatus.startMonitoring(workerDbLoadStatus);
+
+        //Start a db record count status worker and create a monitor instance...
+        workerDbRecordCountStatus = new Worker("/Scripts/custom/workers/workerDbRecordCounts.js");
+
+        workerMonitorDbRecordCountStatus = new WorkerMonitor();
+        workerMonitorDbRecordCountStatus.startMonitoring(workerDbRecordCountStatus);
 
     });
 
