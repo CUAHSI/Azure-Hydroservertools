@@ -78,7 +78,7 @@ namespace HydroServerTools.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ServiceName,Id,GoogleAccount,ServiceTitle,ServiceDescription,ContactName,ContactEmail,ContactPhone,Organization,OrganizationUrl,RequestIssued,RequestConfirmed")] ServiceRegistration serviceRegistration)
+        public ActionResult Create([Bind(Include = "ServiceName,Id,GoogleAccount,ServiceTitle,ServiceDescription,ContactName,ContactEmail,ContactPhone,Organization,OrganizationUrl,Citation,RequestIssued,RequestConfirmed")] ServiceRegistration serviceRegistration)
         {
             //copyAzureDatatabaseTemplate(serviceRegistration.ServiceName); 
             //db.Users.FirstOrDefault( .Identity.Name user 
@@ -155,7 +155,7 @@ namespace HydroServerTools.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ServiceName,Id,GoogleAccount,ServiceTitle,ServiceDescription,ContactName,ContactEmail,ContactPhone,Organization,OrganizationUrl,RequestIssued,RequestConfirmed")] ServiceRegistration serviceRegistration)
+        public ActionResult Edit([Bind(Include = "ServiceName,Id,GoogleAccount,ServiceTitle,ServiceDescription,ContactName,ContactEmail,ContactPhone,Organization,OrganizationUrl,Citation,RequestIssued,RequestConfirmed")] ServiceRegistration serviceRegistration)
         {
             if (ModelState.IsValid)
             {

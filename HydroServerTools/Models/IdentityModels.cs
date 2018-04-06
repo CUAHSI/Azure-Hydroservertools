@@ -160,6 +160,9 @@ namespace HydroServerTools.Models
         [AllowHtml]
         [Display(Name = "Organization Website")]
         public string OrganizationUrl { get; set; }
+        [Display(Name = "Citation")]
+        [AllowHtml]
+        public string Citation { get; set; }
         [DataType(DataType.Date)]
         [AllowHtml]
         public System.DateTime RequestIssued { get; set; }

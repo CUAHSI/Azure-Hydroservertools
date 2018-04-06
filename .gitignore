@@ -169,3 +169,4 @@ AppSettings.config
 
 # ignore SMTP settings
 smtp.config
+/.vs/HydroServerTools/v15/Server/sqlite3
