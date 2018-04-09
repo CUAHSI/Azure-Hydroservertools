@@ -519,8 +519,10 @@ namespace HydroServerTools.Utilities
                                                                                 paramNamesToLists["listOfEditedRecords"],
                                                                                 statusContext
                                                                                 };
-                                            //Call 'Add...' method on newly created instance...
-                                            methodAdd.Invoke(repositoryInstance, objArray);
+                                            //Call 'Add...' method (as awaitable) on newly created instance...
+                                            //Source: https://stackoverflow.com/questions/39674988/how-to-call-a-generic-async-method-using-reflection
+                                            var task = (Task) methodAdd.Invoke(repositoryInstance, objArray);
+                                            await task.ConfigureAwait(false);
 
                                             //Retrieve db table name via EntityFramework metadata extensions...
                                             string tableName = String.Empty;
@@ -580,14 +582,17 @@ namespace HydroServerTools.Utilities
                                                     //New records exist - set substitute key in statusContext...
                                                     await statusContext.AddSubstituteKey(efType.Name, (useProxy ? proxyType.Name : modelType.Name));
 
-                                                    //Invoke 'CommitNew...' method...
+                                                    //Invoke 'CommitNew...' method (as awaitable)...
+                                                    //Source: https://stackoverflow.com/questions/39674988/how-to-call-a-generic-async-method-using-reflection
                                                     methodInfo_G = methodInfoCommit.MakeGenericMethod(((null != proxyType) ? proxyType : modelType));
                                                     object[] objArrayC = new object[] { entityConnectionString,
                                                                                         tableName,
                                                                                         iList2,
                                                                                         statusContext
                                                                                         };
-                                                    methodInfo_G.Invoke(repositoryUtils, objArrayC);
+                                                    //methodInfo_G.Invoke(repositoryUtils, objArrayC);
+                                                    var task_1 = (Task) methodInfo_G.Invoke(repositoryUtils, objArrayC);
+                                                    await task_1.ConfigureAwait(false);
                                                 }
 
                                                 iList2 = paramNamesToLists["listOfEditedRecords"];

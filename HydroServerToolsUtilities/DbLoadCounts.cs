@@ -105,7 +105,24 @@ namespace HydroServerToolsUtilities
             Updated += updatedIncrement;
             Rejected += rejectedIncrement;
             Duplicated += duplicatedIncrement;
+        }
 
+        //Assign input values to member counts...
+        public void SetCounts(int inserted, int updated, int rejected, int duplicated)
+        {
+#if (DEBUG)
+            //Validate/initialize input parameters...
+            if (0 > inserted || 0 > updated || 0 > rejected || 0 > duplicated)
+            {
+                //Negative input parameter...
+                throw new ArgumentOutOfRangeException("UpdateCounts: Negative parameter entered!!");
+            }
+#endif
+            //Increment member counts...
+            Inserted = inserted;
+            Updated = updated;
+            Rejected = rejected;
+            Duplicated = duplicated;
         }
     }
 }

@@ -5505,6 +5505,10 @@ namespace HydroServerToolsRepository.Repository
             {
                 foreach (var sv in siteCodeVarCodePermutations)
                 {
+                    ////Use Task yield here to yield time back to the caller...
+                    ////Source: https://stackoverflow.com/questions/22645024/when-would-i-use-task-yield
+                    //await Task.Yield();
+
                     //siteid for sitecode
                     int currentSiteId = 0;
                     if (siteCodes.ContainsKey(sv.SiteCode))
@@ -5607,6 +5611,10 @@ namespace HydroServerToolsRepository.Repository
 
                     foreach (var item in filteredList)
                     {
+                        ////Use Task yield here to yield time back to the caller...
+                        ////Source: https://stackoverflow.com/questions/22645024/when-would-i-use-task-yield
+                        //await Task.Yield();
+
                         try
                         {
                             statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING_DATAVALUES, count, maxCount, listOfCorrectRecords.Count(), listOfIncorrectRecords.Count(), listOfDuplicateRecords.Count());
@@ -6210,16 +6218,15 @@ namespace HydroServerToolsRepository.Repository
                             }
                         }
 
-                        //Finalize status context...
-                        if (null != statusContext)
-                        {
-                            await statusContext.Finalize(StatusContext.enumCountType.ct_DbProcess, typeof(DataValuesModel).Name);
-                        }
 
                     }
                     #endregion
+                }
 
-
+                //Finalize status context...
+                if (null != statusContext)
+                {
+                    await statusContext.Finalize(StatusContext.enumCountType.ct_DbProcess, typeof(DataValuesModel).Name);
                 }
             }
             catch (OperationCanceledException ex)

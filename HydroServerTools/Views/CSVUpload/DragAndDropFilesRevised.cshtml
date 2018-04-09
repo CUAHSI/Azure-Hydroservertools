@@ -718,13 +718,16 @@ else
                 //Request submitted - set promise's 'then' and 'catch'
                 var endCondition = false;   //Assume end condition not set...
                 promise.then(function (message) {
-                    console.log('requestDbRecordCountMonitoring(' + fileName + ') - success!!!');
+                    //console.log('requestDbRecordCountMonitoring(' + fileName + ') - success!!!');
 
                     //check for output data...
                     var outputData = message.outputData;
                     if ('undefined' !== typeof outputData && null !== outputData) {
                         //Output data found - check for end condition...
                         endCondition = outputData.endCondition;
+                        //if (endCondition) {
+                        //    return;     //return early on end condition...
+                        //}
 
                         //Check for file name...
                         var filesToModels = outputData.fileNamesToModelNames;
@@ -764,6 +767,10 @@ else
                             var percentageProcessed = 0;
 
                             if (null !== recordCountProcessed) {
+                                if (recordCountProcessed.Final) {
+                                    console.log('>>>>>>>>>>>>>>>> Record Count Processed is FINAL <<<<<<<<<<<<<');
+                                }
+
                                 //Display 'processed' progress...
 
                                 //Reset progress bar width...
@@ -781,8 +788,14 @@ else
                                 jqProgressBar.width(percentageProcessed.toString() + '%');
                             }
 
+                            if (null !== recordCountLoaded) {
+                                console.log('>>>>>>>>>>>>>>>> Record Count Loaded is NOT NULL <<<<<<<<<<<<<');
+                            }
+
                             if ( recordCountProcessed.Final && (null !== recordCountLoaded)) {
                                 //Display 'loaded' progress after a brief delay...
+                                var n = 5;
+                                ++n;
 
                                 setTimeout(function (jqPrgrsBr, rcrdCntLdd) {
                                     //Initialize progress bar width...
@@ -802,7 +815,8 @@ else
                                     var percentWidth = width.toString() + '%';
 
                                     jqPrgrsBr.width(percentWidth);
-                                }, 1000, jqProgressBar, recordCountLoaded);
+                                //}, 50, jqProgressBar, recordCountLoaded);
+                                }, 0, jqProgressBar, recordCountLoaded);
                             }
 
                             jqProgressBar.text('Database loading: ' + (endCondition ? 'completed' : 'in progress'));
@@ -814,7 +828,7 @@ else
                             if (!ndCndtn) {
                                 requestDbRecordCountMonitoring(upldId, flNm, wrkrMntr, jqPrgrssWrpr, jqPrgrssBr, jqCllps);
                             }
-                        }, 1500, endCondition, uploadId, fileName, workerMonitor, jqProgressWrapper, jqProgressBar, jqCollapse);
+                        }, 100, endCondition, uploadId, fileName, workerMonitor, jqProgressWrapper, jqProgressBar, jqCollapse);
                     }
                 }).catch(function (message) {
                     //Error - set end condition...
