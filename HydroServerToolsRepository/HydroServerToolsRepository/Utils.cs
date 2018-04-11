@@ -677,7 +677,7 @@ namespace HydroServerToolsRepository.Repository
                                 await statusContext.AddStatusMessage(typeof (targetType).Name, statusMessage);
 
                                 int inserted = 0;
-                                int notifyAfterRowCount = bulkCopy.NotifyAfter;
+                                //int notifyAfterRowCount = bulkCopy.NotifyAfter;
 
                                 try
                                 {
@@ -693,7 +693,8 @@ namespace HydroServerToolsRepository.Repository
                         };
 
                         //bulkCopy.SqlRowsCopied += (sender, e) => { = instanceIdentifier, CacheName};
-                        bulkCopy.NotifyAfter = 5000;
+                        //bulkCopy.NotifyAfter = 5000;
+                        bulkCopy.NotifyAfter = 100;
                         bulkCopy.BatchSize = 10000;
                         // Set the timeout.
                         bulkCopy.BulkCopyTimeout = 6000;
@@ -701,6 +702,7 @@ namespace HydroServerToolsRepository.Repository
                         // bulkCopy.ColumnMappings.Add("OrderID", "NewOrderID");     
                         bulkCopy.DestinationTableName = tableName;
                         bulkCopy.WriteToServer(table);
+                        //await bulkCopy.WriteToServerAsync(table);
 
                         int totalRows = table.Rows.Count;
                         if ((totalRows < bulkCopy.NotifyAfter) && (null != statusContext))

@@ -586,11 +586,16 @@
     <Content Include="Scripts\bootstrap.file-input.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\custom\ButtonElements.js" />
     <Content Include="Scripts\custom\CSVUploadHelper.js" />
+    <Content Include="Scripts\custom\EnableDisableAction.js" />
+    <Content Include="Scripts\custom\freezeEnum.js" />
     <Content Include="Scripts\custom\jsHelper.js" />
     <Content Include="Scripts\custom\Manage.js" />
     <Content Include="Scripts\custom\RandomId.js" />
     <Content Include="Scripts\custom\revisedUploadUtils.js" />
+    <Content Include="Scripts\custom\StatusValues.js" />
+    <Content Include="Scripts\custom\VisibilityState.js" />
     <Content Include="Scripts\custom\workerMonitor.js" />
     <Content Include="Scripts\custom\UploadHelper.js" />
     <Content Include="Scripts\custom\ViewDataHelper.js" />

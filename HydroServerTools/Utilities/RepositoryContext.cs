@@ -575,11 +575,15 @@ namespace HydroServerTools.Utilities
                                                 MethodInfo methodInfoCommit = typeRepositoryUtils.GetMethod("CommitNewRecords");
                                                 MethodInfo methodInfoUpdate = typeRepositoryUtils.GetMethod("CommitUpdateRecords");
                                                 MethodInfo methodInfo_G = null;
+                                                bool bNewRecordsLoaded = false;         //Assume no new records loaded
 
                                                 System.Collections.IList iList2 = paramNamesToLists["listOfCorrectRecords"];
                                                 if (0 < iList2.Count)
                                                 {
-                                                    //New records exist - set substitute key in statusContext...
+                                                    //New records exist - set indicator
+                                                    bNewRecordsLoaded = true;
+
+                                                    //Set substitute key in statusContext...
                                                     await statusContext.AddSubstituteKey(efType.Name, (useProxy ? proxyType.Name : modelType.Name));
 
                                                     //Invoke 'CommitNew...' method (as awaitable)...
@@ -594,7 +598,7 @@ namespace HydroServerTools.Utilities
                                                     var task_1 = (Task) methodInfo_G.Invoke(repositoryUtils, objArrayC);
                                                     await task_1.ConfigureAwait(false);
                                                 }
-
+                                                
                                                 iList2 = paramNamesToLists["listOfEditedRecords"];
                                                 if (0 < iList2.Count)
                                                 {
@@ -617,6 +621,28 @@ namespace HydroServerTools.Utilities
                                                                                         paramNamesToLists["listOfDuplicateRecords"].Count);   //duplicated
 
                                                     dbLoadContext.DbLoadResults.Add(dbLoadResult);
+
+                                                    if ( (null != statusContext) && (!bNewRecordsLoaded))
+                                                    {
+                                                        //No new records loaded - therefore, no status context updates or finalization - do so now...
+                                                        var key = (null != proxyType) ? proxyType.Name : modelType.Name;
+
+                                                        int inserted = paramNamesToLists["listOfCorrectRecords"].Count;
+                                                        int updated = paramNamesToLists["listOfEditedRecords"].Count;
+                                                        int rejected = paramNamesToLists["listOfIncorrectRecords"].Count;
+                                                        int duplicated = paramNamesToLists["listOfDuplicateRecords"].Count;
+
+                                                        await statusContext.SetRecordCount(StatusContext.enumCountType.ct_DbLoad, 
+                                                                                           key, 
+                                                                                           (inserted + updated + rejected + duplicated));
+                                                        await statusContext.SetCounts(StatusContext.enumCountType.ct_DbLoad,
+                                                                                      key,
+                                                                                      inserted,       //inserted
+                                                                                      updated,        //updated
+                                                                                      rejected,       //rejected
+                                                                                      duplicated);    //duplicated
+                                                        await statusContext.Finalize(StatusContext.enumCountType.ct_DbLoad, key);
+                                                    }
                                                 }
                                             }
 

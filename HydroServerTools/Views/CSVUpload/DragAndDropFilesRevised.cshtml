@@ -89,6 +89,12 @@ else
 <script src="~/Scripts/custom/RandomId.js"></script>
 <script src="~/Scripts/custom/revisedUploadUtils.js"></script>
 <script src="~/Scripts/custom/workerMonitor.js"></script>
+<script src="~/Scripts/custom/freezeEnum.js"></script>
+<script src="~/Scripts/custom/EnableDisableAction.js"></script>
+<script src="~/Scripts/custom/ButtonElements.js"></script>
+<script src="~/Scripts/custom/VisibilityState.js"></script>
+<script src="~/Scripts/custom/StatusValues.js"></script>
+
 
 <style type="text/css">
     .bar {
@@ -363,6 +369,98 @@ else
         return result;
     }
 
+    //Per the input enable/disable parameter, set the state of the input button elements...
+    function setButtonState(enableDisable_Parameter, buttonElements_Parameter) {
+        //Validate/initialize input parameters...
+        if ('undefined' !== typeof enableDisable_Parameter && null !== enableDisable_Parameter &&
+            'undefined' !== typeof buttonElements_Parameter && null !== buttonElements_Parameter) {
+            //Input parameters valid - retrieve enable/disable and button element values...
+            var enableDisableAction = (new EnableDisableAction()).getEnum();
+            var buttonElements = (new ButtonElements()).getEnum();
+
+            var buttonElementsArray = [ buttonElements.AddFiles,
+                                        buttonElements.Cancel,
+                                        buttonElements.Upload,
+                                        buttonElements.Insert,
+                                        buttonElements.Continue];
+            var beaLength = buttonElementsArray.length;
+
+            for (var beaI = 0; beaI < beaLength; ++beaI) {
+                var buttonElement = buttonElementsArray[beaI];
+                var jqButton = null;
+                switch (buttonElements_Parameter & buttonElement) {
+                    case buttonElements.AddFiles:
+                        jqButton = $('div.fileinput-button button.btn');
+                        break;
+                    case buttonElements.Cancel:
+                        jqButton = $('a.cancel');
+                        break;
+                    case buttonElements.Upload:
+                        jqButton = $('button#btnUploadFiles');
+                        break;
+                    case buttonElements.Insert:
+                        jqButton = $('button#btnDbInsert');
+                        break;
+                    case buttonElements.Continue:
+                        jqButton = $('button#btnDragAndDropContinue');
+                        break;
+                    default:
+                        //Unknown value - take no action...
+                        break;
+                }
+
+                if (null !== jqButton && jqButton.is(':visible')) {
+                    if (enableDisable_Parameter & enableDisableAction.Enable) {
+                        jqButton.removeClass('disabled');
+                    }
+                    else {
+                        jqButton.addClass('disabled');
+                    }
+                }
+            }
+        }
+    }
+
+    //Per the input upload and validation status parameters, set the visibility of the matching remove buttons to the input visibility parameter... 
+    function setRemoveButtons(visibility_Parameter, upload_Status_Parameter, validation_Status_Parameter) {
+        //Validate/initialize input parameters...
+        if ('undefined' !== typeof visibility_Parameter && null !== visibility_Parameter &&
+            'undefined' !== typeof upload_Status_Parameter && null !== upload_Status_Parameter &&
+            'undefined' !== typeof validation_Status_Parameter && null !== validation_Status_Parameter) {
+            //Input parameters valid - retrieve upload and validation status values...
+            var visibilityState = (new VisibilityState()).getEnum();
+            var statusValues = (new StatusValues()).getEnum();
+
+            var targetUploadStatus = statusValues.properties[upload_Status_Parameter].description.toLowerCase();
+            var targetValidationStatus = statusValues.properties[validation_Status_Parameter].description.toLowerCase();
+
+            //Select all panel items...
+            var panelItems = $('a.accordion-toggle > div[data-file]');
+            var pLength = panelItems.length;
+
+            //For each panelitem...
+            for (var pI = 0; pI < pLength; ++pI) {
+                var panelItem = panelItems[pI];
+
+                //Check upload and validation status against input values...
+                var uploadStatus = $(panelItem).attr('data-upload-status').toLowerCase();
+                var validationStatus = $(panelItem).attr('data-validation-status').toLowerCase();
+
+                if (targetUploadStatus === validationStatus && targetValidationStatus === validationStatus) {
+                    //Match - retrieve remove button...
+                    var button = $(panelItem).find('input.delete');
+
+                    if (visibilityState.Shown === visibility_Parameter) {
+                        button.removeClass('hidden');
+                    }
+                    else {
+                        button.addClass('hidden');
+                    }
+                }
+            }
+        }
+    }
+
     //Send a request via the input worker monitor to validate the input file name
     //function requestFileValidation(uploadId, fileName, workerMonitor, dataToggle, jqBadge, jqProgressWrapper, jqProgressBar, jqCollapse) {
     function requestFileValidation(uploadId, fileName, workerMonitor, dataToggle, jqProgressWrapper, jqProgressBar, jqCollapse) {
@@ -533,9 +631,20 @@ else
                                 }
 
                                 $('#' + 'alertFileValidation').fadeOut({
-                                    "duration": 500 //,
-                                    //"complete": function () {
-                                    //}
+                                    "duration": 500,
+                                    "complete": function () {
+                                        var enableDisableAction = (new EnableDisableAction()).getEnum();
+                                        var buttonElements = (new ButtonElements()).getEnum();
+
+                                        setButtonState(enableDisableAction.Enable,
+                                                        buttonElements.AddFiles |
+                                                        buttonElements.Cancel |
+                                                        buttonElements.Insert );
+
+                                        setButtonState(enableDisableAction.Disable,
+                                                        buttonElements.Upload |
+                                                        buttonElements.Continue);
+                                    }
                                 });
                             }
 
@@ -789,7 +898,12 @@ else
                             }
 
                             if (null !== recordCountLoaded) {
-                                console.log('>>>>>>>>>>>>>>>> Record Count Loaded is NOT NULL <<<<<<<<<<<<<');
+                                if (recordCountLoaded.Final) {
+                                    console.log('>>>>>>>>>>>>>>>> Record Count Loaded is FINAL <<<<<<<<<<<<<');
+                                }
+                                else {
+                                    console.log('>>>>>>>>>>>>>>>> Record Count Loaded is NOT FINAL <<<<<<<<<<<<<');
+                                }
                             }
 
                             if ( recordCountProcessed.Final && (null !== recordCountLoaded)) {
@@ -852,7 +966,7 @@ else
             }
         }
     }
-    
+
     //Show the validation errors dialog for the input file names...
     function showValidationErrorDialog(fileNames) {
         //Validate/initialize input parameters...
@@ -1253,8 +1367,17 @@ else
                 var dropDiv = $('#' + 'divFilesForUpload');
                 dropDiv.fileupload('add', { "files": fileObjectsForUpload });
 
-                //Disable button...
-                $('#' + 'btnUploadFiles').addClass('disabled');
+                //Disable buttons...
+                //$('#' + 'btnUploadFiles').addClass('disabled');
+                var enableDisableAction = (new EnableDisableAction()).getEnum();
+                var buttonElements = (new ButtonElements()).getEnum();
+
+                setButtonState(enableDisableAction.Disable,
+                    buttonElements.AddFiles |
+                    buttonElements.Cancel |
+                    buttonElements.Upload |
+                    buttonElements.Insert |
+                    buttonElements.Continue);
 
                 //Display 'file upload' alert...
                 //Source: http://www.java2s.com/Tutorials/HTML_CSS/Bootstrap_Example/Alert/Show_alert_block_with_fade_in.htm
@@ -1268,8 +1391,23 @@ else
 
             //Invoke db load process, if indicated...
             if (checkValidationResults()) {
-                //Disable button...
-                $('#' + 'btnDbInsert').addClass('disabled');
+                //Disable buttons...
+                //$('#' + 'btnDbInsert').addClass('disabled');
+                var enableDisableAction = (new EnableDisableAction()).getEnum();
+                var buttonElements = (new ButtonElements()).getEnum();
+                var visibilityState = (new VisibilityState()).getEnum();
+                var statusValues = (new StatusValues()).getEnum();
+
+                setButtonState(enableDisableAction.Disable,
+                                buttonElements.AddFiles |
+                                buttonElements.Cancel |
+                                buttonElements.Upload |
+                                buttonElements.Insert |
+                                buttonElements.Continue);
+
+                setRemoveButtons(visibilityState.Hidden,
+                                 statusValues.complete,         //Upload status
+                                 statusValues.complete);        //Validation status
 
                 //Display 'DB load' alert...
                 //Source: http://www.java2s.com/Tutorials/HTML_CSS/Bootstrap_Example/Alert/Show_alert_block_with_fade_in.htm

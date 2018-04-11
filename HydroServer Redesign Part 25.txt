@@ -1,0 +1,54 @@
+
+HydroServer Redesign Part 25
+
+
+**** Summary ****
+ - Miscellaneous changes to ensure:
+   - Timely progress reporting of db inserts
+   - Accurate progress reporting of db updates, rejects and duplicates 
+      when no db inserts occur
+   - Better control of button states/visibility during upload/validate/insert workflow
+
+**** HydroServerTools ****
+ - HydroServerTools.csproj
+   - New files:
+     - Scripts\custom\
+        - ButtonElements.js
+        - EnableDisableAction.js
+        - freezeEnum.js
+        - StatusValues.js
+        - VisibilityState.js
+
+
+**** HydroServerTools/Scripts/custom ****
+   - New files:
+      - ButtonElements.js
+      - EnableDisableAction.js
+      - freezeEnum.js
+      - StatusValues.js
+      - VisibilityState.js
+
+
+**** HydroServerTools/Utilities ****
+ - RepositoryContext.cs
+   - LoadDb(...) 
+     - Add logic to supply 'progress' counts for 'updated', 
+       'rejected' and 'duplicated' values when no 'new' 
+       values are inserted 
+
+
+**** HydroServerTools/Views/CSVUpload ****
+ - DragAndDropFilesRevised.cshtml
+   - Add <script> tags for new *.js files
+   - Add logic to:
+     - Enable/disable 'Add Files', 'Cancel', 'Upload' and 'Insert' buttons
+     - Show/hide 'Remove' buttons
+  - Update miscellaneous console debug messages
+
+
+**** HydroServerToolsRepository/HydroServerToolsRepository ****
+  - Utils.cs
+    - BulkInsert(...)
+      - To speed insertion progress reporting reduce 'NotifyAfter' from 5000 to 100
+
+
