@@ -13,6 +13,10 @@ using System.Reflection;
 
 using EntityFramework.Metadata.Extensions;
 
+#if (!USE_BINARY_FORMATTER)
+using Newtonsoft.Json;
+#endif
+
 using HydroserverToolsBusinessObjects.Models;
 using HydroServerToolsRepository.Repository;
 using HydroServerToolsUtilities;
@@ -448,11 +452,39 @@ namespace HydroServerTools.Utilities
                         try
                         {
                             //For the input file stream...
-                            using (var fileStream = new FileStream(binFilePathAndName, FileMode.Open, FileAccess.Read, FileShare.Read, 65536, true))
+                            using (var fileStream = new FileStream(binFilePathAndName, FileMode.Open, FileAccess.Read, FileShare.Read, 65536 * 16, true))
                             {
-                                //De-serialize to generic list...
+#if (USE_BINARY_FORMATTER)
+                                //De-serialize binary file to generic list...
                                 BinaryFormatter binFor = new BinaryFormatter();
                                 iList = (System.Collections.IList)binFor.Deserialize(fileStream);
+#else
+                                //De-serialize JSON file to generic list...
+                                using (StreamReader sr = new StreamReader(fileStream))
+                                {
+                                    //Find the generic Deserialize method: public T Deserialize<T>(JsonReader reader);
+                                    //Source: https://forums.asp.net/t/1664599.aspx?+Ask+How+to+get+generic+method+using+reflection+
+                                    JsonSerializer jsonSerializer = new JsonSerializer();
+                                    var serializerType = typeof(JsonSerializer);
+
+                                    var methodInfos = serializerType.GetMethods();
+                                    var miDeserialize = methodInfos.Where(m => m.IsGenericMethod && m.Name.Equals("Deserialize", StringComparison.OrdinalIgnoreCase)).SingleOrDefault();
+                                    if (null != miDeserialize)
+                                    {
+                                        MethodInfo miDeserialize_g = miDeserialize.MakeGenericMethod(modelListType);
+
+                                        using (JsonReader jsonReader = new Newtonsoft.Json.JsonTextReader(sr))
+                                        {
+                                            //iList = (System.Collections.IList)miDeserialize_g.Invoke(jsonSerializer, new object[] { jsonReader });
+
+                                            //Type updateableItemsDataType = typeof(UpdateableItemsData<>);
+                                            //Type gUpdateableItemsDataType = updateableItemsDataType.MakeGenericType(modelType);
+
+                                            iList = (System.Collections.IList)jsonSerializer.Deserialize(jsonReader, modelListType);
+                                        }
+                                    }
+                                }
+#endif
                                 if (null != iList && 0 < iList.Count)
                                 {
                                     //Item(s) de-serialized - find the 'Add...' method from the associated repository type...
@@ -724,14 +756,25 @@ namespace HydroServerTools.Utilities
                                                 {
                                                     //For the output file stream...
                                                     //using (var fileStream_1 = new FileStream(binFilePathAndName_1, FileMode.Create))
-                                                    using (var fileStream_1 = new FileStream(binFilePathAndName_1, FileMode.Create, FileAccess.Write, FileShare.None, 65536, true))
+                                                    using (var fileStream_1 = new FileStream(binFilePathAndName_1, FileMode.Create, FileAccess.Write, FileShare.None, 65536 * 16, true))
                                                     {
+#if (USE_BINARY_FORMATTER)
                                                         //Serialize validated records to file stream as binary...
                                                         BinaryFormatter binFor_1 = new BinaryFormatter();
 
-                                                        //binFor_1.Serialize(fileStream_1, recordList);
                                                         binFor_1.Serialize(fileStream_1, iUpdateableItemsList);
+
                                                         fileStream_1.Flush();
+#else
+                                                        //Serialize validated records to file stream as JSON...
+                                                        using (StreamWriter sw_1 = new StreamWriter(fileStream_1))
+                                                        {
+                                                            JsonSerializer jsonSerializer = new JsonSerializer();
+                                                            jsonSerializer.Serialize(sw_1, iUpdateableItemsList);
+
+                                                            fileStream.Flush();
+                                                        }
+#endif
                                                     }
                                                 }
                                                 catch (Exception ex)
@@ -1101,7 +1144,7 @@ namespace HydroServerTools.Utilities
                                                                      List<string> listRequiredPropertyNames,
                                                                      List<string> listOptionalPropertyNames)
         {
-            int count = 65536;
+            int count = 65536 * 16;
             MemoryStream msResult = new MemoryStream(count);
 
             //Validate/initialize input parameters...

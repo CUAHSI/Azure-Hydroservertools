@@ -13,6 +13,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
+#if (!USE_BINARY_FORMATTER)
+using Newtonsoft.Json;
+#endif
+
 using HydroServerTools.Utilities;
 using HydroServerTools.Validators;
 
@@ -978,12 +982,37 @@ namespace HydroServerTools.Controllers.api
             {
                 try
                 {
-                    using (var fileStream = new FileStream(binFilePathAndName, FileMode.Open, FileAccess.Read, FileShare.Read, 65536, true))
+                    using (var fileStream = new FileStream(binFilePathAndName, FileMode.Open, FileAccess.Read, FileShare.Read, 65536 * 16, true))
                     {
-                        //De-serialize to generic list...
+#if (USE_BINARY_FORMATTER)
+                        //De-serialize binary file to generic list...
                         BinaryFormatter binFor = new BinaryFormatter();
-                        //iList = (System.Collections.IList)binFor.Deserialize(fileStream);
                         iUpdateableItemsList = (System.Collections.IList)binFor.Deserialize(fileStream);
+#else
+                        //De-serialize JSON file to generic list...
+                        using (StreamReader sr = new StreamReader(fileStream))
+                        {
+                            //Find the generic Deserialize method: public T Deserialize<T>(JsonReader reader);
+                            //Source: https://forums.asp.net/t/1664599.aspx?+Ask+How+to+get+generic+method+using+reflection+
+                            JsonSerializer jsonSerializer = new JsonSerializer();
+                            var serializerType = typeof(JsonSerializer);
+
+                            var methodInfos = serializerType.GetMethods();
+                            var miDeserialize = methodInfos.Where( m => m.IsGenericMethod && m.Name.Equals("Deserialize", StringComparison.OrdinalIgnoreCase)).SingleOrDefault();
+                            if (null != miDeserialize)
+                            {
+                                MethodInfo miDeserialize_g = miDeserialize.MakeGenericMethod(updateableItemsListType);
+
+                                using (JsonReader jsonReader = new Newtonsoft.Json.JsonTextReader(sr))
+                                {
+                                    //iUpdateableItemsList = (System.Collections.IList)miDeserialize_g.Invoke(jsonSerializer, new object[] { jsonReader });
+
+                                    iUpdateableItemsList = (System.Collections.IList)jsonSerializer.Deserialize(jsonReader, updateableItemsListType);
+                                }
+
+                            }
+                        }
+#endif
                     }
                 }
                 catch (Exception ex)
@@ -1195,12 +1224,42 @@ namespace HydroServerTools.Controllers.api
             {
                 try
                 {
-                    using (var fileStream = new FileStream(binFilePathAndName, FileMode.Open, FileAccess.Read, FileShare.Read, 65536, true))
+                    using (var fileStream = new FileStream(binFilePathAndName, FileMode.Open, FileAccess.Read, FileShare.Read, 65536 * 16, true))
                     {
-                        //De-serialize to generic list...
+#if (USE_BINARY_FORMATTER)
+                        //De-serialize binary file to generic list...
                         BinaryFormatter binFor = new BinaryFormatter();
                         var iUpdateableItemsList = binFor.Deserialize(fileStream);
+#else
+                        //De-serialize JSON file to generic list...
+                        Type tGenericList = typeof(List<>);
+                        Type tUpdateableItem = typeof(UpdateableItem<>);
+                        Type gUpdateableItem = tUpdateableItem.MakeGenericType(modelType);
+                        Type updateableItemsListType = tGenericList.MakeGenericType(gUpdateableItem);
+                        System.Collections.IList iUpdateableItemsList = (System.Collections.IList)Activator.CreateInstance(updateableItemsListType);
 
+                        using (StreamReader sr = new StreamReader(fileStream))
+                        {
+                            //Find the generic Deserialize method: public T Deserialize<T>(JsonReader reader);
+                            //Source: https://forums.asp.net/t/1664599.aspx?+Ask+How+to+get+generic+method+using+reflection+
+                            JsonSerializer jsonSerializer = new JsonSerializer();
+                            var serializerType = typeof(JsonSerializer);
+
+                            var methodInfos = serializerType.GetMethods();
+                            var miDeserialize = methodInfos.Where(m => m.IsGenericMethod && m.Name.Equals("Deserialize", StringComparison.OrdinalIgnoreCase)).SingleOrDefault();
+                            if (null != miDeserialize)
+                            {
+                                MethodInfo miDeserialize_g = miDeserialize.MakeGenericMethod(updateableItemsListType);
+
+                                using (JsonReader jsonReader = new Newtonsoft.Json.JsonTextReader(sr))
+                                {
+                                    //iUpdateableItemsList = (System.Collections.IList)miDeserialize_g.Invoke(jsonSerializer, new object[] { sr });
+
+                                    iUpdateableItemsList = (System.Collections.IList)jsonSerializer.Deserialize(jsonReader, updateableItemsListType);
+                                }
+                            }
+                        }
+#endif
                         //Prepare call to RepositoryContext method to stream list to model type...
                         Type resContextType = repositoryContext.GetType();
                         MethodInfo miStreamItemsToModelList = resContextType.GetMethod("StreamItemsToModelList");
@@ -1223,7 +1282,6 @@ namespace HydroServerTools.Controllers.api
                             //Reset stream position - add stream to response content...
                             streamResult.Position = 0;
                             response.Content = new StreamContent(streamResult);  
-                            //response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/vnd.ms-excel");
                             response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/octet-stream");
                             response.Content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("attachment");
                             response.Content.Headers.ContentDisposition.FileName = "Rejected-" + modelType.Name + ".csv";
@@ -1859,10 +1917,10 @@ namespace HydroServerTools.Controllers.api
                                 Encoding currentEncoding = EncodingContext.GetFileEncoding(contentType, filePathAndName);
 
                                 //Create output file --OR-- open file for append...
-                                using (var fileStream = new FileStream(filePathAndName, isFirstChunk ? FileMode.Create : FileMode.Append, FileAccess.Write, FileShare.None, 65536, true))
+                                using (var fileStream = new FileStream(filePathAndName, isFirstChunk ? FileMode.Create : FileMode.Append, FileAccess.Write, FileShare.None, 65536 * 16, true))
                                 {
                                     //Copy content to file...
-                                    await contentStream.CopyToAsync(fileStream, 65536);
+                                    await contentStream.CopyToAsync(fileStream, 65536 * 16);
 
                                     //NOTE: DO NOT use StreamReader/StreamWriter here.  
                                     //      Apparently their use introduces invalid NUL characters in the file stream...
@@ -2222,12 +2280,24 @@ namespace HydroServerTools.Controllers.api
                                         {
                                             //For the output file stream...
                                             //using (var fileStream = new FileStream(binFilePathAndName, FileMode.Create))
-                                            using (var fileStream = new FileStream(binFilePathAndName, FileMode.Create, FileAccess.Write, FileShare.None, 65536, true))
+                                            using (var fileStream = new FileStream(binFilePathAndName, FileMode.Create, FileAccess.Write, FileShare.None, 65536 * 16, true))
                                             {
+#if (USE_BINARY_FORMATTER)
                                                 //Serialize validated records to file stream as binary...
                                                 BinaryFormatter binFor = new BinaryFormatter();
                                                 binFor.Serialize(fileStream, validatedRecords);
+
                                                 fileStream.Flush();
+#else
+                                                //Serialize validated records to file stream as JSON...
+                                                using (StreamWriter sw = new StreamWriter(fileStream))
+                                                {
+                                                    JsonSerializer jsonSerializer = new JsonSerializer();
+                                                    jsonSerializer.Serialize(sw, validatedRecords);
+
+                                                    fileStream.Flush();
+                                                }
+#endif
                                             }
                                         }
                                         catch (Exception ex)

@@ -55,7 +55,8 @@ else
         <div class="btn-group col-md-12" style="position: relative;">
             <div class="fileinput-button pull-left">
                 <button type="button" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span>&nbsp;Add Files</button>
-                <input id="inpFilesForUpload" type="file" multiple="multiple" class="required" name="fileupload" accept=".csv,.zip" />
+                @*<input id="inpFilesForUpload" type="file" multiple="multiple" class="required" name="fileupload" accept=".csv,.zip" />*@
+                <input id="inpFilesForUpload" type="file" multiple="multiple" class="required" name="fileupload" accept=".csv" />
             </div>
             <div id="alertFileUpload" class="alert alert-info fade in hidden col-md-5 col-md-offset-3" role="alert">
                 <span class="glyphicon glyphicon-refresh spin"></span>
@@ -221,7 +222,23 @@ else
                     }
                 });
 
-                if (!bFound) {
+                if ('text/csv' !== file.type && 'application/vnd.ms-excel' !== file.type) {
+                    //File type not csv - display warning dialog
+                    var markup = '<div>';
+                    markup += '<p style="margin-top: 0.25em;">The file: ' + file.name + ' is not of type "csv"</p>';
+
+                    markup += '<p style="margin-top: 0.25em;">Please restrict file entries to type "csv"</p>';
+                    markup += '</div>';
+
+                    var title = '<span class="alert-danger">Incorrect File Type Entry</span>';
+
+                    var dialog = bootbox.dialog({
+                        "title": title,
+                        "closeButton": true,
+                        "message": markup
+                    });
+                }
+                else if (!bFound) {
                     //Candidate not found - add to collection...
                     collectionFileObjs.push(file);
 
@@ -265,12 +282,12 @@ else
 
                     //msg +=      '<div class="badge col-md-1 invisible" style="position: relative; float: left; margin-left: 0.5em; margin-top: 0.25em; background-color: green; ">OK</div>'
                     //msg +=      '<div class="col-md-4" style="margin-top: 0.25em;">' + file.name + '</div>';
-                    msg +=      '<div class="col-md-5" style="margin-top: 0.25em; text-overflow: ellipsis;">' + file.name + '</div>';
-                    msg +=      '<div class="col-md-6 progress" style="margin-top: 0.25em; margin-bottom: 0;">';
-                    msg +=          '<div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">';
-                    msg +=          '0%';
-                    msg +=          '</div>'
-                    msg +=      '</div>'
+                    msg += '<div class="col-md-5" style="margin-top: 0.25em; text-overflow: ellipsis;">' + file.name + '</div>';
+                    msg += '<div class="col-md-6 progress" style="margin-top: 0.25em; margin-bottom: 0;">';
+                    msg += '<div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">';
+                    msg += '0%';
+                    msg += '</div>'
+                    msg += '</div>'
                     //msg +=      '<button class="btn btn-danger delete"  data-file-name="' + file.name + '">Remove</button>';
                     msg += '<input type="button" class="btn btn-danger delete" style="font-size: 0.75em; font-weight: bold;" data-file-name="' + file.name + '" value="Remove">';
 
@@ -289,6 +306,22 @@ else
 
                     //Enable button...
                     $('#' + 'btnUploadFiles').removeClass('disabled');
+                }
+                else { //bFound
+                    //Input file object already exists, display warning dialog...
+                    var markup = '<div>';
+                    markup += '<p style="margin-top: 0.25em;">A file named: ' + file.name + ' already exists in the collection</p>';
+
+                    markup += '<p style="margin-top: 0.25em;">Please enter unique file names</p>';
+                    markup += '</div>';
+
+                    var title = '<span class="alert-danger">Duplicate File Name Entry</span>';
+
+                    var dialog = bootbox.dialog({
+                        "title": title,
+                        "closeButton": true,
+                        "message": markup
+                    });
                 }
             });
         }
@@ -934,6 +967,18 @@ else
                             }
 
                             jqProgressBar.text('Database loading: ' + (endCondition ? 'completed' : 'in progress'));
+
+                            if (endCondition) {
+                                //Remove the associated file object, if applicable...
+                                var foLength = fileObjectsForUpload.length;
+                                for (var foI = 0; foI < foLength; ++foI) {
+                                    var fo = fileObjectsForUpload[foI];
+                                    if (fileName === fo.name) {
+                                        fileObjectsForUpload.splice(foI, 1);
+                                        break;
+                                    }
+                                }
+                            }
                         }
 
                         //If indicated, repeat the call to request the next available record count(s), if any
@@ -962,6 +1007,16 @@ else
 
                     //Set error message in progress bar...
                     jqProgressBar.text('DB record count monitoring: error');
+
+                    //Remove the associated file object, if applicable...
+                    var foLength = fileObjectsForUpload.length;
+                    for (var foI = 0; foI < foLength; ++foI) {
+                        var fo = fileObjectsForUpload[foI];
+                        if (fileName === fo.name) {
+                            fileObjectsForUpload.splice(foI, 1);
+                            break;
+                        }
+                    }
                 });
             }
         }
@@ -1293,15 +1348,15 @@ else
                         sessionStorage.uploadedFileNames = uploadedFileNames.toString();
                     }
 
-                    //Remove the associated file object, if applicable...
-                    var foLength = fileObjectsForUpload.length;
-                    for (var foI = 0; foI < foLength; ++foI) {
-                        var fo = fileObjectsForUpload[foI];
-                        if (fileName === fo.name) {
-                            fileObjectsForUpload.splice(foI, 1);
-                            break;
-                        }
-                    }
+                    ////Remove the associated file object, if applicable...
+                    //var foLength = fileObjectsForUpload.length;
+                    //for (var foI = 0; foI < foLength; ++foI) {
+                    //    var fo = fileObjectsForUpload[foI];
+                    //    if (fileName === fo.name) {
+                    //        fileObjectsForUpload.splice(foI, 1);
+                    //        break;
+                    //    }
+                    //}
 
                     //Queue file validation request via a self-executing anonymous function...
                     (function () {
