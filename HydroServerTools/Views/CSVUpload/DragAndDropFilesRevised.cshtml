@@ -200,6 +200,23 @@ else
                 }
             });
         }
+
+        //Check for any more panels...
+        allPanelsGone();
+    }
+
+    //Check for existence of any collapse panels...
+    function allPanelsGone() {
+
+        //Attempt to select panels...
+        var panels = $('div.row[data-file]');
+        if (0 >= panels.length) {
+            //All panels gone - hide Insert button...
+            var visibilityState = (new VisibilityState()).getEnum();
+            var buttonElements = (new ButtonElements()).getEnum();
+
+            setButtonVisibility(visibilityState.Hidden, buttonElements.Insert);
+        }
     }
 
     //Add unique input candidate file objects to the input collection and (name) to markup collection...
@@ -214,8 +231,7 @@ else
                 //Check for presence in collection...
                 var bFound = false;
                 $.each(collectionFileObjs, function (indexCol, fileCol) {
-                    if (file.name.toLowerCase() === fileCol.name.toLowerCase() &&
-                        file.size === fileCol.size) {
+                    if (file.name.toLowerCase() === fileCol.name.toLowerCase()) {
                         //Found - set indicator, return early...
                         bFound = true;
                         return false;
@@ -411,6 +427,7 @@ else
             var enableDisableAction = (new EnableDisableAction()).getEnum();
             var buttonElements = (new ButtonElements()).getEnum();
 
+            //Determine referenced button elements...
             var buttonElementsArray = [ buttonElements.AddFiles,
                                         buttonElements.Cancel,
                                         buttonElements.Upload,
@@ -454,13 +471,68 @@ else
         }
     }
 
+    //Per the input visibility, set the state of the input button elements...
+    function setButtonVisibility(visibility_Parameter, buttonElements_Parameter) {
+        //Validate/initialize input parameters...
+        if ('undefined' !== typeof visibility_Parameter && null !== visibility_Parameter &&
+            'undefined' !== typeof buttonElements_Parameter && null !== buttonElements_Parameter) {
+            //Input parameters valid - retrieve enable/disable and button element values...
+            var visibilityState = (new VisibilityState()).getEnum();
+            var buttonElements = (new ButtonElements()).getEnum();
+
+            //Determine referenced button elements...
+            var buttonElementsArray = [buttonElements.AddFiles,
+                                        buttonElements.Cancel,
+                                        buttonElements.Upload,
+                                        buttonElements.Insert,
+                                        buttonElements.Continue];
+            var beaLength = buttonElementsArray.length;
+
+            for (var beaI = 0; beaI < beaLength; ++beaI) {
+                var buttonElement = buttonElementsArray[beaI];
+                var jqButton = null;
+                switch (buttonElements_Parameter & buttonElement) {
+                    case buttonElements.AddFiles:
+                        jqButton = $('div.fileinput-button button.btn');
+                        break;
+                    case buttonElements.Cancel:
+                        jqButton = $('a.cancel');
+                        break;
+                    case buttonElements.Upload:
+                        jqButton = $('button#btnUploadFiles');
+                        break;
+                    case buttonElements.Insert:
+                        jqButton = $('button#btnDbInsert');
+                        break;
+                    case buttonElements.Continue:
+                        jqButton = $('button#btnDragAndDropContinue');
+                        break;
+                    default:
+                        //Unknown value - take no action...
+                        break;
+                }
+
+                if (null !== jqButton) {
+                    if (visibilityState.Shown & visibility_Parameter) {
+                        //Show...
+                        jqButton.removeClass('hidden');
+                    }
+                    else {
+                        //Hide...
+                        jqButton.addClass('hidden');
+                    }
+                }
+            }
+        }
+    }
+
     //Per the input upload and validation status parameters, set the visibility of the matching remove buttons to the input visibility parameter... 
     function setRemoveButtons(visibility_Parameter, upload_Status_Parameter, validation_Status_Parameter) {
         //Validate/initialize input parameters...
         if ('undefined' !== typeof visibility_Parameter && null !== visibility_Parameter &&
             'undefined' !== typeof upload_Status_Parameter && null !== upload_Status_Parameter &&
             'undefined' !== typeof validation_Status_Parameter && null !== validation_Status_Parameter) {
-            //Input parameters valid - retrieve upload and validation status values...
+            //Input parameters valid - retrieve visibility, upload and validation status values...
             var visibilityState = (new VisibilityState()).getEnum();
             var statusValues = (new StatusValues()).getEnum();
 
@@ -490,6 +562,25 @@ else
                         button.addClass('hidden');
                     }
                 }
+            }
+        }
+    }
+
+    //Per the input enable/disable parameter, set the 'drag and drop' state...
+    function setDragAndDropState(enableDisable_Parameter) {
+        //Validate/initialize input parameters...
+        if ('undefined' !== typeof enableDisable_Parameter && null !== enableDisable_Parameter) {
+            //Input parameters valid - retrieve enable/disable values...
+            var enableDisableAction = (new EnableDisableAction()).getEnum();
+            var dropDiv = $('#' + 'divFilesForUpload'); //Assumption: Only one drop zone...
+
+            if (enableDisable_Parameter & enableDisableAction.Enable) {
+                //Enable...
+                dropDiv.fileupload('option', 'dropZone', dropDiv);
+            }
+            else {
+                //Disable...
+                dropDiv.fileupload('option', 'dropZone', null);
             }
         }
     }
@@ -672,7 +763,9 @@ else
                                         setButtonState(enableDisableAction.Enable,
                                                         buttonElements.AddFiles |
                                                         buttonElements.Cancel |
-                                                        buttonElements.Insert );
+                                                        buttonElements.Insert);
+
+                                        setDragAndDropState(enableDisableAction.Enable);
 
                                         setButtonState(enableDisableAction.Disable,
                                                         buttonElements.Upload |
@@ -1169,10 +1262,16 @@ else
         $('#' + 'alertFileValidation').removeClass('hidden').hide();
         $('#' + 'alertDbLoad').removeClass('hidden').hide();
 
-        //TO DO - Check session storage for existing items...
-        console.log('>>>>>>>>>>>>>>>');
-        console.log('>>>>>>>>>>>>>>> Missing functionality: check session storage for existing items <<<<<<<<<<<<<<<<<<<<<<');
-        console.log('>>>>>>>>>>>>>>>');
+        ////TO DO - Check session storage for existing items...
+        //console.log('>>>>>>>>>>>>>>>');
+        //console.log('>>>>>>>>>>>>>>> Missing functionality: check session storage for existing items <<<<<<<<<<<<<<<<<<<<<<');
+        //console.log('>>>>>>>>>>>>>>>');
+
+        //Disable default 'drop' and 'dragover' events for document...
+        //Source: https://github.com/blueimp/jQuery-File-Upload/wiki/Options
+        $(document).bind('drop dragover', function (e) {
+            e.preventDefault();
+        });
 
         //Initialization code for jQuery-File-Upload...
         var dropDiv = $('#' + 'divFilesForUpload');
@@ -1220,7 +1319,16 @@ else
                     "fileNamesAndTypes": JSON.stringify(fileNamesAndTypes),
                     "currentUploadId": currentUploadId,
                     "validationQualifier": "@qualifier"
-                                };
+                };
+
+                ////BC - TEST - Add uploadName to each file object...
+                ////Source: https://github.com/blueimp/jQuery-File-Upload/wiki/API 
+                //var fLength = data.files.length;
+                //var counter = 0;
+                //for (fI = 0; fI < fLength; ++fI) {
+                //    var fObj = data.files[fI];
+                //    fObj.uploadName = (fObj.name + '_' + ((++counter).toString()));
+                //}
 
                 var dropDiv = $('#' + 'divFilesForUpload');
                 dropDiv.fileupload('send', data);
@@ -1434,6 +1542,9 @@ else
                     buttonElements.Insert |
                     buttonElements.Continue);
 
+                setDragAndDropState(enableDisableAction.Disable);
+
+
                 //Display 'file upload' alert...
                 //Source: http://www.java2s.com/Tutorials/HTML_CSS/Bootstrap_Example/Alert/Show_alert_block_with_fade_in.htm
                 $('#' + 'alertFileUpload').fadeIn({ "duration": 500 });
@@ -1459,6 +1570,8 @@ else
                                 buttonElements.Upload |
                                 buttonElements.Insert |
                                 buttonElements.Continue);
+
+                setDragAndDropState(enableDisableAction.Disable);
 
                 setRemoveButtons(visibilityState.Hidden,
                                  statusValues.complete,         //Upload status

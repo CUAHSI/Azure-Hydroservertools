@@ -971,7 +971,11 @@ namespace HydroServerTools.Controllers.api
 
             //Retrieve the list of UpdateableItem<> from the incorrect records binary file...
             string pathProcessed = System.Web.Hosting.HostingEnvironment.MapPath("~/Processed/");
+#if (USE_BINARY_FORMATTER)
             string binFilePathAndName = pathProcessed + uploadId + "-" + modelType.Name + "-IncorrectRecords.bin";
+#else
+            string binFilePathAndName = pathProcessed + uploadId + "-" + modelType.Name + "-IncorrectRecords.json";
+#endif
             Type tGenericList = typeof(List<>);
             Type tUpdateableItem = typeof(UpdateableItem<>);
             Type gUpdateableItem = tUpdateableItem.MakeGenericType(modelType);
@@ -1005,9 +1009,15 @@ namespace HydroServerTools.Controllers.api
 
                                 using (JsonReader jsonReader = new Newtonsoft.Json.JsonTextReader(sr))
                                 {
-                                    //iUpdateableItemsList = (System.Collections.IList)miDeserialize_g.Invoke(jsonSerializer, new object[] { jsonReader });
+                                    ////iUpdateableItemsList = (System.Collections.IList)miDeserialize_g.Invoke(jsonSerializer, new object[] { jsonReader });
 
-                                    iUpdateableItemsList = (System.Collections.IList)jsonSerializer.Deserialize(jsonReader, updateableItemsListType);
+                                    //iUpdateableItemsList = (System.Collections.IList)jsonSerializer.Deserialize(jsonReader, updateableItemsListType);
+
+                                    jsonReader.SupportMultipleContent = true;
+                                    while (await jsonReader.ReadAsync())
+                                    {
+                                        iUpdateableItemsList.Add(jsonSerializer.Deserialize(jsonReader, gUpdateableItem));
+                                    }
                                 }
 
                             }
@@ -1218,7 +1228,12 @@ namespace HydroServerTools.Controllers.api
 
             //Retrieve the list of UpdateableItem<> from the incorrect records binary file...
             string pathProcessed = System.Web.Hosting.HostingEnvironment.MapPath("~/Processed/");
+#if (USE_BINARY_FORMATTER)
             string binFilePathAndName = pathProcessed + uploadId + "-" + modelType.Name + "-IncorrectRecords.bin";
+#else
+            string binFilePathAndName = pathProcessed + uploadId + "-" + modelType.Name + "-IncorrectRecords.json";
+#endif
+
 
             using (await repositoryContext.RepositorySemaphore.UseWaitAsync())
             {
@@ -1253,9 +1268,14 @@ namespace HydroServerTools.Controllers.api
 
                                 using (JsonReader jsonReader = new Newtonsoft.Json.JsonTextReader(sr))
                                 {
-                                    //iUpdateableItemsList = (System.Collections.IList)miDeserialize_g.Invoke(jsonSerializer, new object[] { sr });
+                                    ////iUpdateableItemsList = (System.Collections.IList)miDeserialize_g.Invoke(jsonSerializer, new object[] { sr });
 
-                                    iUpdateableItemsList = (System.Collections.IList)jsonSerializer.Deserialize(jsonReader, updateableItemsListType);
+                                    //iUpdateableItemsList = (System.Collections.IList)jsonSerializer.Deserialize(jsonReader, updateableItemsListType);
+                                    jsonReader.SupportMultipleContent = true;
+                                    while (await jsonReader.ReadAsync())
+                                    {
+                                        iUpdateableItemsList.Add(jsonSerializer.Deserialize(jsonReader, gUpdateableItem));
+                                    }
                                 }
                             }
                         }
@@ -2099,7 +2119,12 @@ namespace HydroServerTools.Controllers.api
                         if (null != modeltype)
                         {
                             //File validated - construct file path and name, delete binary file...
+#if (USE_BINARY_FORMATTER)
                             var binFilePathAndName = pathValidated + uploadId + "-" + modeltype.Name + "-validated.bin";
+#else
+                            var binFilePathAndName = pathValidated + uploadId + "-" + modeltype.Name + "-validated.json";
+#endif
+
                             try
                             {
                                 File.Delete(binFilePathAndName);
@@ -2273,15 +2298,24 @@ namespace HydroServerTools.Controllers.api
                                         string pathValidated = System.Web.Hosting.HostingEnvironment.MapPath("~/Validated/");
                                         var validatedRecords = csvValidator.ValidatedRecords;
                                         var modeltype = csvValidator.ValidatedModelType;
-
+#if (USE_BINARY_FORMATTER)
                                         var binFilePathAndName = pathValidated + uploadId + "-" + modeltype.Name + "-validated.bin";
+#else
+                                        var binFilePathAndName = pathValidated + uploadId + "-" + modeltype.Name + "-validated.json";
+#endif
 
                                         try
                                         {
                                             //For the output file stream...
                                             //using (var fileStream = new FileStream(binFilePathAndName, FileMode.Create))
-                                            using (var fileStream = new FileStream(binFilePathAndName, FileMode.Create, FileAccess.Write, FileShare.None, 65536 * 16, true))
+                                            //using (var fileStream = new FileStream(binFilePathAndName, FileMode.Create, FileAccess.Write, FileShare.None, 65536 * 16, true))
+                                            using (var fileStream = new FileStream(binFilePathAndName, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None, 65536 * 16, true))
                                             {
+                                                //Move to end of stream...
+                                                if (fileStream.CanSeek)
+                                                {
+                                                    fileStream.Seek(0, SeekOrigin.End);
+                                                }
 #if (USE_BINARY_FORMATTER)
                                                 //Serialize validated records to file stream as binary...
                                                 BinaryFormatter binFor = new BinaryFormatter();
@@ -2292,10 +2326,21 @@ namespace HydroServerTools.Controllers.api
                                                 //Serialize validated records to file stream as JSON...
                                                 using (StreamWriter sw = new StreamWriter(fileStream))
                                                 {
-                                                    JsonSerializer jsonSerializer = new JsonSerializer();
-                                                    jsonSerializer.Serialize(sw, validatedRecords);
+                                                    //JsonSerializer jsonSerializer = new JsonSerializer();
+                                                    //jsonSerializer.Serialize(sw, validatedRecords);
 
-                                                    fileStream.Flush();
+                                                    //fileStream.Flush();
+                                                    using (JsonTextWriter jtw = new JsonTextWriter(sw))
+                                                    {
+                                                        JsonSerializer jsonSerializer = new JsonSerializer();
+                                                        //jsonSerializer.Serialize(jtw, validatedRecords);
+                                                        foreach (var validatedRecord in validatedRecords)
+                                                        {
+                                                            jsonSerializer.Serialize(jtw, validatedRecord);
+                                                        }
+
+                                                        await jtw.FlushAsync();
+                                                    }
                                                 }
 #endif
                                             }

@@ -445,8 +445,11 @@ namespace HydroServerTools.Utilities
                     System.Collections.IList iList = (System.Collections.IList)Activator.CreateInstance(modelListType);
 
                     //Construct validated binary file path and name...
+#if (USE_BINARY_FORMATTER)
                     string binFilePathAndName = pathValidated + validatedFileNamePrefix + "-" + modelType.Name + "-validated.bin";
-
+#else
+                    string binFilePathAndName = pathValidated + validatedFileNamePrefix + "-" + modelType.Name + "-validated.json";
+#endif
                     using (await RepositorySemaphore.UseWaitAsync())
                     {
                         try
@@ -475,12 +478,21 @@ namespace HydroServerTools.Utilities
 
                                         using (JsonReader jsonReader = new Newtonsoft.Json.JsonTextReader(sr))
                                         {
-                                            //iList = (System.Collections.IList)miDeserialize_g.Invoke(jsonSerializer, new object[] { jsonReader });
+                                            ////iList = (System.Collections.IList)miDeserialize_g.Invoke(jsonSerializer, new object[] { jsonReader });
 
-                                            //Type updateableItemsDataType = typeof(UpdateableItemsData<>);
-                                            //Type gUpdateableItemsDataType = updateableItemsDataType.MakeGenericType(modelType);
+                                            ////Type updateableItemsDataType = typeof(UpdateableItemsData<>);
+                                            ////Type gUpdateableItemsDataType = updateableItemsDataType.MakeGenericType(modelType);
 
-                                            iList = (System.Collections.IList)jsonSerializer.Deserialize(jsonReader, modelListType);
+                                            //iList = (System.Collections.IList)jsonSerializer.Deserialize(jsonReader, modelListType);
+
+                                            //Use asynchronous JsonReader method here...
+                                            //Source: https://stackoverflow.com/questions/26601594/what-is-the-correct-way-to-use-json-net-to-parse-stream-of-json-objects
+                                            jsonReader.SupportMultipleContent = true;
+                                            while (await jsonReader.ReadAsync())
+                                            {
+                                                //iList = (System.Collections.IList)jsonSerializer.Deserialize(jsonReader, modelListType);
+                                                iList.Add(jsonSerializer.Deserialize(jsonReader, modelType));
+                                            }
                                         }
                                     }
                                 }
@@ -750,8 +762,13 @@ namespace HydroServerTools.Utilities
                                                 }
 
                                                 //Create file path and name...
+#if (USE_BINARY_FORMATTER)
                                                 var binFilePathAndName_1 = pathProcessed + validatedFileNamePrefix + "-" +
                                                                          modelType.Name + "-" + recordType + ".bin";
+#else
+                                                var binFilePathAndName_1 = pathProcessed + validatedFileNamePrefix + "-" +
+                                                                         modelType.Name + "-" + recordType + ".json";
+#endif
                                                 try
                                                 {
                                                     //For the output file stream...
@@ -767,12 +784,22 @@ namespace HydroServerTools.Utilities
                                                         fileStream_1.Flush();
 #else
                                                         //Serialize validated records to file stream as JSON...
+
+                                                        //Question: How to use JsonWriter async writes here?
+                                                        //Possible : https://stackoverflow.com/questions/26601594/what-is-the-correct-way-to-use-json-net-to-parse-stream-of-json-objects
                                                         using (StreamWriter sw_1 = new StreamWriter(fileStream_1))
                                                         {
-                                                            JsonSerializer jsonSerializer = new JsonSerializer();
-                                                            jsonSerializer.Serialize(sw_1, iUpdateableItemsList);
+                                                            using (JsonTextWriter jtw = new JsonTextWriter(sw_1))
+                                                            {
+                                                                JsonSerializer jsonSerializer = new JsonSerializer();
+                                                                //jsonSerializer.Serialize(jtw, iUpdateableItemsList);
+                                                                foreach (var updateableItem in iUpdateableItemsList)
+                                                                {
+                                                                    jsonSerializer.Serialize(jtw, updateableItem);
+                                                                }
 
-                                                            fileStream.Flush();
+                                                                await jtw.FlushAsync();
+                                                            }
                                                         }
 #endif
                                                     }

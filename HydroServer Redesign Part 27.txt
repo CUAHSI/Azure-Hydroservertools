@@ -1,0 +1,63 @@
+
+HydroServer Redesign Part 27
+
+
+**** Summary ****
+
+ - Miscellaneous changes for QA issues
+
+ 
+**** HydroServerTools ****
+ - HydroServerTools.csproj
+   - Remove retired file: DragAndDropFiles.cshtml
+
+ 
+**** HydroServerTools/Controllers/api ****
+ - RevisedUploadController.cs
+   - General change: Conditionally set validated and processed file extension to '.json'
+   - GetRejectedItems(...)
+     - Re-factor NewtonSoft.Json Deserialize calls to read one object at a time from stream 
+   - GetRejectedItems(...)
+     - Re-factor NewtonSoft.Json Deserialize calls to read one object at a time from stream 
+  - ValidateFileContentsAsync(...)
+    - Re-factor validation processing to collection items from different files by validated model type
+    - Re-factor NewtonSoft.Json Serialize calls to write one object at a time to stream 
+
+ 
+**** HydroServerTools/Utilities ****
+  - General change: Conditionally set validated and processed file extension to '.json'
+ - FileContext.cs 
+   - UpdateBinaryFiles(...)
+    - Re-factor NewtonSoft.Json Deserialize calls to read one object at a time from stream 
+    - Re-factor NewtonSoft.Json Serialize calls to write one object at a time to stream 
+ - RepositoryContext.cs
+   - General change: Conditionally set validated and processed file extension to '.json'
+   - LoadDb(...)
+    - Re-factor NewtonSoft.Json Deserialize calls to read one object at a time from stream 
+    - Re-factor NewtonSoft.Json Serialize calls to write one object at a time to stream 
+
+
+**** HydroServerTools/Views/CSVUpload ****
+ - DragAndDropFilesRevised.cshtml
+   - new methods: 
+      - setButtonVisibility(...)
+      - allPanelsGone(...)
+      - setDragAndDropState(...)
+   - deleteCollapsePanel(...)
+     - Re-factor panel deletion checking to hide Insert button on last panel delete
+   - addFileObjects(...)
+      - Re-factor input file checks to require unique file names
+   - requestFileValidation(...)
+     - Add logic to disable 'drag and drop' actions
+   - Document ready
+     - Disable default 'drop' and 'dragover' actions for document
+     - Add 'drag and drop' disable to various button 'click' handlers
+   - Add miscellaneous comments
+
+
+**** HydroServerToolsRepository/HydroServerToolsRepository ****
+ - Utils.cs
+   - BulkkInsert<>(...) 
+     - NotifyAfter r: 100 w: 1000
+
+

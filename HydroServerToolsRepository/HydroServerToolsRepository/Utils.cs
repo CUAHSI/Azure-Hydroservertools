@@ -694,7 +694,7 @@ namespace HydroServerToolsRepository.Repository
 
                         //bulkCopy.SqlRowsCopied += (sender, e) => { = instanceIdentifier, CacheName};
                         //bulkCopy.NotifyAfter = 5000;
-                        bulkCopy.NotifyAfter = 100;
+                        bulkCopy.NotifyAfter = 1000;
                         bulkCopy.BatchSize = 10000;
                         // Set the timeout.
                         bulkCopy.BulkCopyTimeout = 6000;
