@@ -205,7 +205,7 @@ namespace HydroServerTools.Controllers
                             TempData["SynchronizedDateTime"] = TimeZoneInfo.ConvertTimeFromUtc(p.SynchronizedDateTime, estZone).ToString("MM/dd/yy H:mm:ss zzz");
                         else
                         {
-                            TempData["SynchronizedDateTime"] = "scheduled";
+                            TempData["SynchronizedDateTime"] = "Scheduled";
                         }
                     }
                 }

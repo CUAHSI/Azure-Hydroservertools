@@ -302,9 +302,11 @@ else
                     //msg +=      '<div class="badge col-md-1 invisible" style="position: relative; float: left; margin-left: 0.5em; margin-top: 0.25em; background-color: green; ">OK</div>'
                     //msg +=      '<div class="col-md-4" style="margin-top: 0.25em;">' + file.name + '</div>';
                     msg += '<div class="col-md-5" style="margin-top: 0.25em; text-overflow: ellipsis;">' + file.name + '</div>';
-                    msg += '<div class="col-md-6 progress" style="margin-top: 0.25em; margin-bottom: 0;">';
+                    msg += '<div class="col-md-6" style="margin-top: 0.25em; margin-bottom: 0;">';
+                    msg += '<div class="progress">';
                     msg += '<div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">';
                     msg += '0%';
+                    msg += '</div>'
                     msg += '</div>'
                     msg += '</div>'
                     //msg +=      '<button class="btn btn-danger delete"  data-file-name="' + file.name + '">Remove</button>';
@@ -1200,8 +1202,8 @@ else
                 var fileName = $(panelItem).attr('data-file');
 
                 //Set jQuery objects for later reference...
-                var progressWrapper = $(panelItem).children('div.progress');
-                var progressBar = $(progressWrapper).children('div.progress-bar');
+                var progressWrapper = $(panelItem).find('div.progress');
+                var progressBar = $(progressWrapper).find('div.progress-bar');
 
                 var panelItemParent = $(panelItem).parent();    //Enclosing anchor...
                 //var dataToggle = panelItemParent;             //Contains attribute: data-toggle="collapse"
@@ -1418,7 +1420,7 @@ else
 
                 //Set jQuery objects for later reference...
                 var progressWrapper = $(panelItem + ' .progress');
-                var progressBar = $(panelItem + ' .progress-bar');
+                var progressBar = $(panelItem + ' .progress .progress-bar');
                 //var badge = $(panelItem + ' .badge');
 
                 var panelItemParent = $(panelItem).parent();    //Enclosing anchor...

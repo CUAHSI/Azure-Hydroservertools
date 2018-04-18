@@ -58,6 +58,6 @@ namespace HydroserverToolsBusinessObjects
         public static string IMPORT_COMMIT_COMPLETE = "Processing Complete";
         public static string IMPORT_COMMIT_FAILED = "Processing Failed";
 
-        public static string USERACCOUNT_NOT_LINKED = "This google email has no associated account. Please sign up for hosting by clicking 'Request New Publishing Account'. If you encounter additional problems please reach out to help@cuahsi.org.";
+        public static string USERACCOUNT_NOT_LINKED = "This Google email has no associated publishing account. Please sign up by clicking 'Request New Publishing Account'. If you encounter additional problems, please reach out to help@cuahsi.org.";
     }
 }
