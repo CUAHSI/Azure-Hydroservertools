@@ -373,9 +373,64 @@ namespace HydroServerToolsUtilities
                         }
                     }
                 }
-
             }
+        }
 
+        //For the input count type and key, assign the input values to the associated counts...
+        public async Task SetCounts(enumCountType eCountType, string key, int inserted, int updated = 0, int rejected = 0, int duplicated = 0)
+        {
+            //Validate/initialize input parameters...
+            if (ValidCountType(eCountType) && (!String.IsNullOrWhiteSpace(key)) && (0 <= inserted && 0 <= updated && 0 <= rejected && 0 <= duplicated))
+            {
+                //Input parameters valid - check for substitute key...
+                string myKey = key;
+                using (await SubstituteKeysSemaphore.UseWaitAsync())
+                {
+                    if (SubstituteKeys.Keys.Contains(key))
+                    {
+                        myKey = SubstituteKeys[key];
+                    }
+                }
+
+                //Retrieve associated results list...
+                List<DbLoadResult> resultsList = null;
+                SemaphoreSlim semSlim = null;
+
+                if (enumCountType.ct_DbProcess == eCountType)
+                {
+                    //Db Process...
+                    resultsList = DbProcessCounts;
+                    semSlim = _DbProcessSemaphore;
+                }
+                else if (enumCountType.ct_DbLoad == eCountType)
+                {
+                    //Db Load...
+                    resultsList = DbLoadCounts;
+                    semSlim = _DbLoadSemaphore;
+                }
+
+                if (null != resultsList && null != semSlim)
+                {
+                    //Results list found - check for results...
+                    using (await semSlim.UseWaitAsync())
+                    {
+                        var results = resultsList.FirstOrDefault(res => res.TableName == myKey);
+
+                        if (null != results)
+                        {
+                            //Results found - increment values...
+                            DbLoadCounts dbLoadCounts = results.LoadCounts;
+
+                            dbLoadCounts.SetCounts(inserted, updated, rejected, duplicated);
+                        }
+                        else
+                        {
+                            //Results not found - add new instance to list...
+                            resultsList.Add(new DbLoadResult(myKey, inserted, updated, rejected, duplicated));
+                        }
+                    }
+                }
+            }
         }
 
         //For the input count type and key, set the input record count...
@@ -540,7 +595,14 @@ namespace HydroServerToolsUtilities
                         {
                             //Results found - set return value...
                             DbLoadCounts loadCounts = dbLoadResult.LoadCounts;
-                            result = new RecordCountMessage(dbLoadResult.RecordCount, loadCounts.Inserted, loadCounts.Updated, loadCounts.Rejected, loadCounts.Duplicated, dbLoadResult.Final);
+                            var recordCount = dbLoadResult.RecordCount;
+
+                            //if ( 0 >= recordCount )
+                            //{
+                            //    recordCount = (loadCounts.Inserted + loadCounts.Updated + loadCounts.Rejected + loadCounts.Duplicated);
+                            //}
+
+                            result = new RecordCountMessage( recordCount, loadCounts.Inserted, loadCounts.Updated, loadCounts.Rejected, loadCounts.Duplicated, dbLoadResult.Final);
                         }
                     }
                 }

@@ -13,6 +13,10 @@ using System.Reflection;
 
 using EntityFramework.Metadata.Extensions;
 
+#if (!USE_BINARY_FORMATTER)
+using Newtonsoft.Json;
+#endif
+
 using HydroserverToolsBusinessObjects.Models;
 using HydroServerToolsRepository.Repository;
 using HydroServerToolsUtilities;
@@ -441,18 +445,58 @@ namespace HydroServerTools.Utilities
                     System.Collections.IList iList = (System.Collections.IList)Activator.CreateInstance(modelListType);
 
                     //Construct validated binary file path and name...
+#if (USE_BINARY_FORMATTER)
                     string binFilePathAndName = pathValidated + validatedFileNamePrefix + "-" + modelType.Name + "-validated.bin";
-
+#else
+                    string binFilePathAndName = pathValidated + validatedFileNamePrefix + "-" + modelType.Name + "-validated.json";
+#endif
                     using (await RepositorySemaphore.UseWaitAsync())
                     {
                         try
                         {
                             //For the input file stream...
-                            using (var fileStream = new FileStream(binFilePathAndName, FileMode.Open, FileAccess.Read, FileShare.Read, 65536, true))
+                            using (var fileStream = new FileStream(binFilePathAndName, FileMode.Open, FileAccess.Read, FileShare.Read, 65536 * 16, true))
                             {
-                                //De-serialize to generic list...
+#if (USE_BINARY_FORMATTER)
+                                //De-serialize binary file to generic list...
                                 BinaryFormatter binFor = new BinaryFormatter();
                                 iList = (System.Collections.IList)binFor.Deserialize(fileStream);
+#else
+                                //De-serialize JSON file to generic list...
+                                using (StreamReader sr = new StreamReader(fileStream))
+                                {
+                                    //Find the generic Deserialize method: public T Deserialize<T>(JsonReader reader);
+                                    //Source: https://forums.asp.net/t/1664599.aspx?+Ask+How+to+get+generic+method+using+reflection+
+                                    JsonSerializer jsonSerializer = new JsonSerializer();
+                                    var serializerType = typeof(JsonSerializer);
+
+                                    var methodInfos = serializerType.GetMethods();
+                                    var miDeserialize = methodInfos.Where(m => m.IsGenericMethod && m.Name.Equals("Deserialize", StringComparison.OrdinalIgnoreCase)).SingleOrDefault();
+                                    if (null != miDeserialize)
+                                    {
+                                        MethodInfo miDeserialize_g = miDeserialize.MakeGenericMethod(modelListType);
+
+                                        using (JsonReader jsonReader = new Newtonsoft.Json.JsonTextReader(sr))
+                                        {
+                                            ////iList = (System.Collections.IList)miDeserialize_g.Invoke(jsonSerializer, new object[] { jsonReader });
+
+                                            ////Type updateableItemsDataType = typeof(UpdateableItemsData<>);
+                                            ////Type gUpdateableItemsDataType = updateableItemsDataType.MakeGenericType(modelType);
+
+                                            //iList = (System.Collections.IList)jsonSerializer.Deserialize(jsonReader, modelListType);
+
+                                            //Use asynchronous JsonReader method here...
+                                            //Source: https://stackoverflow.com/questions/26601594/what-is-the-correct-way-to-use-json-net-to-parse-stream-of-json-objects
+                                            jsonReader.SupportMultipleContent = true;
+                                            while (await jsonReader.ReadAsync())
+                                            {
+                                                //iList = (System.Collections.IList)jsonSerializer.Deserialize(jsonReader, modelListType);
+                                                iList.Add(jsonSerializer.Deserialize(jsonReader, modelType));
+                                            }
+                                        }
+                                    }
+                                }
+#endif
                                 if (null != iList && 0 < iList.Count)
                                 {
                                     //Item(s) de-serialized - find the 'Add...' method from the associated repository type...
@@ -519,8 +563,10 @@ namespace HydroServerTools.Utilities
                                                                                 paramNamesToLists["listOfEditedRecords"],
                                                                                 statusContext
                                                                                 };
-                                            //Call 'Add...' method on newly created instance...
-                                            methodAdd.Invoke(repositoryInstance, objArray);
+                                            //Call 'Add...' method (as awaitable) on newly created instance...
+                                            //Source: https://stackoverflow.com/questions/39674988/how-to-call-a-generic-async-method-using-reflection
+                                            var task = (Task) methodAdd.Invoke(repositoryInstance, objArray);
+                                            await task.ConfigureAwait(false);
 
                                             //Retrieve db table name via EntityFramework metadata extensions...
                                             string tableName = String.Empty;
@@ -573,23 +619,30 @@ namespace HydroServerTools.Utilities
                                                 MethodInfo methodInfoCommit = typeRepositoryUtils.GetMethod("CommitNewRecords");
                                                 MethodInfo methodInfoUpdate = typeRepositoryUtils.GetMethod("CommitUpdateRecords");
                                                 MethodInfo methodInfo_G = null;
+                                                bool bNewRecordsLoaded = false;         //Assume no new records loaded
 
                                                 System.Collections.IList iList2 = paramNamesToLists["listOfCorrectRecords"];
                                                 if (0 < iList2.Count)
                                                 {
-                                                    //New records exist - set substitute key in statusContext...
+                                                    //New records exist - set indicator
+                                                    bNewRecordsLoaded = true;
+
+                                                    //Set substitute key in statusContext...
                                                     await statusContext.AddSubstituteKey(efType.Name, (useProxy ? proxyType.Name : modelType.Name));
 
-                                                    //Invoke 'CommitNew...' method...
+                                                    //Invoke 'CommitNew...' method (as awaitable)...
+                                                    //Source: https://stackoverflow.com/questions/39674988/how-to-call-a-generic-async-method-using-reflection
                                                     methodInfo_G = methodInfoCommit.MakeGenericMethod(((null != proxyType) ? proxyType : modelType));
                                                     object[] objArrayC = new object[] { entityConnectionString,
                                                                                         tableName,
                                                                                         iList2,
                                                                                         statusContext
                                                                                         };
-                                                    methodInfo_G.Invoke(repositoryUtils, objArrayC);
+                                                    //methodInfo_G.Invoke(repositoryUtils, objArrayC);
+                                                    var task_1 = (Task) methodInfo_G.Invoke(repositoryUtils, objArrayC);
+                                                    await task_1.ConfigureAwait(false);
                                                 }
-
+                                                
                                                 iList2 = paramNamesToLists["listOfEditedRecords"];
                                                 if (0 < iList2.Count)
                                                 {
@@ -612,6 +665,28 @@ namespace HydroServerTools.Utilities
                                                                                         paramNamesToLists["listOfDuplicateRecords"].Count);   //duplicated
 
                                                     dbLoadContext.DbLoadResults.Add(dbLoadResult);
+
+                                                    if ( (null != statusContext) && (!bNewRecordsLoaded))
+                                                    {
+                                                        //No new records loaded - therefore, no status context updates or finalization - do so now...
+                                                        var key = (null != proxyType) ? proxyType.Name : modelType.Name;
+
+                                                        int inserted = paramNamesToLists["listOfCorrectRecords"].Count;
+                                                        int updated = paramNamesToLists["listOfEditedRecords"].Count;
+                                                        int rejected = paramNamesToLists["listOfIncorrectRecords"].Count;
+                                                        int duplicated = paramNamesToLists["listOfDuplicateRecords"].Count;
+
+                                                        await statusContext.SetRecordCount(StatusContext.enumCountType.ct_DbLoad, 
+                                                                                           key, 
+                                                                                           (inserted + updated + rejected + duplicated));
+                                                        await statusContext.SetCounts(StatusContext.enumCountType.ct_DbLoad,
+                                                                                      key,
+                                                                                      inserted,       //inserted
+                                                                                      updated,        //updated
+                                                                                      rejected,       //rejected
+                                                                                      duplicated);    //duplicated
+                                                        await statusContext.Finalize(StatusContext.enumCountType.ct_DbLoad, key);
+                                                    }
                                                 }
                                             }
 
@@ -687,20 +762,46 @@ namespace HydroServerTools.Utilities
                                                 }
 
                                                 //Create file path and name...
+#if (USE_BINARY_FORMATTER)
                                                 var binFilePathAndName_1 = pathProcessed + validatedFileNamePrefix + "-" +
                                                                          modelType.Name + "-" + recordType + ".bin";
+#else
+                                                var binFilePathAndName_1 = pathProcessed + validatedFileNamePrefix + "-" +
+                                                                         modelType.Name + "-" + recordType + ".json";
+#endif
                                                 try
                                                 {
                                                     //For the output file stream...
                                                     //using (var fileStream_1 = new FileStream(binFilePathAndName_1, FileMode.Create))
-                                                    using (var fileStream_1 = new FileStream(binFilePathAndName_1, FileMode.Create, FileAccess.Write, FileShare.None, 65536, true))
+                                                    using (var fileStream_1 = new FileStream(binFilePathAndName_1, FileMode.Create, FileAccess.Write, FileShare.None, 65536 * 16, true))
                                                     {
+#if (USE_BINARY_FORMATTER)
                                                         //Serialize validated records to file stream as binary...
                                                         BinaryFormatter binFor_1 = new BinaryFormatter();
 
-                                                        //binFor_1.Serialize(fileStream_1, recordList);
                                                         binFor_1.Serialize(fileStream_1, iUpdateableItemsList);
+
                                                         fileStream_1.Flush();
+#else
+                                                        //Serialize validated records to file stream as JSON...
+
+                                                        //Question: How to use JsonWriter async writes here?
+                                                        //Possible : https://stackoverflow.com/questions/26601594/what-is-the-correct-way-to-use-json-net-to-parse-stream-of-json-objects
+                                                        using (StreamWriter sw_1 = new StreamWriter(fileStream_1))
+                                                        {
+                                                            using (JsonTextWriter jtw = new JsonTextWriter(sw_1))
+                                                            {
+                                                                JsonSerializer jsonSerializer = new JsonSerializer();
+                                                                //jsonSerializer.Serialize(jtw, iUpdateableItemsList);
+                                                                foreach (var updateableItem in iUpdateableItemsList)
+                                                                {
+                                                                    jsonSerializer.Serialize(jtw, updateableItem);
+                                                                }
+
+                                                                await jtw.FlushAsync();
+                                                            }
+                                                        }
+#endif
                                                     }
                                                 }
                                                 catch (Exception ex)
@@ -1070,7 +1171,7 @@ namespace HydroServerTools.Utilities
                                                                      List<string> listRequiredPropertyNames,
                                                                      List<string> listOptionalPropertyNames)
         {
-            int count = 65536;
+            int count = 65536 * 16;
             MemoryStream msResult = new MemoryStream(count);
 
             //Validate/initialize input parameters...

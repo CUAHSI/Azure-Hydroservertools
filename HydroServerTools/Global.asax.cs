@@ -14,11 +14,16 @@ using HydroServerTools.Utilities;
 using HydroServerTools.Validators;
 
 using HydroServerToolsUtilities;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace HydroServerTools
 {
     public class MvcApplication : System.Web.HttpApplication
     {
+        //Cancellation Token instance...
+        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+
         public static Guid InstanceGuid { get; set;}
         
         protected void Application_Start()
@@ -66,7 +71,17 @@ namespace HydroServerTools
             ConcurrentDictionary<string, DbLoadContext> dbloadcontexts = new ConcurrentDictionary<string, DbLoadContext>();
             cache.Insert(key, dbloadcontexts);
 
+            //Add one ConcurrentDictionary instance for the uploadId 'keep-alives'
+            key = "uploadIdsToKeepAliveDateTimes";
+            ConcurrentDictionary<string, DateTime> uploadIdKeepAlives = new ConcurrentDictionary<string, DateTime>();
+            cache.Insert(key, uploadIdKeepAlives);
 
+            //Start the 'keep alives' checks interval task...
+            //DO NOT await the task!!
+            TimeSpan tsKeepAliveInterval = new TimeSpan(1, 0, 0);   //One hour 'keep-alive' interval...   
+            //TimeSpan tsKeepAliveInterval = new TimeSpan(0, 2, 0);   //TEST two minute 'keep-alive' interval...   
+            TimeSpan tsDelayInterval = new TimeSpan(0, 0, 10);      //ten second interval between checks...
+            CheckKeepAlives(uploadIdKeepAlives, tsKeepAliveInterval, tsDelayInterval, _cancellationTokenSource.Token);
         }
 
         //Disable forms authentication redirect...
@@ -75,6 +90,9 @@ namespace HydroServerTools
         {
             HttpApplication context = (HttpApplication)sender;
             context.Response.SuppressFormsAuthenticationRedirect = true;
+
+            //Signal 'keep alive' interval task to end...
+            _cancellationTokenSource.Cancel();
         }
 
         void Session_Start(object sender, EventArgs e)
@@ -94,5 +112,72 @@ namespace HydroServerTools
             
 
         }
+
+        //Define an interval task for uploadId 'keep alive' checking...
+        //Source: https://stackoverflow.com/questions/30462079/run-async-method-regularly-with-specified-interval
+        private async Task CheckKeepAlives(ConcurrentDictionary<string, DateTime> uploadIdKeepAlives, TimeSpan tsKeepAliveInterval, TimeSpan tsDelayInterval, CancellationToken cancellationToken)
+        {
+            //Set paths...
+            string pathUploads = System.Web.Hosting.HostingEnvironment.MapPath("~/Uploads/");
+            string pathValidated = System.Web.Hosting.HostingEnvironment.MapPath("~/Validated/");
+            string pathProcessed = System.Web.Hosting.HostingEnvironment.MapPath("~/Processed/");
+
+            //Loop until told to stop...
+            while (true)
+            {
+                //Perform keep alive checks here...
+                DateTime dtValue = DateTime.Now;
+                DateTime dtNow = DateTime.Now;
+                List<string> expiredUploadIds = new List<string>();
+                var uploadIds = uploadIdKeepAlives.Keys;
+
+                //For each uploadId...
+                foreach (var uploadId in uploadIds)
+                {
+                    //Check 'keep-alive' date/time against current date/time
+                    //ASSUMPTION: NO 'keep-alive' date/times are in the future...
+                    if (uploadIdKeepAlives.TryGetValue(uploadId, out dtValue))
+                    {
+                        if (dtNow.Subtract(dtValue) >= tsKeepAliveInterval)
+                        {
+                            //'Keep-alive' expired - retain uploadId...
+                            expiredUploadIds.Add(uploadId);
+                        }
+                    }
+                }
+
+                if (0 < expiredUploadIds.Count)
+                {
+                    //Retrieve collections from cache...
+                    var cache = HttpRuntime.Cache;
+                    var key = "uploadIdsToFileContexts";
+                    ConcurrentDictionary<string, FileContext> fileContexts = cache.Get(key) as ConcurrentDictionary<string, FileContext>;
+
+                    key = "uploadIdsToValidationContexts";
+                    ConcurrentDictionary<string, ValidationContext<CsvValidator>> validationContexts = cache.Get(key) as ConcurrentDictionary<string, ValidationContext<CsvValidator>>;
+
+                    key = "uploadIdsToDbLoadContexts";
+                    ConcurrentDictionary<string, DbLoadContext> dbloadContexts = cache.Get(key) as ConcurrentDictionary<string, DbLoadContext>;
+
+
+                    //For each expired uploadId...
+                    foreach (var uploadId in expiredUploadIds)
+                    {
+                        if (uploadIdKeepAlives.TryRemove(uploadId, out dtValue))
+                        {
+                            //Call helper method to remove the collections' files etc... 
+                            UploadIdHelper uploadIdHelper = new UploadIdHelper(uploadId);
+
+                            await uploadIdHelper.DeleteFromCollections(fileContexts, pathUploads, validationContexts, pathValidated, dbloadContexts, pathProcessed);
+                        }
+                    }
+
+                }
+
+                //Wait for the input interval...
+                await Task.Delay(tsDelayInterval, cancellationToken);
+            }
+        }
+
     }
 }

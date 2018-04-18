@@ -1,0 +1,57 @@
+
+HydroServer Redesign Part 26
+
+
+**** Summary ****
+
+ - Miscellaneous changes to replace BinaryFormatter serialize/deserialize calls 
+    with NewtonSoft JSON serialize/deserialize calls to address database load
+    performance issues directly caused by slow BinaryFormatter performance 
+    serializing/deserializing large files to/from disk
+ - All such changes conditionally compile on symbol: USE_BINARY_FORMATTER
+ - Please note: To compile the NewtonSoft code, do NOT define symbol: USE_BINARY_FORMATTER
+ - For additional performance improvement, all stream buffer sizes (formerly 65K) are increased 
+    to 1M (65536 * 16)
+
+ 
+**** HydroServerTools/Controllers/api ****
+ - RevisedUploadController.cs
+   - GetRejectedItems(...) 
+     - Add conditional NewtonSoft.Deserialize() call
+   - GetRejectedItemsFile(...) 
+     - Add conditional NewtonSoft.Deserialize() call
+   - ValidateFileContentsAsync(...)
+     - Add conditional NewtonSoft.Serialize() call
+  - Miscellaneous stream buffer size increases as described above
+  - Remove commented out code
+
+
+**** HydroServerTools/Utilities ****
+- FileContext.cs
+   - UpdateBinaryFiles<>(...) 
+     - Add conditional NewtonSoft.Deserialize() calls for:
+        incorrect, correct, edited and duplicated items
+     - Add conditional NewtonSoft.Serialize() calls for:
+        incorrect, correct, edited and duplicated items
+ - RepositoryContext.cs
+   - LoadDb(...)
+     - Add conditional NewtonSoft.Deserialize() call
+     - Add conditional NewtonSoft.Serialize() call
+   - Miscellaneous stream buffer size increases as described above
+
+
+**** HydroServerTools/Views/CSVUpload ****
+ - DragAndDropFilesRevised.cshtml
+   - File input control: remove '*.zip' from accept attribute
+   - addFileObjects(...)
+     - Add warning dialog for entry of non-csv file
+     - Add warning dialog for duplicate file name entry
+  - requestDbRecordCountMonitoring(...)
+    - Add logic to conditionally remove file object upon:
+      -  End of record count monitoring --OR--
+      - server error
+ - Document ready:
+    - jQuery File Download setup - 
+      - progress: Comment out logic to conditionally remove file object
+                           upon file upload completion
+      

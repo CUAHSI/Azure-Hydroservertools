@@ -101,6 +101,35 @@ function WorkerMonitor() {
             return result;
         };
 
+        //Send message - for the currently monitored worker, if any, 
+        // post a message (in a format known to the worker)
+        //
+        //Expected message format:
+        //  { ["requestId": <requestId>,]   //Optional - not referenced
+        //    "inputData": {
+        //                   <data to be consumed by worker>
+        //                 }
+        //  }
+        //
+        // Always return a null - never return a Promise... 
+        WorkerMonitor.prototype.simpleSendWorkerMessage = function (workerMessage) {
+            var result = null;
+
+            if (null !== this.monitoredWorker) {
+                //Monitored worker exists - validate/initialize input parameters...
+                if ('undefined' !== typeof workerMessage && null !== workerMessage &&
+                    'undefined' !== typeof workerMessage.inputData && null !== workerMessage.inputData) {
+
+                    var myMonitoredWorker = this.monitoredWorker;
+
+                    myMonitoredWorker.postMessage(workerMessage);
+                }
+            }
+
+            //Processing complete - return result...
+            return result;
+        };
+
         //Retrieve message - for the currently monitored worker, 
         // receive a message in a format known to the caller.
         //

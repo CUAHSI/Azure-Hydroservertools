@@ -13,6 +13,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
+#if (!USE_BINARY_FORMATTER)
+using Newtonsoft.Json;
+#endif
+
 using HydroServerTools.Utilities;
 using HydroServerTools.Validators;
 
@@ -33,6 +37,13 @@ namespace HydroServerTools.Controllers.api
 
             //Properties...
             public List<string> tableNames { get; set; }
+        }
+
+        public class UploadIds
+        {
+
+            //Properties...
+            public List<string> uploadIds { get; set; }
         }
 
         public class DbLoadStatus
@@ -144,6 +155,23 @@ namespace HydroServerTools.Controllers.api
             }
 #endif
             return dbloadcontexts;
+        }
+
+        private ConcurrentDictionary<string, DateTime> getUploadIdKeepAlives()
+        {
+            var key = "uploadIdsToKeepAliveDateTimes";
+            var cache = HttpRuntime.Cache;
+
+            //Concurrent dictionary maps current uploadIds to current 'keep-alive' date/times... 
+            ConcurrentDictionary<string, DateTime> uploadIdKeepAlives = cache.Get(key) as ConcurrentDictionary<string, DateTime>;
+#if (DEBUG)
+            if (null == uploadIdKeepAlives)
+            {
+                //Cache creation expected at Application_Start() - thow an exception!!
+                throw new Exception("HttpRuntime.Cache object: " + key + " NOT found!!!");
+            }
+#endif
+            return uploadIdKeepAlives;
         }
 
         //Members...
@@ -673,177 +701,196 @@ namespace HydroServerTools.Controllers.api
             HttpStatusCode httpStatusCode = HttpStatusCode.OK;  //Assume success...
             DbRecordCountStatus dbRecordCountStatus = new DbRecordCountStatus();
 
-            //Validate/initialize input parameters
-            if (String.IsNullOrWhiteSpace(uploadId) || String.IsNullOrWhiteSpace(filename))
+            try
             {
-                response.StatusCode = HttpStatusCode.BadRequest;    //Missing/invalid parameter(s) - return early
-                response.ReasonPhrase = "Invalid parameter(s)";
-                return response;
-            }
-
-            var validationContexts = getValidationContexts();
-            var statusContexts = getStatusContexts();
-            if ((!validationContexts.ContainsKey(uploadId)) || (!statusContexts.ContainsKey(uploadId)))
-            {
-                if (!validationContexts.ContainsKey(uploadId))
+                //Validate/initialize input parameters
+                if (String.IsNullOrWhiteSpace(uploadId) || String.IsNullOrWhiteSpace(filename))
                 {
-                    //No validation results - return early with not found...
-                    response.StatusCode = HttpStatusCode.NotFound;
-                    response.ReasonPhrase = "Unknown upload id...";
+                    response.StatusCode = HttpStatusCode.BadRequest;    //Missing/invalid parameter(s) - return early
+                    response.ReasonPhrase = "Invalid parameter(s)";
                     return response;
                 }
-                else if (!statusContexts.ContainsKey(uploadId))
+
+                var validationContexts = getValidationContexts();
+                var statusContexts = getStatusContexts();
+                if ((!validationContexts.ContainsKey(uploadId)) || (!statusContexts.ContainsKey(uploadId)))
                 {
-                    //No status results - create a new entry...
-                    StatusContext sc = null;
-                    if (!statusContexts.TryGetValue(uploadId, out sc))
+                    if (!validationContexts.ContainsKey(uploadId))
                     {
-                        //Not found - create new instance...
-                        sc = new StatusContext();
-                        statusContexts.TryAdd(uploadId, sc);
-
-                        //Get the instance again...
-                        // IIS threading alert... Since the TryAdd(...) call occurs outside  
-                        // any Semaphore 'using' block it is not thread-safe!!  Thus another 
-                        // IIS thread may have already added a context for the uploadId.  
-                        // Getting the instance again ensures all IIS threads reference the 
-                        // ***same*** context...
-                        statusContexts.TryGetValue(uploadId, out sc);
+                        //No validation results - return early with not found...
+                        response.StatusCode = HttpStatusCode.NotFound;
+                        response.ReasonPhrase = "Unknown upload id...";
+                        return response;
                     }
-
-                    //Check for status context...
-                    if (null == sc)
+                    else if (!statusContexts.ContainsKey(uploadId))
                     {
-                        response.StatusCode = HttpStatusCode.BadRequest;    //No repository context - return early
-                        response.ReasonPhrase = "Cannot find/create status context for current upload Id... (from get/dbloadstatusforfile/)";
+                        //No status results - create a new entry...
+                        StatusContext sc = null;
+                        if (!statusContexts.TryGetValue(uploadId, out sc))
+                        {
+                            //Not found - create new instance...
+                            sc = new StatusContext();
+                            statusContexts.TryAdd(uploadId, sc);
+
+                            //Get the instance again...
+                            // IIS threading alert... Since the TryAdd(...) call occurs outside  
+                            // any Semaphore 'using' block it is not thread-safe!!  Thus another 
+                            // IIS thread may have already added a context for the uploadId.  
+                            // Getting the instance again ensures all IIS threads reference the 
+                            // ***same*** context...
+                            statusContexts.TryGetValue(uploadId, out sc);
+                        }
+
+                        //Check for status context...
+                        if (null == sc)
+                        {
+                            response.StatusCode = HttpStatusCode.BadRequest;    //No repository context - return early
+                            response.ReasonPhrase = "Cannot find/create status context for current upload Id... (from get/dbloadstatusforfile/)";
+                            return response;
+                        }
+
+                    }
+                }
+
+                //Input uploadId valid - retrieve validation context... 
+                dbRecordCountStatus.uploadId = uploadId;
+                ValidationContext<CsvValidator> validationContext = validationContexts[uploadId];
+
+                dbRecordCountStatus.fileNamesToModelNames = new Dictionary<string, string>();
+                using (await validationContext.ValidationResultSemaphore.UseWaitAsync())
+                {
+                    //Scan validation results for input file name...
+                    var valiDATORResults = validationContext.ValidationResults;                     //CsvValidator
+
+                    var validatorResult = valiDATORResults.FirstOrDefault(vr => vr.FileName.ToLowerInvariant() == filename.ToLowerInvariant());
+                    if (default(ValidationResult<CsvValidator>) == validatorResult)
+                    {
+                        //Validation result not found...
+                        response.StatusCode = HttpStatusCode.BadRequest;    //Unknown file name - return early
+                        response.ReasonPhrase = "Unknown file name...";
                         return response;
                     }
 
+                    //File name found - retrieve associated model type...
+                    CsvValidator csvValidator = validatorResult.FileValidator;
+                    Type modelType = csvValidator.ValidatedModelType;
+
+                    if (null == modelType)
+                    {
+                        //Model Type not found...
+                        response.StatusCode = HttpStatusCode.BadRequest;    //Unknown model type - return early
+                        response.ReasonPhrase = "File contents not validated...";
+                        return response;
+                    }
+
+                    //Model type found - retrieve associated status message(s), if any...
+                    var modelTypeName = modelType.Name;
+
+                    //dbLoadStatus.fileNamesToModelNames.Add(validatorResult.FileName, modelTypeName);
+
+                    //Check if model type implements IHydroserverRepositoryProxy<,>...
+                    Type sourceType = null;
+                    Type proxyType = null;
+
+                    var iHRPs = modelType.GetInterfaces().Where(i => i.IsGenericType &&
+                                                          i.GetGenericTypeDefinition() == typeof(IHydroserverRepositoryProxy<,>));
+                    foreach (var iHRP in iHRPs)
+                    {
+                        var definition = iHRP.GetGenericTypeDefinition();
+                        var arguments = iHRP.GenericTypeArguments;
+                        var typeInfo = definition as TypeInfo;
+                        if (null != typeInfo)
+                        {
+                            //Check interface type parameters and arguments...
+                            var typeParams = typeInfo.GenericTypeParameters;
+                            int index = 0;
+
+                            foreach (var typeParam in typeParams)
+                            {
+                                if ("tSourceType" == typeParam.Name)
+                                {
+                                    sourceType = arguments[index];
+                                }
+
+                                if ("tProxyType" == typeParam.Name)
+                                {
+                                    proxyType = arguments[index];
+                                }
+                                ++index;
+                            }
+
+                            if (sourceType == modelType && null != proxyType)
+                            {
+                                //Proxy type found - update model type name...
+                                modelTypeName = proxyType.Name;
+                                break;
+                            }
+                        }
+                    }
+
+                    dbRecordCountStatus.fileNamesToModelNames.Add(validatorResult.FileName, modelTypeName);
+
+                    //retrieve status message context
+                    StatusContext statusContext = statusContexts[uploadId];
+
+                    dbRecordCountStatus.modelNamesToProcessedMessages = new Dictionary<string, RecordCountMessage>();
+                    dbRecordCountStatus.modelNamesToLoadedMessages = new Dictionary<string, RecordCountMessage>();
+
+                    //Retrieve processed and loaded messages...
+                    RecordCountMessage processedMessage = await statusContext.GetCountsMessage(StatusContext.enumCountType.ct_DbProcess, modelTypeName);
+                    RecordCountMessage loadedMessage = await statusContext.GetCountsMessage(StatusContext.enumCountType.ct_DbLoad, modelTypeName);
+
+                    //Add to collections...
+                    //bool bFinal = (null == processedMessage && null == loadedMessage) ? false     //No counts exist, set final indicator 
+                    //                                                                  : true;     //One (or both) records exist - assume all record counting complete...
+                    bool bFinal = true;     //Assume all record counting complete...
+                    httpStatusCode = (null == processedMessage && null == loadedMessage) ? HttpStatusCode.NoContent         //No counts exist, set no content code
+                                                                                         : HttpStatusCode.PartialContent;   //One (or both) records exist - set partial content code
+                    if (null == processedMessage || null == loadedMessage)
+                    {
+                        bFinal = false;     //Some (or no) counts available - record counting not yet started
+                    }
+
+                    if (null != processedMessage)
+                    {
+                        //Processed counts exist - retain current values
+                        dbRecordCountStatus.modelNamesToProcessedMessages[modelTypeName] = processedMessage;
+                        if (!processedMessage.Final)
+                        {
+                            bFinal = false; //Processed message not final - set indicator
+                        }
+                    }
+
+                    if (null != loadedMessage)
+                    {
+                        //Loaded counts exist - retain current values
+                        dbRecordCountStatus.modelNamesToLoadedMessages[modelTypeName] = loadedMessage;
+                        if (!loadedMessage.Final)
+                        {
+                            bFinal = false; //Loaded message not final - set indicator
+                        }
+                    }
+
+                    if (bFinal)
+                    {
+                        //All record counts final - update http status code
+                        httpStatusCode = HttpStatusCode.OK;
+                    }
+
+                    //Convert record count status to JSON - add to response
+                    string jsonData = Newtonsoft.Json.JsonConvert.SerializeObject(dbRecordCountStatus);
+
+                    response.StatusCode = httpStatusCode;
+                    response.Content = new StringContent(jsonData, System.Text.Encoding.UTF8, "application/json");
                 }
             }
-
-            //Input uploadId valid - retrieve validation context... 
-            dbRecordCountStatus.uploadId = uploadId;
-            ValidationContext<CsvValidator> validationContext = validationContexts[uploadId];
-
-            dbRecordCountStatus.fileNamesToModelNames = new Dictionary<string, string>();
-            using (await validationContext.ValidationResultSemaphore.UseWaitAsync())
+            catch (Exception ex)
             {
-                //Scan validation results for input file name...
-                var valiDATORResults = validationContext.ValidationResults;                     //CsvValidator
+                string message = ex.Message;
 
-                var validatorResult = valiDATORResults.FirstOrDefault(vr => vr.FileName.ToLowerInvariant() == filename.ToLowerInvariant());
-                if (default(ValidationResult<CsvValidator>) == validatorResult)
-                {
-                    //Validation result not found...
-                    response.StatusCode = HttpStatusCode.BadRequest;    //Unknown file name - return early
-                    response.ReasonPhrase = "Unknown file name...";
-                    return response;
-                }
+                int n = 5;
 
-                //File name found - retrieve associated model type...
-                CsvValidator csvValidator = validatorResult.FileValidator;
-                Type modelType = csvValidator.ValidatedModelType;
-
-                if (null == modelType)
-                {
-                    //Model Type not found...
-                    response.StatusCode = HttpStatusCode.BadRequest;    //Unknown model type - return early
-                    response.ReasonPhrase = "File contents not validated...";
-                    return response;
-                }
-
-                //Model type found - retrieve associated status message(s), if any...
-                var modelTypeName = modelType.Name;
-
-                //dbLoadStatus.fileNamesToModelNames.Add(validatorResult.FileName, modelTypeName);
-
-                //Check if model type implements IHydroserverRepositoryProxy<,>...
-                Type sourceType = null;
-                Type proxyType = null;
-
-                var iHRPs = modelType.GetInterfaces().Where(i => i.IsGenericType &&
-                                                      i.GetGenericTypeDefinition() == typeof(IHydroserverRepositoryProxy<,>));
-                foreach (var iHRP in iHRPs)
-                {
-                    var definition = iHRP.GetGenericTypeDefinition();
-                    var arguments = iHRP.GenericTypeArguments;
-                    var typeInfo = definition as TypeInfo;
-                    if (null != typeInfo)
-                    {
-                        //Check interface type parameters and arguments...
-                        var typeParams = typeInfo.GenericTypeParameters;
-                        int index = 0;
-
-                        foreach (var typeParam in typeParams)
-                        {
-                            if ("tSourceType" == typeParam.Name)
-                            {
-                                sourceType = arguments[index];
-                            }
-
-                            if ("tProxyType" == typeParam.Name)
-                            {
-                                proxyType = arguments[index];
-                            }
-                            ++index;
-                        }
-
-                        if (sourceType == modelType && null != proxyType)
-                        {
-                            //Proxy type found - update model type name...
-                            modelTypeName = proxyType.Name;
-                            break;
-                        }
-                    }
-                }
-
-                dbRecordCountStatus.fileNamesToModelNames.Add(validatorResult.FileName, modelTypeName);
-
-                //retrieve status message context
-                StatusContext statusContext = statusContexts[uploadId];
-
-                dbRecordCountStatus.modelNamesToProcessedMessages = new Dictionary<string, RecordCountMessage>();
-                dbRecordCountStatus.modelNamesToLoadedMessages = new Dictionary<string, RecordCountMessage>();
-
-                //Retrieve processed and loaded messages...
-                RecordCountMessage processedMessage = await statusContext.GetCountsMessage(StatusContext.enumCountType.ct_DbProcess, modelTypeName);
-                RecordCountMessage loadedMessage = await statusContext.GetCountsMessage(StatusContext.enumCountType.ct_DbLoad, modelTypeName);
-
-                //Add to collections...
-                bool bFinal = (null == processedMessage && null == loadedMessage) ? false     //No counts exist, set final indicator 
-                                                                                  : true;     //One (or both) records exist - assume all record counting complete...
-                httpStatusCode = (null == processedMessage && null == loadedMessage) ? HttpStatusCode.NoContent         //No counts exist, set no content code
-                                                                                     : HttpStatusCode.PartialContent;   //One (or both) records exist - set partial content code
-                if (null != processedMessage)
-                {
-                    dbRecordCountStatus.modelNamesToProcessedMessages[modelTypeName] = processedMessage;
-                    if (!processedMessage.Final)
-                    {
-                        bFinal = false; //Processed message not final - set indicator
-                    }
-                }
-
-                if (null != loadedMessage)
-                {
-                    dbRecordCountStatus.modelNamesToLoadedMessages[modelTypeName] = loadedMessage;
-                    if (!loadedMessage.Final)
-                    {
-                        bFinal = false; //Processed message not final - set indicator
-                    }
-                }
-
-                if (bFinal)
-                {
-                    //All record counts final - update http status code
-                    httpStatusCode = HttpStatusCode.OK;
-                }
-
-                //Convert record count status to JSON - add to response
-                string jsonData = Newtonsoft.Json.JsonConvert.SerializeObject(dbRecordCountStatus);
-
-                response.StatusCode = httpStatusCode;
-                response.Content = new StringContent(jsonData, System.Text.Encoding.UTF8, "application/json");
+                ++n;
             }
 
             //Processing complete - return response
@@ -948,7 +995,11 @@ namespace HydroServerTools.Controllers.api
 
             //Retrieve the list of UpdateableItem<> from the incorrect records binary file...
             string pathProcessed = System.Web.Hosting.HostingEnvironment.MapPath("~/Processed/");
+#if (USE_BINARY_FORMATTER)
             string binFilePathAndName = pathProcessed + uploadId + "-" + modelType.Name + "-IncorrectRecords.bin";
+#else
+            string binFilePathAndName = pathProcessed + uploadId + "-" + modelType.Name + "-IncorrectRecords.json";
+#endif
             Type tGenericList = typeof(List<>);
             Type tUpdateableItem = typeof(UpdateableItem<>);
             Type gUpdateableItem = tUpdateableItem.MakeGenericType(modelType);
@@ -959,12 +1010,43 @@ namespace HydroServerTools.Controllers.api
             {
                 try
                 {
-                    using (var fileStream = new FileStream(binFilePathAndName, FileMode.Open, FileAccess.Read, FileShare.Read, 65536, true))
+                    using (var fileStream = new FileStream(binFilePathAndName, FileMode.Open, FileAccess.Read, FileShare.Read, 65536 * 16, true))
                     {
-                        //De-serialize to generic list...
+#if (USE_BINARY_FORMATTER)
+                        //De-serialize binary file to generic list...
                         BinaryFormatter binFor = new BinaryFormatter();
-                        //iList = (System.Collections.IList)binFor.Deserialize(fileStream);
                         iUpdateableItemsList = (System.Collections.IList)binFor.Deserialize(fileStream);
+#else
+                        //De-serialize JSON file to generic list...
+                        using (StreamReader sr = new StreamReader(fileStream))
+                        {
+                            //Find the generic Deserialize method: public T Deserialize<T>(JsonReader reader);
+                            //Source: https://forums.asp.net/t/1664599.aspx?+Ask+How+to+get+generic+method+using+reflection+
+                            JsonSerializer jsonSerializer = new JsonSerializer();
+                            var serializerType = typeof(JsonSerializer);
+
+                            var methodInfos = serializerType.GetMethods();
+                            var miDeserialize = methodInfos.Where( m => m.IsGenericMethod && m.Name.Equals("Deserialize", StringComparison.OrdinalIgnoreCase)).SingleOrDefault();
+                            if (null != miDeserialize)
+                            {
+                                MethodInfo miDeserialize_g = miDeserialize.MakeGenericMethod(updateableItemsListType);
+
+                                using (JsonReader jsonReader = new Newtonsoft.Json.JsonTextReader(sr))
+                                {
+                                    ////iUpdateableItemsList = (System.Collections.IList)miDeserialize_g.Invoke(jsonSerializer, new object[] { jsonReader });
+
+                                    //iUpdateableItemsList = (System.Collections.IList)jsonSerializer.Deserialize(jsonReader, updateableItemsListType);
+
+                                    jsonReader.SupportMultipleContent = true;
+                                    while (await jsonReader.ReadAsync())
+                                    {
+                                        iUpdateableItemsList.Add(jsonSerializer.Deserialize(jsonReader, gUpdateableItem));
+                                    }
+                                }
+
+                            }
+                        }
+#endif
                     }
                 }
                 catch (Exception ex)
@@ -1170,18 +1252,58 @@ namespace HydroServerTools.Controllers.api
 
             //Retrieve the list of UpdateableItem<> from the incorrect records binary file...
             string pathProcessed = System.Web.Hosting.HostingEnvironment.MapPath("~/Processed/");
+#if (USE_BINARY_FORMATTER)
             string binFilePathAndName = pathProcessed + uploadId + "-" + modelType.Name + "-IncorrectRecords.bin";
+#else
+            string binFilePathAndName = pathProcessed + uploadId + "-" + modelType.Name + "-IncorrectRecords.json";
+#endif
+
 
             using (await repositoryContext.RepositorySemaphore.UseWaitAsync())
             {
                 try
                 {
-                    using (var fileStream = new FileStream(binFilePathAndName, FileMode.Open, FileAccess.Read, FileShare.Read, 65536, true))
+                    using (var fileStream = new FileStream(binFilePathAndName, FileMode.Open, FileAccess.Read, FileShare.Read, 65536 * 16, true))
                     {
-                        //De-serialize to generic list...
+#if (USE_BINARY_FORMATTER)
+                        //De-serialize binary file to generic list...
                         BinaryFormatter binFor = new BinaryFormatter();
                         var iUpdateableItemsList = binFor.Deserialize(fileStream);
+#else
+                        //De-serialize JSON file to generic list...
+                        Type tGenericList = typeof(List<>);
+                        Type tUpdateableItem = typeof(UpdateableItem<>);
+                        Type gUpdateableItem = tUpdateableItem.MakeGenericType(modelType);
+                        Type updateableItemsListType = tGenericList.MakeGenericType(gUpdateableItem);
+                        System.Collections.IList iUpdateableItemsList = (System.Collections.IList)Activator.CreateInstance(updateableItemsListType);
 
+                        using (StreamReader sr = new StreamReader(fileStream))
+                        {
+                            //Find the generic Deserialize method: public T Deserialize<T>(JsonReader reader);
+                            //Source: https://forums.asp.net/t/1664599.aspx?+Ask+How+to+get+generic+method+using+reflection+
+                            JsonSerializer jsonSerializer = new JsonSerializer();
+                            var serializerType = typeof(JsonSerializer);
+
+                            var methodInfos = serializerType.GetMethods();
+                            var miDeserialize = methodInfos.Where(m => m.IsGenericMethod && m.Name.Equals("Deserialize", StringComparison.OrdinalIgnoreCase)).SingleOrDefault();
+                            if (null != miDeserialize)
+                            {
+                                MethodInfo miDeserialize_g = miDeserialize.MakeGenericMethod(updateableItemsListType);
+
+                                using (JsonReader jsonReader = new Newtonsoft.Json.JsonTextReader(sr))
+                                {
+                                    ////iUpdateableItemsList = (System.Collections.IList)miDeserialize_g.Invoke(jsonSerializer, new object[] { sr });
+
+                                    //iUpdateableItemsList = (System.Collections.IList)jsonSerializer.Deserialize(jsonReader, updateableItemsListType);
+                                    jsonReader.SupportMultipleContent = true;
+                                    while (await jsonReader.ReadAsync())
+                                    {
+                                        iUpdateableItemsList.Add(jsonSerializer.Deserialize(jsonReader, gUpdateableItem));
+                                    }
+                                }
+                            }
+                        }
+#endif
                         //Prepare call to RepositoryContext method to stream list to model type...
                         Type resContextType = repositoryContext.GetType();
                         MethodInfo miStreamItemsToModelList = resContextType.GetMethod("StreamItemsToModelList");
@@ -1204,7 +1326,6 @@ namespace HydroServerTools.Controllers.api
                             //Reset stream position - add stream to response content...
                             streamResult.Position = 0;
                             response.Content = new StreamContent(streamResult);  
-                            //response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/vnd.ms-excel");
                             response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/octet-stream");
                             response.Content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("attachment");
                             response.Content.Headers.ContentDisposition.FileName = "Rejected-" + modelType.Name + ".csv";
@@ -1237,7 +1358,7 @@ namespace HydroServerTools.Controllers.api
         }
 
         //Request DB Table Counts method...
-        //Post api/revisedupload/post/requestdbtablecounts/{tablenames}
+        //Post api/revisedupload/post/requestdbtablecounts/{tablename(s) in request body}
         //See WebApiConfig.cs for custom route...
         [System.Web.Http.AcceptVerbs("GET", "POST")]
         [System.Web.Http.HttpPost]
@@ -1294,6 +1415,47 @@ namespace HydroServerTools.Controllers.api
             }
 
             //Processing complete - return response
+            return response;
+        }
+
+        //Post current uploadId method...
+        //Post api/revisedupload/post/currentuploadid/{ids in request body}
+        //See WebApiConfig.cs for custom route...
+        [System.Web.Http.AcceptVerbs("GET", "POST")]
+        [System.Web.Http.HttpPost]
+        public async Task<HttpResponseMessage> PostCurrentUploadId()
+        {
+            HttpResponseMessage response = new HttpResponseMessage();
+            response.StatusCode = HttpStatusCode.OK;    //Assume success...
+
+            //Write an empty JSON object to the response
+            //  To avoid 'Unexpected end of JSON input' error in jQuery AJAX!!
+            response.Content = new StringContent("{}", System.Text.Encoding.UTF8, "application/json");
+
+            //Retrieve request data...
+            HttpContent httpContent = Request.Content;
+
+            string content = await httpContent.ReadAsStringAsync();
+            UploadIds uploadIds = Newtonsoft.Json.JsonConvert.DeserializeObject<UploadIds>(content);
+
+            if (null == uploadIds)
+            {
+                response.StatusCode = HttpStatusCode.BadRequest;    //Missing/invalid parameter(s) - return early
+                response.ReasonPhrase = "Invalid parameter(s)";
+                return response;
+            }
+
+            //Retrieve uploadIds 'keep-alives'...
+            ConcurrentDictionary<string, DateTime> idKeepAlives = getUploadIdKeepAlives();
+
+            //For each received uploadId...
+            foreach (var uploadId in uploadIds.uploadIds)
+            {
+                var dt = DateTime.Now;
+                idKeepAlives.AddOrUpdate(uploadId, dt, (key, value) => dt );
+            }
+
+            //Processing complete - return response...
             return response;
         }
 
@@ -1840,10 +2002,10 @@ namespace HydroServerTools.Controllers.api
                                 Encoding currentEncoding = EncodingContext.GetFileEncoding(contentType, filePathAndName);
 
                                 //Create output file --OR-- open file for append...
-                                using (var fileStream = new FileStream(filePathAndName, isFirstChunk ? FileMode.Create : FileMode.Append, FileAccess.Write, FileShare.None, 65536, true))
+                                using (var fileStream = new FileStream(filePathAndName, isFirstChunk ? FileMode.Create : FileMode.Append, FileAccess.Write, FileShare.None, 65536 * 16, true))
                                 {
                                     //Copy content to file...
-                                    await contentStream.CopyToAsync(fileStream, 65536);
+                                    await contentStream.CopyToAsync(fileStream, 65536 * 16);
 
                                     //NOTE: DO NOT use StreamReader/StreamWriter here.  
                                     //      Apparently their use introduces invalid NUL characters in the file stream...
@@ -2022,7 +2184,12 @@ namespace HydroServerTools.Controllers.api
                         if (null != modeltype)
                         {
                             //File validated - construct file path and name, delete binary file...
+#if (USE_BINARY_FORMATTER)
                             var binFilePathAndName = pathValidated + uploadId + "-" + modeltype.Name + "-validated.bin";
+#else
+                            var binFilePathAndName = pathValidated + uploadId + "-" + modeltype.Name + "-validated.json";
+#endif
+
                             try
                             {
                                 File.Delete(binFilePathAndName);
@@ -2061,63 +2228,23 @@ namespace HydroServerTools.Controllers.api
             //Validate/initialize input parameters
             if (String.IsNullOrWhiteSpace(uploadId))
             {
+
                 response.StatusCode = HttpStatusCode.BadRequest;    //Missing/invalid parameter(s) - return early
                 response.ReasonPhrase = "Invalid parameter(s)";
                 return response;
             }
 
-            //For input uploadId, remove associated file context and uploaded files, if any...
-            var wildCard = uploadId + "*.*";
+            //Call 'helper' method to remove uploaded, validated and processed files associated with the input uploadId
+            UploadIdHelper uploadIdHelper = new UploadIdHelper(uploadId);
 
             var fileContexts = getFileContexts();
-            FileContext fileContext = null;
-            if ( fileContexts.TryRemove(uploadId, out fileContext))
-            {
-                using (await fileContext.FileSemaphore.UseWaitAsync())
-                {
-                    //Source: https://forums.asp.net/t/1899755.aspx?How+to+delete+files+with+wildcard+
-                    string pathUploads = System.Web.Hosting.HostingEnvironment.MapPath("~/Uploads/");
-                    DirectoryInfo directoryInfo = new DirectoryInfo(pathUploads);
-                    foreach (FileInfo fI in directoryInfo.GetFiles(wildCard))
-                    {
-                        fI.Delete();
-                    }
-                }
-            }
-
-            //For input uploadId, remove associated validation context and validated files, if any...
+            string pathUploads = System.Web.Hosting.HostingEnvironment.MapPath("~/Uploads/");
             var validationContexts = getValidationContexts();
-            ValidationContext<CsvValidator> validationContext = null;
-            if (validationContexts.TryRemove(uploadId, out validationContext))
-            {
-                using (await validationContext.ValidationResultSemaphore.UseWaitAsync())
-                {
-                    //Source: https://forums.asp.net/t/1899755.aspx?How+to+delete+files+with+wildcard+
-                    string pathValidated = System.Web.Hosting.HostingEnvironment.MapPath("~/Validated/");
-                    DirectoryInfo directoryInfo = new DirectoryInfo(pathValidated);
-                    foreach (FileInfo fI in directoryInfo.GetFiles(wildCard))
-                    {
-                        fI.Delete();
-                    }
-                }
-            }
-
-            //For input uploadId, remove associated db load context and rsults files, if any...
+            string pathValidated = System.Web.Hosting.HostingEnvironment.MapPath("~/Validated/");
             var dbLoadContexts = getDbLoadContexts();
-            DbLoadContext dbLoadContext = null;
-            if (dbLoadContexts.TryRemove(uploadId, out dbLoadContext))
-            {
-                using (await dbLoadContext.DbLoadSemaphore.UseWaitAsync())
-                {
-                    //Source: https://forums.asp.net/t/1899755.aspx?How+to+delete+files+with+wildcard+
-                    string pathProcessed = System.Web.Hosting.HostingEnvironment.MapPath("~/Processed/");
-                    DirectoryInfo directoryInfo = new DirectoryInfo(pathProcessed);
-                    foreach (FileInfo fI in directoryInfo.GetFiles(wildCard))
-                    {
-                        fI.Delete();
-                    }
-                }
-            }
+            string pathProcessed = System.Web.Hosting.HostingEnvironment.MapPath("~/Processed/");
+
+            await uploadIdHelper.DeleteFromCollections(fileContexts, pathUploads, validationContexts, pathValidated, dbLoadContexts, pathProcessed);
 
             //Processing complete - return
             return response;
@@ -2196,19 +2323,51 @@ namespace HydroServerTools.Controllers.api
                                         string pathValidated = System.Web.Hosting.HostingEnvironment.MapPath("~/Validated/");
                                         var validatedRecords = csvValidator.ValidatedRecords;
                                         var modeltype = csvValidator.ValidatedModelType;
-
+#if (USE_BINARY_FORMATTER)
                                         var binFilePathAndName = pathValidated + uploadId + "-" + modeltype.Name + "-validated.bin";
+#else
+                                        var binFilePathAndName = pathValidated + uploadId + "-" + modeltype.Name + "-validated.json";
+#endif
 
                                         try
                                         {
                                             //For the output file stream...
                                             //using (var fileStream = new FileStream(binFilePathAndName, FileMode.Create))
-                                            using (var fileStream = new FileStream(binFilePathAndName, FileMode.Create, FileAccess.Write, FileShare.None, 65536, true))
+                                            //using (var fileStream = new FileStream(binFilePathAndName, FileMode.Create, FileAccess.Write, FileShare.None, 65536 * 16, true))
+                                            using (var fileStream = new FileStream(binFilePathAndName, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None, 65536 * 16, true))
                                             {
+                                                //Move to end of stream...
+                                                if (fileStream.CanSeek)
+                                                {
+                                                    fileStream.Seek(0, SeekOrigin.End);
+                                                }
+#if (USE_BINARY_FORMATTER)
                                                 //Serialize validated records to file stream as binary...
                                                 BinaryFormatter binFor = new BinaryFormatter();
                                                 binFor.Serialize(fileStream, validatedRecords);
+
                                                 fileStream.Flush();
+#else
+                                                //Serialize validated records to file stream as JSON...
+                                                using (StreamWriter sw = new StreamWriter(fileStream))
+                                                {
+                                                    //JsonSerializer jsonSerializer = new JsonSerializer();
+                                                    //jsonSerializer.Serialize(sw, validatedRecords);
+
+                                                    //fileStream.Flush();
+                                                    using (JsonTextWriter jtw = new JsonTextWriter(sw))
+                                                    {
+                                                        JsonSerializer jsonSerializer = new JsonSerializer();
+                                                        //jsonSerializer.Serialize(jtw, validatedRecords);
+                                                        foreach (var validatedRecord in validatedRecords)
+                                                        {
+                                                            jsonSerializer.Serialize(jtw, validatedRecord);
+                                                        }
+
+                                                        await jtw.FlushAsync();
+                                                    }
+                                                }
+#endif
                                             }
                                         }
                                         catch (Exception ex)

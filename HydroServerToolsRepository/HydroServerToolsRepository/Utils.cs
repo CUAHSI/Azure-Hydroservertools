@@ -108,6 +108,11 @@ namespace HydroServerToolsRepository.Repository
                     //wrap in transaction in case something goes wrong
                     using (TransactionScope scope = new TransactionScope())
                     {
+                        if (null != statusContext)
+                        {
+                            await statusContext.SetRecordCount(StatusContext.enumCountType.ct_DbLoad, typeof(Source).Name, list.Count);
+                        }
+
                         foreach (T item in list)
                         {
                             var isometadatamodel = Mapper.Map<T, ISOMetadata>(item);
@@ -158,12 +163,21 @@ namespace HydroServerToolsRepository.Repository
                             
                             context.Sources.Add(source);
                             objContext.SaveChanges(SaveOptions.AcceptAllChangesAfterSave);
+
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbLoad, typeof(Source).Name, 1, 0, 0, 0);
+                            }
                         }
                         //BulkInsert<ISOMetadata>(providerConnectionString, idLower, isometadatarecordsToInsert);
 
-                   
+
                         //BulkInsert<Source>(providerConnectionString, idLower, sourcerecordsToInsert);
-                        
+                        if (null != statusContext)
+                        {
+                            await statusContext.Finalize(StatusContext.enumCountType.ct_DbLoad, typeof(Source).Name);
+                        }
+
                         //if we get here things are looking good.
                         scope.Complete();
                         objContext.AcceptAllChanges();                        
@@ -632,6 +646,12 @@ namespace HydroServerToolsRepository.Repository
                     table.Rows.Add(values);
                 }
 
+                //Add record count to status context...
+                if (null != statusContext)
+                {
+                    await statusContext.SetRecordCount(StatusContext.enumCountType.ct_DbLoad, typeof(targetType).Name, table.Rows.Count);
+                }
+
                 // open the destination data
                 using (SqlConnection destinationConnection =
                                 new SqlConnection(connection))
@@ -657,6 +677,8 @@ namespace HydroServerToolsRepository.Repository
                                 await statusContext.AddStatusMessage(typeof (targetType).Name, statusMessage);
 
                                 int inserted = 0;
+                                //int notifyAfterRowCount = bulkCopy.NotifyAfter;
+
                                 try
                                 {
                                     inserted = Convert.ToInt32(e.RowsCopied);
@@ -666,13 +688,13 @@ namespace HydroServerToolsRepository.Repository
                                     inserted = Int32.MaxValue;  //Failure of long to int conversion...
                                 }
 
-                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbLoad, typeof(targetType).Name, inserted, 0, 0, 0);
+                                await statusContext.SetCounts(StatusContext.enumCountType.ct_DbLoad, typeof(targetType).Name, inserted, 0, 0, 0);
                             }
-
                         };
 
                         //bulkCopy.SqlRowsCopied += (sender, e) => { = instanceIdentifier, CacheName};
-                        bulkCopy.NotifyAfter = 5000;
+                        //bulkCopy.NotifyAfter = 5000;
+                        bulkCopy.NotifyAfter = 1000;
                         bulkCopy.BatchSize = 10000;
                         // Set the timeout.
                         bulkCopy.BulkCopyTimeout = 6000;
@@ -680,12 +702,9 @@ namespace HydroServerToolsRepository.Repository
                         // bulkCopy.ColumnMappings.Add("OrderID", "NewOrderID");     
                         bulkCopy.DestinationTableName = tableName;
                         bulkCopy.WriteToServer(table);
+                        //await bulkCopy.WriteToServerAsync(table);
 
                         int totalRows = table.Rows.Count;
-                        if (null != statusContext)
-                        {
-                            await statusContext.SetRecordCount(StatusContext.enumCountType.ct_DbLoad, typeof(targetType).Name, totalRows);
-                        }
                         if ((totalRows < bulkCopy.NotifyAfter) && (null != statusContext))
                         {
                             //Bulk copy will not call SqlRowCopied callback - write once to status context to record db load... 

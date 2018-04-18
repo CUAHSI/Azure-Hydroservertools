@@ -1,0 +1,53 @@
+
+HydroServer Redesign Part 24
+
+**** Summary ****
+ - Changes to address progress bar update issues for:
+   - Sources metadate files
+   - Large Data Values files
+
+
+**** HydroServerTools/Controllers/api ****
+ - RevisedUploadController.cs
+   - GetDbRecordCountsForFile(...)
+   - Add try/catch statement for debugging purposes
+   - Revise 'final' checking logic for 'processed' and 'loaded' counts
+   - Miscellaneous format changes
+
+
+**** HydroServerTools/Utilities ****
+ - RepositoryContext.cs
+   - LoadDb(...) 
+     - Change SYNCHRONOUS calls to 'Add' method and 'CommitNewRecords' to ASYNCHRONOUS
+
+
+**** HydroServerTools/Views/CSVUpload ****
+   - DragAndDropFilesRevised.cshtml
+    -  requestDbRecordCountMonitoring(...)
+       - Remove conitional return on end condition
+       - Add diagnostic console messages
+       - Reduce timeout for 'loaded' progress bar updates to zero (0)
+       - Reduce timeout for recursive call to 100 milliseconds 
+
+
+**** HydroServerToolsRepository/HydroServerToolsRepository ****
+  - Repository.cs
+     - AddDataValues(...)
+       - Move status context 'FInalize' call outside 'for' loop
+     - Comment out experimental await Task.Yield() calls
+  - Utils.cs
+     - CommitNewRecords(...)
+       - Revise logic to capture 'load' counts for 'Sources'
+     - BulkInsert(...)
+       - Add status context calls to SetRecordCount(...) and SetCounts(...)
+
+
+**** HydroServerToolsUtilities ****
+ - DbLoadCounts.cs
+   - New method: SetCounts(...)
+ - StatusContext.cs
+   - New method: SetCounts(...)
+   - Method: GetCountsMessage(...)
+     - Comment out experimental record count code...
+
+

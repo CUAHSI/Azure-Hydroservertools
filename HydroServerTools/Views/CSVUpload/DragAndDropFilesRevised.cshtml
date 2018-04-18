@@ -55,7 +55,8 @@ else
         <div class="btn-group col-md-12" style="position: relative;">
             <div class="fileinput-button pull-left">
                 <button type="button" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span>&nbsp;Add Files</button>
-                <input id="inpFilesForUpload" type="file" multiple="multiple" class="required" name="fileupload" accept=".csv,.zip" />
+                @*<input id="inpFilesForUpload" type="file" multiple="multiple" class="required" name="fileupload" accept=".csv,.zip" />*@
+                <input id="inpFilesForUpload" type="file" multiple="multiple" class="required" name="fileupload" accept=".csv" />
             </div>
             <div id="alertFileUpload" class="alert alert-info fade in hidden col-md-5 col-md-offset-3" role="alert">
                 <span class="glyphicon glyphicon-refresh spin"></span>
@@ -89,6 +90,12 @@ else
 <script src="~/Scripts/custom/RandomId.js"></script>
 <script src="~/Scripts/custom/revisedUploadUtils.js"></script>
 <script src="~/Scripts/custom/workerMonitor.js"></script>
+<script src="~/Scripts/custom/freezeEnum.js"></script>
+<script src="~/Scripts/custom/EnableDisableAction.js"></script>
+<script src="~/Scripts/custom/ButtonElements.js"></script>
+<script src="~/Scripts/custom/VisibilityState.js"></script>
+<script src="~/Scripts/custom/StatusValues.js"></script>
+
 
 <style type="text/css">
     .bar {
@@ -109,6 +116,9 @@ else
 
     var workerDbRecordCountStatus = null;
     var workerMonitorDbRecordCountStatus = null;
+
+    var workerUploadIdKeepAlive = null;
+    var workerMonitorUploadIdKeepAlive = null;
 
     function getFileNames(fileObjects) {
         var fileNames = [];
@@ -193,6 +203,23 @@ else
                 }
             });
         }
+
+        //Check for any more panels...
+        allPanelsGone();
+    }
+
+    //Check for existence of any collapse panels...
+    function allPanelsGone() {
+
+        //Attempt to select panels...
+        var panels = $('div.row[data-file]');
+        if (0 >= panels.length) {
+            //All panels gone - hide Insert button...
+            var visibilityState = (new VisibilityState()).getEnum();
+            var buttonElements = (new ButtonElements()).getEnum();
+
+            setButtonVisibility(visibilityState.Hidden, buttonElements.Insert);
+        }
     }
 
     //Add unique input candidate file objects to the input collection and (name) to markup collection...
@@ -207,15 +234,30 @@ else
                 //Check for presence in collection...
                 var bFound = false;
                 $.each(collectionFileObjs, function (indexCol, fileCol) {
-                    if (file.name.toLowerCase() === fileCol.name.toLowerCase() &&
-                        file.size === fileCol.size) {
+                    if (file.name.toLowerCase() === fileCol.name.toLowerCase()) {
                         //Found - set indicator, return early...
                         bFound = true;
                         return false;
                     }
                 });
 
-                if (!bFound) {
+                if ('text/csv' !== file.type && 'application/vnd.ms-excel' !== file.type) {
+                    //File type not csv - display warning dialog
+                    var markup = '<div>';
+                    markup += '<p style="margin-top: 0.25em;">The file: ' + file.name + ' is not of type "csv"</p>';
+
+                    markup += '<p style="margin-top: 0.25em;">Please restrict file entries to type "csv"</p>';
+                    markup += '</div>';
+
+                    var title = '<span class="alert-danger">Incorrect File Type Entry</span>';
+
+                    var dialog = bootbox.dialog({
+                        "title": title,
+                        "closeButton": true,
+                        "message": markup
+                    });
+                }
+                else if (!bFound) {
                     //Candidate not found - add to collection...
                     collectionFileObjs.push(file);
 
@@ -259,12 +301,14 @@ else
 
                     //msg +=      '<div class="badge col-md-1 invisible" style="position: relative; float: left; margin-left: 0.5em; margin-top: 0.25em; background-color: green; ">OK</div>'
                     //msg +=      '<div class="col-md-4" style="margin-top: 0.25em;">' + file.name + '</div>';
-                    msg +=      '<div class="col-md-5" style="margin-top: 0.25em; text-overflow: ellipsis;">' + file.name + '</div>';
-                    msg +=      '<div class="col-md-6 progress" style="margin-top: 0.25em; margin-bottom: 0;">';
-                    msg +=          '<div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">';
-                    msg +=          '0%';
-                    msg +=          '</div>'
-                    msg +=      '</div>'
+                    msg += '<div class="col-md-5" style="margin-top: 0.25em; text-overflow: ellipsis;">' + file.name + '</div>';
+                    msg += '<div class="col-md-6" style="margin-top: 0.25em; margin-bottom: 0;">';
+                    msg += '<div class="progress">';
+                    msg += '<div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">';
+                    msg += '0%';
+                    msg += '</div>'
+                    msg += '</div>'
+                    msg += '</div>'
                     //msg +=      '<button class="btn btn-danger delete"  data-file-name="' + file.name + '">Remove</button>';
                     msg += '<input type="button" class="btn btn-danger delete" style="font-size: 0.75em; font-weight: bold;" data-file-name="' + file.name + '" value="Remove">';
 
@@ -283,6 +327,22 @@ else
 
                     //Enable button...
                     $('#' + 'btnUploadFiles').removeClass('disabled');
+                }
+                else { //bFound
+                    //Input file object already exists, display warning dialog...
+                    var markup = '<div>';
+                    markup += '<p style="margin-top: 0.25em;">A file named: ' + file.name + ' already exists in the collection</p>';
+
+                    markup += '<p style="margin-top: 0.25em;">Please enter unique file names</p>';
+                    markup += '</div>';
+
+                    var title = '<span class="alert-danger">Duplicate File Name Entry</span>';
+
+                    var dialog = bootbox.dialog({
+                        "title": title,
+                        "closeButton": true,
+                        "message": markup
+                    });
                 }
             });
         }
@@ -361,6 +421,173 @@ else
 
         //Processing complete - return result
         return result;
+    }
+
+    //Per the input enable/disable parameter, set the state of the input button elements...
+    function setButtonState(enableDisable_Parameter, buttonElements_Parameter) {
+        //Validate/initialize input parameters...
+        if ('undefined' !== typeof enableDisable_Parameter && null !== enableDisable_Parameter &&
+            'undefined' !== typeof buttonElements_Parameter && null !== buttonElements_Parameter) {
+            //Input parameters valid - retrieve enable/disable and button element values...
+            var enableDisableAction = (new EnableDisableAction()).getEnum();
+            var buttonElements = (new ButtonElements()).getEnum();
+
+            //Determine referenced button elements...
+            var buttonElementsArray = [ buttonElements.AddFiles,
+                                        buttonElements.Cancel,
+                                        buttonElements.Upload,
+                                        buttonElements.Insert,
+                                        buttonElements.Continue];
+            var beaLength = buttonElementsArray.length;
+
+            for (var beaI = 0; beaI < beaLength; ++beaI) {
+                var buttonElement = buttonElementsArray[beaI];
+                var jqButton = null;
+                switch (buttonElements_Parameter & buttonElement) {
+                    case buttonElements.AddFiles:
+                        jqButton = $('div.fileinput-button button.btn');
+                        break;
+                    case buttonElements.Cancel:
+                        jqButton = $('a.cancel');
+                        break;
+                    case buttonElements.Upload:
+                        jqButton = $('button#btnUploadFiles');
+                        break;
+                    case buttonElements.Insert:
+                        jqButton = $('button#btnDbInsert');
+                        break;
+                    case buttonElements.Continue:
+                        jqButton = $('button#btnDragAndDropContinue');
+                        break;
+                    default:
+                        //Unknown value - take no action...
+                        break;
+                }
+
+                if (null !== jqButton && jqButton.is(':visible')) {
+                    if (enableDisable_Parameter & enableDisableAction.Enable) {
+                        jqButton.removeClass('disabled');
+                    }
+                    else {
+                        jqButton.addClass('disabled');
+                    }
+                }
+            }
+        }
+    }
+
+    //Per the input visibility, set the state of the input button elements...
+    function setButtonVisibility(visibility_Parameter, buttonElements_Parameter) {
+        //Validate/initialize input parameters...
+        if ('undefined' !== typeof visibility_Parameter && null !== visibility_Parameter &&
+            'undefined' !== typeof buttonElements_Parameter && null !== buttonElements_Parameter) {
+            //Input parameters valid - retrieve enable/disable and button element values...
+            var visibilityState = (new VisibilityState()).getEnum();
+            var buttonElements = (new ButtonElements()).getEnum();
+
+            //Determine referenced button elements...
+            var buttonElementsArray = [buttonElements.AddFiles,
+                                        buttonElements.Cancel,
+                                        buttonElements.Upload,
+                                        buttonElements.Insert,
+                                        buttonElements.Continue];
+            var beaLength = buttonElementsArray.length;
+
+            for (var beaI = 0; beaI < beaLength; ++beaI) {
+                var buttonElement = buttonElementsArray[beaI];
+                var jqButton = null;
+                switch (buttonElements_Parameter & buttonElement) {
+                    case buttonElements.AddFiles:
+                        jqButton = $('div.fileinput-button button.btn');
+                        break;
+                    case buttonElements.Cancel:
+                        jqButton = $('a.cancel');
+                        break;
+                    case buttonElements.Upload:
+                        jqButton = $('button#btnUploadFiles');
+                        break;
+                    case buttonElements.Insert:
+                        jqButton = $('button#btnDbInsert');
+                        break;
+                    case buttonElements.Continue:
+                        jqButton = $('button#btnDragAndDropContinue');
+                        break;
+                    default:
+                        //Unknown value - take no action...
+                        break;
+                }
+
+                if (null !== jqButton) {
+                    if (visibilityState.Shown & visibility_Parameter) {
+                        //Show...
+                        jqButton.removeClass('hidden');
+                    }
+                    else {
+                        //Hide...
+                        jqButton.addClass('hidden');
+                    }
+                }
+            }
+        }
+    }
+
+    //Per the input upload and validation status parameters, set the visibility of the matching remove buttons to the input visibility parameter... 
+    function setRemoveButtons(visibility_Parameter, upload_Status_Parameter, validation_Status_Parameter) {
+        //Validate/initialize input parameters...
+        if ('undefined' !== typeof visibility_Parameter && null !== visibility_Parameter &&
+            'undefined' !== typeof upload_Status_Parameter && null !== upload_Status_Parameter &&
+            'undefined' !== typeof validation_Status_Parameter && null !== validation_Status_Parameter) {
+            //Input parameters valid - retrieve visibility, upload and validation status values...
+            var visibilityState = (new VisibilityState()).getEnum();
+            var statusValues = (new StatusValues()).getEnum();
+
+            var targetUploadStatus = statusValues.properties[upload_Status_Parameter].description.toLowerCase();
+            var targetValidationStatus = statusValues.properties[validation_Status_Parameter].description.toLowerCase();
+
+            //Select all panel items...
+            var panelItems = $('a.accordion-toggle > div[data-file]');
+            var pLength = panelItems.length;
+
+            //For each panelitem...
+            for (var pI = 0; pI < pLength; ++pI) {
+                var panelItem = panelItems[pI];
+
+                //Check upload and validation status against input values...
+                var uploadStatus = $(panelItem).attr('data-upload-status').toLowerCase();
+                var validationStatus = $(panelItem).attr('data-validation-status').toLowerCase();
+
+                if (targetUploadStatus === validationStatus && targetValidationStatus === validationStatus) {
+                    //Match - retrieve remove button...
+                    var button = $(panelItem).find('input.delete');
+
+                    if (visibilityState.Shown === visibility_Parameter) {
+                        button.removeClass('hidden');
+                    }
+                    else {
+                        button.addClass('hidden');
+                    }
+                }
+            }
+        }
+    }
+
+    //Per the input enable/disable parameter, set the 'drag and drop' state...
+    function setDragAndDropState(enableDisable_Parameter) {
+        //Validate/initialize input parameters...
+        if ('undefined' !== typeof enableDisable_Parameter && null !== enableDisable_Parameter) {
+            //Input parameters valid - retrieve enable/disable values...
+            var enableDisableAction = (new EnableDisableAction()).getEnum();
+            var dropDiv = $('#' + 'divFilesForUpload'); //Assumption: Only one drop zone...
+
+            if (enableDisable_Parameter & enableDisableAction.Enable) {
+                //Enable...
+                dropDiv.fileupload('option', 'dropZone', dropDiv);
+            }
+            else {
+                //Disable...
+                dropDiv.fileupload('option', 'dropZone', null);
+            }
+        }
     }
 
     //Send a request via the input worker monitor to validate the input file name
@@ -533,9 +760,22 @@ else
                                 }
 
                                 $('#' + 'alertFileValidation').fadeOut({
-                                    "duration": 500 //,
-                                    //"complete": function () {
-                                    //}
+                                    "duration": 500,
+                                    "complete": function () {
+                                        var enableDisableAction = (new EnableDisableAction()).getEnum();
+                                        var buttonElements = (new ButtonElements()).getEnum();
+
+                                        setButtonState(enableDisableAction.Enable,
+                                                        buttonElements.AddFiles |
+                                                        buttonElements.Cancel |
+                                                        buttonElements.Insert);
+
+                                        setDragAndDropState(enableDisableAction.Enable);
+
+                                        setButtonState(enableDisableAction.Disable,
+                                                        buttonElements.Upload |
+                                                        buttonElements.Continue);
+                                    }
                                 });
                             }
 
@@ -718,13 +958,16 @@ else
                 //Request submitted - set promise's 'then' and 'catch'
                 var endCondition = false;   //Assume end condition not set...
                 promise.then(function (message) {
-                    console.log('requestDbRecordCountMonitoring(' + fileName + ') - success!!!');
+                    //console.log('requestDbRecordCountMonitoring(' + fileName + ') - success!!!');
 
                     //check for output data...
                     var outputData = message.outputData;
                     if ('undefined' !== typeof outputData && null !== outputData) {
                         //Output data found - check for end condition...
                         endCondition = outputData.endCondition;
+                        //if (endCondition) {
+                        //    return;     //return early on end condition...
+                        //}
 
                         //Check for file name...
                         var filesToModels = outputData.fileNamesToModelNames;
@@ -764,6 +1007,10 @@ else
                             var percentageProcessed = 0;
 
                             if (null !== recordCountProcessed) {
+                                if (recordCountProcessed.Final) {
+                                    console.log('>>>>>>>>>>>>>>>> Record Count Processed is FINAL <<<<<<<<<<<<<');
+                                }
+
                                 //Display 'processed' progress...
 
                                 //Reset progress bar width...
@@ -781,8 +1028,19 @@ else
                                 jqProgressBar.width(percentageProcessed.toString() + '%');
                             }
 
+                            if (null !== recordCountLoaded) {
+                                if (recordCountLoaded.Final) {
+                                    console.log('>>>>>>>>>>>>>>>> Record Count Loaded is FINAL <<<<<<<<<<<<<');
+                                }
+                                else {
+                                    console.log('>>>>>>>>>>>>>>>> Record Count Loaded is NOT FINAL <<<<<<<<<<<<<');
+                                }
+                            }
+
                             if ( recordCountProcessed.Final && (null !== recordCountLoaded)) {
                                 //Display 'loaded' progress after a brief delay...
+                                var n = 5;
+                                ++n;
 
                                 setTimeout(function (jqPrgrsBr, rcrdCntLdd) {
                                     //Initialize progress bar width...
@@ -802,10 +1060,23 @@ else
                                     var percentWidth = width.toString() + '%';
 
                                     jqPrgrsBr.width(percentWidth);
-                                }, 1000, jqProgressBar, recordCountLoaded);
+                                //}, 50, jqProgressBar, recordCountLoaded);
+                                }, 0, jqProgressBar, recordCountLoaded);
                             }
 
                             jqProgressBar.text('Database loading: ' + (endCondition ? 'completed' : 'in progress'));
+
+                            if (endCondition) {
+                                //Remove the associated file object, if applicable...
+                                var foLength = fileObjectsForUpload.length;
+                                for (var foI = 0; foI < foLength; ++foI) {
+                                    var fo = fileObjectsForUpload[foI];
+                                    if (fileName === fo.name) {
+                                        fileObjectsForUpload.splice(foI, 1);
+                                        break;
+                                    }
+                                }
+                            }
                         }
 
                         //If indicated, repeat the call to request the next available record count(s), if any
@@ -814,7 +1085,7 @@ else
                             if (!ndCndtn) {
                                 requestDbRecordCountMonitoring(upldId, flNm, wrkrMntr, jqPrgrssWrpr, jqPrgrssBr, jqCllps);
                             }
-                        }, 1500, endCondition, uploadId, fileName, workerMonitor, jqProgressWrapper, jqProgressBar, jqCollapse);
+                        }, 100, endCondition, uploadId, fileName, workerMonitor, jqProgressWrapper, jqProgressBar, jqCollapse);
                     }
                 }).catch(function (message) {
                     //Error - set end condition...
@@ -834,11 +1105,21 @@ else
 
                     //Set error message in progress bar...
                     jqProgressBar.text('DB record count monitoring: error');
+
+                    //Remove the associated file object, if applicable...
+                    var foLength = fileObjectsForUpload.length;
+                    for (var foI = 0; foI < foLength; ++foI) {
+                        var fo = fileObjectsForUpload[foI];
+                        if (fileName === fo.name) {
+                            fileObjectsForUpload.splice(foI, 1);
+                            break;
+                        }
+                    }
                 });
             }
         }
     }
-    
+
     //Show the validation errors dialog for the input file names...
     function showValidationErrorDialog(fileNames) {
         //Validate/initialize input parameters...
@@ -921,8 +1202,8 @@ else
                 var fileName = $(panelItem).attr('data-file');
 
                 //Set jQuery objects for later reference...
-                var progressWrapper = $(panelItem).children('div.progress');
-                var progressBar = $(progressWrapper).children('div.progress-bar');
+                var progressWrapper = $(panelItem).find('div.progress');
+                var progressBar = $(progressWrapper).find('div.progress-bar');
 
                 var panelItemParent = $(panelItem).parent();    //Enclosing anchor...
                 //var dataToggle = panelItemParent;             //Contains attribute: data-toggle="collapse"
@@ -986,10 +1267,16 @@ else
         $('#' + 'alertFileValidation').removeClass('hidden').hide();
         $('#' + 'alertDbLoad').removeClass('hidden').hide();
 
-        //TO DO - Check session storage for existing items...
-        console.log('>>>>>>>>>>>>>>>');
-        console.log('>>>>>>>>>>>>>>> Missing functionality: check session storage for existing items <<<<<<<<<<<<<<<<<<<<<<');
-        console.log('>>>>>>>>>>>>>>>');
+        ////TO DO - Check session storage for existing items...
+        //console.log('>>>>>>>>>>>>>>>');
+        //console.log('>>>>>>>>>>>>>>> Missing functionality: check session storage for existing items <<<<<<<<<<<<<<<<<<<<<<');
+        //console.log('>>>>>>>>>>>>>>>');
+
+        //Disable default 'drop' and 'dragover' events for document...
+        //Source: https://github.com/blueimp/jQuery-File-Upload/wiki/Options
+        $(document).bind('drop dragover', function (e) {
+            e.preventDefault();
+        });
 
         //Initialization code for jQuery-File-Upload...
         var dropDiv = $('#' + 'divFilesForUpload');
@@ -1037,7 +1324,16 @@ else
                     "fileNamesAndTypes": JSON.stringify(fileNamesAndTypes),
                     "currentUploadId": currentUploadId,
                     "validationQualifier": "@qualifier"
-                                };
+                };
+
+                ////BC - TEST - Add uploadName to each file object...
+                ////Source: https://github.com/blueimp/jQuery-File-Upload/wiki/API 
+                //var fLength = data.files.length;
+                //var counter = 0;
+                //for (fI = 0; fI < fLength; ++fI) {
+                //    var fObj = data.files[fI];
+                //    fObj.uploadName = (fObj.name + '_' + ((++counter).toString()));
+                //}
 
                 var dropDiv = $('#' + 'divFilesForUpload');
                 dropDiv.fileupload('send', data);
@@ -1124,7 +1420,7 @@ else
 
                 //Set jQuery objects for later reference...
                 var progressWrapper = $(panelItem + ' .progress');
-                var progressBar = $(panelItem + ' .progress-bar');
+                var progressBar = $(panelItem + ' .progress .progress-bar');
                 //var badge = $(panelItem + ' .badge');
 
                 var panelItemParent = $(panelItem).parent();    //Enclosing anchor...
@@ -1165,15 +1461,15 @@ else
                         sessionStorage.uploadedFileNames = uploadedFileNames.toString();
                     }
 
-                    //Remove the associated file object, if applicable...
-                    var foLength = fileObjectsForUpload.length;
-                    for (var foI = 0; foI < foLength; ++foI) {
-                        var fo = fileObjectsForUpload[foI];
-                        if (fileName === fo.name) {
-                            fileObjectsForUpload.splice(foI, 1);
-                            break;
-                        }
-                    }
+                    ////Remove the associated file object, if applicable...
+                    //var foLength = fileObjectsForUpload.length;
+                    //for (var foI = 0; foI < foLength; ++foI) {
+                    //    var fo = fileObjectsForUpload[foI];
+                    //    if (fileName === fo.name) {
+                    //        fileObjectsForUpload.splice(foI, 1);
+                    //        break;
+                    //    }
+                    //}
 
                     //Queue file validation request via a self-executing anonymous function...
                     (function () {
@@ -1230,6 +1526,19 @@ else
                 //List entries exist - generate upload Id, if indicated...
                 if (null == currentUploadId) {
                     currentUploadId = randomId.generateId();
+
+                    //Set up a 'keep alive' for newly generated uploadId...
+                    var item = {
+                        "action": "add",
+                        "uploadId": currentUploadId
+                    };
+                    var keepAlive = {
+                        "inputData": []
+                    };
+
+                    keepAlive.inputData.push(item);
+
+                    workerMonitorUploadIdKeepAlive.simpleSendWorkerMessage(keepAlive);
                 }
 
                 //Retain in session storage...
@@ -1239,8 +1548,20 @@ else
                 var dropDiv = $('#' + 'divFilesForUpload');
                 dropDiv.fileupload('add', { "files": fileObjectsForUpload });
 
-                //Disable button...
-                $('#' + 'btnUploadFiles').addClass('disabled');
+                //Disable buttons...
+                //$('#' + 'btnUploadFiles').addClass('disabled');
+                var enableDisableAction = (new EnableDisableAction()).getEnum();
+                var buttonElements = (new ButtonElements()).getEnum();
+
+                setButtonState(enableDisableAction.Disable,
+                    buttonElements.AddFiles |
+                    buttonElements.Cancel |
+                    buttonElements.Upload |
+                    buttonElements.Insert |
+                    buttonElements.Continue);
+
+                setDragAndDropState(enableDisableAction.Disable);
+
 
                 //Display 'file upload' alert...
                 //Source: http://www.java2s.com/Tutorials/HTML_CSS/Bootstrap_Example/Alert/Show_alert_block_with_fade_in.htm
@@ -1254,8 +1575,25 @@ else
 
             //Invoke db load process, if indicated...
             if (checkValidationResults()) {
-                //Disable button...
-                $('#' + 'btnDbInsert').addClass('disabled');
+                //Disable buttons...
+                //$('#' + 'btnDbInsert').addClass('disabled');
+                var enableDisableAction = (new EnableDisableAction()).getEnum();
+                var buttonElements = (new ButtonElements()).getEnum();
+                var visibilityState = (new VisibilityState()).getEnum();
+                var statusValues = (new StatusValues()).getEnum();
+
+                setButtonState(enableDisableAction.Disable,
+                                buttonElements.AddFiles |
+                                buttonElements.Cancel |
+                                buttonElements.Upload |
+                                buttonElements.Insert |
+                                buttonElements.Continue);
+
+                setDragAndDropState(enableDisableAction.Disable);
+
+                setRemoveButtons(visibilityState.Hidden,
+                                 statusValues.complete,         //Upload status
+                                 statusValues.complete);        //Validation status
 
                 //Display 'DB load' alert...
                 //Source: http://www.java2s.com/Tutorials/HTML_CSS/Bootstrap_Example/Alert/Show_alert_block_with_fade_in.htm
@@ -1274,6 +1612,19 @@ else
 
             //Queue remove request to server...
             removeUploadId(currentUploadId);
+
+            //Remove the 'keep alive' for newly removed uploadId...
+            var item = {
+                "action": "remove",
+                "uploadId": currentUploadId
+            };
+            var keepAlive = {
+                "inputData": []
+            };
+
+            keepAlive.inputData.push(item);
+
+            workerMonitorUploadIdKeepAlive.simpleSendWorkerMessage(keepAlive);
         });
 
         //Create Random Id instance...
@@ -1299,6 +1650,12 @@ else
 
         workerMonitorDbRecordCountStatus = new WorkerMonitor();
         workerMonitorDbRecordCountStatus.startMonitoring(workerDbRecordCountStatus);
+
+        //Start an uploadId 'keep alive' worker and create a monitor instance... 
+        workerUploadIdKeepAlive = new Worker("/Scripts/custom/workers/workerUploadIdKeepAlive.js");
+
+        workerMonitorUploadIdKeepAlive = new WorkerMonitor();
+        workerMonitorUploadIdKeepAlive.startMonitoring(workerUploadIdKeepAlive);
 
     });
 
