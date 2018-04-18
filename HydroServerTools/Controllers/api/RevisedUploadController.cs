@@ -39,6 +39,13 @@ namespace HydroServerTools.Controllers.api
             public List<string> tableNames { get; set; }
         }
 
+        public class UploadIds
+        {
+
+            //Properties...
+            public List<string> uploadIds { get; set; }
+        }
+
         public class DbLoadStatus
         {
             //Properties...
@@ -148,6 +155,23 @@ namespace HydroServerTools.Controllers.api
             }
 #endif
             return dbloadcontexts;
+        }
+
+        private ConcurrentDictionary<string, DateTime> getUploadIdKeepAlives()
+        {
+            var key = "uploadIdsToKeepAliveDateTimes";
+            var cache = HttpRuntime.Cache;
+
+            //Concurrent dictionary maps current uploadIds to current 'keep-alive' date/times... 
+            ConcurrentDictionary<string, DateTime> uploadIdKeepAlives = cache.Get(key) as ConcurrentDictionary<string, DateTime>;
+#if (DEBUG)
+            if (null == uploadIdKeepAlives)
+            {
+                //Cache creation expected at Application_Start() - thow an exception!!
+                throw new Exception("HttpRuntime.Cache object: " + key + " NOT found!!!");
+            }
+#endif
+            return uploadIdKeepAlives;
         }
 
         //Members...
@@ -1334,7 +1358,7 @@ namespace HydroServerTools.Controllers.api
         }
 
         //Request DB Table Counts method...
-        //Post api/revisedupload/post/requestdbtablecounts/{tablenames}
+        //Post api/revisedupload/post/requestdbtablecounts/{tablename(s) in request body}
         //See WebApiConfig.cs for custom route...
         [System.Web.Http.AcceptVerbs("GET", "POST")]
         [System.Web.Http.HttpPost]
@@ -1391,6 +1415,47 @@ namespace HydroServerTools.Controllers.api
             }
 
             //Processing complete - return response
+            return response;
+        }
+
+        //Post current uploadId method...
+        //Post api/revisedupload/post/currentuploadid/{ids in request body}
+        //See WebApiConfig.cs for custom route...
+        [System.Web.Http.AcceptVerbs("GET", "POST")]
+        [System.Web.Http.HttpPost]
+        public async Task<HttpResponseMessage> PostCurrentUploadId()
+        {
+            HttpResponseMessage response = new HttpResponseMessage();
+            response.StatusCode = HttpStatusCode.OK;    //Assume success...
+
+            //Write an empty JSON object to the response
+            //  To avoid 'Unexpected end of JSON input' error in jQuery AJAX!!
+            response.Content = new StringContent("{}", System.Text.Encoding.UTF8, "application/json");
+
+            //Retrieve request data...
+            HttpContent httpContent = Request.Content;
+
+            string content = await httpContent.ReadAsStringAsync();
+            UploadIds uploadIds = Newtonsoft.Json.JsonConvert.DeserializeObject<UploadIds>(content);
+
+            if (null == uploadIds)
+            {
+                response.StatusCode = HttpStatusCode.BadRequest;    //Missing/invalid parameter(s) - return early
+                response.ReasonPhrase = "Invalid parameter(s)";
+                return response;
+            }
+
+            //Retrieve uploadIds 'keep-alives'...
+            ConcurrentDictionary<string, DateTime> idKeepAlives = getUploadIdKeepAlives();
+
+            //For each received uploadId...
+            foreach (var uploadId in uploadIds.uploadIds)
+            {
+                var dt = DateTime.Now;
+                idKeepAlives.AddOrUpdate(uploadId, dt, (key, value) => dt );
+            }
+
+            //Processing complete - return response...
             return response;
         }
 
@@ -2163,63 +2228,23 @@ namespace HydroServerTools.Controllers.api
             //Validate/initialize input parameters
             if (String.IsNullOrWhiteSpace(uploadId))
             {
+
                 response.StatusCode = HttpStatusCode.BadRequest;    //Missing/invalid parameter(s) - return early
                 response.ReasonPhrase = "Invalid parameter(s)";
                 return response;
             }
 
-            //For input uploadId, remove associated file context and uploaded files, if any...
-            var wildCard = uploadId + "*.*";
+            //Call 'helper' method to remove uploaded, validated and processed files associated with the input uploadId
+            UploadIdHelper uploadIdHelper = new UploadIdHelper(uploadId);
 
             var fileContexts = getFileContexts();
-            FileContext fileContext = null;
-            if ( fileContexts.TryRemove(uploadId, out fileContext))
-            {
-                using (await fileContext.FileSemaphore.UseWaitAsync())
-                {
-                    //Source: https://forums.asp.net/t/1899755.aspx?How+to+delete+files+with+wildcard+
-                    string pathUploads = System.Web.Hosting.HostingEnvironment.MapPath("~/Uploads/");
-                    DirectoryInfo directoryInfo = new DirectoryInfo(pathUploads);
-                    foreach (FileInfo fI in directoryInfo.GetFiles(wildCard))
-                    {
-                        fI.Delete();
-                    }
-                }
-            }
-
-            //For input uploadId, remove associated validation context and validated files, if any...
+            string pathUploads = System.Web.Hosting.HostingEnvironment.MapPath("~/Uploads/");
             var validationContexts = getValidationContexts();
-            ValidationContext<CsvValidator> validationContext = null;
-            if (validationContexts.TryRemove(uploadId, out validationContext))
-            {
-                using (await validationContext.ValidationResultSemaphore.UseWaitAsync())
-                {
-                    //Source: https://forums.asp.net/t/1899755.aspx?How+to+delete+files+with+wildcard+
-                    string pathValidated = System.Web.Hosting.HostingEnvironment.MapPath("~/Validated/");
-                    DirectoryInfo directoryInfo = new DirectoryInfo(pathValidated);
-                    foreach (FileInfo fI in directoryInfo.GetFiles(wildCard))
-                    {
-                        fI.Delete();
-                    }
-                }
-            }
-
-            //For input uploadId, remove associated db load context and rsults files, if any...
+            string pathValidated = System.Web.Hosting.HostingEnvironment.MapPath("~/Validated/");
             var dbLoadContexts = getDbLoadContexts();
-            DbLoadContext dbLoadContext = null;
-            if (dbLoadContexts.TryRemove(uploadId, out dbLoadContext))
-            {
-                using (await dbLoadContext.DbLoadSemaphore.UseWaitAsync())
-                {
-                    //Source: https://forums.asp.net/t/1899755.aspx?How+to+delete+files+with+wildcard+
-                    string pathProcessed = System.Web.Hosting.HostingEnvironment.MapPath("~/Processed/");
-                    DirectoryInfo directoryInfo = new DirectoryInfo(pathProcessed);
-                    foreach (FileInfo fI in directoryInfo.GetFiles(wildCard))
-                    {
-                        fI.Delete();
-                    }
-                }
-            }
+            string pathProcessed = System.Web.Hosting.HostingEnvironment.MapPath("~/Processed/");
+
+            await uploadIdHelper.DeleteFromCollections(fileContexts, pathUploads, validationContexts, pathValidated, dbLoadContexts, pathProcessed);
 
             //Processing complete - return
             return response;

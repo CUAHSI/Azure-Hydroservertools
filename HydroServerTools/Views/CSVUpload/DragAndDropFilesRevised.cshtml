@@ -117,6 +117,9 @@ else
     var workerDbRecordCountStatus = null;
     var workerMonitorDbRecordCountStatus = null;
 
+    var workerUploadIdKeepAlive = null;
+    var workerMonitorUploadIdKeepAlive = null;
+
     function getFileNames(fileObjects) {
         var fileNames = [];
 
@@ -1521,6 +1524,19 @@ else
                 //List entries exist - generate upload Id, if indicated...
                 if (null == currentUploadId) {
                     currentUploadId = randomId.generateId();
+
+                    //Set up a 'keep alive' for newly generated uploadId...
+                    var item = {
+                        "action": "add",
+                        "uploadId": currentUploadId
+                    };
+                    var keepAlive = {
+                        "inputData": []
+                    };
+
+                    keepAlive.inputData.push(item);
+
+                    workerMonitorUploadIdKeepAlive.simpleSendWorkerMessage(keepAlive);
                 }
 
                 //Retain in session storage...
@@ -1594,6 +1610,19 @@ else
 
             //Queue remove request to server...
             removeUploadId(currentUploadId);
+
+            //Remove the 'keep alive' for newly removed uploadId...
+            var item = {
+                "action": "remove",
+                "uploadId": currentUploadId
+            };
+            var keepAlive = {
+                "inputData": []
+            };
+
+            keepAlive.inputData.push(item);
+
+            workerMonitorUploadIdKeepAlive.simpleSendWorkerMessage(keepAlive);
         });
 
         //Create Random Id instance...
@@ -1619,6 +1648,12 @@ else
 
         workerMonitorDbRecordCountStatus = new WorkerMonitor();
         workerMonitorDbRecordCountStatus.startMonitoring(workerDbRecordCountStatus);
+
+        //Start an uploadId 'keep alive' worker and create a monitor instance... 
+        workerUploadIdKeepAlive = new Worker("/Scripts/custom/workers/workerUploadIdKeepAlive.js");
+
+        workerMonitorUploadIdKeepAlive = new WorkerMonitor();
+        workerMonitorUploadIdKeepAlive.startMonitoring(workerUploadIdKeepAlive);
 
     });
 

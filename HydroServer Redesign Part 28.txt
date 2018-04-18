@@ -1,0 +1,50 @@
+
+HydroServer Redesign Part 28
+
+
+**** Summary ****
+
+ - Addition of a 'keep alive' scheme for automatic deletion 
+   of 'no longer needed' uploaded, validated and processed 
+   temporary files
+
+ 
+**** HydroServerTools ****
+ - Global.asax.cs 
+   - Add asynchronous 'keep alive' checking task
+ - HydroServerTools.csproj
+   - New files: 
+     - UploadHelper.cs
+     - workerUploadIdKeepAlive.js
+
+ 
+**** HydroServerTools/App_Start ****
+ - WebApiConfig.cs
+   - New route: api/revisedupload/post/currentuploadid
+
+ 
+**** HydroServerTools/Controllers/api ****
+ - RevisedUploadController.cs
+   - Add logic for new API route and related structures 
+   - DeleteUploadId(...) - refactor to use new helper class
+
+
+**** HydroServerTools/Scripts/custom ****
+ - workerMonitor.js
+    - new method: simpleSendWorkerMessage(...)
+
+
+**** HydroServerTools/Scripts/custom/workers ****
+ - new worker file: workerUploadIdKeepAlive.js
+
+
+**** HydroServerTools/Utilities ****
+ - New helper class: UploadIdHelper.cs
+
+
+**** HydroServerTools/Views/CSVUpload ****
+ - DragAndDropFilesRevised.cshtml
+   - Add code for new 'keep alive' worker and worker monitor
+   - Add calls for uploadId 'add' and 'remove' to worker monitor
+
+

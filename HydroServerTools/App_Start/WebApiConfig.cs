@@ -95,6 +95,13 @@ namespace HydroServerTools
                 routeTemplate: "api/revisedupload/post/requestdbtablecounts",
                 defaults: new { controller = "RevisedUpload", action = "RequestDbTableCounts" });
 
+            //Define a custom route posting a current uploadId
+            // Action: Post to allow data placement in the request body
+            config.Routes.MapHttpRoute(
+                name: "RevisedUploadApiPostCurrentUploadId",
+                routeTemplate: "api/revisedupload/post/currentuploadid",
+                defaults: new { controller = "RevisedUpload", action = "PostCurrentUploadId" });
+
             //Not sure if this route is strictly necessary...
             config.Routes.MapHttpRoute(
                 name: "RevisedUploadApiPost",
