@@ -574,7 +574,9 @@
     <Content Include="Content\DataTables-Editor-1.7.0\scss\processing.scss" />
     <Content Include="Content\DataTables-Editor-1.7.0\scss\upload.scss" />
     <Content Include="connectionString.config" />
-    <Content Include="AppSettings.config" />
+    <Content Include="AppSettings.config">
+      <SubType>Designer</SubType>
+    </Content>
     <None Include="Microsoft.WindowsAzure.Caching\ClientPerfCountersInstaller.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -885,7 +887,9 @@
     <Content Include="Views\TrackUpdates\Edit.cshtml" />
     <Content Include="Views\TrackUpdates\Index.cshtml" />
     <Content Include="Views\ServiceRegistrations\ActivationEmailError.cshtml" />
-    <Content Include="smtp.config" />
+    <Content Include="smtp.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Templates\Advanced Formatting Template.xlsx" />
     <Content Include="Templates\Standard Formatting Template.xlsx" />
     <Content Include="Templates\Advanced Uploading Guide.pdf" />
