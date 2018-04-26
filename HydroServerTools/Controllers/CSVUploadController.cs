@@ -171,7 +171,8 @@ namespace HydroServerTools.Controllers
                     {
                         HISNetwork hisNetwork = HydroServerToolsUtils.getHISNetworksDataForServiceName(networkId);
                         TempData["LastHarvested"] = hisNetwork.LastHarvested;
-                        TempData["NetworkId"] = hisNetwork.NetworkID;
+                        //BCC - 26-Apr-2018 - Field issue - 500 error returned by SelectUploadType when NetworkID is numeric...
+                        TempData["NetworkId"] = hisNetwork.NetworkID.ToString();
                     }
 
                 }
