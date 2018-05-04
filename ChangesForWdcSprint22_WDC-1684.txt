@@ -1,0 +1,18 @@
+
+ Changes for WDC Sprint 22 - WDC-1684
+
+
+>>> Summary <<<
+ - Enable 'Clear selected tables' button whenever one or more checkboxes are checked
+
+
+>>>> Azure-Hydroservertools/HydroServerTools/Scripts/custom <<<<
+ - Manage.js
+   - Add logic to conditionally enable 'Clear selected tables' button
+   - Add comments
+
+
+
+
+
+
