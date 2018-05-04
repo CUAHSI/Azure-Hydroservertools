@@ -495,8 +495,8 @@ namespace HydroServerTools.Controllers
             try
             {
                 //App Service Publish Profile Credentials 
-                string userName = "$dev-Hydroservertools"; //userName 
-                string userPassword = "utE8ryBlvqDfhExAxKcPF94kBGyYnkKzYCbjxumo2SETcL3pcJMZ5uPx83al"; //userPWD 
+                string userName = ConfigurationManager.AppSettings["azurejob-userName-CopyDBTemplate"]; //userName 
+                string userPassword = ConfigurationManager.AppSettings["azurejob-userPassword-CopyDBTemplate"]; //userPWD 
 
                 //change webJobName to your WebJob name 
                 // string webJobName = "WEBJOBNAME";
@@ -506,7 +506,7 @@ namespace HydroServerTools.Controllers
                 //var arg = "arguments= argtest1";
                 //Change this URL to your WebApp hosting the  
                 //string URL = "https://?.scm.azurewebsites.net/api/triggeredwebjobs/" + webJobName + "/run";
-                string URL = "https://dev-hydroservertools.scm.azurewebsites.net/api/triggeredwebjobs/CopyDBTemplate/run";
+                string URL = ConfigurationManager.AppSettings["azurejob-webhook-CopyDBTemplate"];
                 System.Net.WebRequest request = System.Net.WebRequest.Create(URL);
                 request.Method = "POST";
                 request.ContentLength = 0;

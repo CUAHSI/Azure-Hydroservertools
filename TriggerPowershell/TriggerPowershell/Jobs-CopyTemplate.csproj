@@ -53,12 +53,18 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="App.config" />
+    <Content Include="AppSettings.config">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="azureprofile.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
     <None Include="Properties\PublishProfiles\dev-Hydroservertools - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\hydroserver - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\hydroserver - Web Deploy %282%29.pubxml" />
+    <None Include="Properties\PublishProfiles\hydroserver - Web Deploy %283%29.pubxml" />
     <None Include="Properties\PublishProfiles\hydroserver - Web Deploy.pubxml" />
     <None Include="Properties\webjob-publish-settings.json" />
   </ItemGroup>
