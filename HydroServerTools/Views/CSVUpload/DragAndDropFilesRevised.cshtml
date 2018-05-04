@@ -95,13 +95,30 @@ else
 <script src="~/Scripts/custom/ButtonElements.js"></script>
 <script src="~/Scripts/custom/VisibilityState.js"></script>
 <script src="~/Scripts/custom/StatusValues.js"></script>
-
+<script src="~/Scripts/custom/ConsoleUtils.js"></script>
 
 <style type="text/css">
     .bar {
         background-color: #4298c8;
     }
 </style>
+
+
+@using HydroServerTools.Extensions;
+@if (Html.IsDebugBuild())
+{
+    <script type="text/javascript">
+        //Retrieve enable/disable console setting from web.config...
+        var appConfig_EnableDisableConsole = true;
+    </script>
+}
+else
+{
+    <script type="text/javascript">
+        //Retrieve enable/disable console setting from web.config...
+        var appConfig_EnableDisableConsole = false;
+    </script>
+}
 
 <script type="text/javascript">
     var fileObjectsForUpload = [];
@@ -303,13 +320,13 @@ else
                     //msg +=      '<div class="col-md-4" style="margin-top: 0.25em;">' + file.name + '</div>';
                     msg += '<div class="col-md-5" style="margin-top: 0.25em; text-overflow: ellipsis;">' + file.name + '</div>';
                     msg += '<div class="col-md-6" style="margin-top: 0.25em; margin-bottom: 0;">';
-                    msg += '<div class="progress">';
-                    msg += '<div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">';
-                    msg += '0%';
-                    msg += '</div>'
-                    msg += '</div>'
-                    msg += '</div>'
-                    //msg +=      '<button class="btn btn-danger delete"  data-file-name="' + file.name + '">Remove</button>';
+                        msg += '<div class="progress">';
+                            msg += '<div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">';
+                                msg += '0%';
+                            msg += '</div>';
+                        msg += '</div>';
+                    msg += '</div>';
+                    //msg +=      '<button class="btn btn-danger delete" data-file-name="' + file.name + '">Remove</button>';
                     msg += '<input type="button" class="btn btn-danger delete" style="font-size: 0.75em; font-weight: bold;" data-file-name="' + file.name + '" value="Remove">';
 
                     msg += '</div>';
@@ -531,7 +548,7 @@ else
         }
     }
 
-    //Per the input upload and validation status parameters, set the visibility of the matching remove buttons to the input visibility parameter... 
+    //Per the input upload and validation status parameters, set the visibility of the matching remove buttons to the input visibility parameter...
     function setRemoveButtons(visibility_Parameter, upload_Status_Parameter, validation_Status_Parameter) {
         //Validate/initialize input parameters...
         if ('undefined' !== typeof visibility_Parameter && null !== visibility_Parameter &&
@@ -1132,11 +1149,11 @@ else
                 markup += '<p style="margin-top: 0.25em;">Validation errors exist in the following file(s):</p>';
                 markup += '<ul style="margin-top: 0.5em;">';
                 for (fI = 0; fI < fLength; ++fI) {
-                    markup += '<li>' + fileNames[fI] + '</li>'
+                    markup += '<li>' + fileNames[fI] + '</li>';
                 }
 
                 markup += '</ul>';
-                markup += '<p style="margin-top: 1.0em;">Please remove&#47;correct&#47;reupload the file(s) before continuing.</p>'
+                markup += '<p style="margin-top: 1.0em;">Please remove&#47;correct&#47;reupload the file(s) before continuing.</p>';
                 markup += '</div>';
 
                 var title = '<span class="alert-danger">Validation Errors Found</span>';
@@ -1262,6 +1279,9 @@ else
 
     $(document).ready(function () {
 
+        //Enable/disable console per configuration parameter...
+        EnableDisableConsole(appConfig_EnableDisableConsole);
+
         //Hide the upload file alert...
         $('#' + 'alertFileUpload').removeClass('hidden').hide();
         $('#' + 'alertFileValidation').removeClass('hidden').hide();
@@ -1324,22 +1344,22 @@ else
                     "fileNamesAndTypes": JSON.stringify(fileNamesAndTypes),
                     "currentUploadId": currentUploadId,
                     "validationQualifier": "@qualifier"
-                };
+                    };
 
-                ////BC - TEST - Add uploadName to each file object...
-                ////Source: https://github.com/blueimp/jQuery-File-Upload/wiki/API 
-                //var fLength = data.files.length;
-                //var counter = 0;
-                //for (fI = 0; fI < fLength; ++fI) {
-                //    var fObj = data.files[fI];
-                //    fObj.uploadName = (fObj.name + '_' + ((++counter).toString()));
-                //}
+                    ////BC - TEST - Add uploadName to each file object...
+                    ////Source: https://github.com/blueimp/jQuery-File-Upload/wiki/API
+                    //var fLength = data.files.length;
+                    //var counter = 0;
+                    //for (fI = 0; fI < fLength; ++fI) {
+                    //    var fObj = data.files[fI];
+                    //    fObj.uploadName = (fObj.name + '_' + ((++counter).toString()));
+                    //}
 
-                var dropDiv = $('#' + 'divFilesForUpload');
-                dropDiv.fileupload('send', data);
+                    var dropDiv = $('#' + 'divFilesForUpload');
+                    dropDiv.fileupload('send', data);
 
-                //Return false to stop the submit call from starting the upload....
-                return false;
+                    //Return false to stop the submit call from starting the upload....
+                    return false;
             },
             //File 'chunk' callbacks...
             //"chunkalways": function(event, data) {
@@ -1369,7 +1389,7 @@ else
 
                     if ((-1 === attrStatusValue.indexOf('complete')) &&
                         (-1 === attrStatusValue.indexOf('error'))) {
-                        final = false;
+                            final = false;
                     }
                 });
 
@@ -1448,6 +1468,7 @@ else
                     if ('undefined' !== typeof sessionStorage.fileUploadCount && null !== sessionStorage.fileUploadCount) {
                         fileUploadCount = parseInt(sessionStorage.fileUploadCount);
                     }
+
                     sessionStorage.fileUploadCount = (++fileUploadCount).toString();
 
                     //Retrieve/update file names array...
@@ -1475,31 +1496,30 @@ else
                     (function () {
                         //For the defined interval...
                         var intervalId = setInterval(function (crntUpldId, flNm, wrkrMntrVldtn, dtTgl, prgrsWrpr, prgrsBr, clps) {
-                            //Check for file upload final status ('completed' or 'error') on all panel items...
-                            if (allUploadComplete()) {
-                                //Final status for all panel items - end the interval, show alert, request file validation...
-                                $('#' + 'alertFileUpload').fadeOut({
-                                    "duration": 500,
-                                    "complete": function () {
-                                        var jqAlert = $('#' + 'alertFileValidation');
-                                        jqAlert.fadeIn({ "duration": 500 });
-                                    }
-                                });
+                        //Check for file upload final status ('completed' or 'error') on all panel items...
+                        if (allUploadComplete()) {
+                            //Final status for all panel items - end the interval, show alert, request file validation...
+                            $('#' + 'alertFileUpload').fadeOut({
+                                "duration": 500,
+                                "complete": function () {
+                                    var jqAlert = $('#' + 'alertFileValidation');
+                                    jqAlert.fadeIn({ "duration": 500 });
+                                }
+                            });
 
-                                clearInterval(intervalId);
-                                requestFileValidation(crntUpldId, flNm, wrkrMntrVldtn, dtTgl, prgrsWrpr, prgrsBr, clps);
-                            }
-
-                        }, 1000, currentUploadId, fileName, workerMonitorValidation, dataToggle, progressWrapper, progressBar, collapse);
+                            clearInterval(intervalId);
+                            requestFileValidation(crntUpldId, flNm, wrkrMntrVldtn, dtTgl, prgrsWrpr, prgrsBr, clps);
+                        }
+                    }, 1000, currentUploadId, fileName, workerMonitorValidation, dataToggle, progressWrapper, progressBar, collapse);
                     })();
                 }
             },
             "drop": function (event, data) {
-                var fileNames = getFileNames(data.files);
-                console.log('jquery-file-upload - dropped files: ' + fileNames.join());
+                    var fileNames = getFileNames(data.files);
+                    console.log('jquery-file-upload - dropped files: ' + fileNames.join());
 
-                //Add dropped files...
-                addFileObjects(data.files, fileObjectsForUpload, 'pnlgrpFiles');
+                    //Add dropped files...
+                    addFileObjects(data.files, fileObjectsForUpload, 'pnlgrpFiles');
             }
         });
 
@@ -1529,11 +1549,11 @@ else
 
                     //Set up a 'keep alive' for newly generated uploadId...
                     var item = {
-                        "action": "add",
-                        "uploadId": currentUploadId
+                    "action": "add",
+                    "uploadId": currentUploadId
                     };
                     var keepAlive = {
-                        "inputData": []
+                    "inputData": []
                     };
 
                     keepAlive.inputData.push(item);
@@ -1554,11 +1574,11 @@ else
                 var buttonElements = (new ButtonElements()).getEnum();
 
                 setButtonState(enableDisableAction.Disable,
-                    buttonElements.AddFiles |
-                    buttonElements.Cancel |
-                    buttonElements.Upload |
-                    buttonElements.Insert |
-                    buttonElements.Continue);
+                buttonElements.AddFiles |
+                buttonElements.Cancel |
+                buttonElements.Upload |
+                buttonElements.Insert |
+                buttonElements.Continue);
 
                 setDragAndDropState(enableDisableAction.Disable);
 
@@ -1583,17 +1603,17 @@ else
                 var statusValues = (new StatusValues()).getEnum();
 
                 setButtonState(enableDisableAction.Disable,
-                                buttonElements.AddFiles |
-                                buttonElements.Cancel |
-                                buttonElements.Upload |
-                                buttonElements.Insert |
-                                buttonElements.Continue);
+                buttonElements.AddFiles |
+                buttonElements.Cancel |
+                buttonElements.Upload |
+                buttonElements.Insert |
+                buttonElements.Continue);
 
                 setDragAndDropState(enableDisableAction.Disable);
 
                 setRemoveButtons(visibilityState.Hidden,
-                                 statusValues.complete,         //Upload status
-                                 statusValues.complete);        //Validation status
+                statusValues.complete,         //Upload status
+                statusValues.complete);        //Validation status
 
                 //Display 'DB load' alert...
                 //Source: http://www.java2s.com/Tutorials/HTML_CSS/Bootstrap_Example/Alert/Show_alert_block_with_fade_in.htm
@@ -1629,8 +1649,8 @@ else
 
         //Create Random Id instance...
         randomId = new RandomId({
-            'iterationCount': 10,
-            'characterSets': ['alpha', 'numeric']
+        'iterationCount': 10,
+        'characterSets': ['alpha', 'numeric']
         });
 
         //Start a validation worker and create a monitor instance...
@@ -1651,12 +1671,27 @@ else
         workerMonitorDbRecordCountStatus = new WorkerMonitor();
         workerMonitorDbRecordCountStatus.startMonitoring(workerDbRecordCountStatus);
 
-        //Start an uploadId 'keep alive' worker and create a monitor instance... 
+        //Start an uploadId 'keep alive' worker and create a monitor instance...
         workerUploadIdKeepAlive = new Worker("/Scripts/custom/workers/workerUploadIdKeepAlive.js");
 
         workerMonitorUploadIdKeepAlive = new WorkerMonitor();
         workerMonitorUploadIdKeepAlive.startMonitoring(workerUploadIdKeepAlive);
 
+        //Set up an 'enable/disable console' message for the workers...
+        var msgItem = {
+            "action": "enableDisableConsole",
+            "value": appConfig_EnableDisableConsole
+        };
+        var msg = {
+            "inputData": []
+        };
+
+        msg.inputData.push(msgItem);
+
+        workerMonitorValidation.simpleSendWorkerMessage(msg);
+        workerMonitorDbLoadStatus.simpleSendWorkerMessage(msg);
+        workerMonitorDbRecordCountStatus.simpleSendWorkerMessage(msg);
+        workerMonitorUploadIdKeepAlive.simpleSendWorkerMessage(msg);
     });
 
 </script>

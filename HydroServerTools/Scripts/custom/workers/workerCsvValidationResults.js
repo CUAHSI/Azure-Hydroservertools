@@ -3,6 +3,16 @@
 //
 //Expected message format(s):
 //
+// Enable/Disable console...
+//  { 
+//    "inputData": [
+//                   { 
+//                    "action": "enableDisableConsole"
+//                    "value": true --OR-- false
+//                   }, ...
+//                 ]
+//  }
+//
 //  Validation results for all uploaded files...
 //  { "requestId": <requestId>,
 //    "inputData": {
@@ -26,11 +36,33 @@
 //                                            }
 //                           }
 //
+
+//Import console utilities...
+self.importScripts("/Scripts/custom/ConsoleUtils.js");
+
 var validationObjects = {};     //Current validation objects...
 
 //Handler for incoming messages...
 self.onmessage = function (event) {
     var msg = event.data;
+
+    //Check for enable/disable console message...
+    if ('undefined' !== typeof msg && null !== msg &&
+        'undefined' !== typeof msg.inputData && null !== msg.inputData &&
+        ('undefined' === typeof msg.requestId || null === msg.requestId)) {
+        var inputData = msg.inputData;
+        var idLength = inputData.length;
+
+        for (var idI = 0; idI < idLength; ++idI) {
+            var msgItem = inputData[idI];
+
+            if ("enabledisableconsole" === msgItem.action.toLowerCase()) {
+                //Enable/disable console message found - call console utility...
+                EnableDisableConsole(msgItem.value);
+                break;
+            }
+        }
+    }
 
     //Validate/initialize input parameters...
     if ('undefined' !== typeof msg && null !== msg &&
