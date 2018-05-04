@@ -1,0 +1,19 @@
+
+ Changes for WDC Sprint 22 - WDC-1798
+
+
+>>> Summary <<<
+ - Remove progress bar animation at end conclusion of db insert processing
+
+
+>>>> Azure-Hydroservertools/HydroServerTools/Views/CSVUpload <<<<
+ - DragAndDropFileRevised.cshtml
+   - requestDbRecordCountMonitoring(...)
+     - 'endCondition' if block - add logic to remove 'active' class from progress bar
+ 
+
+
+
+
+
+
