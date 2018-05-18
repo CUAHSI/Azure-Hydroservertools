@@ -535,20 +535,30 @@ namespace HydroServerTools.Controllers
             var targetExists = CheckDatabaseExists(connectionString, targetDBName);
             var sourceExists = CheckDatabaseExists(connectionString, sourceDBName);
             //check if the target db exist to rename if not recreate
-            if (targetExists)
+            if (!targetExists)
+            {
+                //recreate placeholder db
+                copyDatabase(connectionString, sourceDBName, targetDBName);
+                targetExists = CheckDatabaseExists(connectionString, targetDBName);
+
+            }
+            if (!targetExists)
             {
                 renameDatabase(connectionString, targetDBName, newName);
                 //call job to recreate DB
                 sendCreateDbPlaceholderRequest();
             }
             else
-            {
-                if (sourceExists) copyDatabase(connectionString, sourceDBName, newName);
-                else
-                {
+           
+               if (sourceExists) copyDatabase(connectionString, sourceDBName, newName);
+               else
+               {
+
                     throw new FileNotFoundException("Template not found. Please contact support.");
-                }
-            }
+               } 
+
+                
+            
 
         }
 
