@@ -51,9 +51,9 @@
                         @*<p align="center"><a href="#" class="btn btn-primary btn-block " id="dialogRequest">Request Data Service</a></p>*@
 
                         
-                            <section id="socialLoginForm">
-                                @Html.Partial("_ExternalLoginsListPartial", new { Action = "ExternalLogin", ReturnUrl = "GoogleForm" })
-                            </section>
+                        <section id="socialLoginForm">
+                            @Html.Partial("_ExternalLoginsListPartial", new { Action = "ExternalLogin", ReturnUrl = ViewBag.ReturnUrl })
+                        </section>
                             <br />
                             @*<h1 align="center">REQUEST</h1><h3>a Dataservice </h3>*@
                             <h5>Please notice that a Google account is required to create a publishing account. If you don't have a Google account, please request an account <a href="https://accounts.google.com/SignUpWithoutGmail?hl=en" target="_top">here</a>.

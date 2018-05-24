@@ -5,6 +5,7 @@ using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.Google;
 using Owin;
+using Owin.Security.Providers.Hydroshare;
 using System;
 
 namespace HydroServerTools
@@ -34,6 +35,8 @@ namespace HydroServerTools
                         validateInterval: TimeSpan.FromMinutes(30),
                         regenerateIdentity: (manager, user) => user.GenerateUserIdentityAsync(manager))
                 }
+
+
             });          
 
             // Use a cookie to temporarily store information about a user logging in with a third party login provider
@@ -63,10 +66,14 @@ namespace HydroServerTools
 
 
            app.UseGoogleAuthentication(googleOAuth2AuthenticationOptions);
-                
+
+           app.UseHydroshareAuthentication(
+               "lDePFI1H2g4etu8xCaka5S0Gz2ttF6oQLm8CeVA7", "uxOWEVJiZTotyENmI9bVyZE30sSGIxoj1CYS6n7gdgFIW3FY6HSzYZGmUXM6oHhit4VnOMYMnsF2SUHQfri2WvtwLw5FSkZlSbzf6q2ef5OWG6U220ZdUAQZlhhzfk6O");
 
 
         }
-         
+
+
+       
     }
 }

@@ -13,6 +13,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{E56494
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HydroServerTools", "HydroServerTools\HydroServerTools.csproj", "{F8C4C4C8-B264-4D76-B6AB-BBF26C0332B5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8C683F5F-E524-47B5-AC56-8C7DAA7133CC} = {8C683F5F-E524-47B5-AC56-8C7DAA7133CC}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HydroServerTools.Tests", "HydroServerTools.Tests\HydroServerTools.Tests.csproj", "{4CD6AD91-4847-48EF-88F1-ABE71DA92383}"
 EndProject
@@ -35,6 +38,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jobs-CopyTemplate", "TriggerPowershell\TriggerPowershell\Jobs-CopyTemplate.csproj", "{5A09040B-D4F9-4F34-884E-07D63E87E399}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jobs-SynchronizeData", "SunchronizeData\Jobs-SynchronizeData.csproj", "{5073122D-1F3A-487E-95CC-2AE4CA6A516D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Owin.Security.Providers.Hydroshare", "Owin.Security.Providers.Hydroshare\Owin.Security.Providers.Hydroshare.csproj", "{8C683F5F-E524-47B5-AC56-8C7DAA7133CC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -90,6 +95,10 @@ Global
 		{5073122D-1F3A-487E-95CC-2AE4CA6A516D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5073122D-1F3A-487E-95CC-2AE4CA6A516D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5073122D-1F3A-487E-95CC-2AE4CA6A516D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C683F5F-E524-47B5-AC56-8C7DAA7133CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C683F5F-E524-47B5-AC56-8C7DAA7133CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C683F5F-E524-47B5-AC56-8C7DAA7133CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C683F5F-E524-47B5-AC56-8C7DAA7133CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
