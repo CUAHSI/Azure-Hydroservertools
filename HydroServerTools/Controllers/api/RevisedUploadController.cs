@@ -1589,7 +1589,9 @@ namespace HydroServerTools.Controllers.api
 
             //dbLoadContext.DbLoadState = DbLoadContext.enumDbLoadState.dbls_Started;     //Set 'started' state
 
-            await repositoryContext.LoadDb(uploadId, pathValidated, pathProcessed, statusContext, dbLoadContext);
+            //BC - TEST - Trying a revised load method here...
+            //await repositoryContext.LoadDb(uploadId, pathValidated, pathProcessed, statusContext, dbLoadContext);
+            await repositoryContext.LoadDbBis(uploadId, pathValidated, pathProcessed, statusContext, dbLoadContext);
 
             //Retrieve db load results, if any - return to client in response data...
             using (await dbLoadContext.DbLoadSemaphore.UseWaitAsync())
