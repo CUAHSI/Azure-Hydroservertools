@@ -1,0 +1,38 @@
+
+ Changes for WDC Sprint 25 - WDC-2120
+
+
+>>> Summary <<<
+ - Revise db insertion processing to address delays in handling numerous rejected records
+ - Miscellaneous changes to promote asynchronous processing
+
+
+>>>> Azure-Hydroservertools/HydroServerTools/Controllers/api <<<<
+ - RevisedUploadController.cs
+   - Put(...)
+     - r: await repositoryContext.LoadDb(...) w: await repositoryContext.LoadDbBis(...)
+
+
+>>>> Azure-Hydroservertools/HydroServerTools/Utilities <<<<
+ - RepositoryContext.cs
+   - LoadDb(...)
+     - Correct comment
+   - New method: LoadDbBis(...)
+
+
+>>>> Azure-Hydroservertools/HydroServerToolsRepository/HydroServerToolsRepository <<<<
+ - Repository.cs
+   - Add class: SiteCodeVariableCode
+   - Method: AddDataValues(...)
+     - Remove commented out code
+     - Remove unreferenced variables: MinDate and MaxDate
+     - Revise itemList scanning/filtering logic 
+     - Comment out empty parallel code
+ - Utils.cs
+   - Revise method signature - r: static void CommitUpdateRecords<T>... w: static async Task CommitUpdateRecords<T>...
+     - Replace syncrhonous method calls with asynchronous versions...
+
+
+
+
+

@@ -5399,6 +5399,13 @@ namespace HydroServerToolsRepository.Repository
             return result;
         }
 
+        public class SiteCodeVariableCode
+        {
+            public string SiteCode { get; set; }
+
+            public string VariableCode { get; set; }
+        }
+
         public async Task AddDataValues(List<DataValuesModel> itemList, string entityConnectionString, string instanceIdentifier, List<DataValuesModel> listOfIncorrectRecords, List<DataValuesModel> listOfCorrectRecords, List<DataValuesModel> listOfDuplicateRecords, List<DataValuesModel> listOfEditedRecords, StatusContext statusContext)
         {
 #if (DEBUG)
@@ -5436,9 +5443,6 @@ namespace HydroServerToolsRepository.Repository
             var startTime = DateTime.Now;
 
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
-            //context.Database.CommandTimeout = 10000;
-            //var objContext = ((IObjectContextAdapter)context).ObjectContext;
-            //get data to lookup values
             var siteCodes = context.Sites.ToDictionary(p => p.SiteCode, p => p.SiteID);
             var variableCodes = context.Variables.ToDictionary(p => p.VariableCode, p => p.VariableID);
             var offsetTypeCodes = context.OffsetTypes.ToDictionary(p => p.OffsetTypeCode, p => p.OffsetTypeID);
@@ -5447,37 +5451,51 @@ namespace HydroServerToolsRepository.Repository
             var methodCodes = context.Methods.ToDictionary(p => p.MethodCode, p => p.MethodID);
             var sourceCodes = context.Sources.ToDictionary(p => p.SourceCode, p => p.SourceID);
             var sampleCodes = context.Samples.ToDictionary(p => p.LabSampleCode, p => p.SampleID);
-            
-            var siteCodeVarCodePermutations = (from s in itemList
-                                             group s by new { s.SiteCode, s.VariableCode } into d
-                                          select
-                                          new
-                                          {
-                                              d.Key.SiteCode,                                              
-                                              d.Key.VariableCode
-                                          }).ToList();
-
-
-            //context.DataValues.GroupBy(p => new { p.SiteID, p.VariableID }).ToList();
-
-
-//var derivedFromIds = context.DerivedFroms.Select(p => p.DerivedFromID);
             var qualityControlLevelIds = context.QualityControlLevels.ToDictionary(p => p.QualityControlLevelCode, p => p.QualityControlLevelID);
 
+            //BC - Traverse the itemList once to build the collections... 
+            var siteCodeVarCodePermutations = new Dictionary<string, SiteCodeVariableCode>();
+            var filteredLists = new Dictionary<string, List<DataValuesModel>>();
+
+            foreach (var item in itemList)
+            {
+                var key = item.SiteCode + "_" + item.VariableCode;
+                if (!siteCodeVarCodePermutations.Keys.Contains(key))
+                {
+                    var siteCodeVariableCode = new SiteCodeVariableCode { SiteCode = item.SiteCode, VariableCode = item.VariableCode };
+                    siteCodeVarCodePermutations[key] = siteCodeVariableCode;
+
+                    filteredLists[key] = new List<DataValuesModel>();
+                }
+
+                filteredLists[key].Add(item);
+            }
+
+            //var siteCodeVarCodePermutations = (from s in itemList
+            //                                 group s by new { s.SiteCode, s.VariableCode } into d
+            //                              select
+            //                              new
+            //                              {
+            //                                  d.Key.SiteCode,                                              
+            //                                  d.Key.VariableCode
+            //                              }).ToList();
+
+
+            
             //get unique sitecodes to speed up search
-            var uniqueSitecodes = itemList.GroupBy(g => g.SiteCode).Select(grp => new { SiteCode = grp.Key }).ToList();
+            //var uniqueSitecodes = itemList.GroupBy(g => g.SiteCode).Select(grp => new { SiteCode = grp.Key }).ToList();   //BC - never referenced
 
-            //Retrieve Minimum Date
-            DateTime MinDate;
-            var d1 = (from d in itemList select d.DateTimeUTC).Min();
-            bool isConvertable = UniversalTypeConverter.TryConvertTo<DateTime>(d1, out MinDate);
-            if (!isConvertable) MinDate = DateTime.MinValue;
+            ////Retrieve Minimum Date
+            //DateTime MinDate;   //BCC - 14-May-2018 - Never referenced...
+            //var d1 = (from d in itemList select d.DateTimeUTC).Min();
+            //bool isConvertable = UniversalTypeConverter.TryConvertTo<DateTime>(d1, out MinDate);
+            //if (!isConvertable) MinDate = DateTime.MinValue;
 
-            //Retrieve Maximum Date
-            DateTime MaxDate;
-            var d2 =(from d in itemList select d.DateTimeUTC).Max();
-            isConvertable = UniversalTypeConverter.TryConvertTo<DateTime>(d2, out MaxDate);
-            if (!isConvertable) MaxDate = DateTime.MaxValue;
+            ////Retrieve Maximum Date
+            //DateTime MaxDate;   //BCC - 14-May-2018 - Never referenced...
+            //var d2 =(from d in itemList select d.DateTimeUTC).Max();
+            //isConvertable = UniversalTypeConverter.TryConvertTo<DateTime>(d2, out MaxDate);
+            //if (!isConvertable) MaxDate = DateTime.MaxValue;
             bool ignoreDuplicateTest = false;
             try
             {
@@ -5494,20 +5512,22 @@ namespace HydroServerToolsRepository.Repository
             var a_end = DateTime.Now;
 
             timeToRetrieveVars = a_end - startTime;
-            var resultCollection = new System.Collections.Concurrent.ConcurrentBag<string>();
-            System.Threading.Tasks.Parallel.ForEach(siteCodeVarCodePermutations, sv =>
-            {
+            //var resultCollection = new System.Collections.Concurrent.ConcurrentBag<string>();
+            //System.Threading.Tasks.Parallel.ForEach(siteCodeVarCodePermutations, sv =>
+            //{
 
-            });
+            //});
 
            Debug.WriteLine("timeToRetrieveVars:" + timeToRetrieveVars);
             try
             {
-                foreach (var sv in siteCodeVarCodePermutations)
+                foreach (var kvp in siteCodeVarCodePermutations)
                 {
                     ////Use Task yield here to yield time back to the caller...
                     ////Source: https://stackoverflow.com/questions/22645024/when-would-i-use-task-yield
                     //await Task.Yield();
+
+                    var sv = kvp.Value;
 
                     //siteid for sitecode
                     int currentSiteId = 0;
@@ -5533,11 +5553,6 @@ namespace HydroServerToolsRepository.Repository
 
                     if (!ignoreDuplicateTest)
                     {
-                        //var datavaluesWithSiteIDInDatabase = context.DataValues.Select(p => p).Where(f.Equals(currentSiteId)).ToList();
-                        //List<DataValue> datavaluesWithSiteIDInDatabase = (from d in context.DataValues.AsNoTracking()
-                        //                                      where d.SiteID == currentSiteId 
-                        //                                            && d.DateTimeUTC > MinDate && d.DateTimeUTC < MaxDate
-                        //                                                  select d).ToList();
                         setDatetime = new HashSet<DateTime>(from d in context.DataValues.AsNoTracking()
                                                             where d.SiteID == currentSiteId && d.VariableID == currentVariableId
                                                             //where d.SiteID == sv.SiteCode && d.VariableID == sv.VariableID
@@ -5561,25 +5576,10 @@ namespace HydroServerToolsRepository.Repository
                                                             select d).ToList());
 
                     }
-                    //List<HashSet<string>> lines = new List<HashSet<string>>(); //Hashset is very fast in searching duplicates
-                    //datavaluesWithSiteIDInDatabase.ForEach(a=>
-                    //                                            a.DataValue1.ToString() +
-                    //                                            a.ValueAccuracy.ToString() +
-                    //                                            a.LocalDateTime.Ticks.ToString() +
-                    //                                            a.UTCOffset.ToString() +
-                    //                                            a.DateTimeUTC.Ticks.ToString() +
-                    //                                            a.SiteID.ToString() +
-                    //                                            a.VariableID.ToString() +
-                    //                                            a.OffsetValue.ToString() +
-                    //                                            a.OffsetTypeID.ToString() +
-                    //                                            a.CensorCode.ToString() +
-                    //                                            a.QualifierID.ToString()+
-                    //                                            a.MethodID.ToString() +
-                    //                                            a.SourceID.ToString() +
-                    //                                            a.SampleID.ToString() +
-                    //                                            a.DerivedFromID.ToString() +
-                    //                                            a.QualityControlLevelID.ToString()
-                    //    )
+                    else
+                    {
+                        a_end = DateTime.Now;
+                    }
 
                     var span = a_end - a_start;
                     timeToFindDatavalues.Add(span);
@@ -5598,628 +5598,509 @@ namespace HydroServerToolsRepository.Repository
 
                     BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING, count, maxCount, listOfCorrectRecords.Count(), listOfIncorrectRecords.Count(), listOfDuplicateRecords.Count()));
                     #region loop through series
-                    var filteredList = (from i in itemList
-                                        where i.SiteCode == sv.SiteCode && i.VariableCode == sv.VariableCode
-                                        select i).ToList();
-
-                    //var distinctList = filteredList.Distinct().ToList();
-
-                    //var duplicateList = from x in filteredList
-                    //                    group x by x into grouped
-                    //                    where grouped.Count() == 1
-                    //                    select grouped.Key;
+                    //var filteredList = (from i in itemList
+                    //                    where i.SiteCode == sv.SiteCode && i.VariableCode == sv.VariableCode
+                    //                    select i).ToList();
+                    var filteredList = filteredLists[kvp.Key];
 
                     foreach (var item in filteredList)
-                    {
-                        ////Use Task yield here to yield time back to the caller...
-                        ////Source: https://stackoverflow.com/questions/22645024/when-would-i-use-task-yield
-                        //await Task.Yield();
-
-                        try
                         {
-                            statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING_DATAVALUES, count, maxCount, listOfCorrectRecords.Count(), listOfIncorrectRecords.Count(), listOfDuplicateRecords.Count());
-                            if (null == statusContext)
+                            ////Use Task yield here to yield time back to the caller...
+                            ////Source: https://stackoverflow.com/questions/22645024/when-would-i-use-task-yield
+                            //await Task.Yield();
+
+                            try
                             {
-                                BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
-                            }
-                            else
-                            {
-                                await statusContext.AddStatusMessage(typeof(DataValuesModel).Name, statusMessage);
-                            }
-
-                            count++;
-                            #region data matching
-                            bool isRejected = false;
-                            var model = new DataValue();
-                            var listOfErrors = new List<ErrorModel>();
-
-                            //set default values
-                            string unk = "Unknown";
-
-                            model.ValueAccuracy = null;
-                            model.OffsetValue = null;
-                            model.OffsetTypeID = null;
-                            model.CensorCode = "nc";
-                            model.QualifierID = null;
-                            model.MethodID = 0;
-                            model.SampleID = null;
-                            model.DerivedFromID = null;
-                            model.QualityControlLevelID = -9999;
-
-                            //DataValue
-                            if (!string.IsNullOrWhiteSpace(item.DataValue))
-                            {
-                                double result;
-                                bool canConvert = UniversalTypeConverter.TryConvertTo<double>(item.DataValue, out result);
-                                //NaN can be converted properly ino a double sql field is a float and will not accept this so we need to test separately for NaN and reject
-                                if (!canConvert || Double.IsNaN(result))
+                                statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING_DATAVALUES, count, maxCount, listOfCorrectRecords.Count(), listOfIncorrectRecords.Count(), listOfDuplicateRecords.Count());
+                                if (null == statusContext)
                                 {
-                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "DataValue")); listOfErrors.Add(err); isRejected = true;
+                                    BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, statusMessage);
                                 }
                                 else
                                 {
-                                    model.DataValue1 = result;
+                                    await statusContext.AddStatusMessage(typeof(DataValuesModel).Name, statusMessage);
                                 }
-                            }
-                            else
-                            {
-                                var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "DataValue")); listOfErrors.Add(err); isRejected = true;
-                            }
-                            //ValueAccuracy
-                            if (!string.IsNullOrWhiteSpace(item.ValueAccuracy))
-                            {
-                                double result;
-                                bool canConvert = UniversalTypeConverter.TryConvertTo<double>(item.ValueAccuracy, out result);
-                                
-                                if (!canConvert || Double.IsNaN(result))
-                                {
-                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "ValueAccuracy")); listOfErrors.Add(err); isRejected = true;
-                                }
-                                else
-                                {
-                                    model.ValueAccuracy = result;
-                                }
-                            }
 
-                            //LocalDateTime
-                            if (!string.IsNullOrWhiteSpace(item.LocalDateTime))
-                            {
-                                DateTime result;
-                                bool canConvert = UniversalTypeConverter.TryConvertTo<DateTime>(item.LocalDateTime, out result);
+                                count++;
+                                #region data matching
+                                bool isRejected = false;
+                                var model = new DataValue();
+                                var listOfErrors = new List<ErrorModel>();
 
-                                if (!canConvert)
-                                {
-                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "LocalDateTime")); listOfErrors.Add(err); isRejected = true;
-                                }
-                                else
-                                {
-                                    model.LocalDateTime = result;
-                                }
-                            }
-                            else
-                            {
-                                var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "LocalDateTime")); listOfErrors.Add(err); isRejected = true;
-                            }
-                            //UTCOffset
-                            if (!string.IsNullOrWhiteSpace(item.UTCOffset))
-                            {
-                                double result;
-                                bool canConvert = UniversalTypeConverter.TryConvertTo<double>(item.UTCOffset, out result);
+                                //set default values
+                                string unk = "Unknown";
 
-                                if (!canConvert)
-                                {
-                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "UTCOffset")); listOfErrors.Add(err); isRejected = true;
-                                }
-                                else
-                                {
-                                    model.UTCOffset = result;
-                                }
-                            }
-                            else
-                            {
-                                var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "UTCOffset")); listOfErrors.Add(err); isRejected = true;
-                            }
-                            //DateTimeUTC
-                            if (!string.IsNullOrWhiteSpace(item.DateTimeUTC))
-                            {
-                                DateTime result;
-                                bool canConvert = UniversalTypeConverter.TryConvertTo<DateTime>(item.DateTimeUTC, out result);
+                                model.ValueAccuracy = null;
+                                model.OffsetValue = null;
+                                model.OffsetTypeID = null;
+                                model.CensorCode = "nc";
+                                model.QualifierID = null;
+                                model.MethodID = 0;
+                                model.SampleID = null;
+                                model.DerivedFromID = null;
+                                model.QualityControlLevelID = -9999;
 
-                                if (!canConvert)
+                                //DataValue
+                                if (!string.IsNullOrWhiteSpace(item.DataValue))
                                 {
-                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "DateTimeUTC")); listOfErrors.Add(err); isRejected = true;
-                                }
-                                else
-                                {
-                                    model.DateTimeUTC = result;
-                                }
-                            }
-                            else
-                            {
-                                var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "DateTimeUTC")); listOfErrors.Add(err); isRejected = true;
-                            }
-                            //SiteCode
-                            if (!string.IsNullOrWhiteSpace(item.SiteCode))
-                            {
-                                if (RepositoryUtils.containsSpecialCharacters(item.SiteCode))
-                                {
-                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "SiteCode")); listOfErrors.Add(err); isRejected = true;
-                                }
-                                else
-                                {
-                                    if (siteCodes.ContainsKey(item.SiteCode))
+                                    double result;
+                                    bool canConvert = UniversalTypeConverter.TryConvertTo<double>(item.DataValue, out result);
+                                    //NaN can be converted properly ino a double sql field is a float and will not accept this so we need to test separately for NaN and reject
+                                    if (!canConvert || Double.IsNaN(result))
                                     {
-                                        var siteId = siteCodes[item.SiteCode];
+                                        var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "DataValue")); listOfErrors.Add(err); isRejected = true;
+                                    }
+                                    else
+                                    {
+                                        model.DataValue1 = result;
+                                    }
+                                }
+                                else
+                                {
+                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "DataValue")); listOfErrors.Add(err); isRejected = true;
+                                }
+                                //ValueAccuracy
+                                if (!string.IsNullOrWhiteSpace(item.ValueAccuracy))
+                                {
+                                    double result;
+                                    bool canConvert = UniversalTypeConverter.TryConvertTo<double>(item.ValueAccuracy, out result);
+
+                                    if (!canConvert || Double.IsNaN(result))
+                                    {
+                                        var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "ValueAccuracy")); listOfErrors.Add(err); isRejected = true;
+                                    }
+                                    else
+                                    {
+                                        model.ValueAccuracy = result;
+                                    }
+                                }
+
+                                //LocalDateTime
+                                if (!string.IsNullOrWhiteSpace(item.LocalDateTime))
+                                {
+                                    DateTime result;
+                                    bool canConvert = UniversalTypeConverter.TryConvertTo<DateTime>(item.LocalDateTime, out result);
+
+                                    if (!canConvert)
+                                    {
+                                        var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "LocalDateTime")); listOfErrors.Add(err); isRejected = true;
+                                    }
+                                    else
+                                    {
+                                        model.LocalDateTime = result;
+                                    }
+                                }
+                                else
+                                {
+                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "LocalDateTime")); listOfErrors.Add(err); isRejected = true;
+                                }
+                                //UTCOffset
+                                if (!string.IsNullOrWhiteSpace(item.UTCOffset))
+                                {
+                                    double result;
+                                    bool canConvert = UniversalTypeConverter.TryConvertTo<double>(item.UTCOffset, out result);
+
+                                    if (!canConvert)
+                                    {
+                                        var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "UTCOffset")); listOfErrors.Add(err); isRejected = true;
+                                    }
+                                    else
+                                    {
+                                        model.UTCOffset = result;
+                                    }
+                                }
+                                else
+                                {
+                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "UTCOffset")); listOfErrors.Add(err); isRejected = true;
+                                }
+                                //DateTimeUTC
+                                if (!string.IsNullOrWhiteSpace(item.DateTimeUTC))
+                                {
+                                    DateTime result;
+                                    bool canConvert = UniversalTypeConverter.TryConvertTo<DateTime>(item.DateTimeUTC, out result);
+
+                                    if (!canConvert)
+                                    {
+                                        var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "DateTimeUTC")); listOfErrors.Add(err); isRejected = true;
+                                    }
+                                    else
+                                    {
+                                        model.DateTimeUTC = result;
+                                    }
+                                }
+                                else
+                                {
+                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "DateTimeUTC")); listOfErrors.Add(err); isRejected = true;
+                                }
+                                //SiteCode
+                                if (!string.IsNullOrWhiteSpace(item.SiteCode))
+                                {
+                                    if (RepositoryUtils.containsSpecialCharacters(item.SiteCode))
+                                    {
+                                        var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "SiteCode")); listOfErrors.Add(err); isRejected = true;
+                                    }
+                                    else
+                                    {
+                                        if (siteCodes.ContainsKey(item.SiteCode))
+                                        {
+                                            var siteId = siteCodes[item.SiteCode];
+                                            //update model
+                                            model.SiteID = siteId;
+                                            item.SiteID = siteId.ToString();
+                                        }
+                                        else
+                                        {
+                                            var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.SiteCode, "SiteCode")); listOfErrors.Add(err); isRejected = true;
+                                        }
+
+                                    }
+                                }
+                                else
+                                {
+                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "SiteCode")); listOfErrors.Add(err); isRejected = true;
+                                }
+                                //VariableID
+                                //VariableCode
+                                if (!string.IsNullOrWhiteSpace(item.VariableCode))
+                                {
+                                    if (RepositoryUtils.containsSpecialCharacters(item.VariableCode))
+                                    {
+                                        var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "VariableCode")); listOfErrors.Add(err); isRejected = true;
+                                    }
+                                    else
+                                    {
+                                        if (variableCodes.ContainsKey(item.VariableCode))
+                                        {
+                                            var variableId = variableCodes[item.VariableCode];
+                                            //update model
+                                            model.VariableID = variableId;
+                                            item.VariableID = variableId.ToString();
+                                        }
+                                        else
+                                        {
+                                            var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.VariableCode, "VariableCode")); listOfErrors.Add(err); isRejected = true;
+                                        }
+
+                                    }
+                                }
+                                else
+                                {
+                                    var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "VariableCode")); listOfErrors.Add(err); isRejected = true;
+                                }
+                                //OffsetValue
+                                if (!string.IsNullOrWhiteSpace(item.OffsetValue))
+                                {
+                                    double result;
+                                    bool canConvert = UniversalTypeConverter.TryConvertTo<double>(item.OffsetValue, out result);
+
+                                    if (!canConvert || Double.IsNaN(result))
+                                    {
+                                        var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "OffsetValue")); listOfErrors.Add(err); isRejected = true;
+                                    }
+                                    else
+                                    {
+                                        model.OffsetValue = result;
+                                    }
+                                }
+                                //OffsetTypeID
+                                if (!string.IsNullOrWhiteSpace(item.OffsetTypeCode))
+                                {
+
+
+                                    if (RepositoryUtils.containsSpecialCharacters(item.OffsetTypeCode))
+                                    {
+                                        var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "OffsetTypeCode")); listOfErrors.Add(err); isRejected = true;
+                                    }
+                                    else
+                                    {
+                                        if (offsetTypeCodes.ContainsKey(item.OffsetTypeCode))
+                                        {
+                                            var offsetTypeId = offsetTypeCodes[item.OffsetTypeCode];
+                                            //update model
+                                            model.OffsetTypeID = offsetTypeId;
+                                            item.OffsetTypeID = offsetTypeId.ToString();
+                                        }
+                                        else
+                                        {
+                                            var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.OffsetTypeID, "OffsetType")); listOfErrors.Add(err); isRejected = true;
+                                        }
+
+                                    }
+                                }
+                                //CensorCode
+                                if (!string.IsNullOrWhiteSpace(item.CensorCode))
+                                {
+                                    if (RepositoryUtils.containsSpecialCharacters(item.CensorCode))
+                                    {
+                                        var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "CensorCode")); listOfErrors.Add(err); isRejected = true;
+                                    }
+                                    else
+                                    {
+                                        var censorCode = censorCodeCV
+                                                            .Where(a => a.Term.ToLower() == item.CensorCode.ToLower()).FirstOrDefault();
+                                        if (censorCode != null)
+                                        {
+                                            model.CensorCode = item.CensorCode;
+                                            item.CensorCode = censorCode.Term;
+                                        }
+                                        else
+                                        {
+                                            var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_CV, item.CensorCode, "CensorCode")); listOfErrors.Add(err); isRejected = true;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "CensorCode")); listOfErrors.Add(err); isRejected = true;
+                                }
+
+                                //QualifierID
+                                if (!string.IsNullOrWhiteSpace(item.QualifierCode))
+                                {
+
+                                    if (RepositoryUtils.containsSpecialCharacters(item.QualifierCode))
+                                    {
+                                        var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "QualifierCode")); listOfErrors.Add(err); isRejected = true;
+                                    }
+                                    else
+                                    {
+                                        if (qualifierCodes.ContainsKey(item.QualifierCode))
+                                        {
+                                            var qualifierId = qualifierCodes[item.QualifierCode];
+                                            //update model
+                                            model.QualifierID = qualifierId;
+                                            item.QualifierID = qualifierId.ToString();
+                                        }
+                                        else
+                                        {
+                                            var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.QualifierID, "QualifierCode")); listOfErrors.Add(err); isRejected = true;
+                                        }
+
+                                    }
+                                }
+
+                                //MethodID
+                                if (!string.IsNullOrWhiteSpace(item.MethodCode))
+                                {
+                                    if (RepositoryUtils.containsSpecialCharacters(item.MethodCode))
+                                    {
+                                        var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "MethodCode")); listOfErrors.Add(err); isRejected = true;
+                                    }
+                                    else
+                                    {
+                                        if (methodCodes.ContainsKey(item.MethodCode))
+                                        {
+                                            var methodId = methodCodes[item.MethodCode];
+                                            //update model
+                                            model.MethodID = methodId;
+                                            item.MethodID = methodId.ToString();
+                                        }
+                                        else
+                                        {
+                                            var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.MethodID, "MethodCode")); listOfErrors.Add(err); isRejected = true;
+                                        }
+
+                                    }
+                                }
+                                else
+                                {
+                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "MethodCode")); listOfErrors.Add(err); isRejected = true;
+                                }
+                                //SourceID
+                                if (!string.IsNullOrWhiteSpace(item.SourceCode))
+                                {
+                                    if (RepositoryUtils.containsSpecialCharacters(item.SourceCode))
+                                    {
+                                        var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "SourceCode")); listOfErrors.Add(err); isRejected = true;
+                                    }
+                                    else
+                                    {
+                                        if (sourceCodes.ContainsKey(item.SourceCode))
+                                        {
+                                            var sourceId = sourceCodes[item.SourceCode];
+                                            //update model
+                                            model.SourceID = sourceId;
+                                            item.SourceID = sourceId.ToString();
+                                        }
+                                        else
+                                        {
+                                            var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.SourceID, "SourceCode")); listOfErrors.Add(err); isRejected = true;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "SourceCode")); listOfErrors.Add(err); isRejected = true;
+                                }
+                                //SampleID- labsamplecode is unique identifier
+                                if (!string.IsNullOrWhiteSpace(item.LabSampleCode) || !string.IsNullOrWhiteSpace(item.SampleCode))
+                                {
+
+                                    //setting Sample code to Labcsample code to correct a bug where template contained samplecode instead of Labsamplecode MS 11/25/2016                                
+                                    if (string.IsNullOrWhiteSpace(item.LabSampleCode)) { item.LabSampleCode = item.SampleCode; };
+
+                                    if (RepositoryUtils.containsSpecialCharacters(item.LabSampleCode))
+                                    {
+                                        var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "LabSampleCode")); listOfErrors.Add(err); isRejected = true;
+                                    }
+                                    else
+                                    {
+                                        if (sampleCodes.ContainsKey(item.LabSampleCode))
+                                        {
+                                            var sampleId = sampleCodes[item.LabSampleCode];
+                                            //update model
+                                            model.SampleID = sampleId;
+                                            item.SampleID = sampleId.ToString();
+                                        }
+                                        else
+                                        {
+                                            var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.SampleID, "LabSampleCode")); listOfErrors.Add(err); isRejected = true;
+                                        }
+
+                                    }
+                                }
+
+                                //DerivedFromID
+                                if (!string.IsNullOrWhiteSpace(item.DerivedFromID))
+                                {
+                                    int result;
+                                    bool canConvert = UniversalTypeConverter.TryConvertTo<int>(item.DerivedFromID, out result);
+
+                                    if (!canConvert)
+                                    {
+                                        var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "DerivedFromID")); listOfErrors.Add(err); isRejected = true;
+                                    }
+                                    else
+                                    {
+                                        model.DerivedFromID = result;
+                                    }
+                                }
+                                //QualityControlLevelID
+                                if (!string.IsNullOrWhiteSpace(item.QualityControlLevelCode))
+                                {
+                                    if (qualityControlLevelIds.ContainsKey(item.QualityControlLevelCode))
+                                    {
+                                        var qualityControlLevelId = qualityControlLevelIds[item.QualityControlLevelCode];
                                         //update model
-                                        model.SiteID = siteId;
-                                        item.SiteID = siteId.ToString();
+                                        model.QualityControlLevelID = qualityControlLevelId;
+                                        item.QualityControlLevelID = qualityControlLevelId.ToString();
                                     }
                                     else
                                     {
-                                        var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.SiteCode, "SiteCode")); listOfErrors.Add(err); isRejected = true;
-
-                                        //continue;
+                                        var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_CV, item.QualityControlLevelCode, "QualityControlLevelCode")); listOfErrors.Add(err); isRejected = true;
 
                                     }
-
-                                }
-                            }
-                            else
-                            {
-                                var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "SiteCode")); listOfErrors.Add(err); isRejected = true;
-                            }
-                            //VariableID
-                            //VariableCode
-                            if (!string.IsNullOrWhiteSpace(item.VariableCode))
-                            {
-                                if (RepositoryUtils.containsSpecialCharacters(item.VariableCode))
-                                {
-                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "VariableCode")); listOfErrors.Add(err); isRejected = true;
                                 }
                                 else
                                 {
-                                    if (variableCodes.ContainsKey(item.VariableCode))
+                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "QualityControlLevelCode")); listOfErrors.Add(err); isRejected = true;
+                                }
+                                #endregion data
+
+                                if (isRejected)
+                                {
+                                    var sb = new StringBuilder();
+                                    foreach (var er in listOfErrors)
                                     {
-                                        var variableId = variableCodes[item.VariableCode];
-                                        //update model
-                                        model.VariableID = variableId;
-                                        item.VariableID = variableId.ToString();
+                                        sb.Append(er.ErrorMessage + ";");
+                                        if (null != statusContext)
+                                        {
+                                            var errorIndex = listOfIncorrectRecords.Count;
+                                            StatusMessage statMsg = new StatusMessage(er.ErrorMessage, errorIndex);
+                                            statMsg.IsError = true;
+                                            await statusContext.AddStatusMessage(typeof(DataValuesModel).Name, statMsg);
+                                        }
                                     }
-                                    else
-                                    {
-                                        var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.VariableCode, "VariableCode")); listOfErrors.Add(err); isRejected = true;
-
-                                        //continue;
-
-                                    }
-
-                                }
-                            }
-                            else
-                            {
-                                var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "VariableCode")); listOfErrors.Add(err); isRejected = true;
-                            }
-                            //OffsetValue
-                            if (!string.IsNullOrWhiteSpace(item.OffsetValue))
-                            {
-                                double result;
-                                bool canConvert = UniversalTypeConverter.TryConvertTo<double>(item.OffsetValue, out result);
-
-                                if (!canConvert || Double.IsNaN(result))
-                                {
-                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "OffsetValue")); listOfErrors.Add(err); isRejected = true;
-                                }
-                                else
-                                {
-                                    model.OffsetValue = result;
-                                }
-                            }
-                            //OffsetTypeID
-                            if (!string.IsNullOrWhiteSpace(item.OffsetTypeCode))
-                            {
-
-
-                                if (RepositoryUtils.containsSpecialCharacters(item.OffsetTypeCode))
-                                {
-                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "OffsetTypeCode")); listOfErrors.Add(err); isRejected = true;
-                                }
-                                else
-                                {
-                                    if (offsetTypeCodes.ContainsKey(item.OffsetTypeCode))
-                                    {
-                                        var offsetTypeId = offsetTypeCodes[item.OffsetTypeCode];
-                                        //update model
-                                        model.OffsetTypeID = offsetTypeId;
-                                        item.OffsetTypeID = offsetTypeId.ToString();
-                                    }
-                                    else
-                                    {
-                                        var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.OffsetTypeID, "OffsetType")); listOfErrors.Add(err); isRejected = true;
-                                    }
-
-                                }
-                            }
-                            //CensorCode
-                            if (!string.IsNullOrWhiteSpace(item.CensorCode))
-                            {
-                                if (RepositoryUtils.containsSpecialCharacters(item.CensorCode))
-                                {
-                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "CensorCode")); listOfErrors.Add(err); isRejected = true;
-                                }
-                                else
-                                {
-                                    var censorCode = censorCodeCV
-                                                        .Where(a => a.Term.ToLower() == item.CensorCode.ToLower()).FirstOrDefault();
-                                    if (censorCode != null)
-                                    {
-                                        model.CensorCode = item.CensorCode;
-                                        item.CensorCode = censorCode.Term;
-                                    }
-                                    else
-                                    {
-                                        var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_CV, item.CensorCode, "CensorCode")); listOfErrors.Add(err); isRejected = true;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "CensorCode")); listOfErrors.Add(err); isRejected = true;
-                            }
-
-                            //QualifierID
-                            if (!string.IsNullOrWhiteSpace(item.QualifierCode))
-                            {
-
-                                if (RepositoryUtils.containsSpecialCharacters(item.QualifierCode))
-                                {
-                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "QualifierCode")); listOfErrors.Add(err); isRejected = true;
-                                }
-                                else
-                                {
-                                    if (qualifierCodes.ContainsKey(item.QualifierCode))
-                                    {
-                                        var qualifierId = qualifierCodes[item.QualifierCode];
-                                        //update model
-                                        model.QualifierID = qualifierId;
-                                        item.QualifierID = qualifierId.ToString();
-                                    }
-                                    else
-                                    {
-                                        var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.QualifierID, "QualifierCode")); listOfErrors.Add(err); isRejected = true;
-                                    }
-
-                                }
-                            }
-
-                            //MethodID
-                            if (!string.IsNullOrWhiteSpace(item.MethodCode))
-                            {
-                                if (RepositoryUtils.containsSpecialCharacters(item.MethodCode))
-                                {
-                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "MethodCode")); listOfErrors.Add(err); isRejected = true;
-                                }
-                                else
-                                {
-                                    if (methodCodes.ContainsKey(item.MethodCode))
-                                    {
-                                        var methodId = methodCodes[item.MethodCode];
-                                        //update model
-                                        model.MethodID = methodId;
-                                        item.MethodID = methodId.ToString();
-                                    }
-                                    else
-                                    {
-                                        var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.MethodID, "MethodCode")); listOfErrors.Add(err); isRejected = true;
-                                    }
-
-                                }
-                            }
-                            else
-                            {
-                                var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "MethodCode")); listOfErrors.Add(err); isRejected = true;
-                            }
-                            //SourceID
-                            if (!string.IsNullOrWhiteSpace(item.SourceCode))
-                            {
-                                if (RepositoryUtils.containsSpecialCharacters(item.SourceCode))
-                                {
-                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "SourceCode")); listOfErrors.Add(err); isRejected = true;
-                                }
-                                else
-                                {
-                                    if (sourceCodes.ContainsKey(item.SourceCode))
-                                    {
-                                        var sourceId = sourceCodes[item.SourceCode];
-                                        //update model
-                                        model.SourceID = sourceId;
-                                        item.SourceID = sourceId.ToString();
-                                    }
-                                    else
-                                    {
-                                        var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.SourceID, "SourceCode")); listOfErrors.Add(err); isRejected = true;
-                                    }
-
-                                }
-                            }
-                            else
-                            {
-                                var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "SourceCode")); listOfErrors.Add(err); isRejected = true;
-                            }
-                            //SampleID- labsamplecode is unique identifier
-                            if (!string.IsNullOrWhiteSpace(item.LabSampleCode)|| !string.IsNullOrWhiteSpace(item.SampleCode))
-                            {
-
-                                //setting Sample code to Labcsample code to correct a bug where template contained samplecode instead of Labsamplecode MS 11/25/2016                                
-                                if (string.IsNullOrWhiteSpace(item.LabSampleCode)) { item.LabSampleCode = item.SampleCode; };
-
-                                if (RepositoryUtils.containsSpecialCharacters(item.LabSampleCode))
-                                {
-                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "LabSampleCode")); listOfErrors.Add(err); isRejected = true;
-                                }
-                                else
-                                {
-                                    if (sampleCodes.ContainsKey(item.LabSampleCode))
-                                    {
-                                        var sampleId = sampleCodes[item.LabSampleCode];
-                                        //update model
-                                        model.SampleID = sampleId;
-                                        item.SampleID = sampleId.ToString();
-                                    }
-                                    else
-                                    {
-                                        var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.SampleID, "LabSampleCode")); listOfErrors.Add(err); isRejected = true;
-                                    }
-
-                                }
-                            }
-
-                            //DerivedFromID
-                            if (!string.IsNullOrWhiteSpace(item.DerivedFromID))
-                            {
-                                int result;
-                                bool canConvert = UniversalTypeConverter.TryConvertTo<int>(item.DerivedFromID, out result);
-
-                                if (!canConvert)
-                                {
-                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_INVALIDVALUE, "DerivedFromID")); listOfErrors.Add(err); isRejected = true;
-                                }
-                                else
-                                {
-                                    model.DerivedFromID = result;
-                                }
-                            }
-                            //QualityControlLevelID
-                            if (!string.IsNullOrWhiteSpace(item.QualityControlLevelCode))
-                            {
-                                if (qualityControlLevelIds.ContainsKey(item.QualityControlLevelCode))
-                                {
-                                    var qualityControlLevelId = qualityControlLevelIds[item.QualityControlLevelCode];
-                                    //update model
-                                    model.QualityControlLevelID = qualityControlLevelId;
-                                    item.QualityControlLevelID = qualityControlLevelId.ToString();
-                                }
-                                else
-                                {
-                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_CV, item.QualityControlLevelCode, "QualityControlLevelCode")); listOfErrors.Add(err); isRejected = true;
-
-                                }
-                            }
-                            else
-                            {
-                                var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "QualityControlLevelCode")); listOfErrors.Add(err); isRejected = true;
-                            }
-                            //lookup siteid
-
-
-                            //if (variables.ContainsKey(item.VariableCode))
-                            //{
-                            //    var variableId = variables[item.VariableCode];
-                            //    update model
-                            //    model.VariableID = variableId;
-                            //}
-                            //else
-                            //{
-                            //    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_CV, item.VariableCode, "AddDataValues")); listOfErrors.Add(err); isRejected = true;
-
-                            //}
-                            //if (model.OffsetTypeID != null)
-                            //{
-                            //    var offsetTyperID = OffsetTypeIds
-                            //                            .Exists(a => a == model.OffsetTypeID);
-                            //    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.OffsetTypeID.ToString(), "OffsetTypes:")); listOfErrors.Add(err); isRejected = true;
-
-                            //}
-
-                            //if (model.CensorCode != "nc")
-                            //{
-                            //    var censorCode = censorCodeCV
-                            //                            .Exists(a => a.Term == item.CensorCode);
-                            //    if (!censorCode) { var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_CV, item.OffsetTypeID, "AddDataValues")); listOfErrors.Add(err); isRejected = true; };
-
-                            //}
-
-                            //if (model.QualifierID != null)
-                            //{
-                            //    var censorCode = censorCodeCV
-                            //                            .Exists(a => a.Term == item.CensorCode);
-                            //    if (!censorCode) { var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.QualifierID, "Qualifiers")); listOfErrors.Add(err); isRejected = true; };
-
-                            //}
-
-                            //if (model.MethodID != null)
-                            //{
-                            //    var methodId = methodIds
-                            //                            .Exists(a => a.MethodID == model.MethodID);
-                            //    if (!methodId) { var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.MethodID, "Methods")); listOfErrors.Add(err); isRejected = true; };
-
-                            //}
-
-                            //if (model.SourceID != null)
-                            //{
-                            //    var sourceId = sourceIds
-                            //                            .Exists(a => a.SourceID == model.SourceID);
-                            //    if (!sourceId) { var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.SourceID, "Sources")); listOfErrors.Add(err); isRejected = true; };
-
-                            //}
-
-                            //if (model.SampleID != null)
-                            //{
-                            //    var sampleId = sampleIds
-                            //                            .Exists(a => a.SampleID == model.SampleID);
-                            //    if (!sampleId) { var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_DATABASE, item.SampleID, "Samples")); listOfErrors.Add(err); isRejected = true; };
-
-                            //}
-
-                            //if (qualityControlLevelIds.ContainsKey(item.QualityControlLevelCode))
-                            //{
-                            //    var qualityControlLevelId = qualityControlLevelIds[item.QualityControlLevelCode];
-                            //    update model
-                            //    model.QualityControlLevelID = qualityControlLevelId;
-                            //}
-                            //else
-                            //{
-                            //    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_NOT_IN_CV, item.VariableCode, "AddDataValues")); listOfErrors.Add(err); isRejected = true;
-
-                            //}
-                            // var dataType = dataTypeCV
-                            //                         .Exists(a => a.Term.ToString() == item.DataType);
-
-                            #endregion data
-
-                            if (isRejected)
-                            {
-                                var sb = new StringBuilder();
-                                foreach (var er in listOfErrors)
-                                {
-                                    sb.Append(er.ErrorMessage + ";");
+                                    item.Errors = sb.ToString();
+                                    listOfIncorrectRecords.Add(item);
                                     if (null != statusContext)
                                     {
-                                        var errorIndex = listOfIncorrectRecords.Count;
-                                        StatusMessage statMsg = new StatusMessage(er.ErrorMessage, errorIndex);
-                                        statMsg.IsError = true;
-                                        await statusContext.AddStatusMessage(typeof(DataValuesModel).Name, statMsg);
+                                        await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(DataValuesModel).Name, 0, 0, 1, 0);
                                     }
+
+                                    continue;
                                 }
-                                item.Errors = sb.ToString();
-                                listOfIncorrectRecords.Add(item);
-                                if (null != statusContext)
+
+                                a_start = DateTime.Now;
+                                bool doesExist = false;
+                                //pretest with date and datavalue if 
+                                var possibleInSet = false;
+                                if (!ignoreDuplicateTest && setDatetime != null)
                                 {
-                                    await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(DataValuesModel).Name, 0, 0, 1, 0);
+                                    possibleInSet = setDatetime.Contains(model.DateTimeUTC) && setDataValue.Contains(model.DataValue1) && setVariableId.Contains(model.VariableID) && setMethodId.Contains(model.MethodID);
                                 }
 
-                                continue;
-                            }
+                                if (possibleInSet)
+                                {
 
-                            //else
-                            //{
-                            //    int variableId;
-                            //    bool res = int.TryParse(item.VariableID, out variableId);
-                            //    if (res)
-                            //    {
-                            //        //update model
-                            //        model.VariableID = variableId;
-                            //    }
-                            //    else
-                            //    {
-                            //        listOfIncorrectRecords.Add(item);
-                            //        continue;
+                                    doesExist = allValues.Where(a =>
+                                                                a.DataValue1.Equals(model.DataValue1) &&
+                                                                a.ValueAccuracy.Equals(model.ValueAccuracy) &&
+                                                                a.LocalDateTime.Equals(model.LocalDateTime) &&
+                                                                a.UTCOffset.Equals(model.UTCOffset) &&
+                                                                a.DateTimeUTC.Ticks.Equals(model.DateTimeUTC.Ticks) &&
+                                                                a.SiteID.Equals(model.SiteID) &&
+                                                                a.VariableID.Equals(model.VariableID) &&
+                                                                a.OffsetValue.Equals(model.OffsetValue) &&
+                                                                a.OffsetTypeID.Equals(model.OffsetTypeID) &&
+                                                                a.CensorCode.Equals(model.CensorCode) &&
+                                                                a.QualifierID.Equals(model.QualifierID) &&
+                                                                a.MethodID.Equals(model.MethodID) &&
+                                                                a.SourceID.Equals(model.SourceID) &&
+                                                                a.SampleID.Equals(model.SampleID) &&
+                                                                a.DerivedFromID.Equals(model.DerivedFromID) &&
+                                                                a.QualityControlLevelID.Equals(model.QualityControlLevelID)
+                                                                ).FirstOrDefault() != null;
 
-                            //    }
-                            //}
-                            //Validate foreign keys
-                            //var methodId = context.Methods
-                            //                       .Where(a => a.MethodID == model.MethodID)
-                            //                       .Select(a => a);
-
-
-                            //lookup duplicates
-                            //check if item with this sitecode exists in the database
-                            //check in list
-                            //var siteidInList = datavaluesWithSiteIDInDatabase.ToList().Find(p => p.SiteID.ToString() == item.SiteID);
-
-                            a_start = DateTime.Now; 
-                            bool doesExist = false;
-                            //pretest with date and datavalue if 
-                            var possibleInSet = false;
-                            if (!ignoreDuplicateTest && setDatetime != null)
-                            {
-                                possibleInSet = setDatetime.Contains(model.DateTimeUTC) && setDataValue.Contains(model.DataValue1) && setVariableId.Contains(model.VariableID) && setMethodId.Contains(model.MethodID);
-                            }
-                            
-                            //var possibleInSet2 = foo.Contains(model);
-                            //allValues.Add(model);
-                            if (possibleInSet)
-                            {
-
-                                doesExist = allValues.Where(a =>
-                                                            a.DataValue1.Equals(model.DataValue1) &&
-                                                            a.ValueAccuracy.Equals(model.ValueAccuracy) &&
-                                                            a.LocalDateTime.Equals(model.LocalDateTime) &&
-                                                            a.UTCOffset.Equals(model.UTCOffset) &&
-                                                            a.DateTimeUTC.Ticks.Equals(model.DateTimeUTC.Ticks) &&
-                                                            a.SiteID.Equals(model.SiteID) &&
-                                                            a.VariableID.Equals(model.VariableID) &&
-                                                            a.OffsetValue.Equals(model.OffsetValue) &&
-                                                            a.OffsetTypeID.Equals(model.OffsetTypeID) &&
-                                                            a.CensorCode.Equals(model.CensorCode) &&
-                                                            a.QualifierID.Equals(model.QualifierID) &&
-                                                            a.MethodID.Equals(model.MethodID) &&
-                                                            a.SourceID.Equals(model.SourceID) &&
-                                                            a.SampleID.Equals(model.SampleID) &&
-                                                            a.DerivedFromID.Equals(model.DerivedFromID) &&
-                                                            a.QualityControlLevelID.Equals(model.QualityControlLevelID)
-                                                            ).FirstOrDefault() != null;
-
-                                a_end = DateTime.Now;
+                                    a_end = DateTime.Now;
 
                                     span = a_end - a_start;
                                     timeToFindDuplicates = timeToFindDuplicates.Add(span);
                                     //Debug.WriteLine("timeToFindDuplicates: " + span);
 
-                                    
+
+                                }
+                                if (!doesExist)
+                                {
+                                    if (count % 100 == 0) Debug.WriteLine(count);
+                                    listOfCorrectRecords.Add(item);
+                                    if (null != statusContext)
+                                    {
+                                        await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(DataValuesModel).Name, 1, 0, 0, 0);
+                                    }
+                                }
+                                else
+                                {
+
+                                    //no editing possible no unique field in upload
+                                    if (listOfDuplicateRecords.Count() > maxAllowedDuplicates)
+                                    {
+                                        throw new System.OperationCanceledException("The upload was cancelled due to a large number of duplicates (" + maxAllowedDuplicates + ") in upload. Please review data.");
+                                    }
+
+                                    listOfDuplicateRecords.Add(item);
+                                    if (null != statusContext)
+                                    {
+                                        await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(DataValuesModel).Name, 0, 0, 0, 1);
+                                    }
+                                }
+
                             }
-                            if (!doesExist)
+                            catch (OperationCanceledException ex)
                             {
-                                if (count % 100 == 0) Debug.WriteLine(count);
-                                listOfCorrectRecords.Add(item);
+                                throw ex;
+                            }
+                            catch (Exception)
+                            {
+                                listOfIncorrectRecords.Add(item);
                                 if (null != statusContext)
                                 {
-                                    await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(DataValuesModel).Name, 1, 0, 0, 0);
-                                }
-                            }
-                            else
-                            {
-
-                                //no editing possible no unique field in upload
-                                if (listOfDuplicateRecords.Count() > maxAllowedDuplicates )
-                                {
-                                    throw new System.OperationCanceledException("The upload was cancelled due to a large number of duplicates (" + maxAllowedDuplicates + ") in upload. Please review data.");
-                                }
-
-                                listOfDuplicateRecords.Add(item);
-                                if (null != statusContext)
-                                {
-                                    await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(DataValuesModel).Name, 0, 0, 0, 1);
+                                    await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(DataValuesModel).Name, 0, 0, 1, 0);
                                 }
                             }
 
-                        }
-                        catch (OperationCanceledException ex)
-                        {
-                            throw ex;
-                        }
-                        //catch (Exception ex)
-                        catch (Exception)
-                        {
-                            listOfIncorrectRecords.Add(item);
-                            if (null != statusContext)
-                            {
-                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(DataValuesModel).Name, 0, 0, 1, 0);
-                            }
-                        }
 
-
-                    }
+                        }
                     #endregion
                 }
 
@@ -6237,18 +6118,13 @@ namespace HydroServerToolsRepository.Repository
             {
                 throw ex;
             }
-            //context.SaveChanges();
-            //Pass in cnx, tablename, and list of imports
-            //RepositoryUtils.BulkInsert(context.Database.Connection.ConnectionString, "Datavalues", recordsToInsert);
 
-            //RepositoryUtils.UpdateSeriesCatalog(context.Database.Connection.ConnectionString);
             Debug.WriteLine("timeToRetrieveVars:" + timeToRetrieveVars);
             Debug.WriteLine("timeToFindDatavalues: " + timeToFindDatavalues);
             Debug.WriteLine("timeToFindDuplicates: " + timeToFindDuplicates);
             Debug.WriteLine("timeExistInUpload: " + timeExistInUpload);           
             timeTocomplete = DateTime.Now - startTime;
             Debug.WriteLine("timeTocomplete: " + timeTocomplete);
-            //BusinessObjectsUtils.UpdateCachedprocessStatusMessage(instanceIdentifier, CacheName, String.Format(Resources.IMPORT_STATUS_PROCESSING_DONE, count, maxCount));
 
             return;
         }

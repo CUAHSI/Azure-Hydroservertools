@@ -309,7 +309,8 @@ namespace HydroServerToolsRepository.Repository
           
         }
 
-        public static void CommitUpdateRecords<T>(string entityConnectionString, string id, IList<T> list)
+        //public static void CommitUpdateRecords<T>(string entityConnectionString, string id, IList<T> list)
+        public static async Task CommitUpdateRecords<T>(string entityConnectionString, string id, IList<T> list)
         {
 
             //Convert input id to lowercase...
@@ -353,8 +354,8 @@ namespace HydroServerToolsRepository.Repository
                         }
                         
                     }
-                    context.SaveChanges();
-                   
+                    //context.SaveChanges();
+                    await context.SaveChangesAsync();                   
                 }
 
 
@@ -386,7 +387,8 @@ namespace HydroServerToolsRepository.Repository
                             context.Entry(existingItem).State = EntityState.Modified;
                         }
                     }
-                    context.SaveChanges();
+                    //context.SaveChanges();
+                    await context.SaveChangesAsync();
                 }
                 if (idLower == "offsettypes")
                 {
@@ -408,7 +410,8 @@ namespace HydroServerToolsRepository.Repository
 
                         }
                     }
-                    context.SaveChanges();
+                    //context.SaveChanges();
+                    await context.SaveChangesAsync();
                 }
                 if (idLower == "sources")
                 {
@@ -455,7 +458,8 @@ namespace HydroServerToolsRepository.Repository
                         }
                     }
                     //context.SaveChanges();
-                    objContext.SaveChanges(SaveOptions.AcceptAllChangesAfterSave);
+                    //objContext.SaveChanges(SaveOptions.AcceptAllChangesAfterSave);
+                    await objContext.SaveChangesAsync(SaveOptions.AcceptAllChangesAfterSave);
                 }
 
                 if (idLower == "methods")
@@ -478,7 +482,8 @@ namespace HydroServerToolsRepository.Repository
 
                         }
                     }
-                    context.SaveChanges();
+                    //context.SaveChanges();
+                    await context.SaveChangesAsync();
                 }
 
                 if (idLower == "labmethods")
@@ -503,8 +508,8 @@ namespace HydroServerToolsRepository.Repository
 
                         }
                     }
-                    context.SaveChanges();
-
+                    //context.SaveChanges();
+                    await context.SaveChangesAsync();
                 }
 
                 if (idLower == "samples")
@@ -525,8 +530,8 @@ namespace HydroServerToolsRepository.Repository
                         context.Samples.Attach(existingItem);
                         context.Entry(existingItem).State = EntityState.Modified;
                     }
-                    context.SaveChanges();                   
-
+                    //context.SaveChanges();
+                    await context.SaveChangesAsync();
                 }
 
                 if (idLower == "qualifiers")
@@ -547,8 +552,8 @@ namespace HydroServerToolsRepository.Repository
                         context.Qualifiers.Attach(existingItem);
                         context.Entry(existingItem).State = EntityState.Modified;
                     }
-                    context.SaveChanges();      
-
+                    //context.SaveChanges();
+                    await context.SaveChangesAsync();
                 }
 
                 if (idLower == "qualitycontrollevels")
@@ -569,8 +574,8 @@ namespace HydroServerToolsRepository.Repository
                         context.QualityControlLevels.Attach(existingItem);
                         context.Entry(existingItem).State = EntityState.Modified;
                     }
-                    context.SaveChanges();
-
+                    //context.SaveChanges();
+                    await context.SaveChangesAsync();
                 }
 
                 if (idLower == "datavalues")

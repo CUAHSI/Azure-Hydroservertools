@@ -708,7 +708,7 @@ namespace HydroServerTools.Utilities
                                             //For each record type from the 'Add...' call...
                                             foreach (var kvpair in paramNamesToRecordTypes)
                                             {
-                                                //Retrieve associated results list...
+                                                //Retrieve the associated results list...
                                                 string recordType = paramNamesToRecordTypes[kvpair.Key];
                                                 System.Collections.IList recordList = paramNamesToLists[kvpair.Key];
 
@@ -812,6 +812,461 @@ namespace HydroServerTools.Utilities
 
                                                     ++nn;
                                                 }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            //File not found - for now, take no action...
+                            string msg = ex.Message;
+                        }
+                    }
+                }
+            }
+        }
+
+        //Load content from specified <fileprefix>-<modeltypename>-validated.bin files into database... 
+        public async Task LoadDbBis(string validatedFileNamePrefix, string pathValidated, string pathProcessed, StatusContext statusContext, DbLoadContext dbLoadContext)
+        {
+            //Validate/initialize input parameters...
+            if ((!String.IsNullOrWhiteSpace(validatedFileNamePrefix)) &&
+                (!String.IsNullOrWhiteSpace(pathValidated)) &&
+                (!String.IsNullOrWhiteSpace(pathProcessed)) &&
+                (null != statusContext) &&
+                (null != dbLoadContext))
+            {
+                //Dictionary of param names to generic lists for repository 'Add...' call...
+                Dictionary<string, System.Collections.IList> paramNamesToLists = MakeParamNamesToLists();
+
+                //Dictionary of param names to record types for results of repository 'Add...' call...
+                Dictionary<string, string> paramNamesToRecordTypes = MakeParamNamesToRecordTypes();
+
+                //Input parameters valid - scan available model types...
+                foreach (var kvp in modelTypesToRepositoryTypes)
+                {
+                    //For the current model type - dynamically construct a generic list...
+                    //Source: https://blog.magnusmontin.net/2014/10/31/generic-type-parameters-and-dynamic-types-in-csharp/
+                    Type modelType = kvp.Key;
+                    Type repositoryType = kvp.Value;
+
+                    Type tGenericList = typeof(List<>);
+                    Type modelListType = tGenericList.MakeGenericType(modelType);
+
+                    //Check model type for support of interface: IHydroserverRepositoryProxy 
+                    //Source: https://stackoverflow.com/questions/18233390/check-if-a-type-implements-a-generic-interface-without-considering-the-generic-t
+                    bool useProxy = false;
+                    Type proxyType = null;
+                    Type efType = null;
+
+                    IEnumerable<Type> typesGenericInterfaces = modelType.GetInterfaces()
+                                                                .Where(i => i.IsGenericType &&
+                                                                            i.GetGenericTypeDefinition() == typeof(IHydroserverRepositoryProxy<,>));
+                    foreach (var tgi in typesGenericInterfaces)
+                    {
+                        //Retrieve interface information...
+                        var definition = tgi.GetGenericTypeDefinition();
+                        var arguments = tgi.GenericTypeArguments;
+                        var typeInfo = definition as TypeInfo;
+
+                        if (null != typeInfo)
+                        {
+                            //Check interface type parameters and arguments...
+                            var typeParams = typeInfo.GenericTypeParameters;
+                            int index = 0;
+                            foreach (var typeParam in typeParams)
+                            {
+                                if ("tProxyType" == typeParam.Name)
+                                {
+                                    //ProxyType parameter found - retrieve corresponding proxy type from arguments...
+                                    proxyType = arguments[index];
+                                    useProxy = true;
+                                    break;
+                                }
+                                ++index;
+                            }
+                        }
+                        if (useProxy)
+                        {
+                            break;
+                        }
+                    }
+
+                    MethodInfo miInitializeProxy = null;
+                    if (useProxy)
+                    {
+                        //Proxy usage - retrieve proxy methods, get InitializeProxy() information...
+                        MethodInfo[] methods = modelType.GetMethods();
+                        miInitializeProxy = methods.Single(mi => mi.Name == "InitializeProxy");
+
+                        //Get associated entity framework type from proxy type...
+                        efType = modelTypesToEntityFrameworkTypes[proxyType];
+
+                        //Replace modeltype with proxytype in generic list...
+                        modelListType = tGenericList.MakeGenericType(proxyType);
+                    }
+                    else
+                    {
+                        //Get associated entity framework type from model type...
+                        efType = modelTypesToEntityFrameworkTypes[modelType];
+                    }
+
+                    //Build parameters for Repository 'Add' method call...
+                    List<string> keys = paramNamesToLists.Keys.ToList();
+                    foreach (var key in keys)
+                    {
+                        if (null != paramNamesToLists[key])
+                        {
+                            paramNamesToLists[key].Clear();
+                            paramNamesToLists[key] = null;
+                        }
+
+                        paramNamesToLists[key] = (System.Collections.IList)Activator.CreateInstance(modelListType);
+                    }
+
+                    //Construct validated binary file path and name...
+                    string binFilePathAndName = pathValidated + validatedFileNamePrefix + "-" + modelType.Name + "-validated.json";
+                    using (await RepositorySemaphore.UseWaitAsync())
+                    {
+                        try
+                        {
+                            //Retrieve list reference from parameter list...
+                            var key = "itemList";
+                            var itemList = paramNamesToLists[key];
+
+                            //For the input file stream...
+                            using (var fileStream = new FileStream(binFilePathAndName, FileMode.Open, FileAccess.Read, FileShare.Read, 65536 * 16, true))
+                            {
+                                //De-serialize JSON file to 'itemlist'...
+                                using (StreamReader sr = new StreamReader(fileStream))
+                                {
+                                    //Find the generic Deserialize method: public T Deserialize<T>(JsonReader reader);
+                                    //Source: https://forums.asp.net/t/1664599.aspx?+Ask+How+to+get+generic+method+using+reflection+
+                                    JsonSerializer jsonSerializer = new JsonSerializer();
+
+                                    using (JsonReader jsonReader = new Newtonsoft.Json.JsonTextReader(sr))
+                                    {
+                                        //Use asynchronous JsonReader method here...
+                                        //Source: https://stackoverflow.com/questions/26601594/what-is-the-correct-way-to-use-json-net-to-parse-stream-of-json-objects
+                                        jsonReader.SupportMultipleContent = true;
+                                        while (await jsonReader.ReadAsync())
+                                        {
+                                            var item = jsonSerializer.Deserialize(jsonReader, modelType);
+                                            if (useProxy)
+                                            {
+                                                var proxy = miInitializeProxy.Invoke(item, new object[] { });
+                                                itemList.Add(proxy);
+                                            }
+                                            else
+                                            {
+                                                itemList.Add(item);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            if ( null != itemList && 0 < itemList.Count)
+                            {
+                                //Item(s) de-serialized - find the 'Add...' method from the associated repository type...
+                                MethodInfo methodAdd = GetRepositoryAddMethodInfo(repositoryType);
+                                if ( null != methodAdd)
+                                {
+                                    //Create repository instance...
+                                    ConstructorInfo constructorInfo = repositoryType.GetConstructor(Type.EmptyTypes);
+                                    if (null != constructorInfo)
+                                    {
+                                        //Allocate repository instance...
+                                        object repositoryInstance = constructorInfo.Invoke(new object[] { });
+
+                                        //Create arguments array...
+                                        object[] objArray = new object[] { paramNamesToLists["itemList"],
+                                                                                entityConnectionString,
+                                                                                validatedFileNamePrefix,
+                                                                                paramNamesToLists["listOfIncorrectRecords"],
+                                                                                paramNamesToLists["listOfCorrectRecords"],
+                                                                                paramNamesToLists["listOfDuplicateRecords"],
+                                                                                paramNamesToLists["listOfEditedRecords"],
+                                                                                statusContext
+                                                                                };
+                                        //Call 'Add...' method (as awaitable) on newly created instance...
+                                        //Source: https://stackoverflow.com/questions/39674988/how-to-call-a-generic-async-method-using-reflection
+                                        var task = (Task)methodAdd.Invoke(repositoryInstance, objArray);
+                                        await task.ConfigureAwait(false);
+
+                                        System.Diagnostics.Debug.WriteLine("MethodAdd completes!!!");
+
+                                        //Retrieve db table name via EntityFramework metadata extensions...
+                                        string tableName = String.Empty;
+
+                                        //Create a DbContext...
+                                        var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
+
+                                        //Create a 'Db' method for the associated entity framework type via reflection...
+                                        //Looking for a method signature: Db<T>(System.Data.Entity.DbContext)
+                                        Type typeExtension = typeof(EntityFramework.Metadata.Extensions.MappingApiExtensions);
+
+                                        MethodInfo methodInfoTarget = null;
+                                        MethodInfo[] methodInfoDbs = typeExtension.GetMethods().Where(mi => mi.Name == "Db").ToArray();
+
+                                        foreach (var methodInfoDb in methodInfoDbs)
+                                        {
+                                            if (methodInfoDb.IsGenericMethod)
+                                            {
+                                                //Generic method...
+                                                ParameterInfo[] pInfos = methodInfoDb.GetParameters();
+
+                                                if (1 == pInfos.Length)
+                                                {
+                                                    //Single parameter...
+                                                    if (typeof(DbContext) == pInfos[0].ParameterType)
+                                                    {
+                                                        //Parameter type: DbContext...
+                                                        methodInfoTarget = methodInfoDb;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        if (null != methodInfoTarget)
+                                        {
+                                            //'Db' method info found - set generic type, invoke method...
+                                            MethodInfo methodInfo_G = methodInfoTarget.MakeGenericMethod(efType);
+                                            var efMetadata = methodInfo_G.Invoke(context, new object[] { context }) as EntityFramework.Metadata.IEntityMap;
+
+                                            //Retrieve table name...
+                                            tableName = efMetadata.TableName;
+                                        }
+
+                                        if (!String.IsNullOrWhiteSpace(tableName))
+                                        {
+                                            //Table name retrieved - commit new and updated records, if indicated...
+                                            RepositoryUtils repositoryUtils = new RepositoryUtils();
+                                            Type typeRepositoryUtils = typeof(RepositoryUtils);
+                                            MethodInfo methodInfoCommit = typeRepositoryUtils.GetMethod("CommitNewRecords");
+                                            MethodInfo methodInfoUpdate = typeRepositoryUtils.GetMethod("CommitUpdateRecords");
+                                            MethodInfo methodInfo_G = null;
+                                            bool bNewRecordsLoaded = false;         //Assume no new records loaded
+
+                                            System.Collections.IList iList2 = paramNamesToLists["listOfCorrectRecords"];
+                                            System.Collections.IList iList3 = paramNamesToLists["listOfEditedRecords"];
+                                            Task task_1 = null;
+                                            Task task_2 = null;
+
+                                            if (0 < iList2.Count)
+                                            {
+                                                //New records exist - set indicator
+                                                bNewRecordsLoaded = true;
+
+                                                //Set substitute key in statusContext...
+                                                await statusContext.AddSubstituteKey(efType.Name, (useProxy ? proxyType.Name : modelType.Name));
+
+                                                //Invoke 'CommitNew...' method (as awaitable)...
+                                                //Source: https://stackoverflow.com/questions/39674988/how-to-call-a-generic-async-method-using-reflection
+                                                methodInfo_G = methodInfoCommit.MakeGenericMethod(((null != proxyType) ? proxyType : modelType));
+                                                object[] objArrayC = new object[] { entityConnectionString,
+                                                                                        tableName,
+                                                                                        iList2,
+                                                                                        statusContext
+                                                                                        };
+                                                //methodInfo_G.Invoke(repositoryUtils, objArrayC);
+                                                task_1 = (Task)methodInfo_G.Invoke(repositoryUtils, objArrayC);
+                                            }
+
+                                            if (0 < iList3.Count)
+                                            {
+                                                //Updated records exist - invoke 'CommitUpdate...' method...
+                                                methodInfo_G = methodInfoUpdate.MakeGenericMethod(((null != proxyType) ? proxyType : modelType));
+                                                object[] objArrayU = new object[] { entityConnectionString,
+                                                                                        tableName,
+                                                                                        iList3
+                                                                                        };
+                                                task_2 = (Task)methodInfo_G.Invoke(repositoryUtils, objArrayU);
+                                            }
+
+                                            if (null != task_1)
+                                            {
+                                                await task_1.ConfigureAwait(false);
+                                            }
+
+                                            if (null != task_2)
+                                            {
+                                                await task_2.ConfigureAwait(false);
+                                            }
+
+                                            //Create and Save load result...
+                                            using (await dbLoadContext.DbLoadSemaphore.UseWaitAsync())
+                                            {
+                                                var dbLoadResult = new DbLoadResult(tableName,
+                                                                                    paramNamesToLists["listOfCorrectRecords"].Count,      //inserted
+                                                                                    paramNamesToLists["listOfEditedRecords"].Count,       //updated
+                                                                                    paramNamesToLists["listOfIncorrectRecords"].Count,    //rejected
+                                                                                    paramNamesToLists["listOfDuplicateRecords"].Count);   //duplicated
+
+                                                dbLoadContext.DbLoadResults.Add(dbLoadResult);
+
+                                                if ((null != statusContext) && (!bNewRecordsLoaded))
+                                                {
+                                                    //No new records loaded - therefore, no status context updates or finalization - do so now...
+                                                    var key1 = (null != proxyType) ? proxyType.Name : modelType.Name;
+
+                                                    int inserted = paramNamesToLists["listOfCorrectRecords"].Count;
+                                                    int updated = paramNamesToLists["listOfEditedRecords"].Count;
+                                                    int rejected = paramNamesToLists["listOfIncorrectRecords"].Count;
+                                                    int duplicated = paramNamesToLists["listOfDuplicateRecords"].Count;
+
+                                                    await statusContext.SetRecordCount(StatusContext.enumCountType.ct_DbLoad,
+                                                                                       key1,
+                                                                                       (inserted + updated + rejected + duplicated));
+                                                    await statusContext.SetCounts(StatusContext.enumCountType.ct_DbLoad,
+                                                                                  key1,
+                                                                                  inserted,       //inserted
+                                                                                  updated,        //updated
+                                                                                  rejected,       //rejected
+                                                                                  duplicated);    //duplicated
+                                                    await statusContext.Finalize(StatusContext.enumCountType.ct_DbLoad, key1);
+                                                }
+                                            }
+                                        }
+
+                                        //Retrieve UpdateableItem<> initializing constructor definition
+                                        Type tUpdateableItem = typeof(UpdateableItem<>);
+                                        Type gUpdateableItem = tUpdateableItem.MakeGenericType(modelType);
+                                        ConstructorInfo ciUpdateableItem = gUpdateableItem.GetConstructor(new Type[] { modelType, typeof(int) });
+
+                                        //Retrieve model type default constructor definition...
+                                        ConstructorInfo ciModelType = modelType.GetConstructor(Type.EmptyTypes);
+                                        MethodInfo miValueFromProxy = null;
+
+                                        if (useProxy)
+                                        {
+                                            MethodInfo[] methods = modelType.GetMethods();
+                                            miValueFromProxy = methods.Single(mi => mi.Name == "ValueFromProxy");
+                                        }
+
+                                        //For each record type from the 'Add...' call...
+                                        foreach (var kvpair in paramNamesToRecordTypes)
+                                        {
+                                            //Retrieve the associated results list...
+                                            string recordType = paramNamesToRecordTypes[kvpair.Key];
+                                            System.Collections.IList recordList = paramNamesToLists[kvpair.Key];
+
+                                            //Create a list of UpdateableItems for output to binary file...
+                                            Type updateableItemsListType = tGenericList.MakeGenericType(gUpdateableItem);
+                                            System.Collections.IList iUpdateableItemsList = (System.Collections.IList)Activator.CreateInstance(updateableItemsListType);
+                                            int initialId = 100;
+                                            int currentIndex = 0;
+                                            Dictionary<int, int> currentIndexToInitialId = new Dictionary<int, int>();
+
+                                            foreach (var record in recordList)
+                                            {
+                                                if (null != ciModelType)
+                                                {
+                                                    //Create model type instance...
+                                                    if (useProxy)
+                                                    {
+                                                        //Create model type instance - value from proxy...
+                                                        var modelTypeInstance = ciModelType.Invoke(new object[] { });
+                                                        var modelTypeInstance2 = miValueFromProxy.Invoke(modelTypeInstance, new object[] { record });
+
+                                                        var updateableItem = ciUpdateableItem.Invoke(new object[] { modelTypeInstance2, ++initialId });
+                                                        iUpdateableItemsList.Add(updateableItem);
+                                                    }
+                                                    else
+                                                    {
+                                                        var updateableItem = ciUpdateableItem.Invoke(new object[] { record, ++initialId });
+                                                        iUpdateableItemsList.Add(updateableItem);
+                                                    }
+
+                                                    if ("IncorrectRecords" == recordType)
+                                                    {
+                                                        //Processing incorrect records - map index to id value...
+                                                        currentIndexToInitialId.Add(currentIndex++, initialId);
+                                                    }
+                                                }
+
+                                                //if ("IncorrectRecords" == recordType)
+                                                //{
+                                                //    //Processing incorrect records - update 'IsError' status message ItemIds...
+                                                //    using (await statusContext.StatusMessagesSemaphore.UseWaitAsync())
+                                                //    {
+                                                //        var keyVal = useProxy ? proxyType.Name : modelType.Name;
+                                                //        if (statusContext.StatusMessages.ContainsKey(keyVal))
+                                                //        {
+                                                //            var statusMessages = statusContext.StatusMessages[keyVal];
+
+                                                //            var myStatusMessages = statusMessages.Where(sm => (sm.IsError && (currentIndex == sm.ItemId)));
+                                                //            foreach (var statusMessage in myStatusMessages)
+                                                //            {
+                                                //                statusMessage.ItemId = initialId;
+                                                //            }
+                                                //        }
+                                                //    }
+                                                //    ++currentIndex;
+                                                //}
+                                            }
+
+                                            if ("IncorrectRecords" == recordType)
+                                            {
+                                                //Processing incorrect records - update 'IsError' status message ItemIds...
+                                                using (await statusContext.StatusMessagesSemaphore.UseWaitAsync())
+                                                {
+                                                    var keyVal = useProxy ? proxyType.Name : modelType.Name;
+                                                    if (statusContext.StatusMessages.ContainsKey(keyVal))
+                                                    {
+                                                        var statusMessages = statusContext.StatusMessages[keyVal];
+                                                        foreach (var statusMessage in statusMessages)
+                                                        {
+                                                            if (statusMessage.IsError)
+                                                            {
+                                                                int index = statusMessage.ItemId;
+                                                                if (currentIndexToInitialId.ContainsKey(index))
+                                                                {
+                                                                    statusMessage.ItemId = currentIndexToInitialId[index];
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            //Create file path and name...
+                                            var binFilePathAndName_1 = pathProcessed + validatedFileNamePrefix + "-" +
+                                                                     modelType.Name + "-" + recordType + ".json";
+                                            try
+                                            {
+                                                //For the output file stream...
+                                                using (var fileStream_1 = new FileStream(binFilePathAndName_1, FileMode.Create, FileAccess.Write, FileShare.None, 65536 * 16, true))
+                                                {
+                                                    //Serialize validated records to file stream as JSON...
+
+                                                    //Question: How to use JsonWriter async writes here?
+                                                    //Possible : https://stackoverflow.com/questions/26601594/what-is-the-correct-way-to-use-json-net-to-parse-stream-of-json-objects
+                                                    using (StreamWriter sw_1 = new StreamWriter(fileStream_1))
+                                                    {
+                                                        using (JsonTextWriter jtw = new JsonTextWriter(sw_1))
+                                                        {
+                                                            JsonSerializer jsonSerializer = new JsonSerializer();
+                                                            foreach (var updateableItem in iUpdateableItemsList)
+                                                            {
+                                                                jsonSerializer.Serialize(jtw, updateableItem);
+                                                            }
+
+                                                            await jtw.FlushAsync();
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                //For now take no action...
+                                                string msg = ex.Message;
+                                                int nn = 5;
+
+                                                ++nn;
                                             }
                                         }
                                     }
