@@ -15,6 +15,21 @@
     var appConfig_InlineEditMaxRejectedItems = parseInt('@System.Configuration.ConfigurationManager.AppSettings["InlineEditMaxRejectedItems"]');
 </script>
 
+@using HydroServerTools.Extensions;
+@if (Html.IsDebugBuild())
+{
+    <script type="text/javascript">
+         //Retrieve enable/disable console setting from web.config...
+        var appConfig_EnableDisableConsole = true;
+    </script>
+}
+else
+{
+    <script type="text/javascript">
+         //Retrieve enable/disable console setting from web.config...
+        var appConfig_EnableDisableConsole = false;
+    </script>
+}
 
 <div class="container">
 
@@ -27,54 +42,54 @@
                     <thead>
                         <tr>
                             <th class="col-md-6 text-center">Table Name</th>
-@if ("meta_data" == qualifier)
-{
-                            <th class="col-md-1 text-center">Inserted</th>
-                            <th class="col-md-1 text-center">Updated</th>
-                            <th class="col-md-1 text-center" data-toggle="tooltip" data-placement="top" data-animation="true" data-container="body"
-                                data-template='<div class="tooltip" role="tooltip"><div class="tooltip-arrow"></div><div  style="font-size: 1.25em;" class="tooltip-inner"></div></div>'
-                                title="Duplicate records are not added to the database">Duplicates<span style="font-weight: bold;">&#42;</span></th>
-                            <th class="col-md-1 text-center">Rejected</th>
-}
-else
-{
-                            <th class="col-md-2 text-center">Inserted</th>
-                            <th class="col-md-2 text-center">Rejected</th>
-}
+                            @if ("meta_data" == qualifier)
+                            {
+                                <th class="col-md-1 text-center">Inserted</th>
+                                <th class="col-md-1 text-center">Updated</th>
+                                <th class="col-md-1 text-center" data-toggle="tooltip" data-placement="top" data-animation="true" data-container="body"
+                                    data-template='<div class="tooltip" role="tooltip"><div class="tooltip-arrow"></div><div  style="font-size: 1.25em;" class="tooltip-inner"></div></div>'
+                                    title="Duplicate records are not added to the database">Duplicates<span style="font-weight: bold;">&#42;</span></th>
+                                <th class="col-md-1 text-center">Rejected</th>
+                            }
+                            else
+                            {
+                                <th class="col-md-2 text-center">Inserted</th>
+                                <th class="col-md-2 text-center">Rejected</th>
+                            }
                         </tr>
                     </thead>
                     <tbody>
                         <!-- Dynamic table row template -->
                         <tr class="templateTableRow hidden">
                             <td class="col-md-6 text-center"><span style="font-size: 1.5em; font-weight: bold;" class="spanTableName">Test Table Name</span></td>
-@if ("meta_data" == qualifier)
-{
-                            <!-- If Inserted === 0 show span else show button -->
-                            <td class="col-md-1 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanInserted">0</span></td>
-                            <td class="col-md-1 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-success buttonInserted">100</button></td>
+                            @if ("meta_data" == qualifier)
+                            {
+                                <!-- If Inserted === 0 show span else show button -->
+                                <td class="col-md-1 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanInserted">0</span></td>
+                                <td class="col-md-1 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-success buttonInserted">100</button></td>
 
-                            <!-- If Updated === 0 show span else show button -->
-                            <td class="col-md-1 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanUpdated">0</span></td>
-                            <td class="col-md-1 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-primary buttonUpdated">50</button></td>
+                                <!-- If Updated === 0 show span else show button -->
+                                <td class="col-md-1 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanUpdated">0</span></td>
+                                <td class="col-md-1 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-primary buttonUpdated">50</button></td>
 
-                            <!-- If Duplicated === 0 show span else show button -->
-                            <td class="col-md-1 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanDuplicated">0</span></td>
-                            <td class="col-md-1 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-primary buttonDuplicated">50</button></td>
+                                <!-- If Duplicated === 0 show span else show button -->
+                                <td class="col-md-1 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanDuplicated">0</span></td>
+                                <td class="col-md-1 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-primary buttonDuplicated">50</button></td>
 
-                            <!-- If Rejected === 0 show span else show button -->
-                            <td class="col-md-1 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanRejected">0</span></td>
-                            <td class="col-md-1 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-danger buttonRejected" data-toggle="modal" data-target="#rejectedItemsModal">25</button></td>
-}
-else
-{
-                            <!-- If Inserted === 0 show span else show button -->
-                            <td class="col-md-1 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanInserted">0</span></td>
-                            <td class="col-md-1 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-success buttonInserted">100</button></td>
+                                <!-- If Rejected === 0 show span else show button -->
+                                <td class="col-md-1 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanRejected">0</span></td>
+                                <td class="col-md-1 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-danger buttonRejected" data-toggle="modal" data-target="#rejectedItemsModal">25</button></td>
+                            }
+                            else
+                            {
+                                <!-- If Inserted === 0 show span else show button -->
+                                <td class="col-md-1 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanInserted">0</span></td>
+                                <td class="col-md-1 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-success buttonInserted">100</button></td>
 
-                            <!-- If Rejected === 0 show span else show button -->
-                            <td class="col-md-1 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanRejected">0</span></td>
-                            <td class="col-md-1 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-danger buttonRejected" data-toggle="modal" data-target="#rejectedItemsModal">25</button></td>
-}
+                                <!-- If Rejected === 0 show span else show button -->
+                                <td class="col-md-1 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanRejected">0</span></td>
+                                <td class="col-md-1 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-danger buttonRejected" data-toggle="modal" data-target="#rejectedItemsModal">25</button></td>
+                            }
                         </tr>
 
                         <!-- DB Load Results go here... -->
@@ -104,7 +119,7 @@ else
                     <div class="row">
                         <h3 class="modal-title col-md-2" id="myModalLabel" style="display: inline-block;">Rejected&nbsp;<span id="spanRejectedItemsTitle"></span></h3>
                         <div id="tblRejectedItemsAlert" class="alert alert-warning hidden col-md-8" role="alert"
-                            style="text-align: center; font-weight: bold; margin-left: 2.0em;">
+                             style="text-align: center; font-weight: bold; margin-left: 2.0em;">
                             There are more than @System.Configuration.ConfigurationManager.AppSettings["InlineEditMaxRejectedItems"] errors in your data, so editing has been disabled. Please download, fix the errors, and re-upload
                         </div>
                     </div>
@@ -128,69 +143,70 @@ else
     <!-- Test rows - hidden -->
     <!-- TEST row... -->
     @*<table class="hidden">
-        <!-- TEST row... -->
-        <tbody>
-            <tr class="templateTableRow">
-                <td class="col-md-6 text-center"><span style="font-size: 1.5em; font-weight: bold;" class="spanTableName">Test Table Name</span></td>
-
-                <!-- If Inserted === 0 show span else show button -->
-                <td class="col-md-2 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanInserted">0</span></td>
-                <td class="col-md-2 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-success buttonInserted">100</button></td>
-
-                <!-- If Updated === 0 show span else show button -->
-                <td class="col-md-2 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanUpdated">0</span></td>
-                <td class="col-md-2 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-primary buttonUpdated">50</button></td>
-
-                <!-- If Rejected === 0 show span else show button -->
-                <td class="col-md-2 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanRejected">0</span></td>
-                <td class="col-md-2 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-danger buttonRejected">25</button></td>
-            </tr>
-            <tr class="templateTableRow">
-                <td class="col-md-6 text-center"><span style="font-size: 1.5em; font-weight: bold;" class="spanTableName">Test Table Name</span></td>
-
-                <!-- If Inserted === 0 show span else show button -->
-                <td class="col-md-2 text-center hidden"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanInserted">0</span></td>
-                <td class="col-md-2 text-center"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-success buttonInserted">100</button></td>
-
-                <!-- If Updated === 0 show span else show button -->
-                <td class="col-md-2 text-center hidden"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanUpdated">0</span></td>
-                <td class="col-md-2 text-center"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-primary buttonUpdated">50</button></td>
-
-                <!-- If Rejected === 0 show span else show button -->
-                <td class="col-md-2 text-center hidden"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanRejected">0</span></td>
-                <td class="col-md-2 text-center"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-danger buttonRejected">25</button></td>
-            </tr>
-
             <!-- TEST row... -->
-            <tr class="templateTableRow">
-                <td class="col-md-6 text-center"><span style="font-size: 1.5em; font-weight: bold;" class="spanTableName">Test Table Name</span></td>
+            <tbody>
+                <tr class="templateTableRow">
+                    <td class="col-md-6 text-center"><span style="font-size: 1.5em; font-weight: bold;" class="spanTableName">Test Table Name</span></td>
 
-                <!-- If Inserted === 0 show span else show button -->
-                <td class="col-md-2 text-center hidden"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanInserted">0</span></td>
-                <td class="col-md-2 text-center"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-success buttonInserted">100</button></td>
+                    <!-- If Inserted === 0 show span else show button -->
+                    <td class="col-md-2 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanInserted">0</span></td>
+                    <td class="col-md-2 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-success buttonInserted">100</button></td>
 
-                <!-- If Updated === 0 show span else show button -->
-                <td class="col-md-2 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanUpdated">0</span></td>
-                <td class="col-md-2 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-primary buttonUpdated">50</button></td>
+                    <!-- If Updated === 0 show span else show button -->
+                    <td class="col-md-2 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanUpdated">0</span></td>
+                    <td class="col-md-2 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-primary buttonUpdated">50</button></td>
 
-                <!-- If Rejected === 0 show span else show button -->
-                <td class="col-md-2 text-center hidden"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanRejected">0</span></td>
-                <td class="col-md-2 text-center"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-danger buttonRejected">25</button></td>
-            </tr>
-        </tbody>
-    </table>*@
+                    <!-- If Rejected === 0 show span else show button -->
+                    <td class="col-md-2 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanRejected">0</span></td>
+                    <td class="col-md-2 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-danger buttonRejected">25</button></td>
+                </tr>
+                <tr class="templateTableRow">
+                    <td class="col-md-6 text-center"><span style="font-size: 1.5em; font-weight: bold;" class="spanTableName">Test Table Name</span></td>
 
-@section styles {
-    @Styles.Render("~/Content/css")
-    @Styles.Render("~/Content/css/DataTablesEditorCombo")
-}
+                    <!-- If Inserted === 0 show span else show button -->
+                    <td class="col-md-2 text-center hidden"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanInserted">0</span></td>
+                    <td class="col-md-2 text-center"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-success buttonInserted">100</button></td>
+
+                    <!-- If Updated === 0 show span else show button -->
+                    <td class="col-md-2 text-center hidden"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanUpdated">0</span></td>
+                    <td class="col-md-2 text-center"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-primary buttonUpdated">50</button></td>
+
+                    <!-- If Rejected === 0 show span else show button -->
+                    <td class="col-md-2 text-center hidden"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanRejected">0</span></td>
+                    <td class="col-md-2 text-center"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-danger buttonRejected">25</button></td>
+                </tr>
+
+                <!-- TEST row... -->
+                <tr class="templateTableRow">
+                    <td class="col-md-6 text-center"><span style="font-size: 1.5em; font-weight: bold;" class="spanTableName">Test Table Name</span></td>
+
+                    <!-- If Inserted === 0 show span else show button -->
+                    <td class="col-md-2 text-center hidden"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanInserted">0</span></td>
+                    <td class="col-md-2 text-center"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-success buttonInserted">100</button></td>
+
+                    <!-- If Updated === 0 show span else show button -->
+                    <td class="col-md-2 text-center"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanUpdated">0</span></td>
+                    <td class="col-md-2 text-center hidden"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-primary buttonUpdated">50</button></td>
+
+                    <!-- If Rejected === 0 show span else show button -->
+                    <td class="col-md-2 text-center hidden"><span style="font-size: 1.5em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanRejected">0</span></td>
+                    <td class="col-md-2 text-center"><button style="padding: 3px 7px; font-weight: bold;" class="btn btn-danger buttonRejected">25</button></td>
+                </tr>
+            </tbody>
+        </table>*@
+
+    @section styles {
+        @Styles.Render("~/Content/css")
+        @Styles.Render("~/Content/css/DataTablesEditorCombo")
+    }
 
 
-@section Scripts {
-    @Scripts.Render("~/bundles/js/DataTablesEditorCombo")
-}
+    @section Scripts {
+        @Scripts.Render("~/bundles/js/DataTablesEditorCombo")
+    }
 
     <script src="~/Scripts/custom/revisedUploadUtils.js"></script>
+    <script src="~/Scripts/custom/ConsoleUtils.js"></script>
 
     <script type="text/javascript">
 
@@ -325,7 +341,7 @@ else
             return result;
         }
 
-        //Remove Rejected Items table row(s) per the input correct item ids... 
+        //Remove Rejected Items table row(s) per the input correct item ids...
         function updateRejectedItemsTable(tableUpdateResult) {
 
             //Validate/initialize input parameters...
@@ -362,9 +378,9 @@ else
                         //Assign 'fade to' function to <tr> element
                         $(node).fadeTo(1500, 0.5, function () {
                             //Get the row again (due to other remove() calls, 'row' instance in outer scope may be invalid)
-                            //For more information see: 
+                            //For more information see:
                             //  Bug: "Uncaught TypeError: Cannot read property '_aData' of undefined" when using row reference after removing other row #566
-                            //  https://github.com/DataTables/DataTables/issues/566 
+                            //  https://github.com/DataTables/DataTables/issues/566
                             var myRow = table.row(rowId);
                             myRow.remove();        //DataTables Remove...
                             table.draw();
@@ -457,7 +473,7 @@ else
 
         function buildRejectedItemsTable(rejectedItemsData, readOnly) {
 
-            //Validate/initialize input parameters... 
+            //Validate/initialize input parameters...
             if ('undefined' !== typeof rejectedItemsData && null !== rejectedItemsData &&
                 'undefined' !== typeof readOnly && null !== readOnly) {
 
@@ -505,7 +521,7 @@ else
 
                 //Rejected items - add 'rejectedRowId' and 'rowUpdated' values to each data item...
                 var rjLength = rejectedItemsData.RejectedItems.length;
-                var rjItems = (readOnly && (rjLength > appConfig_InlineEditMaxRejectedItems)) ? 
+                var rjItems = (readOnly && (rjLength > appConfig_InlineEditMaxRejectedItems)) ?
                                                 rejectedItemsData.RejectedItems.slice(0, appConfig_InlineEditMaxRejectedItems) :
                                                 rejectedItemsData.RejectedItems
                 var rjLength = rjItems.length;
@@ -529,10 +545,10 @@ else
                     "display": "bootstrap",  //Display main editing form in Bootstrap modal dialog...
                     //Apply changes locally only...
                     "ajax": function (method,      //Legacy parameter - should be null
-                                        url,         //Legacy parameter - should be null 
+                                        url,         //Legacy parameter - should be null
                                         data,        //Data to send to server...
                                         success,    //Success callback accepting data returned from the server.  Signature: success({ "data": [<data object(s)>] })
-                                        error) {    //Error callback for server errors (not validation errors!!). Signature: error(xhr, error, thrown)  
+                                        error) {    //Error callback for server errors (not validation errors!!). Signature: error(xhr, error, thrown)
                         //For now - update the table data...
                         var tblObjs = tblData.data;
                         var length = tblObjs.length;
@@ -547,7 +563,7 @@ else
                                 if (key == tblObj.ItemId) {
                                     //Match on unique Id...
 
-                                    //Assign input data object 'Item' values to table data object 'Item'  
+                                    //Assign input data object 'Item' values to table data object 'Item'
                                     var dataObj = dataObjs[key];
                                     for (var dKey in dataObj) {
                                         //if ('rejectedRowId' !== dKey && 'rowUpdated' !== dKey) {
@@ -572,7 +588,7 @@ else
 
                                     //Initialize 'from server' data, call success function...
                                     var fromServer = { "data": [tblObj] };
-                                    success(fromServer); 
+                                    success(fromServer);
                                     break;
                                 }
                             }
@@ -611,7 +627,7 @@ else
                 });
 
                 //Set uploadSummaryDiv markup...
-                var uploadSummary = $('#' + 'uploadSummaryDiv'); 
+                var uploadSummary = $('#' + 'uploadSummaryDiv');
                 uploadSummary.addClass('alert col-md-2 col-md-offset-4 hidden');
                 uploadSummary.css({ "margin-top": "0.5em", "margin-bottom": "0", "padding": "0", "text-align": "center" });
 
@@ -629,7 +645,7 @@ else
                     else {
                         // Child row closed, open...
                         if ('undefined' === typeof (row.child())) {
-                            //No child rows - retrieve row errors from StatusMessages... 
+                            //No child rows - retrieve row errors from StatusMessages...
                             var rowData = row.data();
                             var itemId = rowData.ItemId;
                             var rowErrors = [];
@@ -680,7 +696,7 @@ else
                 var anchor = $('#' + 'btnRejectedItemsModalDownload');
                 anchor.removeClass('disabled');
                 anchor.attr('href', '/api/revisedupload/get/rejecteditemsfile/' + currentUploadId + '/' + tableName + '/')
-                
+
                 //Retrieve rejected items for display...
                 var url = '/api/revisedupload/get/rejecteditems/' + currentUploadId + '/' +  tableName + '/';
 
@@ -879,6 +895,9 @@ else
     }
 
     $(document).ready(function () {
+        //Enable/disable console per configuration parameter...
+        EnableDisableConsole(appConfig_EnableDisableConsole);
+
         console.log('DB Summary Report - document ready called!!');
 
         //Retrieve current upload Id...
@@ -913,4 +932,4 @@ else
     </script>
 
 
-    </div>
+</div>

@@ -1,0 +1,50 @@
+
+ Changes for WDC Sprint 22 - WDC-1860
+
+
+>>> Summary <<<
+ - Make output of debug JavaScript console messages conditional on build type:
+   - DEBUG - enable debug console message output
+   - RELEASE - disable debug console message output
+
+
+>>>> Azure-Hydroservertools/HydroServerTools <<<<
+ - HydroServerTools.csproj
+   - added files:
+     - Extensions\HtmlHelperExtensions.cs
+     - Scripts\custom\ConsoleUtils.js
+
+
+>>>> Azure-Hydroservertools/HydroServerTools\Extensions <<<<
+ - Added file: 
+    - HtmlHelperExtensions.cs
+
+
+>>>> Azure-Hydroservertools/HydroServerTools/Scripts/custom <<<<
+ - added file: ConsoleUtils.js
+
+
+>>>> Azure-Hydroservertools/HydroServerTools/Scripts/custom/workers <<<<
+ - modified files for conditional JavaScript console messages:
+    - workerCsvValidationResults.js
+    - workerDbLoadStatus.js
+    - workerDbRecordCounts.js
+    - workerUploadIdKeepAlive.js
+
+
+>>>> Azure-Hydroservertools/HydroServerTools/Views/CSVUpload <<<<
+ - modified files for conditional JavaScript console messages:
+   - DbSummaryReport.cshtml
+   - DragAndDropFilesRevised.cshtml
+   - SelectUploadType.cshtml
+- Miscellaneous additions of statement terminators ';'
+
+ NOTE: Some files contains tabbing/spacing changes of unknown origin
+
+
+
+
+
+
+
+

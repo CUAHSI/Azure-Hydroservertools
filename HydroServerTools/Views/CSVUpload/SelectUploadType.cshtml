@@ -15,7 +15,7 @@
 
 <div class="container">
     <div class="col-md-6">
-        
+
         <div class="well">
             @Html.ActionLink("Metadata Upload", "RevisedUploadData", "CSVUpload", new { id = "DragAndDropFiles_meta_data" }, new { @class = "btn btn-primary" })
             <h4>Upload Sites, Variables, Methods, Sources and Quality Control Levels</h4>
@@ -32,12 +32,30 @@
         </div>
 
     </div>
-           
-        @Html.Partial("_CountInTables")
-    
-    </div>
-<script type="text/javascript">
 
+    @Html.Partial("_CountInTables")
+
+</div>
+
+<script src="~/Scripts/custom/ConsoleUtils.js"></script>
+
+@using HydroServerTools.Extensions;
+@if (Html.IsDebugBuild())
+{
+    <script type="text/javascript">
+        //Retrieve enable/disable console setting from web.config...
+        var appConfig_EnableDisableConsole = true;
+    </script>
+}
+else
+{
+    <script type="text/javascript">
+        //Retrieve enable/disable console setting from web.config...
+        var appConfig_EnableDisableConsole = false;
+    </script>
+}
+
+<script type="text/javascript">
     function getDbRecordCounts() {
 
         //Set url...
@@ -45,8 +63,8 @@
 
         //Set request data...
         var data = {
-                    "tablenames": ["methods", "qualitycontrollevels", "sites", "sources", "variables"] 
-                   };
+            "tablenames": ["methods", "qualitycontrollevels", "sites", "sources", "variables"]
+        };
 
         $.ajax({
             "url": url,
@@ -85,6 +103,10 @@
     }
 
     $(document).ready(function () {
+
+        //Enable/disable console per configuration parameter...
+        EnableDisableConsole(appConfig_EnableDisableConsole);
+
         console.log('Select Upload Type - document ready called!!');
 
         //Queue retrieval of db record counts...
