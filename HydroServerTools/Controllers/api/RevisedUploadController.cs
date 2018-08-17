@@ -18,7 +18,6 @@ using Newtonsoft.Json;
 #endif
 
 using HydroServerTools.Utilities;
-using HydroServerTools.Validators;
 
 using HydroserverToolsBusinessObjects;
 using HydroserverToolsBusinessObjects.ModelMaps;
@@ -27,6 +26,7 @@ using HydroServerToolsUtilities;
 using System.Xml.Serialization;
 using HydroServerTools.Models;
 using HydroserverToolsBusinessObjects.Interfaces;
+using HydroServerToolsUtilities.Validators;
 
 namespace HydroServerTools.Controllers.api
 {
@@ -2001,7 +2001,7 @@ namespace HydroServerTools.Controllers.api
                                     }
                                 }
 
-                                Encoding currentEncoding = EncodingContext.GetFileEncoding(contentType, filePathAndName);
+                                //Encoding currentEncoding = EncodingContext.GetFileEncoding(contentType, filePathAndName);
 
                                 //Create output file --OR-- open file for append...
                                 using (var fileStream = new FileStream(filePathAndName, isFirstChunk ? FileMode.Create : FileMode.Append, FileAccess.Write, FileShare.None, 65536 * 16, true))

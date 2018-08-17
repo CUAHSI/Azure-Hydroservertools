@@ -27,6 +27,8 @@ namespace HydroServerTools
             //Define a custom route taking a parameter that is not named 'Id' 
             // (thus different from the DefaultApi)
 
+            //Start - Revised Upload API routes...
+
             //Get File Validation Report Route
             config.Routes.MapHttpRoute(
                 name: "RevisedUploadApiGetFileValidationResults",
@@ -119,6 +121,24 @@ namespace HydroServerTools
                 name: "RevisedUploadApiDeleteUploadId",
                 routeTemplate: "api/revisedupload/delete/uploadId/{uploadId}",
                 defaults: new { controller = "RevisedUpload", action = "DeleteUploadId" });
+
+            //End - Revised Upload API routes...
+
+            //Start - Bulk Upload API routes...
+
+            //Get Route
+            config.Routes.MapHttpRoute(
+                name: "BulkUploadApiGet",
+                routeTemplate: "api/bulkupload/get",
+                defaults: new { controller = "BulkUpload", action = "Get" });
+
+            //Post Route
+            config.Routes.MapHttpRoute(
+                name: "BulkUploadApiPost",
+                routeTemplate: "api/bulkupload/post",
+                defaults: new { controller = "BulkUpload", action = "Post" });
+
+            //End - Bulk Upload API routes...
 
             RouteTable.Routes.MapHttpRoute(
                name: "DefaultApi",

@@ -11,7 +11,7 @@ using System.Web.Routing;
 using System.Collections.Concurrent;
 
 using HydroServerTools.Utilities;
-using HydroServerTools.Validators;
+using HydroServerToolsUtilities.Validators;
 
 using HydroServerToolsUtilities;
 using System.Threading.Tasks;
@@ -38,6 +38,11 @@ namespace HydroServerTools
             // JQueryDataTablesModelBinder when binding the model.
             ModelBinders.Binders.Add(typeof(JQueryDataTablesModel), new JQueryDataTablesModelBinder());
             //InstanceGuid = Guid.NewGuid();
+
+            //13-Aug-2018 - BC - Add CacheCollections Initialize() call here...
+            CacheCollections.Initialize();
+
+            //TO DO - re-refactor this code and RevisedUploadController to use CacheCollections... 
 
             //At web application startup - add ConcurrentDictionary instances to the runtime cache for the following context types:
             //  - file, 
