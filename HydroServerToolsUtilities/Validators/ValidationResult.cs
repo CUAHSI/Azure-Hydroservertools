@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace HydroServerTools.Validators
+namespace HydroServerToolsUtilities.Validators
 {
     //A simple generic class for the association of a validator with a file name
     public class ValidationResult<TValidator> where TValidator : class, IValidationComplete

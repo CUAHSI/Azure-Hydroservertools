@@ -30,23 +30,83 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoMapper">
+      <HintPath>..\packages\AutoMapper.6.2.1\lib\net45\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="CsvHelper">
+      <HintPath>..\..\HydroserverRedesign\packages\CsvHelper.6.0.0\lib\net45\CsvHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework">
+      <HintPath>..\..\HydroserverRedesign\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.Extended">
+      <HintPath>..\packages\EntityFramework.Extended.6.1.0.168\lib\net45\EntityFramework.Extended.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.Metadata">
+      <HintPath>..\packages\EntityFramework.Metadata.1.0.2.0\lib\net45\EntityFramework.Metadata.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="UniversalTypeConverter">
+      <HintPath>..\packages\UniversalTypeConverter.1.0.2\lib\net40\UniversalTypeConverter.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\HydroServerToolsRepository\HydroServerToolsRepository\IRepository.cs">
+      <Link>IRepository.cs</Link>
+    </Compile>
+    <Compile Include="..\HydroServerToolsRepository\HydroServerToolsRepository\Models.cs">
+      <Link>Models.cs</Link>
+    </Compile>
+    <Compile Include="..\HydroServerToolsRepository\HydroServerToolsRepository\Repository.cs">
+      <Link>Repository.cs</Link>
+    </Compile>
+    <Compile Include="..\HydroServerToolsRepository\HydroServerToolsRepository\Utils.cs">
+      <Link>Utils.cs</Link>
+    </Compile>
+    <Compile Include="CacheCollections.cs" />
+    <Compile Include="DbLoadContext.cs" />
     <Compile Include="DbLoadCounts.cs" />
     <Compile Include="DbLoadResult.cs" />
+    <Compile Include="EncodingContext.cs" />
+    <Compile Include="FileContext.cs" />
     <Compile Include="RejectedItemsData.cs" />
+    <Compile Include="RepositoryContext.cs" />
     <Compile Include="SemaphoreSlimExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StatusContext.cs" />
     <Compile Include="UpdateableItemsData.cs" />
+    <Compile Include="ValidationContext.cs" />
+    <Compile Include="Validators\CsvValidator.cs" />
+    <Compile Include="Validators\IValidationComplete.cs" />
+    <Compile Include="Validators\ValidationResult.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HydroserverToolsBusinessObjects\HydroserverToolsBusinessObjects.csproj">
+      <Project>{7cab9a1b-dedf-4c2f-801e-05cc8f136455}</Project>
+      <Name>HydroserverToolsBusinessObjects</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\jQuery.DataTables.Mvc\jQuery.DataTables.Mvc.csproj">
+      <Project>{3383d0e2-c499-4f02-9d29-f744741aa999}</Project>
+      <Name>jQuery.DataTables.Mvc</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ODM_1_1_1EFModel\ODM_1_1_1EFModel\ODM_1_1_1EFModel.csproj">
+      <Project>{4f03e897-3890-4762-8a71-18c379bb7957}</Project>
+      <Name>ODM_1_1_1EFModel</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

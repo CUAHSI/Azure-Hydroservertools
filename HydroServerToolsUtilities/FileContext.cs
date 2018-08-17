@@ -12,9 +12,9 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 #endif
 
-using HydroServerToolsUtilities;
+//using HydroServerToolsUtilities;
 
-namespace HydroServerTools.Utilities
+namespace HydroServerToolsUtilities
 {
     //A simple class for the association of a file name and a file (MIME) type
     public class FileNameAndType

@@ -141,10 +141,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\HydroServerToolsUtilities\HydroServerToolsUtilities.csproj">
-      <Project>{cff64114-d63e-4015-a460-862f7f22d857}</Project>
-      <Name>HydroServerToolsUtilities</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ODM_1_1_1EFModel\ODM_1_1_1EFModel\ODM_1_1_1EFModel.csproj">
       <Project>{4f03e897-3890-4762-8a71-18c379bb7957}</Project>
       <Name>ODM_1_1_1EFModel</Name>

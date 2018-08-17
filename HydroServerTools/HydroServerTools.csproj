@@ -184,10 +184,6 @@
     <Reference Include="MvcFileUploader">
       <HintPath>..\packages\MvcFileUploader.1.3.5\lib\40\MvcFileUploader.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
@@ -289,6 +285,7 @@
     <Compile Include="Areas\Admin\Models\RolesViewModel.cs" />
     <Compile Include="Areas\Admin\Controllers\ConnectionParametersController.cs" />
     <Compile Include="Areas\Admin\Controllers\ConnectionParametersUsersController.cs" />
+    <Compile Include="Controllers\api\BulkUploadController.cs" />
     <Compile Include="Controllers\ServiceRegistrationsController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\api\RevisedUploadController.cs" />
@@ -323,15 +320,7 @@
     <Compile Include="Services\Job.cs" />
     <Compile Include="Services\JobManager.cs" />
     <Compile Include="Startup.cs" />
-    <Compile Include="Utilities\DbLoadContext.cs" />
-    <Compile Include="Utilities\EncodingContext.cs" />
-    <Compile Include="Utilities\FileContext.cs" />
-    <Compile Include="Utilities\RepositoryContext.cs" />
     <Compile Include="Utilities\UploadIdHelper.cs" />
-    <Compile Include="Utilities\ValidationContext.cs" />
-    <Compile Include="Validators\CsvValidator.cs" />
-    <Compile Include="Validators\IValidationComplete.cs" />
-    <Compile Include="Validators\ValidationResult.cs" />
     <Compile Include="Utilities\ServiceRegistrationHelper.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -718,6 +707,7 @@
     </None>
     <Content Include="Powershell\copyDBTemplateAzure.ps1" />
     <Content Include="Powershell\azureprofile.json" />
+    <None Include="Properties\PublishProfiles\bccHydroServer - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\hydroserver - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\hydroserver - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\hydroserver-staging - FTP.pubxml" />
@@ -727,7 +717,6 @@
     <None Include="Properties\PublishProfiles\hydroservertools-staging - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\hydroservertools-staging - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\hydroservertools.pubxml" />
-    <None Include="Properties\PublishProfiles\HydroServerToolsBCTest - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\local.pubxml" />
     <None Include="Properties\PublishProfiles\QA-HydroServer - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\QA-HydroServer - Web Deploy.pubxml" />
@@ -927,10 +916,12 @@
     <ProjectReference Include="..\HydroServerToolsRepository\HydroServerToolsRepository\HydroServerToolsRepository.csproj">
       <Project>{2b8b6f28-fce4-4a9e-a016-1cb40918ffe7}</Project>
       <Name>HydroServerToolsRepository</Name>
+      <Aliases>AliasHSTR</Aliases>
     </ProjectReference>
     <ProjectReference Include="..\HydroServerToolsUtilities\HydroServerToolsUtilities.csproj">
       <Project>{cff64114-d63e-4015-a460-862f7f22d857}</Project>
       <Name>HydroServerToolsUtilities</Name>
+      <Aliases>global</Aliases>
     </ProjectReference>
     <ProjectReference Include="..\jenkinsJobs\Jobs-Jenkins.csproj">
       <Project>{82267D11-AE3F-4ABE-88D8-90A6346BEC3D}</Project>
