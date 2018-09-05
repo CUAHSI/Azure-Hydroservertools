@@ -5827,7 +5827,8 @@ namespace HydroServerToolsRepository.Repository
 
                                     }
                                 }
-                                //CensorCode
+                                //CensorCode 
+                                //Added to allow files without censorcode to be processed MS 8/21/18
                                 if (!string.IsNullOrWhiteSpace(item.CensorCode))
                                 {
                                     if (RepositoryUtils.containsSpecialCharacters(item.CensorCode))
@@ -5851,7 +5852,8 @@ namespace HydroServerToolsRepository.Repository
                                 }
                                 else
                                 {
-                                    var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "CensorCode")); listOfErrors.Add(err); isRejected = true;
+                                    item.CensorCode = "Unknown";
+                                //var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "CensorCode")); listOfErrors.Add(err); isRejected = true;
                                 }
 
                                 //QualifierID
