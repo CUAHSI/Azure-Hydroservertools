@@ -78,7 +78,7 @@ namespace HydroServerTools.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ServiceName,Id,GoogleAccount,ServiceTitle,ServiceDescription,ContactName,ContactEmail,ContactPhone,Organization,OrganizationUrl,RequestIssued,RequestConfirmed")] ServiceRegistration serviceRegistration)
+        public ActionResult Create([Bind(Include = "ServiceName,Id,GoogleAccount,ServiceTitle,ServiceDescription,ContactName,ContactEmail,ContactPhone,Organization,OrganizationUrl,Citation,RequestIssued,RequestConfirmed")] ServiceRegistration serviceRegistration)
         {
             //copyAzureDatatabaseTemplate(serviceRegistration.ServiceName); 
             //db.Users.FirstOrDefault( .Identity.Name user 
@@ -155,7 +155,7 @@ namespace HydroServerTools.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ServiceName,Id,GoogleAccount,ServiceTitle,ServiceDescription,ContactName,ContactEmail,ContactPhone,Organization,OrganizationUrl,RequestIssued,RequestConfirmed")] ServiceRegistration serviceRegistration)
+        public ActionResult Edit([Bind(Include = "ServiceName,Id,GoogleAccount,ServiceTitle,ServiceDescription,ContactName,ContactEmail,ContactPhone,Organization,OrganizationUrl,Citation,RequestIssued,RequestConfirmed")] ServiceRegistration serviceRegistration)
         {
             if (ModelState.IsValid)
             {
@@ -495,8 +495,8 @@ namespace HydroServerTools.Controllers
             try
             {
                 //App Service Publish Profile Credentials 
-                string userName = "$dev-Hydroservertools"; //userName 
-                string userPassword = "utE8ryBlvqDfhExAxKcPF94kBGyYnkKzYCbjxumo2SETcL3pcJMZ5uPx83al"; //userPWD 
+                string userName = ConfigurationManager.AppSettings["azurejob-userName-CopyDBTemplate"]; //userName 
+                string userPassword = ConfigurationManager.AppSettings["azurejob-userPassword-CopyDBTemplate"]; //userPWD 
 
                 //change webJobName to your WebJob name 
                 // string webJobName = "WEBJOBNAME";
@@ -506,7 +506,7 @@ namespace HydroServerTools.Controllers
                 //var arg = "arguments= argtest1";
                 //Change this URL to your WebApp hosting the  
                 //string URL = "https://?.scm.azurewebsites.net/api/triggeredwebjobs/" + webJobName + "/run";
-                string URL = "https://dev-hydroservertools.scm.azurewebsites.net/api/triggeredwebjobs/CopyDBTemplate/run";
+                string URL = ConfigurationManager.AppSettings["azurejob-webhook-CopyDBTemplate"];
                 System.Net.WebRequest request = System.Net.WebRequest.Create(URL);
                 request.Method = "POST";
                 request.ContentLength = 0;
@@ -535,20 +535,30 @@ namespace HydroServerTools.Controllers
             var targetExists = CheckDatabaseExists(connectionString, targetDBName);
             var sourceExists = CheckDatabaseExists(connectionString, sourceDBName);
             //check if the target db exist to rename if not recreate
-            if (targetExists)
+            if (!targetExists)
+            {
+                //recreate placeholder db
+                copyDatabase(connectionString, sourceDBName, targetDBName);
+                targetExists = CheckDatabaseExists(connectionString, targetDBName);
+
+            }
+            if (!targetExists)
             {
                 renameDatabase(connectionString, targetDBName, newName);
                 //call job to recreate DB
                 sendCreateDbPlaceholderRequest();
             }
             else
-            {
-                if (sourceExists) copyDatabase(connectionString, sourceDBName, newName);
-                else
-                {
+           
+               if (sourceExists) copyDatabase(connectionString, sourceDBName, newName);
+               else
+               {
+
                     throw new FileNotFoundException("Template not found. Please contact support.");
-                }
-            }
+               } 
+
+                
+            
 
         }
 

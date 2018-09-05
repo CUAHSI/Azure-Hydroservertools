@@ -1,0 +1,84 @@
+
+HydroServer Redesign Part 22
+
+
+**** Summary ****
+ - Major changes in Standard Upload UI workflow 
+   - Reduce page count to two
+     - Page 1: File upload, validation and database loading with 
+                      unique styled progress bars for each
+     - Page 2: Upload Summary page, largely unchanged from previous implementation
+ - Implementation of promise-based, asynchronous 'worker' modules for file validation and database loading status reporting
+
+
+**** HydroServerTools ****
+ - HydroServerTools.csproj
+   - New files: 
+     - Validators\IvalidationComplete.cs
+     - Scripts\custom\workerMonitor.js
+     - Scripts\custom\workers\workerDbLoadStatus.js
+     - Scripts\custom\workers\workerCsvVlaidationResults.js
+     - Views\CSUpload\DragAndDropFilesRevised.cshtml
+
+
+**** HydroServerTools/App_Start ****
+ - WebApiConfig.cs
+    - new API routes: file validation results, db load status and db load status for file 
+
+
+**** HydroServerTools/Controllers ****
+ - CSVUploadController.cs
+   - r: "DragAndDropFiles" w: "DragAndDropFilesRevised"
+
+
+**** HydroServerTools/Controllers/api ****
+ - RevisedUploadController.cs
+   - add class: dbLoadStatus
+   - On REST interface methods - replace MVC Http attributes with System.Web.Http attributes
+        to avoad 'method does not accept GET' errors
+   - New methods for new API routes
+   - Revise signatures of miscellaneous methods
+
+
+**** HydroServerTools/Scripts/Custom ****
+ - new files:
+   - worker Monitor.js - JavaScript 'class' for promise-based message exchange with workers
+   - /workers/workerCsvValidationResults.js - worker code for validation results retrieval from server
+   - /workers/workerCsvDbLoadStatus.js - worker code for db load status retrieval from server
+
+
+**** HydroServerTools/Utilities ****
+ - DbLoadContext.cs 
+   - Class: dbLoadContext
+     - Add enumDbLoadState
+     - Comment out initializing constructor - never called
+     - Add property: DbLoadState
+ - ValidationContext.cs
+   - Class: ValidationContext<TValidator> - TValidator inherit from IValidationComplete
+
+
+**** HydroServerTools/Validators ****
+ - New interface file: IValidationComplete.cs
+ - CsvValidator.cs 
+   - Class: CsvValidationResults
+      - derive from IValidationComplete
+   - Class: CsvValidator
+      - derive from IValidationComplete
+      - add private static Dictionary: validationTypesToFriendlyNames
+   - Miscellaneous changes in indentation/spacing
+   - Miscellaneous changes to error messages
+ - ValidationResult.cs
+   -  Class: ValidationResult<TValidator> 
+     - derive from IValidationComplete
+
+
+**** HydroServerTools/Views/CSVUpload ****
+ - new file:
+   - DragAndDropFilesRevised.cshtml - revised Standard Upload UI workflow
+ - DragAndDropFiles.cshtml
+   - No longer used in Production  
+   - Updated for testing purposes with some worker-based file validation code
+ - ValidateFiles.cshtml
+   - No longer used in Production
+   - Updated for testing purposes with some worker-based db load status code
+

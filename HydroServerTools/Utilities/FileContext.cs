@@ -8,6 +8,10 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using System.Threading.Tasks;
 
+#if (!USE_BINARY_FORMATTER)
+using Newtonsoft.Json;
+#endif
+
 using HydroServerToolsUtilities;
 
 namespace HydroServerTools.Utilities
@@ -134,39 +138,135 @@ namespace HydroServerTools.Utilities
                     try
                     {
                         //De-serialize binary file contents - Incorrect records...
+#if (USE_BINARY_FORMATTER)
                         string binIncorrectFilePathAndName = pathProcessed + iUpdateableItems.UploadId + "-" + modelType.Name + "-IncorrectRecords.bin";
-                        using (var fileStream = new FileStream(binIncorrectFilePathAndName, FileMode.Open, FileAccess.Read, FileShare.Read, 65536, true))
+#else
+                        string binIncorrectFilePathAndName = pathProcessed + iUpdateableItems.UploadId + "-" + modelType.Name + "-IncorrectRecords.json";
+#endif
+                        using (var fileStream = new FileStream(binIncorrectFilePathAndName, FileMode.Open, FileAccess.Read, FileShare.Read, 65536 * 16, true))
                         {
-                            //De-serialize to generic list...
+#if (USE_BINARY_FORMATTER)
+                            //De-serialize binary file to generic list...
                             BinaryFormatter binFor = new BinaryFormatter();
                             incorrectItems = (List<UpdateableItem<tModelType>>)binFor.Deserialize(fileStream);
+#else
+                            //De-serialize JSON file to generic list...
+                            using (StreamReader sr = new StreamReader(fileStream))
+                            {
+                                JsonSerializer jsonSerializer = new JsonSerializer();
+
+                                //incorrectItems = (List<UpdateableItem<tModelType>>)jsonSerializer.Deserialize(sr, typeof(List<UpdateableItem<tModelType>>));
+                                using (JsonReader jsonReader = new Newtonsoft.Json.JsonTextReader(sr))
+                                {
+                                    //Use asynchronous JsonReader method here...
+                                    //Source: https://stackoverflow.com/questions/26601594/what-is-the-correct-way-to-use-json-net-to-parse-stream-of-json-objects
+                                    jsonReader.SupportMultipleContent = true;
+                                    while (await jsonReader.ReadAsync())
+                                    {
+                                        incorrectItems.Add(jsonSerializer.Deserialize<UpdateableItem<tModelType>>(jsonReader));
+                                    }
+                                }
+                            }
+#endif
                         }
 
                         //Correct records...
+#if (USE_BINARY_FORMATTER)
                         string binCorrectFilePathAndName = pathProcessed + iUpdateableItems.UploadId + "-" + modelType.Name + "-CorrectRecords.bin";
-                        using (var fileStream = new FileStream(binCorrectFilePathAndName, FileMode.Open, FileAccess.Read, FileShare.Read, 65536, true))
+#else
+                        string binCorrectFilePathAndName = pathProcessed + iUpdateableItems.UploadId + "-" + modelType.Name + "-CorrectRecords.json";
+#endif
+                        using (var fileStream = new FileStream(binCorrectFilePathAndName, FileMode.Open, FileAccess.Read, FileShare.Read, 65536 * 16, true))
                         {
-                            //De-serialize to generic list...
+#if (USE_BINARY_FORMATTER)
+                            //De-serialize binary file to generic list...
                             BinaryFormatter binFor = new BinaryFormatter();
                             correctItems = (List<UpdateableItem<tModelType>>)binFor.Deserialize(fileStream);
+#else
+                            //De-serialize JSON file to generic list...
+                            using (StreamReader sr = new StreamReader(fileStream))
+                            {
+                                JsonSerializer jsonSerializer = new JsonSerializer();
+
+                                //correctItems = (List<UpdateableItem<tModelType>>)jsonSerializer.Deserialize(sr, typeof(List<UpdateableItem<tModelType>>));
+                                using (JsonReader jsonReader = new Newtonsoft.Json.JsonTextReader(sr))
+                                {
+                                    //Use asynchronous JsonReader method here...
+                                    //Source: https://stackoverflow.com/questions/26601594/what-is-the-correct-way-to-use-json-net-to-parse-stream-of-json-objects
+                                    jsonReader.SupportMultipleContent = true;
+                                    while (await jsonReader.ReadAsync())
+                                    {
+                                        correctItems.Add(jsonSerializer.Deserialize<UpdateableItem<tModelType>>(jsonReader));
+                                    }
+                                }
+                            }
+#endif
                         }
 
                         //Edited records...
+#if (USE_BINARY_FORMATTER)
                         string binEditedFilePathAndName = pathProcessed + iUpdateableItems.UploadId + "-" + modelType.Name + "-EditedRecords.bin";
-                        using (var fileStream = new FileStream(binEditedFilePathAndName, FileMode.Open, FileAccess.Read, FileShare.Read, 65536, true))
+#else
+                        string binEditedFilePathAndName = pathProcessed + iUpdateableItems.UploadId + "-" + modelType.Name + "-EditedRecords.json";
+#endif
+                        using (var fileStream = new FileStream(binEditedFilePathAndName, FileMode.Open, FileAccess.Read, FileShare.Read, 65536 * 16, true))
                         {
-                            //De-serialize to generic list...
+#if (USE_BINARY_FORMATTER)
+                            //De-serialize binary file to generic list...
                             BinaryFormatter binFor = new BinaryFormatter();
                             editedItems = (List<UpdateableItem<tModelType>>)binFor.Deserialize(fileStream);
+#else
+                            //De-serialize JSON file to generic list...
+                            using (StreamReader sr = new StreamReader(fileStream))
+                            {
+                                JsonSerializer jsonSerializer = new JsonSerializer();
+
+                                //editedItems = (List<UpdateableItem<tModelType>>)jsonSerializer.Deserialize(sr, typeof(List<UpdateableItem<tModelType>>));
+                                using (JsonReader jsonReader = new Newtonsoft.Json.JsonTextReader(sr))
+                                {
+                                    //Use asynchronous JsonReader method here...
+                                    //Source: https://stackoverflow.com/questions/26601594/what-is-the-correct-way-to-use-json-net-to-parse-stream-of-json-objects
+                                    jsonReader.SupportMultipleContent = true;
+                                    while (await jsonReader.ReadAsync())
+                                    {
+                                        editedItems.Add(jsonSerializer.Deserialize<UpdateableItem<tModelType>>(jsonReader));
+                                    }
+                                }
+                            }
+#endif
                         }
 
                         //Duplicated records...
+#if (USE_BINARY_FORMATTER)
                         string binDuplicatedFilePathAndName = pathProcessed + iUpdateableItems.UploadId + "-" + modelType.Name + "-DuplicateRecords.bin";
-                        using (var fileStream = new FileStream(binDuplicatedFilePathAndName, FileMode.Open, FileAccess.Read, FileShare.Read, 65536, true))
+#else
+                        string binDuplicatedFilePathAndName = pathProcessed + iUpdateableItems.UploadId + "-" + modelType.Name + "-DuplicateRecords.json";
+#endif
+                        using (var fileStream = new FileStream(binDuplicatedFilePathAndName, FileMode.Open, FileAccess.Read, FileShare.Read, 65536 * 16, true))
                         {
-                            //De-serialize to generic list...
+#if (USE_BINARY_FORMATTER)
+                            //De-serialize binary file to generic list...
                             BinaryFormatter binFor = new BinaryFormatter();
                             duplicatedItems = (List<UpdateableItem<tModelType>>)binFor.Deserialize(fileStream);
+#else
+                            //De-serialize JSON file to generic list...
+                            using (StreamReader sr = new StreamReader(fileStream))
+                            {
+                                JsonSerializer jsonSerializer = new JsonSerializer();
+
+                                //duplicatedItems = (List<UpdateableItem<tModelType>>)jsonSerializer.Deserialize(sr, typeof (List<UpdateableItem<tModelType>>));
+                                using (JsonReader jsonReader = new Newtonsoft.Json.JsonTextReader(sr))
+                                {
+                                    //Use asynchronous JsonReader method here...
+                                    //Source: https://stackoverflow.com/questions/26601594/what-is-the-correct-way-to-use-json-net-to-parse-stream-of-json-objects
+                                    jsonReader.SupportMultipleContent = true;
+                                    while (await jsonReader.ReadAsync())
+                                    {
+                                        duplicatedItems.Add(jsonSerializer.Deserialize<UpdateableItem<tModelType>>(jsonReader));
+                                    }
+                                }
+                            }
+#endif
                         }
 
                         //Remove all processed items from the incorrect items...
@@ -184,36 +284,132 @@ namespace HydroServerTools.Utilities
                         //Add newly incorrect items to incorrect items
                         incorrectItems.AddRange(updateableItems.Where(item => (-1 != incorrectItemIds.IndexOf(item.ItemId))));
 
-                        //Serialize binary file contents - Incorrect records...
-                        using (var fileStream = new FileStream(binIncorrectFilePathAndName, FileMode.Create, FileAccess.Write, FileShare.None, 65536, true))
+                        //Serialize Incorrect records...
+                        using (var fileStream = new FileStream(binIncorrectFilePathAndName, FileMode.Create, FileAccess.Write, FileShare.None, 65536 * 16, true))
                         {
+#if (USE_BINARY_FORMATTER)
+                            //To binary file... 
                             BinaryFormatter binFor = new BinaryFormatter();
                             binFor.Serialize(fileStream, incorrectItems);
+
                             fileStream.Flush();
+#else
+                            //To JSON file...
+                            using (StreamWriter sw = new StreamWriter(fileStream))
+                            {
+                                //JsonSerializer jsonSerializer = new JsonSerializer();
+                                //jsonSerializer.Serialize(sw, incorrectItems);
+
+                                //fileStream.Flush();
+                                using (JsonTextWriter jtw = new JsonTextWriter(sw))
+                                {
+                                    JsonSerializer jsonSerializer = new JsonSerializer();
+                                    //jsonSerializer.Serialize(jtw, incorrectItems);
+                                    foreach (var incorrectItem in incorrectItems)
+                                    {
+                                        jsonSerializer.Serialize(jtw, incorrectItem);
+                                    }
+
+                                    await jtw.FlushAsync();
+                                }
+                            }
+#endif
                         }
 
                         //Correct records...
-                        using (var fileStream = new FileStream(binCorrectFilePathAndName, FileMode.Create, FileAccess.Write, FileShare.None, 65536, true))
+                        using (var fileStream = new FileStream(binCorrectFilePathAndName, FileMode.Create, FileAccess.Write, FileShare.None, 65536 * 16, true))
                         {
+#if (USE_BINARY_FORMATTER)
+                            //To binary file... 
                             BinaryFormatter binFor = new BinaryFormatter();
                             binFor.Serialize(fileStream, correctItems);
+
                             fileStream.Flush();
+#else
+                            //To JSON file...
+                            using (StreamWriter sw = new StreamWriter(fileStream))
+                            {
+                                //JsonSerializer jsonSerializer = new JsonSerializer();
+                                //jsonSerializer.Serialize(sw, correctItems);
+
+                                //fileStream.Flush();
+                                using (JsonTextWriter jtw = new JsonTextWriter(sw))
+                                {
+                                    JsonSerializer jsonSerializer = new JsonSerializer();
+                                    //jsonSerializer.Serialize(jtw, correctItems);
+                                    foreach (var correctItem in correctItems)
+                                    {
+                                        jsonSerializer.Serialize(jtw, correctItem);
+                                    }
+
+                                    await jtw.FlushAsync();
+                                }
+                            }
+#endif
                         }
 
                         //Duplicated records...
-                        using (var fileStream = new FileStream(binDuplicatedFilePathAndName, FileMode.Create, FileAccess.Write, FileShare.None, 65536, true))
+                        using (var fileStream = new FileStream(binDuplicatedFilePathAndName, FileMode.Create, FileAccess.Write, FileShare.None, 65536 * 16, true))
                         {
+#if (USE_BINARY_FORMATTER)
+                            //To binary file... 
                             BinaryFormatter binFor = new BinaryFormatter();
                             binFor.Serialize(fileStream, duplicatedItems);
+
                             fileStream.Flush();
+#else
+                            //To JSON file...
+                            using (StreamWriter sw = new StreamWriter(fileStream))
+                            {
+                                //JsonSerializer jsonSerializer = new JsonSerializer();
+                                //jsonSerializer.Serialize(sw, duplicatedItems);
+
+                                //fileStream.Flush();
+                                using (JsonTextWriter jtw = new JsonTextWriter(sw))
+                                {
+                                    JsonSerializer jsonSerializer = new JsonSerializer();
+                                    //jsonSerializer.Serialize(jtw, duplicatedItems);
+                                    foreach (var duplicatedItem in duplicatedItems)
+                                    {
+                                        jsonSerializer.Serialize(jtw, duplicatedItem);
+                                    }
+
+                                    await jtw.FlushAsync();
+                                }
+                            }
+#endif
                         }
 
                         //Edited records...
-                        using (var fileStream = new FileStream(binEditedFilePathAndName, FileMode.Create, FileAccess.Write, FileShare.None, 65536, true))
+                        using (var fileStream = new FileStream(binEditedFilePathAndName, FileMode.Create, FileAccess.Write, FileShare.None, 65536 * 16, true))
                         {
+#if (USE_BINARY_FORMATTER)
+                            //To binary file... 
                             BinaryFormatter binFor = new BinaryFormatter();
                             binFor.Serialize(fileStream, editedItems);
+
                             fileStream.Flush();
+#else
+                            //To JSON file...
+                            using (StreamWriter sw = new StreamWriter(fileStream))
+                            {
+                                //JsonSerializer jsonSerializer = new JsonSerializer();
+                                //jsonSerializer.Serialize(sw, editedItems);
+
+                                //fileStream.Flush();
+                                using (JsonTextWriter jtw = new JsonTextWriter(sw))
+                                {
+                                    JsonSerializer jsonSerializer = new JsonSerializer();
+                                    //jsonSerializer.Serialize(jtw, editedItems);
+                                    foreach (var editedItem in editedItems)
+                                    {
+                                        jsonSerializer.Serialize(jtw, editedItem);
+                                    }
+
+                                    await jtw.FlushAsync();
+                                }
+                            }
+#endif
                         }
                     }
                     catch (Exception ex)

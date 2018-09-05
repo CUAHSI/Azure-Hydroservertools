@@ -2,7 +2,7 @@
 
 @{
     ViewBag.Title = "Create";
-    Layout = "~/Views/Shared/_LayoutSimple.cshtml";
+    Layout = "~/Views/Shared/_LayoutBasic.cshtml";
 }
 
 <style>
@@ -22,98 +22,105 @@
 {
     @Html.AntiForgeryToken()
     
-    <div class="form-horizontal">
-        <h4></h4>
-        <hr />
-        @Html.ValidationSummary(true)
-        <div class="form-group">
-            @Html.LabelFor(model => model.ServiceName, htmlAttributes: new { @class = "control-label col-md-2" })
-           
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.ServiceName)<a href="#" data-toggle="tooltip" title="Short Name for the data!"><img class="infobutton"  src="~/Images/infobutton_60.jpg" /></a>
-                                @Html.ValidationMessageFor(model => model.ServiceName)
-                                
-            </div>
-        </div>
+<div class="form-horizontal">
+    <h4></h4>
+    <hr />
+    @Html.ValidationSummary(true)
+    <div class="form-group">
+        @Html.LabelFor(model => model.ServiceName, htmlAttributes: new { @class = "control-label col-md-2" })
 
-        <div class="form-group hide">
-            @Html.LabelFor(model => model.GoogleAccount, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.TextBoxFor(model => model.GoogleAccount, new { @Value = User.Identity.Name, @readonly = "readonly" })<a href="#" data-toggle="tooltip" title="Email for current user account"><img class="infobutton" src="~/Images/infobutton_60.jpg" /></a>
-               @* @Html.EditorFor(model => model.GoogleAccount)*@
-                @Html.ValidationMessageFor(model => model.GoogleAccount)
-            </div>
-        </div>
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.ServiceName)<a href="#" data-toggle="tooltip" title="Short Name for the data!"><img class="infobutton" src="~/Images/infobutton_60.jpg" /></a>
+            @Html.ValidationMessageFor(model => model.ServiceName)
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.ServiceTitle, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.ServiceTitle)
-                @Html.ValidationMessageFor(model => model.ServiceTitle)<a href="#" data-toggle="tooltip" title="A descriptive title for the dataset"><img class="infobutton" src="~/Images/infobutton_60.jpg" /></a>
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.ServiceDescription, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @*@Html.EditorFor(model => model.ServiceDescription)*@
-                @Html.TextAreaFor(model => model.ServiceDescription, 5, 100, null)<a href="#" data-toggle="tooltip" title="A detailed description of your data"><img class="infobutton" src="~/Images/infobutton_60.jpg" /></a>
-                @Html.ValidationMessageFor(model => model.ServiceDescription)
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.ContactName, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.ContactName)<a href="#" data-toggle="tooltip" title="Name of main contact"><img class="infobutton" src="~/Images/infobutton_60.jpg" /></a>
-                @Html.ValidationMessageFor(model => model.ContactName)
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.ContactEmail, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.ContactEmail)<a href="#" data-toggle="tooltip" title="Email of main contact"><img class="infobutton" src="~/Images/infobutton_60.jpg" /></a>
-                @Html.ValidationMessageFor(model => model.ContactEmail)
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.ContactPhone, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.ContactPhone)<a href="#" data-toggle="tooltip" title="Phone number of main contact"><img class="infobutton" src="~/Images/infobutton_60.jpg" /></a>
-                @Html.ValidationMessageFor(model => model.ContactPhone)
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Organization, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Organization)<a href="#" data-toggle="tooltip" title="Name of organization responsible for publishing data"><img class="infobutton" src="~/Images/infobutton_60.jpg" /></a>
-                @Html.ValidationMessageFor(model => model.Organization)
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.OrganizationUrl, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.OrganizationUrl)<a href="#" data-toggle="tooltip" title="Website address of organization responsible for publishing data"><img class="infobutton" src="~/Images/infobutton_60.jpg" /></a>
-                @Html.ValidationMessageFor(model => model.OrganizationUrl)
-            </div>
-        </div>
-        <div class="form-group hidden">
-            @Html.LabelFor(model => model.RequestIssued, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.TextBoxFor(model => model.RequestIssued, new { @Value = @DateTime.Now.ToString("s")});
-
-</div>
-        </div>
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" id ="btnServiceRegistrationSubmit" value="Create" class="btn btn-default"  />
-            </div>
         </div>
     </div>
+
+    <div class="form-group hide">
+        @Html.LabelFor(model => model.GoogleAccount, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(model => model.GoogleAccount, new { @Value = User.Identity.Name, @readonly = "readonly" })<a href="#" data-toggle="tooltip" title="Email for current user account"><img class="infobutton" src="~/Images/infobutton_60.jpg" /></a>
+            @* @Html.EditorFor(model => model.GoogleAccount)*@
+            @Html.ValidationMessageFor(model => model.GoogleAccount)
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.ServiceTitle, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.ServiceTitle)
+            @Html.ValidationMessageFor(model => model.ServiceTitle)<a href="#" data-toggle="tooltip" title="A descriptive title for the dataset"><img class="infobutton" src="~/Images/infobutton_60.jpg" /></a>
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.ServiceDescription, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @*@Html.EditorFor(model => model.ServiceDescription)*@
+            @Html.TextAreaFor(model => model.ServiceDescription, 5, 100, null)<a href="#" data-toggle="tooltip" title="A detailed description of your data"><img class="infobutton" src="~/Images/infobutton_60.jpg" /></a>
+            @Html.ValidationMessageFor(model => model.ServiceDescription)
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.ContactName, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.ContactName)<a href="#" data-toggle="tooltip" title="Name of main contact"><img class="infobutton" src="~/Images/infobutton_60.jpg" /></a>
+            @Html.ValidationMessageFor(model => model.ContactName)
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.ContactEmail, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.ContactEmail)<a href="#" data-toggle="tooltip" title="Email of main contact"><img class="infobutton" src="~/Images/infobutton_60.jpg" /></a>
+            @Html.ValidationMessageFor(model => model.ContactEmail)
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.ContactPhone, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.ContactPhone)<a href="#" data-toggle="tooltip" title="Phone number of main contact"><img class="infobutton" src="~/Images/infobutton_60.jpg" /></a>
+            @Html.ValidationMessageFor(model => model.ContactPhone)
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Organization, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Organization)<a href="#" data-toggle="tooltip" title="Name of organization responsible for publishing data"><img class="infobutton" src="~/Images/infobutton_60.jpg" /></a>
+            @Html.ValidationMessageFor(model => model.Organization)
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.OrganizationUrl, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.OrganizationUrl)<a href="#" data-toggle="tooltip" title="Website address of organization responsible for publishing data"><img class="infobutton" src="~/Images/infobutton_60.jpg" /></a>
+            @Html.ValidationMessageFor(model => model.OrganizationUrl)
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Citation, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.TextAreaFor(model => model.Citation, 5, 75, null)<a href="#" data-toggle="tooltip" title="Citation for publishing data"><img class="infobutton" src="~/Images/infobutton_60.jpg" /></a>
+            @Html.ValidationMessageFor(model => model.Citation)
+        </div>
+    </div>
+    <div class="form-group hidden">
+        @Html.LabelFor(model => model.RequestIssued, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(model => model.RequestIssued, new { @Value = @DateTime.Now.ToString("s") });
+
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" id="btnServiceRegistrationSubmit" value="Create" class="btn btn-default" />
+        </div>
+    </div>
+</div>
     <div><h5>Fields with (*) are required.</h5></div>
 }
 @if (User.IsInRole("Admin")) 

@@ -1,0 +1,62 @@
+
+HydroServer Redesign Part 29
+
+
+**** Summary ****
+
+ - Miscellaneous UI format/wording changes per: 
+   - WDC-1804
+   - Neal's Uploader Interface Language/Content Review (http://10.202.2.117:8000/documentation/cuahsi/index.html)
+
+Please note:  Per the recommendation to use ", and " in lists of terms, i.e.
+		- "<term 1>, <term 2>, ... , and <term n>".
+
+                      I have always understood correct usage to be: 
+		- "<term 1>, <term 2>, ... and <term n>".
+  
+ 
+**** HydroServerTools/Controllers ****
+- CSVUploadController.cs
+  - getTableValueCounts() 
+     - r: "scheduled" w: "Scheduled"
+- HomeController.cs
+  - Index() 
+    - r: "scheduled" w: "Scheduled"
+  
+ 
+**** HydroServerTools/Helper ****
+- HydroServerToolsUtils.cs
+   - SendInfoEmail(...)
+     - r: procced w: proceed
+
+
+**** HydroServerTools/Views/Account ****
+- Login.cshtml
+  - Revise HTML markup text per recommendations
+
+
+**** HydroServerTools/Views/CSVUpload ****
+- DragAndDropFilesRevised.cshtml
+  - Revise progress bar markup and code references to address issues in WDC-1804
+
+
+**** HydroServerTools/Views/Home ****
+- Contact.cshtml
+  - Revise HTML markup text per recommendations
+- Index.cshtml
+  - Revise HTML markup text per recommendations
+
+
+**** HydroServerTools/Views/Shared ****
+ - _Layout.cshtml
+  - Revise HTML markup text per recommendations
+ - _LayoutBasic.cshtml
+  - Revise HTML markup text per recommendations
+ - _LayoutSimple.cshtml
+  - Revise HTML markup text per recommendations
+
+
+**** HydroServerToolsBusinessObjects ****
+ - Ressources.cs
+  - Revise resource text per recommendations
+

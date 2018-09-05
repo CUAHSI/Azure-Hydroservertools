@@ -70,7 +70,7 @@ namespace HydroServerTools.Validators
     }
 
     //A simple class for the validation results of a CSV-delimited file...
-    public class CsvValidationResults
+    public class CsvValidationResults : IValidationComplete
     {
         //Default constructor...
         public CsvValidationResults()
@@ -84,6 +84,8 @@ namespace HydroServerTools.Validators
             if (null != csvValidationResults)
             {
                 CandidateTypeName = csvValidationResults.CandidateTypeName;
+
+                CandidateTypeFriendlyName = csvValidationResults.CandidateTypeFriendlyName;
 
                 CandidateRecordCount = csvValidationResults.CandidateRecordCount;
 
@@ -108,6 +110,8 @@ namespace HydroServerTools.Validators
                 }
 
                 HeaderValidationIndex = csvValidationResults.HeaderValidationIndex;
+
+                ValidationComplete = csvValidationResults.ValidationComplete;
             }
 #if (DEBUG)
             else
@@ -122,18 +126,24 @@ namespace HydroServerTools.Validators
         private void reset()
         {
             CandidateTypeName = String.Empty;
+            CandidateTypeFriendlyName = String.Empty;
             CandidateRecordCount = 0;
             InvalidHeaderNames = new List<string>();
             MissingRequiredHeaderNames = new List<string>();
             ValidHeaderNames = new List<string>();
             DataErrors = new List<CsvDataError>();
             HeaderValidationIndex = -1;
+
+            ValidationComplete = false;
         }
 
         //Properties
 
         //Candidate type name (empty if no candidate type established)
         public String CandidateTypeName { get; set; }
+
+        //Friendly name for candidate type (empty if no candidate type established)
+        public String CandidateTypeFriendlyName { get; set; } 
 
         //Number of records available for DB loading...
         public int CandidateRecordCount { get; set; }
@@ -152,6 +162,9 @@ namespace HydroServerTools.Validators
 
         //Header Validation Index - referenced during header validation...
         public int HeaderValidationIndex { get; set; }
+
+        //Validation Complete 
+        public bool ValidationComplete { get; set; }
 
         //Methods 
 
@@ -185,7 +198,7 @@ namespace HydroServerTools.Validators
 
 
     //A simple class for the validation of CSV-delimited files...
-    public class CsvValidator
+    public class CsvValidator : IValidationComplete
     {
         //Members...
 
@@ -208,6 +221,17 @@ namespace HydroServerTools.Validators
                                                                                   {typeof(SourcesModelBasicTemplate), typeof(GenericMap<SourcesModelBasicTemplate>)},
                                                                                   {typeof(VariablesModelBasicTemplate), typeof(GenericMap<VariablesModelBasicTemplate>)}
                                                                                 };
+        //Dictionary of model types used in validation to 'friendly names'...
+        private static Dictionary<Type, string> validationTypesToFriendlyNames = new Dictionary<Type, string>
+        {
+            {typeof(DataValuesModelBasicTemplate), "Data Values"},
+            {typeof(MethodModel), "Methods"},
+            {typeof(QualityControlLevelModel), "Quality Control Levels"},
+            {typeof(SiteModelBasicTemplate), "Sites"},
+            {typeof(SourcesModelBasicTemplate), "Sources"},
+            {typeof(VariablesModelBasicTemplate), "Variables"}
+        };
+
         //CSV file path and name...
         private string csvFilePathAndName;
 
@@ -216,6 +240,9 @@ namespace HydroServerTools.Validators
 
         //Validation results...
         private Dictionary<Type, CsvValidationResults> validationTypesToValidationResults;
+
+        //IValidationComplete...
+        public bool ValidationComplete { get; private set; }
 
         //Default constructor...
         private CsvValidator()
@@ -253,6 +280,8 @@ namespace HydroServerTools.Validators
             FileEncoding = Encoding.Default;
 
             validationTypesToValidationResults = new Dictionary<Type, CsvValidationResults>();
+
+            ValidationComplete = false;
         }
 
         //CsvHelper - Header validation callback...
@@ -266,7 +295,7 @@ namespace HydroServerTools.Validators
                     var mapType = validationTypesToClassMaps[CurrentModelType];
 
                     ConstructorInfo constructorInfo = mapType.GetConstructor(Type.EmptyTypes);
-                    if ( null != constructorInfo)
+                    if (null != constructorInfo)
                     {
                         object mapTypeInstance = constructorInfo.Invoke(new object[] { });
                         MethodInfo miGetOptionalPropertyNames = mapType.GetMethod("GetOptionalPropertyNames");
@@ -294,7 +323,7 @@ namespace HydroServerTools.Validators
                 int headerValidationIndex = (-1 == csvValidationResults.HeaderValidationIndex) ? 0 : csvValidationResults.HeaderValidationIndex + 1;
                 csvValidationResults.HeaderValidationIndex = headerValidationIndex;
 
-                var headerName = isValid ? headerNames[headerNameIndex] : 
+                var headerName = isValid ? headerNames[headerNameIndex] :
                                             (headerValidationIndex < context.HeaderRecord.Count()) ? context.HeaderRecord[headerValidationIndex] : String.Empty;
 
                 if (!String.IsNullOrWhiteSpace(headerName))
@@ -390,6 +419,10 @@ namespace HydroServerTools.Validators
             }
         }
 
+        //Validation Qualifier
+        //Post construction qualifier referenced during validation processing...
+        public String ValidationQualifier { get; set; }
+
         //Methods 
 
         //Validate the associated CSV file...
@@ -462,6 +495,12 @@ namespace HydroServerTools.Validators
                                     var mapType = kvp.Value;
                                     var bRequiredHeadersPresent = false;    //Assume not all required headers are present in file header...
 
+                                    var modelFriendlyName = String.Empty;
+                                    if (validationTypesToFriendlyNames.Keys.Contains(modelType))
+                                    {
+                                        modelFriendlyName = validationTypesToFriendlyNames[modelType];
+                                    }
+
                                     //Create dictionary entry...
                                     csvValidationResults = CsvValidationResults.MakeInstance();
                                     validationTypesToValidationResults.Add(modelType, csvValidationResults);
@@ -471,6 +510,7 @@ namespace HydroServerTools.Validators
 
                                     CurrentModelType = modelType;
                                     csvValidationResults.CandidateTypeName = modelType.Name;
+                                    csvValidationResults.CandidateTypeFriendlyName = modelFriendlyName;
                                     csvReader.ValidateHeader(modelType);
 
                                     //Check for presence of valid header names in file...
@@ -504,7 +544,7 @@ namespace HydroServerTools.Validators
                                         {
                                             if ("SuppressEmptyRequiredFieldsChecks" == fieldInfo.Name)
                                             {
-                                                enumValue = (int) Convert.ChangeType(fieldInfo.GetValue(null), typeof(int));
+                                                enumValue = (int)Convert.ChangeType(fieldInfo.GetValue(null), typeof(int));
                                                 break;
                                             }
                                         }
@@ -536,6 +576,9 @@ namespace HydroServerTools.Validators
                                                 }
                                             }
 
+                                        //Mark validation complete for current validation results...
+                                        csvValidationResults.ValidationComplete = true;
+
                                             if (0 < requiredPropertyNames.Count)
                                             {
                                                 //Not all required property names present - cannot validate - continue to next map type...
@@ -554,7 +597,7 @@ namespace HydroServerTools.Validators
 
                                     if (bRequiredHeadersPresent)
                                     {
-                                        //Successful validation - set validated type...
+                                        //Successful validation - set validated type, break...
                                         ValidatedModelType = modelType;
                                         break;
                                     }
@@ -562,40 +605,72 @@ namespace HydroServerTools.Validators
 
                                 if (null != ValidatedModelType)
                                 {
-                                    //Successful header validation - scan and validate records...
-                                    while (await csvReader.ReadAsync())
+                                    //Successful header validation - check for data values in metadata submission --OR-- 
+                                    //                                          metadata in data values submission...
+                                    if (("meta_data" == ValidationQualifier &&
+                                         typeof(DataValuesModelBasicTemplate) == ValidatedModelType) ||
+                                        ("data_values" == ValidationQualifier &&
+                                         typeof(DataValuesModelBasicTemplate) != ValidatedModelType))
                                     {
-                                        try
+                                        //Metadata validation only - validation finds Data Values --OR-- 
+                                        //Data values validation only - validation finds Metadata 
+                                        // - set validation indicators...
+                                        if (validationTypesToValidationResults.ContainsKey(ValidatedModelType))
                                         {
-                                            //Add validated record to list...
-                                            var record = csvReader.GetRecord(ValidatedModelType);
+                                            var validationResults = validationTypesToValidationResults[ValidatedModelType];
 
-                                            ValidatedRecords.Add(record);
+                                            //Set candidate type name to allow easy identification of error on client...
+                                            if ("meta_data" == ValidationQualifier)
+                                            {
+                                                validationResults.CandidateTypeName = "DataValuesSubmittedAsMetadata";
+                                                validationResults.CandidateTypeFriendlyName = "Data values submitted as metadata";
+                                            }
+                                            else if ("data_values" == ValidationQualifier)
+                                            {
+                                                validationResults.CandidateTypeName = "MetadataSubmittedAsDataValues";
+                                                validationResults.CandidateTypeFriendlyName = "Metadata submitted as data values";
+                                            }
                                         }
-                                        catch (ValidationException ex)
+
+                                        result = false; //Set return value...
+                                    }
+                                    else
+                                    {
+                                        //Scan and validate records...
+                                        while (await csvReader.ReadAsync())
                                         {
-                                            //Validation error - log...
-                                            //NOTE: A sucessful ValidateFileContents() call can find validation error(s) 
-                                            //      on one or more records.  Thus the catch block does not set the result
-                                            //      indicator...
-                                            handlerBadDataFound(ex.ReadingContext);
+                                            try
+                                            {
+                                                //Add validated record to list...
+                                                var record = csvReader.GetRecord(ValidatedModelType);
 
-                                            //var rContext = ex.ReadingContext;
+                                                ValidatedRecords.Add(record);
+                                            }
+                                            catch (ValidationException ex)
+                                            {
+                                                //Validation error - log...
+                                                //NOTE: A sucessful ValidateFileContents() call can find validation error(s) 
+                                                //      on one or more records.  Thus the catch block does not set the result
+                                                //      indicator...
+                                                handlerBadDataFound(ex.ReadingContext);
 
-                                            //var index = rContext.CurrentIndex;
-                                            //var fieldName = rContext.HeaderRecord[index];
-                                            //var fieldValue = rContext.Record[index];
-                                            //var message = String.IsNullOrEmpty(fieldValue) ? "empty" : "invalid format";
+                                                //var rContext = ex.ReadingContext;
 
-                                            //var csvDataError = new CsvDataError(String.Format("Field: {0} - {1}", fieldName, message),
-                                            //                                     rContext.RawRecordBuilder.ToString(),
-                                            //                                     rContext.RawRow,
-                                            //                                     index);
-                                            //DataErrors.Add(csvDataError);
+                                                //var index = rContext.CurrentIndex;
+                                                //var fieldName = rContext.HeaderRecord[index];
+                                                //var fieldValue = rContext.Record[index];
+                                                //var message = String.IsNullOrEmpty(fieldValue) ? "empty" : "invalid format";
+
+                                                //var csvDataError = new CsvDataError(String.Format("Field: {0} - {1}", fieldName, message),
+                                                //                                     rContext.RawRecordBuilder.ToString(),
+                                                //                                     rContext.RawRow,
+                                                //                                     index);
+                                                //DataErrors.Add(csvDataError);
+                                            }
                                         }
                                     }
 
-                                    //Record scan complete - set results candidate record count...
+                                    //Set results candidate record count...
                                     csvValidationResults.CandidateRecordCount = ValidatedRecords.Count;
 
                                     //Remove validation results for types other than ValidatedModelType...
@@ -613,16 +688,14 @@ namespace HydroServerTools.Validators
                                     var IOrderedEnumerable = validationTypesToValidationResults.OrderBy(kvp => kvp.Value.MissingRequiredHeaderNames.Count);
                                     var kvpValidationResults = IOrderedEnumerable.FirstOrDefault();
 
-                                    ////NOTE: Since KeyValuePair is a struct - must compare result to the default value...
-                                    ////Source: https://stackoverflow.com/questions/1641392/the-default-for-keyvaluepair
-                                    //if (kvpValidationResults.Equals(default(KeyValuePair<Type, CsvValidationResults>)))
                                     if (0 >= kvpValidationResults.Value.ValidHeaderNames.Count)
                                     {
                                         //No match - clear validation results, set no match type and validation result
-                                        var type = typeof (HydroserverToolsBusinessObjects.NoModel);
+                                        var type = typeof(HydroserverToolsBusinessObjects.NoModel);
                                         var validationResults = new CsvValidationResults(kvpValidationResults.Value);
 
                                         validationResults.CandidateTypeName = "Unknown";
+                                        validationResults.CandidateTypeFriendlyName = "Unknown";
 
                                         validationTypesToValidationResults.Clear();
                                         validationTypesToValidationResults.Add(type, validationResults);
@@ -644,6 +717,9 @@ namespace HydroServerTools.Validators
                         }
                     }
                 }
+
+                //Validation complete - set indicator...
+                ValidationComplete = true;
             }
             catch (Exception Ex)
             {
@@ -664,6 +740,5 @@ namespace HydroServerTools.Validators
             return ((null != ValidatedModelType) &&  //Model type validated
                     (0 < ValidatedRecords.Count));   //Validated data exists
         }
-
     }
 }

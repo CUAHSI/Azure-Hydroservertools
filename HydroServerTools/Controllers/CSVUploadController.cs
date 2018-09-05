@@ -171,7 +171,8 @@ namespace HydroServerTools.Controllers
                     {
                         HISNetwork hisNetwork = HydroServerToolsUtils.getHISNetworksDataForServiceName(networkId);
                         TempData["LastHarvested"] = hisNetwork.LastHarvested;
-                        TempData["NetworkId"] = hisNetwork.NetworkID;
+                        //BCC - 26-Apr-2018 - Field issue - 500 error returned by SelectUploadType when NetworkID is numeric...
+                        TempData["NetworkId"] = hisNetwork.NetworkID.ToString();
                     }
 
                 }
@@ -205,7 +206,7 @@ namespace HydroServerTools.Controllers
                             TempData["SynchronizedDateTime"] = TimeZoneInfo.ConvertTimeFromUtc(p.SynchronizedDateTime, estZone).ToString("MM/dd/yy H:mm:ss zzz");
                         else
                         {
-                            TempData["SynchronizedDateTime"] = "scheduled";
+                            TempData["SynchronizedDateTime"] = "Scheduled";
                         }
                     }
                 }
@@ -240,7 +241,8 @@ namespace HydroServerTools.Controllers
                     case "draganddropfiles_meta_data":      //Select Upload Type input...
                     case "draganddropfiles_data_values":    //Select Upload Type input...
                         {
-                            viewName = "DragAndDropFiles";
+                            //viewName = "DragAndDropFiles";
+                            viewName = "DragAndDropFilesRevised";
                             //Set temp data for qualifier, if indicated
                             switch (idLower)
                             {

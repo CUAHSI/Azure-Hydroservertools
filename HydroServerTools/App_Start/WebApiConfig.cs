@@ -26,6 +26,14 @@ namespace HydroServerTools
 
             //Define a custom route taking a parameter that is not named 'Id' 
             // (thus different from the DefaultApi)
+
+            //Get File Validation Report Route
+            config.Routes.MapHttpRoute(
+                name: "RevisedUploadApiGetFileValidationResults",
+                routeTemplate: "api/revisedupload/get/filevalidationresults/{uploadId}/{fileName}",
+                defaults: new { controller = "RevisedUpload", action = "GetFileValidationResults" });
+
+            //GET Route - validation results for input uploadId
             config.Routes.MapHttpRoute(
                 name: "RevisedUploadApiGet",
                 routeTemplate: "api/revisedupload/get/{uploadId}",
@@ -36,6 +44,24 @@ namespace HydroServerTools
                 name: "RevisedUploadApiGetDbLoadResults",
                 routeTemplate: "api/revisedupload/get/dbloadresults/{uploadId}",
                 defaults: new { controller = "RevisedUpload", action = "GetDbLoadResults" });
+
+            //Get DB Load Status Route
+            config.Routes.MapHttpRoute(
+                name: "RevisedUploadApiGetDbLoadStatus",
+                routeTemplate: "api/revisedupload/get/dbloadstatus/{uploadId}",
+                defaults: new { controller = "RevisedUpload", action = "GetDbLoadStatus" });
+
+            //Get DB Load Status For File Route
+            config.Routes.MapHttpRoute(
+                name: "RevisedUploadApiGetDbLoadStatusForFile",
+                routeTemplate: "api/revisedupload/get/dbloadstatusforfile/{uploadId}/{fileName}",
+                defaults: new { controller = "RevisedUpload", action = "GetDbLoadStatusForFile" });
+
+            //Get DB Record Counts for File Route
+            config.Routes.MapHttpRoute(
+                name: "RevisedUploadApiGetDbRecordCountsForFile",
+                routeTemplate: "api/revisedupload/get/dbrecordcountsforfile/{uploadId}/{fileName}",
+                defaults: new { controller = "RevisedUpload", action = "GetDbRecordCountsForFile" });
 
             //Get Rejected Items Route...
             config.Routes.MapHttpRoute(
@@ -68,6 +94,13 @@ namespace HydroServerTools
                 name: "RevisedUploadApiRequestDbCounts",
                 routeTemplate: "api/revisedupload/post/requestdbtablecounts",
                 defaults: new { controller = "RevisedUpload", action = "RequestDbTableCounts" });
+
+            //Define a custom route posting a current uploadId
+            // Action: Post to allow data placement in the request body
+            config.Routes.MapHttpRoute(
+                name: "RevisedUploadApiPostCurrentUploadId",
+                routeTemplate: "api/revisedupload/post/currentuploadid",
+                defaults: new { controller = "RevisedUpload", action = "PostCurrentUploadId" });
 
             //Not sure if this route is strictly necessary...
             config.Routes.MapHttpRoute(

@@ -108,6 +108,11 @@ namespace HydroServerToolsRepository.Repository
                     //wrap in transaction in case something goes wrong
                     using (TransactionScope scope = new TransactionScope())
                     {
+                        if (null != statusContext)
+                        {
+                            await statusContext.SetRecordCount(StatusContext.enumCountType.ct_DbLoad, typeof(Source).Name, list.Count);
+                        }
+
                         foreach (T item in list)
                         {
                             var isometadatamodel = Mapper.Map<T, ISOMetadata>(item);
@@ -158,12 +163,21 @@ namespace HydroServerToolsRepository.Repository
                             
                             context.Sources.Add(source);
                             objContext.SaveChanges(SaveOptions.AcceptAllChangesAfterSave);
+
+                            if (null != statusContext)
+                            {
+                                await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbLoad, typeof(Source).Name, 1, 0, 0, 0);
+                            }
                         }
                         //BulkInsert<ISOMetadata>(providerConnectionString, idLower, isometadatarecordsToInsert);
 
-                   
+
                         //BulkInsert<Source>(providerConnectionString, idLower, sourcerecordsToInsert);
-                        
+                        if (null != statusContext)
+                        {
+                            await statusContext.Finalize(StatusContext.enumCountType.ct_DbLoad, typeof(Source).Name);
+                        }
+
                         //if we get here things are looking good.
                         scope.Complete();
                         objContext.AcceptAllChanges();                        
@@ -295,7 +309,8 @@ namespace HydroServerToolsRepository.Repository
           
         }
 
-        public static void CommitUpdateRecords<T>(string entityConnectionString, string id, IList<T> list)
+        //public static void CommitUpdateRecords<T>(string entityConnectionString, string id, IList<T> list)
+        public static async Task CommitUpdateRecords<T>(string entityConnectionString, string id, IList<T> list)
         {
 
             //Convert input id to lowercase...
@@ -339,8 +354,8 @@ namespace HydroServerToolsRepository.Repository
                         }
                         
                     }
-                    context.SaveChanges();
-                   
+                    //context.SaveChanges();
+                    await context.SaveChangesAsync();                   
                 }
 
 
@@ -372,7 +387,8 @@ namespace HydroServerToolsRepository.Repository
                             context.Entry(existingItem).State = EntityState.Modified;
                         }
                     }
-                    context.SaveChanges();
+                    //context.SaveChanges();
+                    await context.SaveChangesAsync();
                 }
                 if (idLower == "offsettypes")
                 {
@@ -394,7 +410,8 @@ namespace HydroServerToolsRepository.Repository
 
                         }
                     }
-                    context.SaveChanges();
+                    //context.SaveChanges();
+                    await context.SaveChangesAsync();
                 }
                 if (idLower == "sources")
                 {
@@ -441,7 +458,8 @@ namespace HydroServerToolsRepository.Repository
                         }
                     }
                     //context.SaveChanges();
-                    objContext.SaveChanges(SaveOptions.AcceptAllChangesAfterSave);
+                    //objContext.SaveChanges(SaveOptions.AcceptAllChangesAfterSave);
+                    await objContext.SaveChangesAsync(SaveOptions.AcceptAllChangesAfterSave);
                 }
 
                 if (idLower == "methods")
@@ -464,7 +482,8 @@ namespace HydroServerToolsRepository.Repository
 
                         }
                     }
-                    context.SaveChanges();
+                    //context.SaveChanges();
+                    await context.SaveChangesAsync();
                 }
 
                 if (idLower == "labmethods")
@@ -489,8 +508,8 @@ namespace HydroServerToolsRepository.Repository
 
                         }
                     }
-                    context.SaveChanges();
-
+                    //context.SaveChanges();
+                    await context.SaveChangesAsync();
                 }
 
                 if (idLower == "samples")
@@ -511,8 +530,8 @@ namespace HydroServerToolsRepository.Repository
                         context.Samples.Attach(existingItem);
                         context.Entry(existingItem).State = EntityState.Modified;
                     }
-                    context.SaveChanges();                   
-
+                    //context.SaveChanges();
+                    await context.SaveChangesAsync();
                 }
 
                 if (idLower == "qualifiers")
@@ -533,8 +552,8 @@ namespace HydroServerToolsRepository.Repository
                         context.Qualifiers.Attach(existingItem);
                         context.Entry(existingItem).State = EntityState.Modified;
                     }
-                    context.SaveChanges();      
-
+                    //context.SaveChanges();
+                    await context.SaveChangesAsync();
                 }
 
                 if (idLower == "qualitycontrollevels")
@@ -555,8 +574,8 @@ namespace HydroServerToolsRepository.Repository
                         context.QualityControlLevels.Attach(existingItem);
                         context.Entry(existingItem).State = EntityState.Modified;
                     }
-                    context.SaveChanges();
-
+                    //context.SaveChanges();
+                    await context.SaveChangesAsync();
                 }
 
                 if (idLower == "datavalues")
@@ -597,57 +616,57 @@ namespace HydroServerToolsRepository.Repository
         {
             try 
             { 
-            //connection = "Data Source=tcp:bhi5g2ajst.database.windows.net,1433;Database=hydroservertest2;User ID=HisCentralAdmin@bhi5g2ajst;Password=f3deratedResearch;Integrated Security=false;Trusted_Connection=False;Encrypt=True;Connection Timeout=30;Persist Security Info = true";
+                //connection = "Data Source=tcp:bhi5g2ajst.database.windows.net,1433;Database=hydroservertest2;User ID=HisCentralAdmin@bhi5g2ajst;Password=f3deratedResearch;Integrated Security=false;Trusted_Connection=False;Encrypt=True;Connection Timeout=30;Persist Security Info = true";
 
+                //bulkCopy.BatchSize = list.Count;
+                // bulkCopy.DestinationTableName = tableName;
+                var table = new DataTable();
+                var props = TypeDescriptor.GetProperties(typeof(targetType))
+                    //Dirty hack to make sure we only have system data types 
+                    //i.e. filter out the relationships/collections
+                                           .Cast<PropertyDescriptor>()
+                                           .Where(propertyInfo => propertyInfo.PropertyType.Namespace.Equals("System"))
+                                           .ToArray();
+                var sortedProps = props.OrderBy(x => x.Name).ToArray();
 
-
-            //bulkCopy.BatchSize = list.Count;
-            // bulkCopy.DestinationTableName = tableName;
-
-
-            var table = new DataTable();
-            var props = TypeDescriptor.GetProperties(typeof(targetType))
-                //Dirty hack to make sure we only have system data types 
-                //i.e. filter out the relationships/collections
-                                       .Cast<PropertyDescriptor>()
-                                       .Where(propertyInfo => propertyInfo.PropertyType.Namespace.Equals("System"))
-                                       .ToArray();
-            var sortedProps = props.OrderBy(x => x.Name).ToArray();
-
-            foreach (var propertyInfo in props)
-            {
-                if (propertyInfo.Name != "ValueID")
+                foreach (var propertyInfo in props)
                 {
-                    //bulkCopy.ColumnMappings.Add(propertyInfo.Name, propertyInfo.Name);
-                }
-                table.Columns.Add(propertyInfo.Name, Nullable.GetUnderlyingType(propertyInfo.PropertyType) ?? propertyInfo.PropertyType);
+                    if (propertyInfo.Name != "ValueID")
+                    {
+                        //bulkCopy.ColumnMappings.Add(propertyInfo.Name, propertyInfo.Name);
+                    }
+                    table.Columns.Add(propertyInfo.Name, Nullable.GetUnderlyingType(propertyInfo.PropertyType) ?? propertyInfo.PropertyType);
 
-            }
-
-            var values = new object[props.Length];
-            foreach (var item in list)
-            {
-
-                for (var i = 0; i < values.Length; i++)
-                {
-                    values[i] = props[i].GetValue(item);
                 }
 
-                table.Rows.Add(values);
-            }
+                var values = new object[props.Length];
+                foreach (var item in list)
+                {
 
+                    for (var i = 0; i < values.Length; i++)
+                    {
+                        values[i] = props[i].GetValue(item);
+                    }
 
+                    table.Rows.Add(values);
+                }
 
-            // open the destination data
-            using (SqlConnection destinationConnection =
-                            new SqlConnection(connection))
-            {
-                // open the connection
-                destinationConnection.Open();
+                //Add record count to status context...
+                if (null != statusContext)
+                {
+                    await statusContext.SetRecordCount(StatusContext.enumCountType.ct_DbLoad, typeof(targetType).Name, table.Rows.Count);
+                }
+
+                // open the destination data
+                using (SqlConnection destinationConnection =
+                                new SqlConnection(connection))
+                {
+                    // open the connection
+                    destinationConnection.Open();
 
                     using (SqlBulkCopy bulkCopy =
                                 new SqlBulkCopy(destinationConnection.ConnectionString, SqlBulkCopyOptions.KeepNulls))//| SqlBulkCopyOptions.CheckConstraints ))
-                {
+                    {
 
                         //bulkCopy.SqlRowsCopied += new SqlRowsCopiedEventHandler(OnSqlRowsTransfer, instanceIdentifier, CacheName);
                         bulkCopy.SqlRowsCopied += async (s, e) =>
@@ -661,21 +680,45 @@ namespace HydroServerToolsRepository.Repository
                             else
                             {
                                 await statusContext.AddStatusMessage(typeof (targetType).Name, statusMessage);
+
+                                int inserted = 0;
+                                //int notifyAfterRowCount = bulkCopy.NotifyAfter;
+
+                                try
+                                {
+                                    inserted = Convert.ToInt32(e.RowsCopied);
+                                }
+                                catch (Exception )
+                                {
+                                    inserted = Int32.MaxValue;  //Failure of long to int conversion...
+                                }
+
+                                await statusContext.SetCounts(StatusContext.enumCountType.ct_DbLoad, typeof(targetType).Name, inserted, 0, 0, 0);
                             }
-
                         };
-                        //bulkCopy.SqlRowsCopied += (sender, e) => { = instanceIdentifier, CacheName};
-                        bulkCopy.NotifyAfter = 5000;
-                    bulkCopy.BatchSize = 10000;
-                    // Set the timeout.
-                    bulkCopy.BulkCopyTimeout = 6000;
 
-                    // bulkCopy.ColumnMappings.Add("OrderID", "NewOrderID");     
-                    bulkCopy.DestinationTableName = tableName;
-                    bulkCopy.WriteToServer(table);
+                        //bulkCopy.SqlRowsCopied += (sender, e) => { = instanceIdentifier, CacheName};
+                        //bulkCopy.NotifyAfter = 5000;
+                        bulkCopy.NotifyAfter = 1000;
+                        bulkCopy.BatchSize = 10000;
+                        // Set the timeout.
+                        bulkCopy.BulkCopyTimeout = 6000;
+
+                        // bulkCopy.ColumnMappings.Add("OrderID", "NewOrderID");     
+                        bulkCopy.DestinationTableName = tableName;
+                        bulkCopy.WriteToServer(table);
+                        //await bulkCopy.WriteToServerAsync(table);
+
+                        int totalRows = table.Rows.Count;
+                        if ((totalRows < bulkCopy.NotifyAfter) && (null != statusContext))
+                        {
+                            //Bulk copy will not call SqlRowCopied callback - write once to status context to record db load... 
+                            await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbLoad, typeof(targetType).Name, totalRows, 0, 0, 0);
+                            await statusContext.Finalize(StatusContext.enumCountType.ct_DbLoad, typeof(targetType).Name);
+                        }
+                    }
                 }
             }
-                }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
@@ -691,6 +734,7 @@ namespace HydroServerToolsRepository.Repository
                 else
                 {
                     await statusContext.AddStatusMessage(typeof(targetType).Name, statusMessage);
+                    await statusContext.Finalize(StatusContext.enumCountType.ct_DbLoad, typeof(targetType).Name);
                 }
             }
             //bulkCopy.WriteToServer(table);

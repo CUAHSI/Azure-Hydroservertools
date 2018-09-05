@@ -21,7 +21,7 @@
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
-    <Use64BitIISExpress />
+    <Use64BitIISExpress>true</Use64BitIISExpress>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -190,7 +190,7 @@
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Documents\Visual Studio 2013\Projects\WebApplication7\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -298,6 +298,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\TrackUpdatesController.cs" />
     <Compile Include="Controllers\ViewDataController.cs" />
+    <Compile Include="Extensions\HtmlHelperExtensions.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -326,8 +327,10 @@
     <Compile Include="Utilities\EncodingContext.cs" />
     <Compile Include="Utilities\FileContext.cs" />
     <Compile Include="Utilities\RepositoryContext.cs" />
+    <Compile Include="Utilities\UploadIdHelper.cs" />
     <Compile Include="Utilities\ValidationContext.cs" />
     <Compile Include="Validators\CsvValidator.cs" />
+    <Compile Include="Validators\IValidationComplete.cs" />
     <Compile Include="Validators\ValidationResult.cs" />
     <Compile Include="Utilities\ServiceRegistrationHelper.cs" />
   </ItemGroup>
@@ -572,7 +575,9 @@
     <Content Include="Content\DataTables-Editor-1.7.0\scss\processing.scss" />
     <Content Include="Content\DataTables-Editor-1.7.0\scss\upload.scss" />
     <Content Include="connectionString.config" />
-    <Content Include="AppSettings.config" />
+    <Content Include="AppSettings.config">
+      <SubType>Designer</SubType>
+    </Content>
     <None Include="Microsoft.WindowsAzure.Caching\ClientPerfCountersInstaller.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -585,13 +590,24 @@
     <Content Include="Scripts\bootstrap.file-input.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\custom\ButtonElements.js" />
+    <Content Include="Scripts\custom\ConsoleUtils.js" />
     <Content Include="Scripts\custom\CSVUploadHelper.js" />
+    <Content Include="Scripts\custom\EnableDisableAction.js" />
+    <Content Include="Scripts\custom\freezeEnum.js" />
     <Content Include="Scripts\custom\jsHelper.js" />
     <Content Include="Scripts\custom\Manage.js" />
     <Content Include="Scripts\custom\RandomId.js" />
     <Content Include="Scripts\custom\revisedUploadUtils.js" />
+    <Content Include="Scripts\custom\StatusValues.js" />
+    <Content Include="Scripts\custom\VisibilityState.js" />
+    <Content Include="Scripts\custom\workerMonitor.js" />
     <Content Include="Scripts\custom\UploadHelper.js" />
     <Content Include="Scripts\custom\ViewDataHelper.js" />
+    <Content Include="Scripts\custom\workers\workerDbLoadStatus.js" />
+    <Content Include="Scripts\custom\workers\workerCsvValidationResults.js" />
+    <Content Include="Scripts\custom\workers\workerDbRecordCounts.js" />
+    <Content Include="Scripts\custom\workers\workerUploadIdKeepAlive.js" />
     <Content Include="Scripts\DataTables-1.9.4\docs\media\js\doc.js" />
     <Content Include="Scripts\DataTables-1.9.4\docs\media\js\jquery.js" />
     <Content Include="Scripts\DataTables-1.9.4\docs\media\js\shBrushJScript.js" />
@@ -861,7 +877,6 @@
     <Content Include="Views\ServiceRegistrations\AccountIsRegistered.cshtml" />
     <Content Include="Views\Home\Default.cshtml" />
     <Content Include="Templates\ODMTemplates.zip" />
-    <Content Include="Views\CSVUpload\DragAndDropFiles.cshtml" />
     <Content Include="Views\CSVUpload\ValidateFiles.cshtml" />
     <Content Include="Views\CSVUpload\DbSummaryReport.cshtml" />
     <Content Include="Views\CSVUpload\SelectUploadType.cshtml" />
@@ -874,12 +889,15 @@
     <Content Include="Views\TrackUpdates\Edit.cshtml" />
     <Content Include="Views\TrackUpdates\Index.cshtml" />
     <Content Include="Views\ServiceRegistrations\ActivationEmailError.cshtml" />
-    <Content Include="smtp.config" />
+    <Content Include="smtp.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Templates\Advanced Formatting Template.xlsx" />
     <Content Include="Templates\Standard Formatting Template.xlsx" />
     <Content Include="Templates\Advanced Uploading Guide.pdf" />
     <Content Include="Templates\CUAHSI Formatting Guide.pdf" />
     <Content Include="Templates\Standard Uploading Guide.pdf" />
+    <Content Include="Views\CSVUpload\DragAndDropFilesRevised.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

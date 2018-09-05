@@ -43,7 +43,7 @@ namespace HydroserverToolsBusinessObjects.Models
         public string OffsetTypeID { get; set; }
         public string OffsetTypeCode { get; set; }
 
-        [Required]
+        //[Required]
         public string CensorCode { get; set; }
 
         [Display(Name = "NotVisible")]//

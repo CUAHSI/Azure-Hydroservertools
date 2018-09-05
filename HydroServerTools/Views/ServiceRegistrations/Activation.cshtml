@@ -5,9 +5,9 @@
     Layout = "~/Views/Shared/_LayoutSimple.cshtml";
 }
 <div class="well">
-    <h2>Activation</h2>
+    <h3>Activation</h3>
 
-    <h4>Account was successfully activated. Please click continue.”</h4>
+    <h4>You successfully activated your account. Please click button below to continue</h4>
     
        @* <div class="col-md-offset-2 col-md-10">*@
             <input type="button" class="btn btn-success"  value="Continue " onclick="@("window.location.href='" + @Url.Action("index", "home") + "'");" />

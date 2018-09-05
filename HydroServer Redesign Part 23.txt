@@ -1,0 +1,70 @@
+
+HydroServer Redesign Part 23
+
+**** Summary ****
+ - Relatively minor changes in UI behavior supporting real-time
+    updates of the progress bar during database 'process' and 
+    'load' phases
+
+
+**** HydroServerTools ****
+ - HydroServerTools.csproj
+   - New files:
+     -  workerDbRecordCounts.js
+
+
+**** HydroServerTools/App_Start ****
+ - WebApiConfig.cs
+    - new API routes: get db record counts for file 
+
+
+**** HydroServerTools/Controllers/api ****
+ - RevisedUploadController.cs
+   - new class: DbRecordCountStatus
+   - Get method for new API route
+
+
+**** HydroServerTools/Scripts/Custom ****
+ - new files:
+   - /workers/workerDbRecordCounts.js - worker code for db record counts from server
+ - workerDbLoadStatus.js
+    - Miscellaneous spacing/formatting changes
+
+
+**** HydroServerTools/Utilities ****
+ - DbLoadContext.cs 
+   - new class: DbLoadCounts
+ - RepositoryContext.cs
+   - Refactor to support substitute keys in StatusContext entries...
+
+
+**** HydroServerTools/Views/CSVUpload ****
+   - DragAndDropFilesRevised.cshtml
+      - Add worker and worker monitor instances for db record counts
+      - New methods: 
+         - allUploadComplete()
+         - requestDbRecordCountMonitoring(...)
+      - Comment out calls to requestDbStatusMonitoring(...)
+      - Miscellaneous re-factoring to address observed UI timing issues
+      - Added miscellaneous comments
+
+
+**** HydroServerToolsRepository/HydroServerToolsRepository ****
+  - Repository.cs
+     - Add StatusContext calls for db record count capture
+  - Utils.cs
+     - Add StatusContext calls for db record count capture
+     - Miscellaneous formatting changes
+
+
+**** HydroServerToolsUtilities ****
+ - Added files for refactored classes:
+   - DbLoadCounts,cs
+   - DbLoadResult.cs
+ - StatusContext.cs
+   - new class: RecordCountMessage
+   - class: StatusContext 
+      - refactor for db process and load record counts 
+      - refactor for substitute keys
+
+
