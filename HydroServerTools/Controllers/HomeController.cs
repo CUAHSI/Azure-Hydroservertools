@@ -44,6 +44,8 @@ namespace HydroServerTools.Controllers
             TempData["SynchronizedDateTime"] = "unknown";
             TempData["LastHarvested"] = "unknown";
             TempData["NetworkId"] = "unknown";
+            TempData["ConnectionName"] = "unknown"; ;
+            TempData["NetworkApiKey"] = "unknown";
             //test jenkins
 
             //j.Init();
@@ -53,11 +55,15 @@ namespace HydroServerTools.Controllers
             //get connection name
             string connectionName = HydroServerToolsUtils.GetConnectionName(HttpContext.User.Identity.Name.ToString());
 
+           
             if (connectionName == Resources.NOT_LINKED_TO_DATABASE)
             {
                 TempData["message"] = Resources.USERACCOUNT_NOT_LINKED;
                 return RedirectToAction("Login","Account");
             }
+            //st connection anem for status
+            TempData["ConnectionName"] = connectionName;
+
             string entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name.ToString());
 
             //try to get status
@@ -66,22 +72,19 @@ namespace HydroServerTools.Controllers
                 var networkidString = HydroServerToolsUtils.GetNetworkIdForUserName(HttpContext.User.Identity.Name.ToString());
                 int networkId = -1;
                 bool res = int.TryParse(networkidString, out networkId);
-                if (res == true)
+                if (res == true)//fill staus message
                 {
                     hisNetwork = HydroServerToolsUtils.getHISNetworksDataForServiceName(networkId);
                     TempData["LastHarvested"] = hisNetwork.LastHarvested;
                     TempData["NetworkId"] = hisNetwork.NetworkID.ToString();
-                }
-                else
-                {
-                    //TODO
-                }
+                }                
             }
             catch (Exception ex)
             {
                 //TODO logging
             }
             
+           
 
             if (!String.IsNullOrEmpty(entityConnectionString))
             {
@@ -124,6 +127,14 @@ namespace HydroServerTools.Controllers
                         TempData["SynchronizedDateTime"] = "Scheduled";
                     }
                 }
+
+                //try to get HiscentralNetworkApiKey
+                try
+                {                    
+                    TempData["NetworkApiKey"] = HydroServerToolsUtils.GetConnectionHIScentralNetworkApiKey(userId);
+                }
+                catch
+                { }
 
               
                 TempData["message"] = Resources.CSV_FILES_HYDROSERVER;

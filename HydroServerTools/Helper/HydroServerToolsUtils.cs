@@ -222,6 +222,25 @@ namespace HydroServerTools
             return connectionId;
         }
 
+        public static string GetConnectionHIScentralNetworkApiKey(string userId)
+        {
+            string HIScentralNetworkApiKey = Resources.NOT_LINKED_TO_DATABASE;
+            ApplicationDbContext context = new ApplicationDbContext();
+
+            var p = (from c in context.ConnectionParametersUser
+                     where c.User.Id == userId
+                     select new
+                     {
+                         c.ConnectionParameters.HIScentralNetworkApiKey
+                     }).FirstOrDefault();
+            if (p != null)
+            {
+                HIScentralNetworkApiKey = p.HIScentralNetworkApiKey;
+            }
+
+            return HIScentralNetworkApiKey;
+        }
+
         public static string BuildConnectionStringForUserName(string userName)
         {
             string connectionString = string.Empty;
