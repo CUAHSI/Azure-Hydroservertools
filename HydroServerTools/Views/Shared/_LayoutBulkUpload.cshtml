@@ -1,0 +1,45 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - HydroServerTools</title>
+
+    <!-- Cannot be interpreted by RazonEngine ??? -->
+    @*@Styles.Render("~/Content/css")*@
+    <link rel="stylesheet" type="text/css" href="@(ViewBag.urlBase)Content/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="@(ViewBag.urlBase)Content/Site.css" />
+
+    @RenderSection("styles", required: false)
+    @*<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+        <script src="~/Scripts/jquery-ui-1.10.3.min.js"></script>
+        <script src="~/Scripts/bootstrap.min.js"></script>
+        <script src="~/Scripts/purl.js"></script>
+        <script src="~/Scripts/bootbox.min.js"></script>*@
+    <script src="@(ViewBag.urlBase)Scripts/jquery-1.10.2.min.js"></script>
+    <script src="@(ViewBag.urlBase)Scripts/jquery-ui-1.10.3.min.js"></script>
+    <script src="@(ViewBag.urlBase)Scripts/bootstrap.min.js"></script>
+    <script src="@(ViewBag.urlBase)Scripts/purl.js"></script>
+    <script src="@(ViewBag.urlBase)Scripts/bootbox.min.js"></script>
+
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            @*<img src="~/Images/Hydroserver/HydroserverLogo.png" class="center img-thumbnail" style="border:0px; vertical-align:top" />*@
+            <img src="@(ViewBag.urlBase)Images/Hydroserver/HydroserverLogo.png" class="center img-thumbnail" style="border:0px; vertical-align:top" />
+            
+        </div>
+
+        @RenderBody()
+
+        <footer>
+            <hr />
+            <p><a href="https://github.com/CUAHSI/Azure-Hydroservertools/issues" class="h5" target="_blank">Report a bug here!</a><span style="float:right"> &copy; @DateTime.Now.Year CUAHSI - Version 2.0.1</span></p>
+        </footer>
+    </div>
+
+    @RenderSection("scripts", required: false)
+
+</body>
+</html>

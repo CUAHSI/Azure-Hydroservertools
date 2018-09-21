@@ -18,12 +18,28 @@ namespace HydroServerToolsUtilities
     public static class CacheCollections
     {
         //Private members...
+        private const string _keyDbLoadContexts = "DbLoadContexts";
+        private const string _keyFileContext = "FileContexts";
+        private const string _keyKeepAliveDateTimes = "KeepAliveDateTimes";
+        private const string _keyRepositoryContexts = "RepositoryContexts";
+        private const string _keyStatusContexts = "StatusContexts";
+        private const string _keyValidationContexts = "ValidationContexts";
+
         private const string _keyUploadIdsToDbLoadContexts = "uploadIdsToDbLoadContexts";
         private const string _keyUploadIdsToFileContexts = "uploadIdsToFileContexts";
         private const string _keyUploadIdsToKeepAliveDateTimes = "uploadIdsToKeepAliveDateTimes";
         private const string _keyUploadIdsToRepositoryContexts = "uploadIdsToRepositoryContexts";
         private const string _keyUploadIdsToStatusContexts = "uploadIdsToStatusContexts";
         private const string _keyUploadIdsToValidationContexts = "uploadIdsToValidationContexts";
+
+        private static ConcurrentDictionary<string, string> _friendlyKeysToInternalKeys =
+            new ConcurrentDictionary<string, string>(new Dictionary<string, string>() { //{_keyDbLoadContexts, _keyUploadIdsToDbLoadContexts },
+                                                                                        //{_keyFileContext, _keyUploadIdsToFileContexts },
+                                                                                        {_keyKeepAliveDateTimes, _keyUploadIdsToKeepAliveDateTimes } //,
+                                                                                        //{_keyRepositoryContexts, _keyUploadIdsToRepositoryContexts },
+                                                                                        //{_keyStatusContexts, _keyUploadIdsToStatusContexts },
+                                                                                        //{_keyValidationContexts, _keyUploadIdsToValidationContexts} 
+                                                                                      });
 
         private static ConcurrentDictionary<string, Type> _keysToContextTypes =
             new ConcurrentDictionary<string, Type>(new Dictionary<string, Type>() { {_keyUploadIdsToDbLoadContexts, typeof (DbLoadContext) },
@@ -32,7 +48,6 @@ namespace HydroServerToolsUtilities
                                                                                     {_keyUploadIdsToRepositoryContexts, typeof (RepositoryContext) },
                                                                                     {_keyUploadIdsToStatusContexts, typeof (StatusContext) },
                                                                                     {_keyUploadIdsToValidationContexts, typeof (ValidationContext<CsvValidator>)} });
-
 
         //Public methods...
 
@@ -67,6 +82,13 @@ namespace HydroServerToolsUtilities
                     var instance = Activator.CreateInstance(genericType);
                     cache.Insert(key, instance);
                 }
+
+                //Allocate log contexts...
+                var dbLogContext = new DbLogContext("DBLog", "AdoNetAppenderLog", "local-DBLog", "deploy-DBLog");
+                var dbErrorContext = new DbErrorContext("DBError", "AdoNetAppenderError", "local-DBLog", "deploy-DBLog");
+
+                cache.Insert("DBLog", dbLogContext);
+                cache.Insert("DBError", dbErrorContext);
 
                 //Set initialization flag...
                 cache.Insert(initKey, true);
@@ -106,7 +128,6 @@ namespace HydroServerToolsUtilities
             return bResult;
         }
 
-
         //Retrieve a context...
         public static typeContext GetContext<typeContext>(string uploadId)
         {
@@ -141,5 +162,49 @@ namespace HydroServerToolsUtilities
             //Processing complete - return
             return result;
         }
+
+        //Get DbLogContext
+        public static DbLogContext GetDbLogContext()
+        {
+            //Retrieve Http cache reference...
+            var cache = HttpRuntime.Cache;
+
+            var result = cache.Get("DbLog") as DbLogContext;
+
+            return result;
+        }
+
+        //Get DbErrorContext 
+        public static DbErrorContext GetDbErrorContext()
+        {
+            //Retrieve Http cache reference...
+            var cache = HttpRuntime.Cache;
+
+            var result = cache.Get("DbError") as DbErrorContext;
+
+            return result;
+        }
+
+        //Retrieve a collection...
+        public static ConcurrentDictionary<string, typeValue> GetCollection<typeValue>(string friendlyKey)
+        {
+            ConcurrentDictionary<string, typeValue> result = null;
+
+            //Validate/initialize input parameters...
+            if (!String.IsNullOrWhiteSpace(friendlyKey))
+            {
+                string internalKey = String.Empty;
+                if (_friendlyKeysToInternalKeys.TryGetValue(friendlyKey, out internalKey))
+                {
+                    var cache = HttpRuntime.Cache;
+
+                    result = cache.Get(internalKey) as ConcurrentDictionary<string, typeValue>;
+                }
+            }
+
+            //Processing complete - return result...
+            return result;
+        }
+
     }
 }

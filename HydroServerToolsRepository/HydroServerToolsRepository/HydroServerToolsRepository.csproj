@@ -100,7 +100,6 @@
     <Compile Include="Repository.cs" />
     <Compile Include="VariablesRepository.cs" />
     <Compile Include="SitesRepository.cs" />
-    <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\HydroserverToolsBusinessObjects\HydroserverToolsBusinessObjects.csproj">

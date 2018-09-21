@@ -47,5 +47,11 @@ namespace HydroServerToolsUtilities
         public bool Final { get; set; }
 
         public int RecordCount { get; set; }
+
+        //Override ToString to produce 'human-readable' output...
+        public override string ToString()
+        {
+            return String.Format("Table: {0} - Load Counts: {1}", TableName, LoadCounts.ToString() );
+        }
     }
 }

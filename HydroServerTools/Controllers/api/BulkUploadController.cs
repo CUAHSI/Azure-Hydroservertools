@@ -14,14 +14,34 @@ using Newtonsoft.Json;
 using HydroServerToolsUtilities;
 using HydroServerToolsUtilities.Validators;
 using HydroserverToolsBusinessObjects;
+using HydroserverToolsBusinessObjects.ModelMaps;
+using System.Reflection;
+using System.Text;
+using System.Web;
+
+using RazorEngine;
+using RazorEngine.Templating;
+using System.Web.Routing;
 
 namespace HydroServerTools.Controllers.api
 {
     public class BulkUploadController : ApiController
     {
         //private members...
-        static string _strHdrUploadId = "X-Api-BulkUpload-UploadId";
-        static string _strHdrValidationQualifier = "X-Api-BulkUpload-ValidationQualifier";
+        private static readonly string _strHdrNetworkApiKey = "X-Api-BulkUpload-NetworkApiKey";
+        private static readonly string _strHdrValidationQualifier = "X-Api-BulkUpload-ValidationQualifier";
+        private static readonly string _strHdrResponseHumanReadable = "X-Api-BulkUpload-ResponseHumanReadable";
+
+        private static readonly string _postErrorMsgTemplate = "API method: bulkupload/post fails with error code: {0}. Reason: {1}";
+        private static readonly string _hdrNotFoundTemplate = "Header '{0}' not found...";
+
+        private static readonly Dictionary<string, string> _itemTypesToFileStubs = new Dictionary<string, string>()
+                                                                                    { { "inserted", "CorrectRecords" }, 
+                                                                                      { "updated", "EditedRecords" },
+                                                                                      { "duplicate", "DuplicateRecords" },
+                                                                                      { "rejected", "IncorrectRecords" }
+                                                                                    };
+
 
         //Private methods...
         //An asynchronous method for file content validation...
@@ -164,30 +184,227 @@ namespace HydroServerTools.Controllers.api
             });
         }
 
-        // GET
-        //Return a newly generated Upload Id
+        // GetItemsFile
+        //Return a non-zero length items file as produced by db insertion/update processing...
         [System.Web.Http.AcceptVerbs("GET")]
         [System.Web.Http.HttpGet]
-        public async Task<HttpResponseMessage> Get()
+        public async Task<HttpResponseMessage> GetItemsFile(string itemsType, string uploadId, string tableName)
         {
             HttpResponseMessage response = new HttpResponseMessage();
-            response.StatusCode = HttpStatusCode.OK;    //Assume success...
+            HttpStatusCode httpStatusCode = HttpStatusCode.OK;  //Assume success...
 
-            //TO DO - Authentication of input JWT...
-            //        Return early (with error) if no JWT or JWT invalid/expired
+            //Write an empty JSON object to the response
+            //  To avoid 'Unexpected end of JSON input' error in jQuery AJAX!!
+            response.Content = new StringContent("{}", System.Text.Encoding.UTF8, "application/json");
 
-            //Generate new Upload Id...
-            var uploadId = Guid.NewGuid().ToString();
+            //Validate/initialize input parameters
+            if (String.IsNullOrWhiteSpace(itemsType) || 
+                String.IsNullOrWhiteSpace(uploadId) || 
+                String.IsNullOrWhiteSpace(tableName) ||
+                (! _itemTypesToFileStubs.ContainsKey(itemsType.ToLowerInvariant())))
+            {
+                response.StatusCode = HttpStatusCode.PreconditionFailed;    //Missing/invalid parameter(s) - return early
+                response.ReasonPhrase = "Invalid parameter(s)";
+                return response;
+            }
 
-            //TO DO - pair Upload Id with JWT... 
+            //Retrieve DbLoad context...
+            DbLoadContext dbLoadContext = CacheCollections.GetContext<DbLoadContext>(uploadId);
+            if (null == dbLoadContext)
+            {
+                response.StatusCode = HttpStatusCode.NotFound;    //Unknown uploadId - return early
+                response.ReasonPhrase = String.Format("No dbLoadContext for upload id: {0}", uploadId);
+                return response;
+            }
 
-            //Add a customer header, pass in parameters to task...
-            //Sources: https://stackoverflow.com/questions/32017686/add-a-custom-response-header-in-apicontroller
-            //         https://stackoverflow.com/questions/41520513/create-a-task-with-an-actiont-t-n-multiple-parameters
-            void action(HttpResponseMessage resp, string upldId) => resp.Headers.Add(_strHdrUploadId, upldId);
-            Task task = new Task(() => action(response, uploadId));
+            //Check context for input table name...
+            using (await dbLoadContext.DbLoadSemaphore.UseWaitAsync())
+            {
+                bool bFound = false;    //Assume failure
+                var dbLoadResults = dbLoadContext.DbLoadResults;
+                foreach (var dbLoadResult in dbLoadResults)
+                {
+                    if (tableName.ToLowerInvariant() == dbLoadResult.TableName.ToLowerInvariant())
+                    {
+                        bFound = true;
+                        break;
+                    }
+                }
 
-            await task;
+                if (!bFound)
+                {
+                    response.StatusCode = HttpStatusCode.NotFound;    //Invalid table name - return early
+                    response.ReasonPhrase = String.Format("Unknown table name {0} for upload id: {1}", tableName, uploadId);
+                    return response;
+                }
+            }
+
+            //Retrieve the associated repository context...
+            RepositoryContext repositoryContext = CacheCollections.GetContext<RepositoryContext>(uploadId);
+            if (null == repositoryContext)
+            {
+                response.StatusCode = HttpStatusCode.NotFound;    //Unknown uploadId - return early
+                response.ReasonPhrase = String.Format("No repositoryContext for upload id: {0}", uploadId);
+                return response;
+            }
+
+            //Retrieve the associated model type...
+            Dictionary<String, Type> modelTypes = await repositoryContext.ModelTypeByTableName(tableName);
+
+            Type modelType = modelTypes["tSourceType"];
+
+            //Retrieve required and optional property names for model type...
+            Type tGenericMap = typeof(GenericMap<>);
+            Type tModelMap = tGenericMap.MakeGenericType(modelType);
+            List<string> listRequiredPropertyNames = null;
+            List<string> listOptionalPropertyNames = null;
+
+            //Construct a map type instance...
+            ConstructorInfo constructorInfo = tModelMap.GetConstructor(Type.EmptyTypes);
+            if (null != constructorInfo)
+            {
+                object mapTypeInstance = constructorInfo.Invoke(new object[] { });
+
+                MethodInfo miGetRequiredPropertyNames = tModelMap.GetMethod("GetRequiredPropertyNames");
+                listRequiredPropertyNames = miGetRequiredPropertyNames.Invoke(mapTypeInstance, new object[] { }) as List<string>;
+
+                MethodInfo miGetOptionalPropertyNames = tModelMap.GetMethod("GetOptionalPropertyNames");
+                listOptionalPropertyNames = miGetOptionalPropertyNames.Invoke(mapTypeInstance, new object[] { }) as List<string>;
+            }
+
+            if (null == listRequiredPropertyNames && null == listOptionalPropertyNames)
+            {
+                //Cannot retrieve property names - return early
+                response.StatusCode = HttpStatusCode.NotFound;
+                response.ReasonPhrase = String.Format("Cannot find property names for map type {0} for upload id {1}", tModelMap.Name, uploadId);
+                return response;
+            }
+
+            //Retrieve validation context...
+            ValidationContext<CsvValidator> validationContext = CacheCollections.GetContext<ValidationContext<CsvValidator>>(uploadId);
+            if (null == validationContext)
+            {
+                response.StatusCode = HttpStatusCode.NotFound;    //Unknown uploadId - return early
+                response.ReasonPhrase = String.Format("No validationContext for upload id: {0}", uploadId);
+                return response;
+            }
+
+            //Retrieve the associated file encoding...
+            System.Text.Encoding fileEncoding = System.Text.Encoding.GetEncoding("iso-8859-1"); //Default usage...
+            using (await validationContext.ValidationResultSemaphore.UseWaitAsync())
+            {
+                foreach (var validationRes in validationContext.ValidationResults)
+                {
+                    if (modelType == validationRes.FileValidator.ValidatedModelType)
+                    {
+                        fileEncoding = validationRes.FileValidator.FileEncoding;
+                    }
+                }
+            }
+
+            //Retrieve the associated file stub...
+            var fileStub = _itemTypesToFileStubs[itemsType.ToLowerInvariant()];
+
+            //Retrieve the list of UpdateableItem<> from the indicated records file...
+            string pathProcessed = System.Web.Hosting.HostingEnvironment.MapPath("~/Processed/");
+#if (USE_BINARY_FORMATTER)
+            string binFilePathAndName = pathProcessed + uploadId + "-" + modelType.Name + "-" + fileStub + ".bin";
+#else
+            string binFilePathAndName = pathProcessed + uploadId + "-" + modelType.Name + "-" + fileStub + ".json";
+#endif
+
+            using (await repositoryContext.RepositorySemaphore.UseWaitAsync())
+            {
+                try
+                {
+                    int bufferSize = 65536 * 16;
+                    using (var fileStream = new FileStream(binFilePathAndName, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize, true))
+                    {
+#if (USE_BINARY_FORMATTER)
+                        //De-serialize binary file to generic list...
+                        BinaryFormatter binFor = new BinaryFormatter();
+                        var iUpdateableItemsList = binFor.Deserialize(fileStream);
+#else
+                        //De-serialize JSON file to generic list...
+                        Type tGenericList = typeof(List<>);
+                        Type tUpdateableItem = typeof(UpdateableItem<>);
+                        Type gUpdateableItem = tUpdateableItem.MakeGenericType(modelType);
+                        Type updateableItemsListType = tGenericList.MakeGenericType(gUpdateableItem);
+                        System.Collections.IList iUpdateableItemsList = (System.Collections.IList)Activator.CreateInstance(updateableItemsListType);
+
+                        using (StreamReader sr = new StreamReader(fileStream))
+                        {
+                            //Find the generic Deserialize method: public T Deserialize<T>(JsonReader reader);
+                            //Source: https://forums.asp.net/t/1664599.aspx?+Ask+How+to+get+generic+method+using+reflection+
+                            JsonSerializer jsonSerializer = new JsonSerializer();
+                            var serializerType = typeof(JsonSerializer);
+
+                            //var methodInfos = serializerType.GetMethods();
+                            //var miDeserialize = methodInfos.Where(m => m.IsGenericMethod && m.Name.Equals("Deserialize", StringComparison.OrdinalIgnoreCase)).SingleOrDefault();
+                            //if (null != miDeserialize)
+                            //{
+                                //MethodInfo miDeserialize_g = miDeserialize.MakeGenericMethod(updateableItemsListType);
+
+                                using (JsonReader jsonReader = new Newtonsoft.Json.JsonTextReader(sr))
+                                {
+                                    ////iUpdateableItemsList = (System.Collections.IList)miDeserialize_g.Invoke(jsonSerializer, new object[] { sr });
+
+                                    //iUpdateableItemsList = (System.Collections.IList)jsonSerializer.Deserialize(jsonReader, updateableItemsListType);
+                                    jsonReader.SupportMultipleContent = true;
+                                    while (await jsonReader.ReadAsync())
+                                    {
+                                        iUpdateableItemsList.Add(jsonSerializer.Deserialize(jsonReader, gUpdateableItem));
+                                    }
+                                }
+                            //}
+                        }
+#endif
+                        //Prepare call to RepositoryContext method to stream list to model type...
+                        Type resContextType = repositoryContext.GetType();
+                        MethodInfo miStreamItemsToModelList = resContextType.GetMethod("StreamItemsToModelList");
+                        MethodInfo miStreamItemsToModelList_G = miStreamItemsToModelList.MakeGenericMethod(modelType);
+
+                        //Call the async method via reflection...
+                        //Source: https://stackoverflow.com/questions/43426533/how-to-invoke-async-method-in-c-sharp-by-using-reflection-and-wont-cause-deadlo
+                        var task = (Task)miStreamItemsToModelList_G.Invoke(repositoryContext, new object[] { iUpdateableItemsList,
+                                                                                                             fileEncoding,
+                                                                                                             listRequiredPropertyNames,
+                                                                                                             listOptionalPropertyNames });
+                        await task;
+
+                        //Retrieve result...
+                        Stream streamResult = task.GetType().GetProperty("Result").GetValue(task) as Stream;
+                        if (null != streamResult)
+                        {
+                            //Reset stream position - add stream to response content...
+                            streamResult.Position = 0;
+                            response.Content = new StreamContent(streamResult);
+                            response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/octet-stream");
+                            response.Content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("attachment");
+                            response.Content.Headers.ContentDisposition.FileName = itemsType + "-" + modelType.Name + ".csv";
+                            response.Content.Headers.ContentLength = streamResult.Length;
+
+                            response.StatusCode = httpStatusCode;
+                        }
+                        else
+                        {
+                            //Streaming error...
+                            response.StatusCode = HttpStatusCode.InternalServerError;
+                            response.ReasonPhrase = String.Format("Unable to stream {0} items to output for upload id: {1}", itemsType, uploadId);
+                            return response;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    //File not found - return early
+                    string msg = ex.Message;
+
+                    response.StatusCode = HttpStatusCode.NotFound;
+                    response.ReasonPhrase = String.Format("{0} items file not found: {1}", itemsType, binFilePathAndName);
+                    return response;
+                }
+            }
 
             //Processing complete - return response
             return response;
@@ -206,26 +423,55 @@ namespace HydroServerTools.Controllers.api
             //  To avoid 'Unexpected end of JSON input' error in jQuery file download!!
             response.Content = new StringContent("{}", System.Text.Encoding.UTF8, "application/json");
 
-            //TO DO - Authentication of input JWT...
-            //        Return early (with error) if no JWT or JWT invalid/expired
-
             //Map to a relative path...
             //Source: http://bytutorial.com/blogs/aspnet/alternative-way-of-using-server-mappath-in-aspnet-web-api
             string pathUploads = System.Web.Hosting.HostingEnvironment.MapPath("~/Uploads/");
+
+            //Default to human readable response content...
+            bool bRespHumanReadable = true;
 
             //Check for multipart content...
             HttpContent httpContent = Request.Content;
             if (httpContent.IsMimeMultipartContent())
             {
-                //Multipart content - retrieve Upload Id
+                //Multipart content -retrieve response human readable parameter, if any...
                 IEnumerable<string> values;
-                string uploadId = String.Empty;
-                string validationQualifier = String.Empty;
-
-                if (Request.Headers.TryGetValues(_strHdrUploadId, out values))
+                if (Request.Headers.TryGetValues(_strHdrResponseHumanReadable, out values))
                 {
-                    uploadId = values.First();
-                    //TO DO - verify uploadId maps to the input JWT...
+                    bool bResult = false;
+
+                    var val = values.First();
+                    if ( bool.TryParse(values.First(), out bResult))
+                    {
+                        bRespHumanReadable = bResult;
+                    }
+                }
+
+                //Retrieve Upload Id and user name
+                string networkApiKey = String.Empty;
+                string validationQualifier = String.Empty;
+                string userName;
+
+                values = null;
+                if (Request.Headers.TryGetValues(_strHdrNetworkApiKey, out values))
+                {
+                    networkApiKey = values.First();
+
+                    //Retrieve user name from network API key...
+                    userName = HydroServerToolsUtils.GetGoogleEmailForNetworkApiKey(networkApiKey);
+                    if (String.IsNullOrWhiteSpace(userName))
+                    {
+                        response.StatusCode = HttpStatusCode.BadRequest;    //User name not found - return early
+                        var reason = String.Format("Google e-mail account not found for network API key: {0}", networkApiKey);
+
+                        response.ReasonPhrase = bRespHumanReadable ? String.Format(_postErrorMsgTemplate, response.StatusCode, reason) : reason;
+                        if (bRespHumanReadable)
+                        {
+                            response.Content = new StringContent(response.ReasonPhrase, System.Text.Encoding.UTF8, "text/plain");
+                        }
+
+                        return response;
+                    }
 
                     values = null;
                     if (Request.Headers.TryGetValues(_strHdrValidationQualifier, out values))
@@ -239,6 +485,9 @@ namespace HydroServerTools.Controllers.api
                             await httpContent.ReadAsMultipartAsync(mpmProvider);
 
                             char[] charArray = { '\"' };
+                            bool bContent = false;      //Assume no content found...
+
+                            //NOTE: Following logic returns error response on first content error found...
                             foreach (var content in mpmProvider.Contents)
                             {
                                 //Check headers...
@@ -276,23 +525,29 @@ namespace HydroServerTools.Controllers.api
                                         //Retrieve/create associated file context...
                                         FileContext fileContext = null;
 
-                                        fileContext = CacheCollections.GetContext<FileContext>(uploadId);
+                                        fileContext = CacheCollections.GetContext<FileContext>(networkApiKey);
                                         if (null == fileContext)
                                         {
                                             //Not found - create and attempt to add to collection...
                                             FileNameAndType fileNameAndType = new FileNameAndType(fileName, contentType);
-                                            fileContext = new FileContext(uploadId, new List<FileNameAndType>() { fileNameAndType });
+                                            fileContext = new FileContext(networkApiKey, new List<FileNameAndType>() { fileNameAndType });
 
-                                            if (!CacheCollections.AddContext<FileContext>(uploadId, fileContext))
+                                            if (!CacheCollections.AddContext<FileContext>(networkApiKey, fileContext))
                                             {
                                                 //Not added - context possibly already added by another IIS thread
                                                 //            get the instance again...
-                                                fileContext = CacheCollections.GetContext<FileContext>(uploadId);
+                                                fileContext = CacheCollections.GetContext<FileContext>(networkApiKey);
                                                 if (null == fileContext)
                                                 {
                                                     //File context not found - return error...
-                                                    response.StatusCode = HttpStatusCode.BadRequest;
-                                                    response.ReasonPhrase = String.Format("File context not created/found for {0}", fileName);
+                                                    response.StatusCode = HttpStatusCode.NotFound;
+                                                    var reason = String.Format("File context not created/found for network API key: {0}, file: {1}", networkApiKey, fileName);
+
+                                                    response.ReasonPhrase = bRespHumanReadable ? String.Format(_postErrorMsgTemplate, response.StatusCode, reason) : reason;
+                                                    if (bRespHumanReadable)
+                                                    {
+                                                        response.Content = new StringContent(response.ReasonPhrase, System.Text.Encoding.UTF8, "text/plain");
+                                                    }
                                                     return response;
                                                 }
                                             }
@@ -317,6 +572,7 @@ namespace HydroServerTools.Controllers.api
                                             using (var contentStream = await content.ReadAsStreamAsync())
                                             {
                                                 //Reposition to beginning of stream...
+                                                bContent = true;
                                                 contentStream.Seek(0, SeekOrigin.Begin);
 
                                                 //Create output file --OR-- open file for append...
@@ -334,12 +590,12 @@ namespace HydroServerTools.Controllers.api
                                                 //If the last chunk, queue a validation task for the completed file
                                                 if (isLastChunk)
                                                 {
-                                                    await ValidateFileContentsAsync(uploadId, contentType, fileName, filePathAndName, validationQualifier);
+                                                    await ValidateFileContentsAsync(networkApiKey, contentType, fileName, filePathAndName, validationQualifier);
 
                                                     //Retrieve validation context...
                                                     ValidationContext<CsvValidator> validationContext = null;
 
-                                                    validationContext = CacheCollections.GetContext<ValidationContext<CsvValidator>>(uploadId);
+                                                    validationContext = CacheCollections.GetContext<ValidationContext<CsvValidator>>(networkApiKey);
                                                     if (null != validationContext)
                                                     {
                                                         //Validation context found - retrieve file validation results...
@@ -358,11 +614,73 @@ namespace HydroServerTools.Controllers.api
                                                                          0 < csvValiDATIONResults.MissingRequiredHeaderNames.Count)
                                                                     {
                                                                         //Validation error(s) - return error response 
-                                                                        response.StatusCode = HttpStatusCode.NotAcceptable;
-                                                                        response.ReasonPhrase = String.Format("Validation error(s) for file: '{0}'", fileName);
-                                                                        string jsonData = JsonConvert.SerializeObject(csvValiDATIONResults);
+                                                                        response.StatusCode = (HttpStatusCode) 422; //WebDAV Unprocessable Entity
+                                                                        var reason = String.Format("Validation error(s) for file: '{0}'", fileName);
 
-                                                                        response.Content = new StringContent(jsonData, System.Text.Encoding.UTF8, "application/json");
+                                                                        response.ReasonPhrase = bRespHumanReadable ? String.Format(_postErrorMsgTemplate, response.StatusCode, reason) : reason;
+                                                                        if (bRespHumanReadable)
+                                                                        {
+                                                                            //Report results in a rendered Razor view...
+                                                                            // Sources: https://itechmanager.com/2013/09/10/web-api-and-returning-a-razor-view/
+                                                                            //          https://medium.com/@DomBurf/templated-html-emails-using-razorengine-6f150bb5f3a6
+                                                                            string viewPath = @"~/Views/Shared/_LayoutBulkUpload.cshtml";
+                                                                            string template = String.Empty;
+
+                                                                            if (!Engine.Razor.IsTemplateCached(viewPath, null))
+                                                                            {
+                                                                                string fullViewPath = HttpContext.Current.Server.MapPath(viewPath);
+                                                                                template = File.ReadAllText(fullViewPath);
+                                                                                Engine.Razor.AddTemplate(viewPath, template);
+                                                                            }
+
+                                                                            DynamicViewBag viewBag = new DynamicViewBag();
+
+                                                                            //Add file name to view bag...
+                                                                            viewBag.AddValue("fileName", fileName);
+
+                                                                            //Retrieve request scheme, host and port...
+                                                                            var httpContext = System.Web.HttpContext.Current;
+                                                                            var urlBase = httpContext.Request.Url.Scheme + "://" +
+                                                                                          httpContext.Request.Url.Host + ":" +
+                                                                                          httpContext.Request.Url.Port + "/";
+
+                                                                            //Add base URL to view bag...
+                                                                            viewBag.AddValue("urlBase", urlBase);
+
+                                                                            //Add service name to view bag...
+                                                                            var userId = HydroServerToolsUtils.GetUserIdFromUserName(userName);
+                                                                            var serviceName = HydroServerToolsUtils.GetServiceNameForUserID(userId);
+
+                                                                            viewBag.AddValue("serviceName", serviceName);
+
+                                                                            string templateName = "ValidationSummary";
+                                                                            string parsedView = String.Empty;
+
+                                                                            //Check engine cache for template - add to cache if not found...
+                                                                            //Source: https://stackoverflow.com/questions/42119846/how-to-runcomplie-on-updated-template-using-same-key-in-razorengine
+                                                                            if (Engine.Razor.IsTemplateCached(templateName, null))
+                                                                            {
+                                                                                parsedView = Engine.Razor.Run(templateName, csvValiDATIONResults.GetType(), csvValiDATIONResults, viewBag);
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                viewPath = HttpContext.Current.Server.MapPath(@"~/Views/BulkUpload/ValidationSummary.cshtml");
+                                                                                template = File.ReadAllText(viewPath);
+                                                                                Engine.Razor.AddTemplate(templateName, template);
+
+                                                                                parsedView = Engine.Razor.RunCompile(template, templateName, csvValiDATIONResults.GetType(), csvValiDATIONResults, viewBag);
+                                                                            }
+
+                                                                            response.Content = new StringContent(parsedView);
+                                                                            response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            string jsonData = JsonConvert.SerializeObject(csvValiDATIONResults);
+
+                                                                            response.Content = new StringContent(jsonData, System.Text.Encoding.UTF8, "application/json");
+                                                                        }
+
                                                                         return response;
                                                                     }
 
@@ -375,7 +693,13 @@ namespace HydroServerTools.Controllers.api
                                                     {
                                                         //Validation context not found...
                                                         response.StatusCode = HttpStatusCode.NotFound;
-                                                        response.ReasonPhrase = String.Format("Validation context missing for upload Id: '{0}'", uploadId);
+                                                        var reason = String.Format("Validation context missing for network API key: '{0}'", networkApiKey);
+
+                                                        response.ReasonPhrase = bRespHumanReadable ? String.Format(_postErrorMsgTemplate, response.StatusCode, reason) : reason;
+                                                        if (bRespHumanReadable)
+                                                        {
+                                                            response.Content = new StringContent(response.ReasonPhrase, System.Text.Encoding.UTF8, "text/plain");
+                                                        }
                                                         return response;
                                                     }
                                                 }
@@ -385,7 +709,7 @@ namespace HydroServerTools.Controllers.api
                                         //Check for file validation completion (when out of all 'using' blocks)
                                         ValidationContext<CsvValidator> validationContext2 = null;
 
-                                        validationContext2 = CacheCollections.GetContext<ValidationContext<CsvValidator>>(uploadId);
+                                        validationContext2 = CacheCollections.GetContext<ValidationContext<CsvValidator>>(networkApiKey);
                                         if (null != validationContext2)
                                         {
                                             var valiDATORResults2 = validationContext2.ValidationResults;     //Type: CsvValidator
@@ -393,11 +717,11 @@ namespace HydroServerTools.Controllers.api
                                             {
                                                 if (valiDATORResult2.ValidationComplete && (fileName.ToLower() == valiDATORResult2.FileName.ToLower()))
                                                 {
+                                                    //valiDATORResult2.FileValidator.ValidatedModelType
                                                     //File validation complete - retrieve repository context...
-                                                    //TO DO - Retrieve user name from JWT...
-                                                    var userName = "anightcoder.brian@gmail.com";
+                                                    Type modelType = valiDATORResult2.FileValidator.ValidatedModelType;
 
-                                                    RepositoryContext repositoryContext = CacheCollections.GetContext<RepositoryContext>(uploadId);
+                                                    RepositoryContext repositoryContext = CacheCollections.GetContext<RepositoryContext>(networkApiKey);
                                                     if (null == repositoryContext)
                                                     {
                                                         //Repository context not found - attempt to build connection string...
@@ -405,62 +729,86 @@ namespace HydroServerTools.Controllers.api
                                                         if (String.IsNullOrWhiteSpace(entityConnectionString))
                                                         {
                                                             response.StatusCode = HttpStatusCode.BadRequest;    //Connection string not found - return early
-                                                            response.ReasonPhrase = Resources.CONNECTION_STRING_NOT_FOUND;
+                                                            var reason = String.Format("Database connection string not found for user: {0}", userName);
+
+                                                            response.ReasonPhrase = bRespHumanReadable ? String.Format(_postErrorMsgTemplate, response.StatusCode, reason) : reason;
+                                                            if (bRespHumanReadable)
+                                                            {
+                                                                response.Content = new StringContent(response.ReasonPhrase, System.Text.Encoding.UTF8, "text/plain");
+                                                            }
                                                             return response;
                                                         }
 
                                                         //Create new context instance...
                                                         repositoryContext = new RepositoryContext(entityConnectionString);
-                                                        if (!CacheCollections.AddContext<RepositoryContext>(uploadId, repositoryContext))
+                                                        if (!CacheCollections.AddContext<RepositoryContext>(networkApiKey, repositoryContext))
                                                         {
                                                             //Not added - context possibly already added by another IIS thread
                                                             //            get the instance again...
-                                                            repositoryContext = CacheCollections.GetContext<RepositoryContext>(uploadId);
+                                                            repositoryContext = CacheCollections.GetContext<RepositoryContext>(networkApiKey);
                                                             if (null == repositoryContext)
                                                             {
                                                                 //Repository context not found - return error...
-                                                                response.StatusCode = HttpStatusCode.BadRequest;
-                                                                response.ReasonPhrase = String.Format("Repository context not created/found for user: {0}", userName);
+                                                                response.StatusCode = HttpStatusCode.NotFound;
+                                                                var reason = String.Format("Repository context not created/found for user: {0}", userName);
+
+                                                                response.ReasonPhrase = bRespHumanReadable ? String.Format(_postErrorMsgTemplate, response.StatusCode, reason) : reason;
+                                                                if (bRespHumanReadable)
+                                                                {
+                                                                    response.Content = new StringContent(response.ReasonPhrase, System.Text.Encoding.UTF8, "text/plain");
+                                                                }
                                                                 return response;
                                                             }
                                                         }
                                                     }
 
                                                     //Retrieve status context...
-                                                    StatusContext statusContext = CacheCollections.GetContext<StatusContext>(uploadId);
+                                                    StatusContext statusContext = CacheCollections.GetContext<StatusContext>(networkApiKey);
                                                     if (null == statusContext)
                                                     {
                                                         statusContext = new StatusContext();
-                                                        if (!CacheCollections.AddContext<StatusContext>(uploadId, statusContext))
+                                                        if (!CacheCollections.AddContext<StatusContext>(networkApiKey, statusContext))
                                                         {
                                                             //Not added - context possibly already added by another IIS thread
                                                             //            get the instance again...
-                                                            statusContext = CacheCollections.GetContext<StatusContext>(uploadId);
+                                                            statusContext = CacheCollections.GetContext<StatusContext>(networkApiKey);
                                                             if ( null == statusContext)
                                                             {
                                                                 //Status context not found - return error...
-                                                                response.StatusCode = HttpStatusCode.BadRequest;
-                                                                response.ReasonPhrase = String.Format("Status context not created/found for upload Id: {0}", uploadId);
+                                                                response.StatusCode = HttpStatusCode.NotFound;
+                                                                var reason = String.Format("Status context not created/found for network API key: {0}", networkApiKey);
+
+                                                                response.ReasonPhrase = bRespHumanReadable ? String.Format(_postErrorMsgTemplate, response.StatusCode, reason) : reason;
+                                                                if (bRespHumanReadable)
+                                                                {
+                                                                    response.Content = new StringContent(response.ReasonPhrase, System.Text.Encoding.UTF8, "text/plain");
+                                                                }
                                                                 return response;
                                                             }
                                                         }
                                                     }
 
                                                     //Retrieve DbLoad context...
-                                                    DbLoadContext dbLoadContext = CacheCollections.GetContext<DbLoadContext>(uploadId);
+                                                    DbLoadContext dbLoadContext = CacheCollections.GetContext<DbLoadContext>(networkApiKey);
                                                     if (null == dbLoadContext)
                                                     {
                                                         dbLoadContext = new DbLoadContext();
-                                                        if (!CacheCollections.AddContext<DbLoadContext>(uploadId, dbLoadContext))
+                                                        if (!CacheCollections.AddContext<DbLoadContext>(networkApiKey, dbLoadContext))
                                                         {
                                                             //Not added - context possibly already added by another IIS thread
                                                             //            get the instance again...
-                                                            dbLoadContext = CacheCollections.GetContext<DbLoadContext>(uploadId);
+                                                            dbLoadContext = CacheCollections.GetContext<DbLoadContext>(networkApiKey);
                                                             if (null == dbLoadContext)
                                                             {
                                                                 //DbLoad context not found - return error...
-                                                                response.StatusCode = HttpStatusCode.BadRequest;
-                                                                response.ReasonPhrase = String.Format("DbLoad context not created/found for upload Id: {0}", uploadId);
+                                                                response.StatusCode = HttpStatusCode.NotFound;
+                                                                var reason = String.Format("DbLoad context not created/found for network API key: {0}", networkApiKey);
+
+                                                                response.ReasonPhrase = bRespHumanReadable ? String.Format(_postErrorMsgTemplate, response.StatusCode, reason) : reason;
+                                                                if (bRespHumanReadable)
+                                                                {
+                                                                    response.Content = new StringContent(response.ReasonPhrase, System.Text.Encoding.UTF8, "text/plain");
+                                                                }
                                                                 return response;
                                                             }
                                                         }
@@ -471,16 +819,87 @@ namespace HydroServerTools.Controllers.api
                                                     string pathProcessed = System.Web.Hosting.HostingEnvironment.MapPath("~/Processed/");
 
                                                     //Invoke DB load processing on validated files...
-                                                    await repositoryContext.LoadDbBis(uploadId, pathValidated, pathProcessed, statusContext, dbLoadContext);
+                                                    bool bPurgeValidated = true;    //purge validated file(s) to prevent multiple db insertion attempts...
+                                                    await repositoryContext.LoadDbBis(networkApiKey, pathValidated, pathProcessed, statusContext, dbLoadContext, bPurgeValidated);
 
                                                     //Retrieve db load results, if any - return to client in response data...
                                                     using (await dbLoadContext.DbLoadSemaphore.UseWaitAsync())
                                                     {
+                                                        var tableName = repositoryContext.GetTableName(modelType.Name);
                                                         var dbLoadResults = dbLoadContext.DbLoadResults;
-                                                        if (0 < dbLoadResults.Count)
+                                                        if ((0 < dbLoadResults.Count) && (!String.IsNullOrWhiteSpace(tableName)))
                                                         {
-                                                            string jsonData = Newtonsoft.Json.JsonConvert.SerializeObject(dbLoadResults);
-                                                            response.Content = new StringContent(jsonData, System.Text.Encoding.UTF8, "application/json");
+                                                            var dbLoadResult = dbLoadResults.Find(dblr => tableName.ToLower() == dblr.TableName.ToLower());
+                                                            if (null != dbLoadResult)
+                                                            {
+                                                                if (bRespHumanReadable)
+                                                                {
+                                                                    //NOTE: Tried using UrlHelper to programmatically create complete URL's for 
+                                                                    //      API calls as explained in the source references, but encountered incomplete/erroneous results!!
+                                                                    //
+                                                                    //Report results in a rendered Razor view...
+                                                                    // Sources: https://itechmanager.com/2013/09/10/web-api-and-returning-a-razor-view/
+                                                                    //          https://medium.com/@DomBurf/templated-html-emails-using-razorengine-6f150bb5f3a6
+                                                                    string viewPath = @"~/Views/Shared/_LayoutBulkUpload.cshtml";
+                                                                    string template = String.Empty;
+
+                                                                    if (!Engine.Razor.IsTemplateCached(viewPath, null))
+                                                                    {
+                                                                        string fullViewPath = HttpContext.Current.Server.MapPath(viewPath);
+                                                                        template = File.ReadAllText(fullViewPath);
+                                                                        Engine.Razor.AddTemplate(viewPath, template);
+                                                                    }
+
+                                                                    DynamicViewBag viewBag = new DynamicViewBag();
+
+                                                                    //Add file name to view bag...
+                                                                    viewBag.AddValue("fileName", fileName);
+
+                                                                    //Add networkApiKey to view bag...
+                                                                    viewBag.AddValue("networkApiKey", networkApiKey);
+
+                                                                    //Retrieve request scheme, host and port...
+                                                                    var httpContext = System.Web.HttpContext.Current;
+                                                                    var urlBase = httpContext.Request.Url.Scheme + "://" +
+                                                                                  httpContext.Request.Url.Host + ":" +
+                                                                                  httpContext.Request.Url.Port + "/";
+
+                                                                    //Add base URL to view bag...
+                                                                    viewBag.AddValue("urlBase", urlBase);
+
+                                                                    //Add service name to view bag...
+                                                                    var userId = HydroServerToolsUtils.GetUserIdFromUserName(userName);
+                                                                    var serviceName = HydroServerToolsUtils.GetServiceNameForUserID(userId);
+
+                                                                    viewBag.AddValue("serviceName", serviceName);
+
+                                                                    string templateName = "DatabaseLoadSummary";
+                                                                    string parsedView = String.Empty;
+
+                                                                    //Check engine cache for template - add to cache if not found...
+                                                                    //Source: https://stackoverflow.com/questions/42119846/how-to-runcomplie-on-updated-template-using-same-key-in-razorengine
+                                                                    if (Engine.Razor.IsTemplateCached(templateName, null))
+                                                                    {
+                                                                        parsedView = Engine.Razor.Run(templateName, dbLoadResult.GetType(), dbLoadResult, viewBag);
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        viewPath = HttpContext.Current.Server.MapPath(@"~/Views/BulkUpload/DatabaseLoadSummary.cshtml");
+                                                                        template = File.ReadAllText(viewPath);
+                                                                        Engine.Razor.AddTemplate(templateName, template);
+
+                                                                        parsedView = Engine.Razor.RunCompile(template, templateName, dbLoadResult.GetType(), dbLoadResult, viewBag);
+                                                                    }
+
+                                                                    response.Content = new StringContent(parsedView);
+                                                                    response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                                                                }
+                                                                else
+                                                                {
+                                                                    string jsonData = Newtonsoft.Json.JsonConvert.SerializeObject(dbLoadResult);
+                                                                    response.Content = new StringContent(jsonData, System.Text.Encoding.UTF8, "application/json");
+                                                                }
+                                                            }
                                                         }
                                                     }
 
@@ -491,6 +910,21 @@ namespace HydroServerTools.Controllers.api
                                         }
                                     }
                                 }
+                            }
+
+                            if (!bContent)
+                            {
+                                //No content - return early with error response...
+                                response.StatusCode = HttpStatusCode.PreconditionFailed;
+                                var reason = "No content found...";
+
+                                response.ReasonPhrase = bRespHumanReadable ? String.Format(_postErrorMsgTemplate, response.StatusCode, reason) : reason;
+                                if (bRespHumanReadable)
+                                {
+                                    response.Content = new StringContent(response.ReasonPhrase, System.Text.Encoding.UTF8, "text/plain");
+                                }
+
+                                return response;
                             }
                         }
                         catch (Exception ex)
@@ -503,32 +937,66 @@ namespace HydroServerTools.Controllers.api
                             }
 
                             response.StatusCode = HttpStatusCode.InternalServerError;
-                            response.ReasonPhrase = innerException.Message;
+                            var reason = String.Format("Internal Server Error: {0}", innerException.Message);
+
+                            response.ReasonPhrase = bRespHumanReadable ? String.Format(_postErrorMsgTemplate, response.StatusCode, reason) : reason;
+
+                            if (bRespHumanReadable)
+                            {
+                                response.Content = new StringContent(response.ReasonPhrase, System.Text.Encoding.UTF8, "text/plain");
+                            }
+                            else
+                            {
+                                //Return call stack as response content, if available...
+                                if (!String.IsNullOrWhiteSpace(innerException.StackTrace))
+                                {
+                                    string responseContent = String.Format("Stack trace: {0}", innerException.StackTrace);
+                                    response.Content = new StringContent(responseContent, System.Text.Encoding.UTF8, "text/plain");
+                                }
+                            }
+
                             return response;
                         }
                     }
                     else
                     {
                         //Unexpected content - set error return...
-                        response.StatusCode = HttpStatusCode.BadRequest;
-                        response.ReasonPhrase = String.Format("Header '{0}' not found!!", _strHdrValidationQualifier);
+                        response.StatusCode = HttpStatusCode.PreconditionFailed;
+                        var reason = String.Format(_hdrNotFoundTemplate, _strHdrValidationQualifier);
+
+                        response.ReasonPhrase = bRespHumanReadable ? String.Format(_postErrorMsgTemplate, response.StatusCode, reason) : reason;
+                        if (bRespHumanReadable)
+                        {
+                            response.Content = new StringContent(response.ReasonPhrase, System.Text.Encoding.UTF8, "text/plain");
+                        }
                         return response;
                     }
                 }
                 else
                 {
                     //Unexpected content - set error return...
-                    response.StatusCode = HttpStatusCode.BadRequest;
-                    response.ReasonPhrase = String.Format("Header '{0}' not found!!", _strHdrUploadId);
+                    response.StatusCode = HttpStatusCode.PreconditionFailed;
+                    var reason = String.Format(_hdrNotFoundTemplate, _strHdrNetworkApiKey);
+
+                    response.ReasonPhrase = bRespHumanReadable ? String.Format(_postErrorMsgTemplate, response.StatusCode, reason) : reason;
+                    if (bRespHumanReadable)
+                    {
+                        response.Content = new StringContent(response.ReasonPhrase, System.Text.Encoding.UTF8, "text/plain");
+                    }
                     return response;
                 }
             }
             else
             {
-                //Unexpected content - set error return...
-                response.StatusCode = HttpStatusCode.BadRequest;
-                response.ReasonPhrase = "Multipart content expected...";
-                return response;
+                //Not multipart content - set error return...
+                response.StatusCode = HttpStatusCode.PreconditionFailed;
+                var reason = "Multipart content expected...";
+
+                response.ReasonPhrase = bRespHumanReadable ? String.Format(_postErrorMsgTemplate, response.StatusCode, reason) : reason;
+                if (bRespHumanReadable)
+                {
+                    response.Content = new StringContent(response.ReasonPhrase, System.Text.Encoding.UTF8, "text/plain");
+                }
             }
 
             //Processing complete - return response...

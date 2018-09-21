@@ -39,11 +39,6 @@ namespace HydroServerTools
             ModelBinders.Binders.Add(typeof(JQueryDataTablesModel), new JQueryDataTablesModelBinder());
             //InstanceGuid = Guid.NewGuid();
 
-            //13-Aug-2018 - BC - Add CacheCollections Initialize() call here...
-            CacheCollections.Initialize();
-
-            //TO DO - re-refactor this code and RevisedUploadController to use CacheCollections... 
-
             //At web application startup - add ConcurrentDictionary instances to the runtime cache for the following context types:
             //  - file, 
             //  - validation
@@ -54,38 +49,18 @@ namespace HydroServerTools
             //NOTE: One HttpRuntime.Cache instance exists for the Application Domain...
             //Sources: https://docs.microsoft.com/en-us/aspnet/web-forms/overview/data-access/caching-data/caching-data-at-application-startup-cs
             //         https://stackoverflow.com/questions/27575213/how-to-cache-in-asp-net
-            var cache = HttpRuntime.Cache;
-            var key = "uploadIdsToFileContexts";
+            CacheCollections.Initialize();
 
-            ConcurrentDictionary<string, FileContext> filecontexts = new ConcurrentDictionary<string, FileContext>();
-            cache.Insert(key, filecontexts);
-
-            key = "uploadIdsToValidationContexts";
-            ConcurrentDictionary<string, ValidationContext<CsvValidator>> validationcontexts = new ConcurrentDictionary<string, ValidationContext<CsvValidator>>();
-            cache.Insert(key, validationcontexts);
-
-            key = "uploadIdsToRepositoryContexts";
-            ConcurrentDictionary<string, RepositoryContext> repositorycontexts = new ConcurrentDictionary<string, RepositoryContext>();
-            cache.Insert(key, repositorycontexts);
-
-            key = "uploadIdsToStatusContexts";
-            ConcurrentDictionary<string, StatusContext> statuscontexts = new ConcurrentDictionary<string, StatusContext>();
-            cache.Insert(key, statuscontexts);
-
-            key = "uploadIdsToDbLoadContexts";
-            ConcurrentDictionary<string, DbLoadContext> dbloadcontexts = new ConcurrentDictionary<string, DbLoadContext>();
-            cache.Insert(key, dbloadcontexts);
-
-            //Add one ConcurrentDictionary instance for the uploadId 'keep-alives'
-            key = "uploadIdsToKeepAliveDateTimes";
-            ConcurrentDictionary<string, DateTime> uploadIdKeepAlives = new ConcurrentDictionary<string, DateTime>();
-            cache.Insert(key, uploadIdKeepAlives);
+            //TO DO - re-refactor RevisedUploadController to use CacheCollections... 
 
             //Start the 'keep alives' checks interval task...
             //DO NOT await the task!!
             TimeSpan tsKeepAliveInterval = new TimeSpan(1, 0, 0);   //One hour 'keep-alive' interval...   
             //TimeSpan tsKeepAliveInterval = new TimeSpan(0, 2, 0);   //TEST two minute 'keep-alive' interval...   
             TimeSpan tsDelayInterval = new TimeSpan(0, 0, 10);      //ten second interval between checks...
+
+            var uploadIdKeepAlives = CacheCollections.GetCollection<DateTime>("KeepAliveDateTimes");
+
             CheckKeepAlives(uploadIdKeepAlives, tsKeepAliveInterval, tsDelayInterval, _cancellationTokenSource.Token);
         }
 

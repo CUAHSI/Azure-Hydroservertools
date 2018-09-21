@@ -5628,7 +5628,7 @@ namespace HydroServerToolsRepository.Repository
                                 var listOfErrors = new List<ErrorModel>();
 
                                 //set default values
-                                string unk = "Unknown";
+                                //string unk = "Unknown";
 
                                 model.ValueAccuracy = null;
                                 model.OffsetValue = null;
@@ -7198,7 +7198,7 @@ namespace HydroServerToolsRepository.Repository
             var variables = context.Variables.ToDictionary(p => p.VariableCode, p => p.VariableID);
           
             var maxCount = itemList.Count;
-            var count = 0;
+            //var count = 0;
             var statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING_RECORDS, maxCount, "Categories");
 
             if (null == statusContext)
