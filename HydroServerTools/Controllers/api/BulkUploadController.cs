@@ -762,6 +762,49 @@ namespace HydroServerTools.Controllers.api
                                                         }
                                                     }
 
+                                                    //Check validated model type...
+                                                    var friendlyName = valiDATORResult2.FileValidator.ValidationResults.CandidateTypeFriendlyName.ToLower();
+                                                    if ("data values" == friendlyName)
+                                                    {
+                                                        //Data values - check for completed metadata upload
+                                                        List<string> tableNames = new List<string> { "methods", "qualitycontrollevels", "sites", "sources", "variables" };
+                                                        List<string> missingTableNames = new List<string>();
+
+                                                        var tableCounts = repositoryContext.GetTableRecordCounts(tableNames);
+                                                        bool bFound = false;    //Assume failure... 
+
+                                                        if (0 < tableCounts.Count)  
+                                                        {
+                                                            bFound = true;  //Table count(s) found - check each count...
+                                                            foreach (var kvp in tableCounts)
+                                                            {
+                                                                if (0 >= kvp.Value)
+                                                                {
+                                                                    //Empty metadata table found - retain table name, continue
+                                                                    bFound = false;
+                                                                    missingTableNames.Add(kvp.Key);
+                                                                    continue;
+                                                                }
+                                                            }
+                                                        }
+
+                                                        if (!bFound)
+                                                        {
+                                                            //Metadata information missing - return early...
+                                                            response.StatusCode = HttpStatusCode.PreconditionFailed;
+                                                            var reasonText = (0 >= missingTableNames.Count) ? "..." : (String.Format("for tables: {0}", String.Join(",", missingTableNames)));                               
+                                                            var reason = String.Format("No metadata found {0}", reasonText);
+
+                                                            response.ReasonPhrase = bRespHumanReadable ? String.Format(_postErrorMsgTemplate, response.StatusCode, reason) : reason;
+                                                            if (bRespHumanReadable)
+                                                            {
+                                                                response.Content = new StringContent(response.ReasonPhrase, System.Text.Encoding.UTF8, "text/plain");
+                                                            }
+
+                                                            return response;
+                                                        }
+                                                    }
+
                                                     //Retrieve status context...
                                                     StatusContext statusContext = CacheCollections.GetContext<StatusContext>(networkApiKey);
                                                     if (null == statusContext)
