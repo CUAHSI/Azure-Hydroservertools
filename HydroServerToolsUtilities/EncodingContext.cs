@@ -6,7 +6,7 @@ using System.Web;
 using System.IO;
 using System.Text;
 
-namespace HydroServerTools.Utilities
+namespace HydroServerToolsUtilities
 {
     //A simple class for miscellaneous file encoding methods...
     public static class EncodingContext

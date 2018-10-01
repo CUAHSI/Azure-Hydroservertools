@@ -6,7 +6,7 @@ using System.Web;
 using System.Threading;
 using HydroServerToolsUtilities;
 
-namespace HydroServerTools.Utilities
+namespace HydroServerToolsUtilities
 {
 
     //A simple class for the association of db load results with an access semaphore...

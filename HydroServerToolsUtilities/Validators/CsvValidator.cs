@@ -9,11 +9,11 @@ using System.Reflection;
 
 using CsvHelper;
 
-using HydroServerTools.Utilities;
+using HydroServerToolsUtilities;
 using HydroserverToolsBusinessObjects.Models;
 using HydroserverToolsBusinessObjects.ModelMaps;
 
-namespace HydroServerTools.Validators
+namespace HydroServerToolsUtilities.Validators
 {
     //A simple class for CSV data validation error...
     public class CsvDataError

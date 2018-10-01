@@ -1,0 +1,79 @@
+
+ Changes for WDC Sprint 26 - WDC-2189
+
+
+>>> Summary <<<
+ - For the HydroServer Bulk Uploader, provide the following API methods:
+   - api/bulkupload/get 
+     - Return an uploadId for use in the current session
+   - api/bulkupload/post
+     - Post one *.csv (metadata or data values) file for validation and db insertion processing
+- Implement test API calls in a 'development only' C# command-line client
+  - NOTE: Command line client uses hardcoded values for:
+                  - uploadId
+                  - userName
+
+
+>>>> Azure-Hydroservertools/HydroServerTools <<<<
+ - Global.asax.cs
+    - Re-factor - add CacheCollections.Initialize() call
+ - HydroServerTools.csproj
+    - add BulkUploadController.cs
+    - remove various utilities files (migrate to utilities project)
+    - define 'alias' AliasHSTR
+ - Startup.cs
+    -  Add AliasHSTR references to resolve type references
+
+
+>>>> Azure-Hydroservertools/HydroServerTools/App_Data <<<<
+ - Files of unknown origin:
+   - HISCentralConnection.mdf
+   - HISCentralConnection_log.ldf
+
+
+>>>> Azure-Hydroservertools/HydroServerTools/App_Start <<<<
+ - WebApiConfig.cs
+    - Add Bulk Upload API routes:
+      - api/bulkupload/get
+      - api/bulkupload/post
+
+
+>>>> Azure-Hydroservertools/HydroServerTools/Controllers/api <<<<
+ - new file: BulkUploadController.cs
+ - RevisedUploadController.cs
+   - method Post()
+     - comment out unreferenced variable: currentEncoding
+
+
+>>>> Azure-Hydroservertools/HydroServerTools/Utilities <<<<
+ - UploadIdHelper.cs
+   - revise using statements
+
+
+>>>> Azure-Hydroservertools/HydroserverToolsBusinessObjects <<<<
+ - HydroserverToolsBusinessObjects.csproj
+   - update project references
+
+
+>>>> Azure-Hydroservertools/HydroserverToolsRepository/HydroserverToolsRepository <<<<
+ - HydroServerToolsRespository.csproj
+   - ItemGroup update of unknown origin
+
+
+>>>> Azure-Hydroservertools/HydroserverToolsUtilities <<<<
+ - HydroServerToolsUtilities.csproj
+    - Update project references
+    - Add source file references
+ - Add files migrated from HydroserverTools:
+   - DbLoadContext.cs
+   - EncodingContext.cs
+   - FileContext.cs
+   - RepositoryContext.cs
+   - ValidationContext.cs
+   - Validators/
+      - CsvValidator.cs
+      - IValidationComplete.cs
+      - ValidationResult.cs
+ - New file: CacheCollections.cs
+
+

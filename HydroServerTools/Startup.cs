@@ -1,6 +1,9 @@
-﻿using HydroServerToolsRepository;
+﻿extern alias AliasHSTR; //Source: https://stackoverflow.com/questions/9194495/type-exists-in-2-assemblies
+
 using Microsoft.Owin;
 using Owin;
+
+using HydroServerToolsRepository;
 
 [assembly: OwinStartupAttribute(typeof(HydroServerTools.Startup))]
 namespace HydroServerTools
@@ -10,7 +13,7 @@ namespace HydroServerTools
         public void Configuration(IAppBuilder app)
         {
             ConfigureAuth(app);
-            AutoMapperWebConfiguration.Configure();
+            AliasHSTR.HydroServerToolsRepository.AutoMapperWebConfiguration.Configure();
         }
     }
 }

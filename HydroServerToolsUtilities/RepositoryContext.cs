@@ -21,11 +21,13 @@ using HydroserverToolsBusinessObjects.Models;
 using HydroServerToolsRepository.Repository;
 using HydroServerToolsUtilities;
 
-using ODM_1_1_1EFModel;
+//using ODM_1_1_1EFModel;
 using System.Collections.Concurrent;
 using HydroserverToolsBusinessObjects.Interfaces;
+using System.Data.Entity;
+using ODM_1_1_1EFModel;
 
-namespace HydroServerTools.Utilities
+namespace HydroServerToolsUtilities
 {
     public class RepositoryContext
     {
@@ -33,7 +35,7 @@ namespace HydroServerTools.Utilities
         //Listed in table load order!!!
         private static Dictionary<Type, Type> modelTypesToRepositoryTypes = new Dictionary<Type, Type>
                                                                                 { //{typeof(SiteModel), typeof(SitesRepository)},
-                                                                                  {typeof(SiteModelBasicTemplate), typeof(SitesRepository)},
+                                                                                  {typeof(SiteModelBasicTemplate), typeof(HydroServerToolsRepository.Repository.SitesRepository)},
                                                                                   //{typeof(VariablesModel), typeof(VariablesRepository)},
                                                                                   {typeof(VariablesModelBasicTemplate), typeof(VariablesRepository)},
                                                                                   {typeof(OffsetTypesModel), typeof(OffsetTypesRepository)},
