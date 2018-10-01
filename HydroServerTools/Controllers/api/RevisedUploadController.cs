@@ -522,7 +522,7 @@ namespace HydroServerTools.Controllers.api
                     //Check for status context...
                     if (null == sc)
                     {
-                        response.StatusCode = HttpStatusCode.BadRequest;    //No repository context - return early
+                        response.StatusCode = HttpStatusCode.BadRequest;    //No status context - return early
                         response.ReasonPhrase = "Cannot find/create status context for current upload Id... (from get/dbloadstatusforfile/)";
                         return response;
                     }
@@ -1322,7 +1322,6 @@ namespace HydroServerTools.Controllers.api
                         Stream streamResult = task.GetType().GetProperty("Result").GetValue(task) as Stream;
                         if (null != streamResult)
                         {
-
                             //Reset stream position - add stream to response content...
                             streamResult.Position = 0;
                             response.Content = new StreamContent(streamResult);  

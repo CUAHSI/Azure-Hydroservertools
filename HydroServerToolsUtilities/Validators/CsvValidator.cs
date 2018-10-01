@@ -72,6 +72,10 @@ namespace HydroServerToolsUtilities.Validators
     //A simple class for the validation results of a CSV-delimited file...
     public class CsvValidationResults : IValidationComplete
     {
+        //private members...
+        private string _dataAsMetadata = "datavaluessubmittedasmetadata";
+        private string _metadataAsData = "metadatasubmittedasdatavalues";
+
         //Default constructor...
         public CsvValidationResults()
         {
@@ -193,6 +197,67 @@ namespace HydroServerToolsUtilities.Validators
         public static CsvValidationResults MakeInstance()
         {
             return (new CsvValidationResults());
+        }
+
+        //Produce a validation message per instance state,
+        //  If an error message, bErrorMessage == true, else false...
+        public string ValidationMessage(ref bool bErrorMessage)
+        {
+            string validationMessage = String.Empty;
+            bErrorMessage = false;   //Assume no error(s) exist...
+
+            //Retrieve instance state...
+            var typeName = CandidateTypeName.ToLower();
+            var friendlyName = CandidateTypeFriendlyName;
+            var recordCount = CandidateRecordCount;
+            var invalidHeadersCount = InvalidHeaderNames.Count;
+            var missingHeadersCount = MissingRequiredHeaderNames.Count;
+
+            //Evaluate instance state...
+            if (_dataAsMetadata == typeName ||
+                _metadataAsData == typeName ||
+                "unknown" == typeName ||
+                0 < invalidHeadersCount ||
+                0 < missingHeadersCount ||
+                0 >= recordCount)
+            {
+                bErrorMessage = true;
+                if (_dataAsMetadata == typeName)
+                {
+                    validationMessage = "Data values submitted with metadata.  Please submit data values after metadata";
+                }
+                else if (_metadataAsData == typeName)
+                {
+                    validationMessage = "Metadata submitted with data values.  Please submit metadata before data values";
+                }
+                else if ("unknown" == typeName)
+                {
+                    validationMessage = "File contents map to no known model type";
+                }
+                else if (String.IsNullOrEmpty(validationMessage))
+                {
+                    if (0 < invalidHeadersCount)
+                    {
+                        validationMessage = String.Format("Validates as: {0} with {1:n0} invalid column name(s).", friendlyName, invalidHeadersCount);
+                    }
+                    else if (0 < missingHeadersCount)
+                    {
+                        validationMessage = String.Format("Validates as: {0} with {1:n0} missing column name(s).", friendlyName, missingHeadersCount);
+                    }
+                    else if (0 >= recordCount)
+                    {
+                        validationMessage = String.Format("Validates as: {0} with zero ({1}) record(s)", friendlyName, recordCount);
+                    }
+                }
+            }
+            else
+            {
+                //Known type - no errors...
+                validationMessage = String.Format("Validates as: '{0}' with {1:n0} records.", friendlyName, recordCount);
+            }
+
+            //Processing complete - return 
+            return validationMessage;
         }
     }
 

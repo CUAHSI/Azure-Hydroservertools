@@ -180,6 +180,41 @@ namespace HydroServerTools
             return userEmail;
         }
 
+        //Retrieve the Google e-mail associated with the input Network API key...
+        public static string GetGoogleEmailForNetworkApiKey(string networkApiKey)
+        {
+            string googleEmail = String.Empty;
+
+            //Validate/initialize input parameters...
+            if (!String.IsNullOrWhiteSpace(networkApiKey))
+            {
+                //Input parameters valid - allocate db context...
+                using (var applDbContext = new ApplicationDbContext())
+                {
+                    //Find connection parameters for input network API key...
+                    var connParameters = applDbContext.ConnectionParameters.FirstOrDefault(cp => networkApiKey == cp.HIScentralNetworkApiKey);
+                    if (null != connParameters)
+                    {
+                        //Connection parameters found - retrieve service name
+                        var serviceName = connParameters.Name;
+                        if (!String.IsNullOrWhiteSpace(serviceName))
+                        {
+                            //Find service registration for the service name...
+                            var serviceRegistration = applDbContext.ServiceRegistrations.FirstOrDefault(sr => serviceName.ToLower() == sr.ServiceName.ToLower());
+                            if (null != serviceRegistration)
+                            {
+                                //Service registration found - retrieve Google email...
+                                googleEmail = serviceRegistration.GoogleAccount;
+                            }
+                        }
+                    }
+                }
+            }
+
+            //Processing complete - return user e-mail
+            return googleEmail;
+        }
+
         public static string GetConnectionName(string userName)
         {
             string connectionName = Resources.NOT_LINKED_TO_DATABASE;

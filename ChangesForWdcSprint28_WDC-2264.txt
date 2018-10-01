@@ -1,0 +1,142 @@
+
+ Changes for WDC Sprint 28 - WDC-2264
+
+
+>>> Summary <<<
+ - Changes for HydroServer Bulk Upload API initial deployment 
+ - Initial deployment tested with the cURL file upload utility
+
+
+>>>> Azure-Hydroservertools/HydroServerTools <<<<
+ - New file:
+    - BulkUpload.log4net
+ - Global.asax.cs
+    - Application_Start() 
+      - Re-factor context creation logic to use CacheCollections
+- HydroServerTools.csproj 
+   - Add IISExpressSSLPort setting
+- packages.config
+  - Add RazorEngine v3.10.0 reference
+- web.config
+  - Visual Studio adds miscellaneous dependent assemblies
+  - CustomErrors mode 'off' for debugging purposes
+
+>>>>>>>>>>> NOTE: Additions to AppSettings.config (not checked in) <<<<<<<<<<<<<<
+
+  <!-- Debug Log4Net - Displays debug messages in Visual Studio's Output Window... -->
+  <add key="log4net.Internal.Debug" value="true"/>
+  <!-- Log4Net configuration file key... 
+        Source: https://www.paraesthesia.com/archive/2009/11/20/putting-log4net.config-outside-of-application-configuration.aspx/
+  -->
+  <add key="log4net.config" value="BulkUpload.log4net"/>
+
+
+>>>>>>>>>>>NOTE: Additions to connectionString.config (not checked in) <<<<<<<<<<<
+
+<!-- DEVELOPMENT hiscentral_logging -->
+<add name="local-DBLog" connectionString="data source=localhost;initial catalog=hiscentral_logging;integrated security=True" providerName="System.Data.SqlClient"/>
+<!-- 
+      source - p2wat4wc7f.database.windows.net,1433
+      catalog - hiscentral_logging
+      user - hiscentraladmin
+      password - HIS@cuahs1
+-->
+<!-- DEPLOYED hiscentral_logging -->
+<add name="deploy-DBLog" connectionString="data source=p2wat4wc7f.database.windows.net,1433;initial catalog=hiscentral_logging;integrated security=false;persist security info=True;User ID=hiscentraladmin;Password=HIS@cuahs1" providerName="System.Data.SqlClient"/>
+
+
+>>>> Azure-Hydroservertools/HydroServerTools/App_Start <<<<
+ - WebApiConfig.cs
+   - Remove 'BulkUploadApiGet' route
+   - Add 'BulkUploadApiGetItemsFile' route
+
+
+>>>> Azure-Hydroservertools/HydroServerTools/Content/BulkUpload/cURLConfig <<<<
+ - New files:
+    - fileUpload_Methods.config
+    - fileUpload_Template.config
+
+
+>>>> Azure-Hydroservertools/HydroServerTools/Controllers/api <<<<
+ - BulkUploadController.cs
+   - Add logic for the dynamic construction of Status Report pages with the Razor Engine
+   - Remove method: Get()
+   - Add method: GetItemsFile(...)
+   - method: Post() 
+      - Revise to work with custom headers, multi-part forms in web request
+      - Re-factor to treat Network API Key as validation 'token'
+      - Add logic to create 'human readable' responses, if indicated
+      - Add logic to format Validation Error and Upload Results reports as HTML pages
+- RevisedUploadController.cs
+  - Update/add comments
+
+
+>>>> Azure-Hydroservertools/HydroServerTools/Helper <<<<
+ - HydroServerToolsUtils.cs
+   - New method: GetGoogleEmailForNetworkApiKey(...)
+
+
+>>>> Azure-Hydroservertools/HydroServerTools/Properties <<<<
+ - AssemblyInfo.cs
+   - Comment out log4net references - Add documentation note
+
+
+>>>> Azure-Hydroservertools/HydroServerTools/Templates <<<<
+ - New file: 
+    - HydroServer Bulk Uploader API Guide.docx
+
+
+>>>> Azure-Hydroservertools/HydroServerTools/Views/BulkUpload <<<<
+ - New files:
+    - DatabaseLoadSummary.cshtml
+    - ValidationSummary.cshtml
+
+
+>>>> Azure-Hydroservertools/HydroServerTools/Views/Shared <<<<
+ - New file:
+   - _LayoutBulkUpload.cshtml
+
+
+>>>> Azure-Hydroservertools/HydroServerToolsRepository/HydroServerToolsRepository <<<<
+ - HydroServerToolsRepository.csproj
+   - remove reference to: utils.cs
+ - Repository.cs
+   - comment out unreferenced local variables
+
+
+>>>> Azure-Hydroservertools/HydroServerToolsUtilities <<<<
+ - New files:
+   - ContextUtil.cs
+   - CurrentUser.cs
+   - DbBaseContext.cs
+   - DbErrorContext.cs
+   - DbLogContext.cs
+   - ulConstants.cs
+   - Utils.cs (transfer)
+ - CacheCollections.cs
+   - Re-factor to support dynamic context collections keyed by uploadId (API Key)
+   - Add members/methods for DbLogContext and DbErrorContext...
+ - DbLoadContext.cs
+   - overrride ToString() method - probably no longer needed
+ - DbLoadCounts.cs
+   - overrride ToString() method - probably no longer needed
+ - DbLoadResult.cs
+   - overrride ToString() method - probably no longer needed
+ - HydoServerToolsUtilities.csproj
+   - update assembly references
+   - add new file references
+- RepositoryContext.cs
+ - new method: GetTableName(...)
+ - method: LoadDbBis(...) - add bPurgeValidated parameter
+
+
+>>>> Azure-Hydroservertools/HydroServerToolsUtilities/Properties <<<<
+ - AssemblyInfo.cs
+   - Comment out log4net references - Add documentation note
+
+
+>>>> Azure-Hydroservertools/HydroServerToolsUtilities/Validators <<<<
+ - CsvValidator.cs
+    - new method: ValidationMessage(...)
+
+

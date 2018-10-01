@@ -16,7 +16,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
-    <IISExpressSSLPort />
+    <IISExpressSSLPort>44340</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
@@ -72,6 +72,13 @@
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net.Appender.Azure">
+      <HintPath>..\packages\log4net.Appender.Azure.1.4.3.0\lib\net45\log4net.Appender.Azure.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.ApplicationServer.Caching.AzureClientHelper, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -187,6 +194,9 @@
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="RazorEngine, Version=3.10.0.0, Culture=neutral, PublicKeyToken=9ee697374c7e744a, processorArchitecture=MSIL">
+      <HintPath>..\packages\RazorEngine.3.10.0\lib\net45\RazorEngine.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -563,10 +573,18 @@
     <Content Include="Content\DataTables-Editor-1.7.0\scss\mixins.scss" />
     <Content Include="Content\DataTables-Editor-1.7.0\scss\processing.scss" />
     <Content Include="Content\DataTables-Editor-1.7.0\scss\upload.scss" />
-    <Content Include="connectionString.config" />
+    <Content Include="connectionString.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="AppSettings.config">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="BulkUpload.log4net">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\BulkUpload\cURLConfig\fileUpload_Methods.config" />
+    <Content Include="Content\BulkUpload\cURLConfig\fileUpload_Template.config" />
     <None Include="Microsoft.WindowsAzure.Caching\ClientPerfCountersInstaller.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -685,6 +703,7 @@
     <Content Include="Scripts\mvcfileupload\vendor\jquery.ui.widget.js" />
     <Content Include="Scripts\Purl.js" />
     <Content Include="Scripts\URLParser.js" />
+    <Content Include="SQL\BulkUploadLog-create.sql" />
     <Content Include="Uploads\NEVER-DELETE-THIS-FILE.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -707,21 +726,8 @@
     </None>
     <Content Include="Powershell\copyDBTemplateAzure.ps1" />
     <Content Include="Powershell\azureprofile.json" />
-    <None Include="Properties\PublishProfiles\bccHydroServer - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\hydroserver - FTP.pubxml" />
-    <None Include="Properties\PublishProfiles\hydroserver - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\hydroserver-staging - FTP.pubxml" />
-    <None Include="Properties\PublishProfiles\hydroserver-staging - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\hydroservertools-staging - FTP.pubxml" />
-    <None Include="Properties\PublishProfiles\hydroservertools-staging - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\hydroservertools-staging - FTP.pubxml" />
-    <None Include="Properties\PublishProfiles\hydroservertools-staging - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\hydroservertools.pubxml" />
-    <None Include="Properties\PublishProfiles\local.pubxml" />
-    <None Include="Properties\PublishProfiles\QA-HydroServer - FTP.pubxml" />
-    <None Include="Properties\PublishProfiles\QA-HydroServer - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\QA-HydroServer-staging - FTP.pubxml" />
-    <None Include="Properties\PublishProfiles\QA-HydroServer-staging - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\bcc-HydroServerTools - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\bcc-HydroServerTools - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\DataTables-1.9.4\extras\TableTools\media\js\ZeroClipboard.js" />
     <Content Include="Scripts\DataTables-1.9.4\media\js\jquery.dataTables.js" />
@@ -887,6 +893,10 @@
     <Content Include="Templates\CUAHSI Formatting Guide.pdf" />
     <Content Include="Templates\Standard Uploading Guide.pdf" />
     <Content Include="Views\CSVUpload\DragAndDropFilesRevised.cshtml" />
+    <Content Include="Views\BulkUpload\DatabaseLoadSummary.cshtml" />
+    <Content Include="Views\Shared\_LayoutBulkUpload.cshtml" />
+    <Content Include="Views\BulkUpload\ValidationSummary.cshtml" />
+    <Content Include="Templates\HydroServer Bulk Uploader API Guide.docx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

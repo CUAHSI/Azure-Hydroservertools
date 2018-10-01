@@ -1,0 +1,190 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<configuration>
+  <configSections>
+    <section name="log4net" type="log4net.Config.Log4NetConfigurationSectionHandler, log4net"/>
+  </configSections>
+  <log4net debug="true">
+
+    <appender name="AdoNetAppenderLog" type="log4net.Appender.AdoNetAppender">
+      <!-- For production - bufferSize should be increased -->
+      <bufferSize value="1" />
+      <connectionType value="System.Data.SqlClient.SqlConnection, System.Data, Version=1.0.3300.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+      <commandText value="INSERT INTO BulkUploadLog ([SessionId],[IPAddress],[Domain],[EmailAddress],[StartDateTime],[EndDateTime],[MethodName],[Parameters],[Returns],[Message],[LogLevel]) VALUES (@SessionId,@IPAddress,@Domain, CASE @EmailAddress WHEN '(null)' THEN NULL ELSE @EmailAddress END,@StartDateTime,@EndDateTime,@MethodName,@Parameters, CASE @Returns WHEN '(null)' THEN NULL ELSE @Returns END ,@Message,@LogLevel)" />
+      <parameter>
+        <parameterName value="@SessionId" />
+        <dbType value="String" />
+        <size value="50" />
+        <layout type="log4net.Layout.PatternLayout">
+          <conversionPattern value="%X{SessionId}" />
+        </layout>
+      </parameter>
+      <parameter>
+        <parameterName value="@IPAddress" />
+        <dbType value="String" />
+        <size value="50" />
+        <layout type="log4net.Layout.PatternLayout">
+          <conversionPattern value="%X{IPAddress}" />
+        </layout>
+      </parameter>
+      <parameter>
+        <parameterName value="@Domain" />
+        <dbType value="String" />
+        <size value="255" />
+        <layout type="log4net.Layout.PatternLayout">
+          <conversionPattern value="%X{Domain}" />
+        </layout>
+      </parameter>
+      <parameter>
+        <parameterName value="@EmailAddress" />
+        <dbType value="String" />
+        <size value="255" />
+        <layout type="log4net.Layout.PatternLayout">
+          <conversionPattern value="%X{EmailAddress}" />
+        </layout>
+      </parameter>
+      <parameter>
+        <parameterName value="@StartDateTime" />
+        <dbType value="DateTime" />
+        <layout type="log4net.Layout.PatternLayout">
+          <conversionPattern value="%X{StartDateTime}" />
+        </layout>
+      </parameter>
+      <parameter>
+        <parameterName value="@EndDateTime" />
+        <dbType value="DateTime" />
+        <layout type="log4net.Layout.PatternLayout">
+          <conversionPattern value="%X{EndDateTime}" />
+        </layout>
+      </parameter>
+      <parameter>
+        <parameterName value="@MethodName" />
+        <dbType value="String" />
+        <size value="255" />
+        <layout type="log4net.Layout.PatternLayout">
+          <conversionPattern value="%X{MethodName}" />
+        </layout>
+      </parameter>
+      <parameter>
+        <parameterName value="@Parameters" />
+        <dbType value="String" />
+        <size value="-1" />
+        <layout type="log4net.Layout.PatternLayout">
+          <conversionPattern value="%X{Parameters}" />
+        </layout>
+      </parameter>
+      <parameter>
+        <parameterName value="@Returns" />
+        <dbType value="String" />
+        <size value="-1" />
+        <layout type="log4net.Layout.PatternLayout">
+          <conversionPattern value="%X{Returns}" />
+        </layout>
+      </parameter>
+      <parameter>
+        <parameterName value="@Message" />
+        <dbType value="String" />
+        <size value="255" />
+        <layout type="log4net.Layout.PatternLayout">
+          <conversionPattern value="%X{Message}" />
+        </layout>
+      </parameter>
+      <parameter>
+        <parameterName value="@LogLevel" />
+        <dbType value="String" />
+        <size value="20" />
+        <layout type="log4net.Layout.PatternLayout">
+          <conversionPattern value="%X{LogLevel}" />
+        </layout>
+      </parameter>
+    </appender>
+
+
+    <appender name="AdoNetAppenderError" type="log4net.Appender.AdoNetAppender">
+      <!-- For production - bufferSize should be increased -->
+      <bufferSize value="1" />
+      <connectionType value="System.Data.SqlClient.SqlConnection, System.Data, Version=1.0.3300.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+      <commandText value="INSERT INTO BulkUploadError ([SessionId],[IPAddress],[Domain],[OccurrenceDateTime],[MethodName],[Parameters],[ExceptionType],[ExceptionMessage]) VALUES (@SessionId,@IPAddress,@Domain, @OccurrenceDateTime,@MethodName,@Parameters, @ExceptionType,@ExceptionMessage)" />
+      <parameter>
+        <parameterName value="@SessionId" />
+        <dbType value="String" />
+        <size value="50" />
+        <layout type="log4net.Layout.PatternLayout">
+          <conversionPattern value="%X{SessionId}" />
+        </layout>
+      </parameter>
+      <parameter>
+        <parameterName value="@IPAddress" />
+        <dbType value="String" />
+        <size value="50" />
+        <layout type="log4net.Layout.PatternLayout">
+          <conversionPattern value="%X{IPAddress}" />
+        </layout>
+      </parameter>
+      <parameter>
+        <parameterName value="@Domain" />
+        <dbType value="String" />
+        <size value="255" />
+        <layout type="log4net.Layout.PatternLayout">
+          <conversionPattern value="%X{Domain}" />
+        </layout>
+      </parameter>
+      <parameter>
+        <parameterName value="@OccurrenceDateTime" />
+        <dbType value="DateTime" />
+        <layout type="log4net.Layout.PatternLayout">
+          <conversionPattern value="%X{OccurrenceDateTime}" />
+        </layout>
+      </parameter>
+      <parameter>
+        <parameterName value="@MethodName" />
+        <dbType value="String" />
+        <size value="255" />
+        <layout type="log4net.Layout.PatternLayout">
+          <conversionPattern value="%X{MethodName}" />
+        </layout>
+      </parameter>
+      <parameter>
+        <parameterName value="@Parameters" />
+        <dbType value="String" />
+        <size value="-1" />
+        <layout type="log4net.Layout.PatternLayout">
+          <conversionPattern value="%X{Parameters}" />
+        </layout>
+      </parameter>
+      <parameter>
+        <parameterName value="@ExceptionType" />
+        <dbType value="String" />
+        <size value="50" />
+        <layout type="log4net.Layout.PatternLayout">
+          <conversionPattern value="%X{ExceptionType}" />
+        </layout>
+      </parameter>
+      <parameter>
+        <parameterName value="@ExceptionMessage" />
+        <dbType value="String" />
+        <size value="255" />
+        <layout type="log4net.Layout.PatternLayout">
+          <conversionPattern value="%X{ExceptionMessage}" />
+        </layout>
+      </parameter>
+    </appender>
+
+    <root>
+    <level value="INFO" />
+      <appender-ref ref="AdoNetAppenderLog"/>
+      <appender-ref ref="AdoNetAppenderError"/>
+    </root>
+
+    <logger name="DBLog">
+      <level value="INFO" />
+      <appender-ref ref="AdoNetAppenderLog"/>
+    </logger>
+
+    <logger name="DBError">
+      <level value="ERROR" />
+      <appender-ref ref="AdoNetAppenderError"/>
+    </logger>
+
+  </log4net>
+</configuration>

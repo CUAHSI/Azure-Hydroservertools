@@ -78,6 +78,8 @@ namespace HydroServerToolsUtilities
                                                                                   {typeof(DerivedFromModel), typeof(DerivedFrom)},
                                                                                   {typeof(CategoriesModel), typeof(Category)}
                                                                                 };
+        //Concurrent dictionary of model type names to table names...
+        private static ConcurrentDictionary<string, string> modelTypeNamesToDbTableNames = new ConcurrentDictionary<string, string>();
 
         //Dictionary of repository types to repository instances...
         private Dictionary<Type, object> repositoryInstances = new Dictionary<Type, object>();
@@ -202,6 +204,20 @@ namespace HydroServerToolsUtilities
         public List<Type> RepositoryTypes { get; private set; }
 
         //Methods...
+
+        //Retrieve the table name per the input model type name...
+        public string GetTableName(string modelTypeName)
+        {
+            string result = string.Empty;
+
+            if (!String.IsNullOrWhiteSpace(modelTypeName))
+            {
+                modelTypeNamesToDbTableNames.TryGetValue(modelTypeName.ToLower(), out result);
+            }
+            
+            //Processing complete - return result...
+            return result;
+        }
 
         //Retrieve the repository instance per the input type...
         // Returns null if no such instance found...
@@ -831,7 +847,7 @@ namespace HydroServerToolsUtilities
         }
 
         //Load content from specified <fileprefix>-<modeltypename>-validated.bin files into database... 
-        public async Task LoadDbBis(string validatedFileNamePrefix, string pathValidated, string pathProcessed, StatusContext statusContext, DbLoadContext dbLoadContext)
+        public async Task LoadDbBis(string validatedFileNamePrefix, string pathValidated, string pathProcessed, StatusContext statusContext, DbLoadContext dbLoadContext, bool bPurgeValidated = false)
         {
             //Validate/initialize input parameters...
             if ((!String.IsNullOrWhiteSpace(validatedFileNamePrefix)) &&
@@ -970,6 +986,12 @@ namespace HydroServerToolsUtilities
                                 }
                             }
 
+                            //Delete the validated file, if indicated...
+                            if (bPurgeValidated)
+                            {
+                                File.Delete(binFilePathAndName);
+                            }
+
                             if ( null != itemList && 0 < itemList.Count)
                             {
                                 //Item(s) de-serialized - find the 'Add...' method from the associated repository type...
@@ -1045,7 +1067,10 @@ namespace HydroServerToolsUtilities
 
                                         if (!String.IsNullOrWhiteSpace(tableName))
                                         {
-                                            //Table name retrieved - commit new and updated records, if indicated...
+                                            //Table name retrieved - make concurrent dictionary entry...
+                                            modelTypeNamesToDbTableNames.TryAdd(modelType.Name.ToLower(), tableName.ToLower());
+
+                                            //Commit new and updated records, if indicated...
                                             RepositoryUtils repositoryUtils = new RepositoryUtils();
                                             Type typeRepositoryUtils = typeof(RepositoryUtils);
                                             MethodInfo methodInfoCommit = typeRepositoryUtils.GetMethod("CommitNewRecords");

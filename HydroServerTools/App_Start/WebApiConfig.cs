@@ -126,11 +126,11 @@ namespace HydroServerTools
 
             //Start - Bulk Upload API routes...
 
-            //Get Route
+            //Get Items File Route
             config.Routes.MapHttpRoute(
-                name: "BulkUploadApiGet",
-                routeTemplate: "api/bulkupload/get",
-                defaults: new { controller = "BulkUpload", action = "Get" });
+                name: "BulkUploadApiGetItemsFile",
+                routeTemplate: "api/bulkupload/get/itemsfile/{itemsType}/{uploadId}/{tableName}",
+                defaults: new { controller = "BulkUpload", action = "GetItemsFile" });
 
             //Post Route
             config.Routes.MapHttpRoute(
