@@ -42,7 +42,6 @@ namespace HydroServerTools.Controllers.api
                                                                                       { "rejected", "IncorrectRecords" }
                                                                                     };
 
-
         //Private methods...
         //An asynchronous method for file content validation...
         //ASSUMPTION: Referenced file is available for read access
@@ -548,6 +547,7 @@ namespace HydroServerTools.Controllers.api
                                                     {
                                                         response.Content = new StringContent(response.ReasonPhrase, System.Text.Encoding.UTF8, "text/plain");
                                                     }
+                                                    
                                                     return response;
                                                 }
                                             }
@@ -700,7 +700,8 @@ namespace HydroServerTools.Controllers.api
                                                         {
                                                             response.Content = new StringContent(response.ReasonPhrase, System.Text.Encoding.UTF8, "text/plain");
                                                         }
-                                                        return response;
+
+                                                         return response;
                                                     }
                                                 }
                                             }
@@ -736,6 +737,7 @@ namespace HydroServerTools.Controllers.api
                                                             {
                                                                 response.Content = new StringContent(response.ReasonPhrase, System.Text.Encoding.UTF8, "text/plain");
                                                             }
+                                                            
                                                             return response;
                                                         }
 
@@ -757,6 +759,7 @@ namespace HydroServerTools.Controllers.api
                                                                 {
                                                                     response.Content = new StringContent(response.ReasonPhrase, System.Text.Encoding.UTF8, "text/plain");
                                                                 }
+                                                                
                                                                 return response;
                                                             }
                                                         }
@@ -809,6 +812,7 @@ namespace HydroServerTools.Controllers.api
                                                                 {
                                                                     response.Content = new StringContent(response.ReasonPhrase, System.Text.Encoding.UTF8, "text/plain");
                                                                 }
+                                                                
                                                                 return response;
                                                             }
                                                         }
@@ -969,6 +973,7 @@ namespace HydroServerTools.Controllers.api
                         {
                             response.Content = new StringContent(response.ReasonPhrase, System.Text.Encoding.UTF8, "text/plain");
                         }
+                        
                         return response;
                     }
                 }
@@ -983,6 +988,7 @@ namespace HydroServerTools.Controllers.api
                     {
                         response.Content = new StringContent(response.ReasonPhrase, System.Text.Encoding.UTF8, "text/plain");
                     }
+                    
                     return response;
                 }
             }
