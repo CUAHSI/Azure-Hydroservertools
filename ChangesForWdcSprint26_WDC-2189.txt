@@ -14,6 +14,7 @@
                   - userName
 
 
+>>>> Azure-Hydroservertools <<<<
  - HydroServerTools.sln
    - Unknown additions of 'HasPerformanceSessions' parameters
 

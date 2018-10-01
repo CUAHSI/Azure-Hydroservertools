@@ -24,7 +24,6 @@ using HydroServerToolsUtilities;
 //using ODM_1_1_1EFModel;
 using System.Collections.Concurrent;
 using HydroserverToolsBusinessObjects.Interfaces;
-using System.Data.Entity;
 using ODM_1_1_1EFModel;
 
 namespace HydroServerToolsUtilities
@@ -85,6 +84,8 @@ namespace HydroServerToolsUtilities
         private Dictionary<Type, object> repositoryInstances = new Dictionary<Type, object>();
 
         private string entityConnectionString;
+
+        private Repository repositoryInstance;
 
         //Utilities...
 
@@ -217,6 +218,37 @@ namespace HydroServerToolsUtilities
             
             //Processing complete - return result...
             return result;
+        }
+
+        //Retrieve the record counts for the input table name(s) 
+        //NOTE: Exposes Repository method...
+        public Dictionary<string, int> GetTableRecordCounts(List<string> tableNames)
+        {
+            Dictionary<string, int> result = new Dictionary<string, int>();
+
+            //Validate/initialize input parameters...
+            if ((null != tableNames) && (0 < tableNames.Count))
+            {
+                //Input parameters valid - get repository instance...
+                try
+                {
+                    if (null == repositoryInstance)
+                    {
+                        //Allocate new instance...
+                        repositoryInstance = new Repository(entityConnectionString);
+                    }
+
+                    //Call repository method...
+                    result = repositoryInstance.GetTableRecordCounts(tableNames);
+                }
+                catch (Exception)
+                {
+                    //For now take no action...
+                }
+            }
+
+            //Processing complete - return result...
+            return result; 
         }
 
         //Retrieve the repository instance per the input type...
