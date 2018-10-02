@@ -195,16 +195,18 @@ namespace HydroServerTools
                     var connParameters = applDbContext.ConnectionParameters.FirstOrDefault(cp => networkApiKey == cp.HIScentralNetworkApiKey);
                     if (null != connParameters)
                     {
-                        //Connection parameters found - retrieve service name
-                        var serviceName = connParameters.Name;
-                        if (!String.IsNullOrWhiteSpace(serviceName))
+                        //Connection parameters found - find referenced ConnectionParametersUsers record...
+                        var connParamsId = connParameters.Id;
+                        var connParamsUser = applDbContext.ConnectionParametersUser.FirstOrDefault(cpu => connParamsId == cpu.ConnectionParametersId);
+                        if ( null != connParamsUser)
                         {
-                            //Find service registration for the service name...
-                            var serviceRegistration = applDbContext.ServiceRegistrations.FirstOrDefault(sr => serviceName.ToLower() == sr.ServiceName.ToLower());
-                            if (null != serviceRegistration)
+                            //ConnectionParametersUsers record found - find referenced Users record...
+                            var userId = connParamsUser.UserId;
+                            var aspUser = applDbContext.Users.FirstOrDefault(user => userId == user.Id);
+                            if (null != aspUser)
                             {
-                                //Service registration found - retrieve Google email...
-                                googleEmail = serviceRegistration.GoogleAccount;
+                                //User record found - retrieve username...
+                                googleEmail = aspUser.UserName;
                             }
                         }
                     }

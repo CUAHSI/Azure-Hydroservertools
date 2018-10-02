@@ -30,6 +30,12 @@ namespace HydroServerToolsUtilities
 			public string domainName { get; set; }
 		}
 
+        protected class bulkUploadIds
+        {
+            public string googleEmailAddress { get; set; }
+            public string networkApiKey { get; set; }
+        }
+
 		//members...
         //Unique Ids to collections of parameter names and values
         protected static Dictionary<int, Dictionary<string, string>> m_dictParams = new Dictionary<int, Dictionary<string,string>>();
@@ -44,8 +50,9 @@ namespace HydroServerToolsUtilities
 
 		protected static Object lockObject = new Object();
 
-		//protected Dictionary<int, ids> m_dictUniqueIdsToIds = new Dictionary<int, ids>();
         protected static Dictionary<int, ids> m_dictUniqueIdsToIds = new Dictionary<int, ids>();
+
+        protected static Dictionary<int, bulkUploadIds> m_dictUniqueIdsToBulkUploadIds = new Dictionary<int, bulkUploadIds>();
 
         //Initializing constructor
         protected DbBaseContext(string loggerName, string adoNetAppenderName, string localConnectionStringKey, string deployConnectionStringKey)
@@ -146,12 +153,14 @@ namespace HydroServerToolsUtilities
 				//Deployed environment...
 				return m_deployConnectionString;
 			}
-
-//			return m_deployConnectionString;
 		}
 
 		public void getIds(HttpContext httpcontextCurrent, ref string sessionId, ref string userIpAddress, ref string domainName)
 		{
+            sessionId = String.Empty;
+            userIpAddress = String.Empty;
+            domainName = String.Empty;
+
 			if ( null == httpcontextCurrent)
 			{
 				//If no http context (running in an async task) check the dictionary for the 'Call Context' unique id...
@@ -198,8 +207,33 @@ namespace HydroServerToolsUtilities
 			return;
 		}
 
+        public void getBulkUploadIds(ref string networkApiKey, ref string googleEmailAddress)
+        {
+            googleEmailAddress = String.Empty;
+            networkApiKey = String.Empty;
+
+            //Check for the 'Call Context' unique id...
+            if (null != CallContext.LogicalGetData("uniqueId"))
+            {
+                //'Call Context' unique id found - retrieve associated values...
+                int uniqueId = (int)CallContext.LogicalGetData("uniqueId");
+
+                lock (lockObject)
+                {
+                    if (m_dictUniqueIdsToBulkUploadIds.ContainsKey(uniqueId))
+                    {
+                        bulkUploadIds myIds = m_dictUniqueIdsToBulkUploadIds[uniqueId];
+
+                        networkApiKey = myIds.networkApiKey;
+                        googleEmailAddress = myIds.googleEmailAddress;
+                    }
+                }
+            }
+        }
+
 		//Save input ids (used in logging) under a unique Id...
-		public void saveIds( int uniqueId, string sessionId, string userIpAddress, string domainName)
+        public void saveIds( int uniqueId, string sessionId, string userIpAddress, string domainName,
+                                            string networkApiKey = null, string googleEmailAddress = null)
 		{
 			ids myIds = new ids();
 			myIds.sessionId = sessionId;
@@ -211,6 +245,15 @@ namespace HydroServerToolsUtilities
 				if (!m_dictUniqueIdsToIds.ContainsKey(uniqueId))
 				{
 					m_dictUniqueIdsToIds.Add(uniqueId, myIds);
+
+                    if (!(String.IsNullOrWhiteSpace(googleEmailAddress) || String.IsNullOrWhiteSpace(networkApiKey)))
+                    {
+                        var myBulkUploadIds = new bulkUploadIds();
+                        myBulkUploadIds.googleEmailAddress = googleEmailAddress;
+                        myBulkUploadIds.networkApiKey = networkApiKey;
+
+                        m_dictUniqueIdsToBulkUploadIds.Add(uniqueId, myBulkUploadIds);
+                    }
 				}
 			}
 		}
@@ -223,6 +266,8 @@ namespace HydroServerToolsUtilities
 				if (m_dictUniqueIdsToIds.ContainsKey(uniqueId))
 				{
 					m_dictUniqueIdsToIds.Remove(uniqueId);
+
+                    m_dictUniqueIdsToBulkUploadIds.Remove(uniqueId);
 				}
 			}
 		}

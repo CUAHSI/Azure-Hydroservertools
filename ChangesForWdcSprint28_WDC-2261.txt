@@ -1,0 +1,51 @@
+
+ Changes for WDC Sprint 28 - WDC-2261
+
+
+>>> Summary <<<
+ - HydroServer Logging - Add log and error calls to HydroServer Bulk Upload API methods
+ - Bulk Upload Validation Error Report - Fix misleading error message when uploaded file cannot be mapped to any known model type 
+
+
+>>>> Azure-Hydroservertools/HydroServerTools <<<<
+ - HydroServerTools.csproj 
+    - New content files: cURL confg template and sample 
+    - Re-located log4net configuration file
+    - New SQL file for HydroServer logs
+
+
+>>>> Azure-Hydroservertools/HydroServerTools/Controllers/api <<<<
+ - BulkUploadController.cs
+   - Method: Post() 
+      - Add log4net log and error calls   
+      - Add 'uniqueId' to CallContext
+
+
+>>>> Azure-Hydroservertools/HydroServerTools/Helper <<<<
+ - HydroServerToolsUtils.cs
+   - Per Martin's guidance, revise logic for GetGoogleEmailForNetworkApiKey(...)
+
+
+>>>> Azure-Hydroservertools/HydroServerTools/Log4Net <<<<
+ - New folder
+   - Move BulkUploadAndHydroServer.log4net configuration file here
+
+
+>>>> Azure-Hydroservertools/HydroServerToolsUtilities <<<<
+ - CacheCollections.cs
+   - method: Initialize() 
+      - Add bulkupload and hydroserver log and error contexts
+   - New methods: bulkupload and hydroserver log and error context 'get' methods
+ - DbBaseContext.cs
+   - Add logic for new fields: googleEmailAddress and networkApiKey
+- DbErrorContext.cs
+   - Add logic for new fields: googleEmailAddress and networkApiKey
+- DbLogContext.cs
+  - Add logic for new fields: googleEmailAddress and networkApiKey
+
+
+>>>> Azure-Hydroservertools/HydroServerToolsUtilities/Validators <<<<
+- CsvValidator.cs
+    - Method: ValidateFileContents() 
+       - For 'unknown' model type, clear missing required header names from validation results
+ 

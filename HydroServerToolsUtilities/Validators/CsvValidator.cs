@@ -762,6 +762,12 @@ namespace HydroServerToolsUtilities.Validators
                                         validationResults.CandidateTypeName = "Unknown";
                                         validationResults.CandidateTypeFriendlyName = "Unknown";
 
+                                        //Clear missing required header names to prevent misleading error messages...
+                                        if ( 0 < validationResults.MissingRequiredHeaderNames.Count)
+                                        {
+                                            validationResults.MissingRequiredHeaderNames.Clear();
+                                        }
+
                                         validationTypesToValidationResults.Clear();
                                         validationTypesToValidationResults.Add(type, validationResults);
                                     }

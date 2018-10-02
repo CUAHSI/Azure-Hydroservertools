@@ -579,12 +579,12 @@
     <Content Include="AppSettings.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="BulkUpload.log4net">
-      <SubType>Designer</SubType>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Content\BulkUpload\cURLConfig\fileUpload_Methods.config" />
     <Content Include="Content\BulkUpload\cURLConfig\fileUpload_Template.config" />
+    <Content Include="Log4Net\BulkUploadAndHydroServer.log4net">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </Content>
     <None Include="Microsoft.WindowsAzure.Caching\ClientPerfCountersInstaller.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -704,6 +704,7 @@
     <Content Include="Scripts\Purl.js" />
     <Content Include="Scripts\URLParser.js" />
     <Content Include="SQL\BulkUploadLog-create.sql" />
+    <Content Include="SQL\HydroServerLog-create.sql" />
     <Content Include="Uploads\NEVER-DELETE-THIS-FILE.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

@@ -98,13 +98,15 @@ namespace HydroServerToolsUtilities
 
 
 		//Write and entry to the log table (for use when an HttpContext is not available...)
-		public void createLogEntry(string sessionId, string userIpAddress, string domainName, string userEMailAddress, DateTime startDtUtc, DateTime endDtUtc, string methodName, string message, Level logLevel)
+		public void createLogEntry(string sessionId, string userIpAddress, string domainName, string networkApiKey, string googleEmailAddress,  
+                                                     DateTime startDtUtc, DateTime endDtUtc, string methodName, string message, Level logLevel)
 		{
 			//Validate/initialize input parameters...
 			if ( String.IsNullOrWhiteSpace(sessionId) ||
 				 String.IsNullOrWhiteSpace(userIpAddress) ||
 				 String.IsNullOrWhiteSpace(domainName) ||
-				 String.IsNullOrWhiteSpace(userEMailAddress) ||
+                 String.IsNullOrWhiteSpace(networkApiKey) ||
+				 String.IsNullOrWhiteSpace(googleEmailAddress) ||
 				 null == startDtUtc ||
 				 null == endDtUtc ||
 				 String.IsNullOrWhiteSpace(methodName) ||
@@ -120,8 +122,9 @@ namespace HydroServerToolsUtilities
 			MDC.Set("SessionId", sessionId);
 			MDC.Set("IPAddress", userIpAddress);
 			MDC.Set("Domain", domainName);
-			MDC.Set("EmailAddress", userEMailAddress);
 
+            MDC.Set("NetworkApiKey", networkApiKey);
+			MDC.Set("GoogleEmailAddress", googleEmailAddress);
 			string dtFormat = "dd-MMM-yyyy HH:mm:ss.fff";
 			MDC.Set("StartDateTime", startDtUtc.ToString(dtFormat, CultureInfo.CreateSpecificCulture("en-US")));
 			MDC.Set("EndDateTime", endDtUtc.ToString(dtFormat, CultureInfo.CreateSpecificCulture("en-US")));
@@ -201,17 +204,13 @@ namespace HydroServerToolsUtilities
 			string sessionId = String.Empty;
 			string userIpAddress = String.Empty;
 			string domainName = String.Empty;
+            string networkApiKey = String.Empty;
+            string googleEmailAddress = String.Empty;
 
 			getIds(httpcontextCurrent, ref sessionId, ref userIpAddress, ref domainName);
+            getBulkUploadIds(ref networkApiKey, ref googleEmailAddress);
 
-			//If current user authenticated, retrieve user's e-mail address...
-			//var httpContext = new HttpContextWrapper(System.Web.HttpContext.Current);
-            var httpContext = new HttpContextWrapper(httpcontextCurrent);
-            CurrentUser cu = (null != httpContext.Session) ? (httpContext.Session[httpContext.Session.SessionID] as CurrentUser) : null;
-
-			string eMailAddress = (null != cu && cu.Authenticated) ? cu.UserEmail : ulConstants.Unknown;
-
-			createLogEntry(sessionId, userIpAddress, domainName, eMailAddress, startDtUtc, endDtUtc, methodName, message, logLevel);
+			createLogEntry(sessionId, userIpAddress, domainName, networkApiKey, googleEmailAddress, startDtUtc, endDtUtc, methodName, message, logLevel);
 
 			return;
 		}

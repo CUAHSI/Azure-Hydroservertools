@@ -22,6 +22,8 @@ using System.Web;
 using RazorEngine;
 using RazorEngine.Templating;
 using System.Web.Routing;
+using System.Runtime.Remoting.Messaging;
+using log4net.Core;
 
 namespace HydroServerTools.Controllers.api
 {
@@ -41,6 +43,8 @@ namespace HydroServerTools.Controllers.api
                                                                                       { "duplicate", "DuplicateRecords" },
                                                                                       { "rejected", "IncorrectRecords" }
                                                                                     };
+
+        private Random _random = new Random(DateTime.Now.Millisecond);
 
         //Private methods...
         //An asynchronous method for file content validation...
@@ -417,10 +421,19 @@ namespace HydroServerTools.Controllers.api
         {
             HttpResponseMessage response = new HttpResponseMessage();
             response.StatusCode = HttpStatusCode.OK;    //Assume success
+            var methodName = "BulkUploadController.Post()";
 
             //Write an empty JSON object to the response
             //  To avoid 'Unexpected end of JSON input' error in jQuery file download!!
             response.Content = new StringContent("{}", System.Text.Encoding.UTF8, "application/json");
+
+            //Retrieve log and error contexts...
+            string sessionId = String.Empty;
+            string userIpAddress = string.Empty;
+            string domainName = string.Empty;
+
+            DbLogContext myDbLogContext = CacheCollections.GetBulkUploadLogContext();
+            DbErrorContext myDbErrorContext = CacheCollections.GetBulkUploadErrorContext();
 
             //Map to a relative path...
             //Source: http://bytutorial.com/blogs/aspnet/alternative-way-of-using-server-mappath-in-aspnet-web-api
@@ -471,6 +484,22 @@ namespace HydroServerTools.Controllers.api
 
                         return response;
                     }
+
+                    //Get logging Ids...
+                    myDbLogContext.getIds(System.Web.HttpContext.Current, ref sessionId, ref userIpAddress, ref domainName);
+
+                    //Save ids to log and error contexts...
+                    int uniqueId = _random.Next();
+
+                    myDbLogContext.saveIds(uniqueId, sessionId, userIpAddress, domainName, networkApiKey, userName);
+                    myDbErrorContext.saveIds(uniqueId, sessionId, userIpAddress, domainName, networkApiKey, userName);
+
+                    //Add uniqueId to call context (for later reference in async calls)...
+                    CallContext.LogicalSetData("uniqueId", uniqueId);
+
+                    //Log 'start' message...
+                    DateTime dtUTC = DateTime.UtcNow;
+                    myDbLogContext.createLogEntry(System.Web.HttpContext.Current, dtUTC, dtUTC, methodName, "Starts!!", Level.Info);
 
                     values = null;
                     if (Request.Headers.TryGetValues(_strHdrValidationQualifier, out values))
@@ -547,7 +576,12 @@ namespace HydroServerTools.Controllers.api
                                                     {
                                                         response.Content = new StringContent(response.ReasonPhrase, System.Text.Encoding.UTF8, "text/plain");
                                                     }
-                                                    
+
+                                                    //Log error...
+                                                    myDbErrorContext.clearParameters();
+                                                    var exception = new HttpRequestException(response.ReasonPhrase);
+                                                    myDbErrorContext.createLogEntry(System.Web.HttpContext.Current, DateTime.UtcNow, methodName, exception, response.ReasonPhrase);
+
                                                     return response;
                                                 }
                                             }
@@ -681,6 +715,16 @@ namespace HydroServerTools.Controllers.api
                                                                             response.Content = new StringContent(jsonData, System.Text.Encoding.UTF8, "application/json");
                                                                         }
 
+                                                                        //Log error...
+                                                                        myDbErrorContext.clearParameters();
+
+                                                                        myDbErrorContext.addParameter("CandidateTypeName", csvValiDATIONResults.CandidateTypeName);
+                                                                        myDbErrorContext.addParameter("InvalidHeaderNames", String.Join(",", csvValiDATIONResults.InvalidHeaderNames));
+                                                                        myDbErrorContext.addParameter("MissingRequiredHeaderNames", String.Join(",", csvValiDATIONResults.MissingRequiredHeaderNames));
+
+                                                                        var exception = new HttpRequestException(response.ReasonPhrase);
+                                                                        myDbErrorContext.createLogEntry(System.Web.HttpContext.Current, DateTime.UtcNow, methodName, exception, response.ReasonPhrase);
+
                                                                         return response;
                                                                     }
 
@@ -701,6 +745,11 @@ namespace HydroServerTools.Controllers.api
                                                             response.Content = new StringContent(response.ReasonPhrase, System.Text.Encoding.UTF8, "text/plain");
                                                         }
 
+                                                        //Log error...
+                                                        myDbErrorContext.clearParameters();
+                                                        var exception = new HttpRequestException(response.ReasonPhrase);
+                                                        myDbErrorContext.createLogEntry(System.Web.HttpContext.Current, DateTime.UtcNow, methodName, exception, response.ReasonPhrase);
+
                                                          return response;
                                                     }
                                                 }
@@ -718,7 +767,6 @@ namespace HydroServerTools.Controllers.api
                                             {
                                                 if (valiDATORResult2.ValidationComplete && (fileName.ToLower() == valiDATORResult2.FileName.ToLower()))
                                                 {
-                                                    //valiDATORResult2.FileValidator.ValidatedModelType
                                                     //File validation complete - retrieve repository context...
                                                     Type modelType = valiDATORResult2.FileValidator.ValidatedModelType;
 
@@ -737,7 +785,12 @@ namespace HydroServerTools.Controllers.api
                                                             {
                                                                 response.Content = new StringContent(response.ReasonPhrase, System.Text.Encoding.UTF8, "text/plain");
                                                             }
-                                                            
+
+                                                            //Log error...
+                                                            myDbErrorContext.clearParameters();
+                                                            var exception = new HttpRequestException(response.ReasonPhrase);
+                                                            myDbErrorContext.createLogEntry(System.Web.HttpContext.Current, DateTime.UtcNow, methodName, exception, response.ReasonPhrase);
+
                                                             return response;
                                                         }
 
@@ -759,7 +812,12 @@ namespace HydroServerTools.Controllers.api
                                                                 {
                                                                     response.Content = new StringContent(response.ReasonPhrase, System.Text.Encoding.UTF8, "text/plain");
                                                                 }
-                                                                
+
+                                                                //Log error...
+                                                                myDbErrorContext.clearParameters();
+                                                                var exception = new HttpRequestException(response.ReasonPhrase);
+                                                                myDbErrorContext.createLogEntry(System.Web.HttpContext.Current, DateTime.UtcNow, methodName, exception, response.ReasonPhrase);
+
                                                                 return response;
                                                             }
                                                         }
@@ -804,6 +862,11 @@ namespace HydroServerTools.Controllers.api
                                                                 response.Content = new StringContent(response.ReasonPhrase, System.Text.Encoding.UTF8, "text/plain");
                                                             }
 
+                                                            //Log error...
+                                                            myDbErrorContext.clearParameters();
+                                                            var exception = new HttpRequestException(response.ReasonPhrase);
+                                                            myDbErrorContext.createLogEntry(System.Web.HttpContext.Current, DateTime.UtcNow, methodName, exception, response.ReasonPhrase);
+
                                                             return response;
                                                         }
                                                     }
@@ -829,6 +892,12 @@ namespace HydroServerTools.Controllers.api
                                                                 {
                                                                     response.Content = new StringContent(response.ReasonPhrase, System.Text.Encoding.UTF8, "text/plain");
                                                                 }
+
+                                                                //Log error...
+                                                                myDbErrorContext.clearParameters();
+                                                                var exception = new HttpRequestException(response.ReasonPhrase);
+                                                                myDbErrorContext.createLogEntry(System.Web.HttpContext.Current, DateTime.UtcNow, methodName, exception, response.ReasonPhrase);
+
                                                                 return response;
                                                             }
                                                         }
@@ -855,7 +924,12 @@ namespace HydroServerTools.Controllers.api
                                                                 {
                                                                     response.Content = new StringContent(response.ReasonPhrase, System.Text.Encoding.UTF8, "text/plain");
                                                                 }
-                                                                
+
+                                                                //Log error...
+                                                                myDbErrorContext.clearParameters();
+                                                                var exception = new HttpRequestException(response.ReasonPhrase);
+                                                                myDbErrorContext.createLogEntry(System.Web.HttpContext.Current, DateTime.UtcNow, methodName, exception, response.ReasonPhrase);
+
                                                                 return response;
                                                             }
                                                         }
@@ -946,12 +1020,22 @@ namespace HydroServerTools.Controllers.api
                                                                     string jsonData = Newtonsoft.Json.JsonConvert.SerializeObject(dbLoadResult);
                                                                     response.Content = new StringContent(jsonData, System.Text.Encoding.UTF8, "application/json");
                                                                 }
+
+                                                                //Log db load result...
+                                                                myDbLogContext.clearParameters();
+                                                                myDbLogContext.addParameter("dbLoadResult", dbLoadResult);
+                                                                dtUTC = DateTime.UtcNow;
+                                                                myDbLogContext.createLogEntry(System.Web.HttpContext.Current, dtUTC, dtUTC, methodName, "Db Load Results", Level.Info);
                                                             }
                                                         }
                                                     }
 
                                                     //update updateTracking table to indicate changes
                                                     HydroServerToolsUtils.InsertTrackUpdates(userName);
+
+                                                    //Log 'returns' message
+                                                    dtUTC = DateTime.UtcNow;
+                                                    myDbLogContext.createLogEntry(System.Web.HttpContext.Current, dtUTC, dtUTC, methodName, "Returns!!", Level.Info);
                                                 }
                                             }
                                         }
@@ -970,6 +1054,11 @@ namespace HydroServerTools.Controllers.api
                                 {
                                     response.Content = new StringContent(response.ReasonPhrase, System.Text.Encoding.UTF8, "text/plain");
                                 }
+
+                                //Log error...
+                                myDbErrorContext.clearParameters();
+                                var exception = new HttpRequestException(response.ReasonPhrase);
+                                myDbErrorContext.createLogEntry(System.Web.HttpContext.Current, DateTime.UtcNow, methodName, exception, response.ReasonPhrase);
 
                                 return response;
                             }
@@ -1002,6 +1091,11 @@ namespace HydroServerTools.Controllers.api
                                 }
                             }
 
+                            //Log error...
+                            myDbErrorContext.clearParameters();
+                            var exception = new HttpRequestException(response.ReasonPhrase);
+                            myDbErrorContext.createLogEntry(System.Web.HttpContext.Current, DateTime.UtcNow, methodName, exception, response.ReasonPhrase);
+
                             return response;
                         }
                     }
@@ -1016,7 +1110,12 @@ namespace HydroServerTools.Controllers.api
                         {
                             response.Content = new StringContent(response.ReasonPhrase, System.Text.Encoding.UTF8, "text/plain");
                         }
-                        
+
+                        //Log error...
+                        myDbErrorContext.clearParameters();
+                        var exception = new HttpRequestException(response.ReasonPhrase);
+                        myDbErrorContext.createLogEntry(System.Web.HttpContext.Current, DateTime.UtcNow, methodName, exception, response.ReasonPhrase);
+
                         return response;
                     }
                 }
@@ -1031,7 +1130,12 @@ namespace HydroServerTools.Controllers.api
                     {
                         response.Content = new StringContent(response.ReasonPhrase, System.Text.Encoding.UTF8, "text/plain");
                     }
-                    
+
+                    //Log error...
+                    myDbErrorContext.clearParameters();
+                    var exception = new HttpRequestException(response.ReasonPhrase);
+                    myDbErrorContext.createLogEntry(System.Web.HttpContext.Current, DateTime.UtcNow, methodName, exception, response.ReasonPhrase);
+
                     return response;
                 }
             }
@@ -1046,6 +1150,11 @@ namespace HydroServerTools.Controllers.api
                 {
                     response.Content = new StringContent(response.ReasonPhrase, System.Text.Encoding.UTF8, "text/plain");
                 }
+
+                //Log error...
+                myDbErrorContext.clearParameters();
+                var exception = new HttpRequestException(response.ReasonPhrase);
+                myDbErrorContext.createLogEntry(System.Web.HttpContext.Current, DateTime.UtcNow, methodName, exception, response.ReasonPhrase);
             }
 
             //Processing complete - return response...

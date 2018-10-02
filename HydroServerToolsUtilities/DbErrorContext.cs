@@ -10,7 +10,6 @@ namespace HydroServerToolsUtilities
 	/// <summary>
 	/// A derived class for use with the AdoNetAppender...
 	/// </summary>
-//	public class DbErrorContext : DbBaseContext
 	public class DbErrorContext : DbBaseContext
 	{
         //Singleton instance for 'sharing' of current instance among different projects in the application...
@@ -50,21 +49,26 @@ namespace HydroServerToolsUtilities
 			string sessionId = String.Empty;
 			string userIpAddress = String.Empty;
 			string domainName = String.Empty;
+            string networkApiKey = String.Empty;
+            string googleEmailAddress = String.Empty;
 
 			getIds(httpcontextCurrent, ref sessionId, ref userIpAddress, ref domainName);
+            getBulkUploadIds(ref networkApiKey, ref googleEmailAddress);
 
-			createLogEntry(sessionId, userIpAddress, domainName, occurrenceDtUtc, methodName, exception, exceptionMessage);
+			createLogEntry(sessionId, userIpAddress, domainName, networkApiKey, occurrenceDtUtc, methodName, exception, exceptionMessage);
 
 			return;
 		}
 
 		//Write and entry to the log table (for use when an HttpContext is not available...)
-		public void createLogEntry(string sessionId, string userIpAddress, string domainName, DateTime occurrenceDtUtc, string methodName, Exception exception, string exceptionMessage)
+		public void createLogEntry(string sessionId, string userIpAddress, string domainName, string networkApiKey, 
+                                                     DateTime occurrenceDtUtc, string methodName, Exception exception, string exceptionMessage)
 		{
 			//Validate/initialize input parameters...
 			if (String.IsNullOrWhiteSpace(sessionId) ||
 				 String.IsNullOrWhiteSpace(userIpAddress) ||
 				 String.IsNullOrWhiteSpace(domainName) ||
+                 String.IsNullOrWhiteSpace(networkApiKey) ||
 				 null == occurrenceDtUtc ||
 				 String.IsNullOrWhiteSpace(methodName) ||
 				 null == exception ||
@@ -79,6 +83,7 @@ namespace HydroServerToolsUtilities
 			MDC.Set("SessionId", sessionId);
 			MDC.Set("IPAddress", userIpAddress);
 			MDC.Set("Domain", domainName);
+            MDC.Set("NetworkApiKey", networkApiKey);
 			MDC.Set("OccurrenceDateTime", occurrenceDtUtc.ToString());
 			MDC.Set("MethodName", methodName);
 			MDC.Set("ExceptionType", exception.GetType().ToString());

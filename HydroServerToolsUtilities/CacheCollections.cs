@@ -84,11 +84,16 @@ namespace HydroServerToolsUtilities
                 }
 
                 //Allocate log contexts...
-                var dbLogContext = new DbLogContext("DBLog", "AdoNetAppenderLog", "local-DBLog", "deploy-DBLog");
-                var dbErrorContext = new DbErrorContext("DBError", "AdoNetAppenderError", "local-DBLog", "deploy-DBLog");
+                var bulkUploadLogContext = new DbLogContext("BulkUploadLog", "AdoNetAppenderBulkUploadLog", "local-DBLog", "deploy-DBLog");
+                var bulkUploadErrorContext = new DbErrorContext("BulkUploadError", "AdoNetAppenderBulkUploadError", "local-DBLog", "deploy-DBLog");
+                var hydroServerLogContext = new DbLogContext("HydroServerLog", "AdoNetAppenderHydroServerLog", "local-DBLog", "deploy-DBLog");
+                var hydroServerErrorContext = new DbErrorContext("HydroServerError", "AdoNetAppenderHydroServerError", "local-DBLog", "deploy-DBLog");
 
-                cache.Insert("DBLog", dbLogContext);
-                cache.Insert("DBError", dbErrorContext);
+                cache.Insert("BulkUploadLog", bulkUploadLogContext);
+                cache.Insert("BulkUploadError", bulkUploadErrorContext);
+
+                cache.Insert("HydroServerLog", hydroServerLogContext);
+                cache.Insert("HydroServerError", hydroServerErrorContext);
 
                 //Set initialization flag...
                 cache.Insert(initKey, true);
@@ -163,24 +168,46 @@ namespace HydroServerToolsUtilities
             return result;
         }
 
-        //Get DbLogContext
-        public static DbLogContext GetDbLogContext()
+        //Get Bulk Upload Log Context
+        public static DbLogContext GetBulkUploadLogContext()
         {
             //Retrieve Http cache reference...
             var cache = HttpRuntime.Cache;
 
-            var result = cache.Get("DbLog") as DbLogContext;
+            var result = cache.Get("BulkUploadLog") as DbLogContext;
 
             return result;
         }
 
-        //Get DbErrorContext 
-        public static DbErrorContext GetDbErrorContext()
+        //Get Bulk Upload Error Context 
+        public static DbErrorContext GetBulkUploadErrorContext()
         {
             //Retrieve Http cache reference...
             var cache = HttpRuntime.Cache;
 
-            var result = cache.Get("DbError") as DbErrorContext;
+            var result = cache.Get("BulkUploadError") as DbErrorContext;
+
+            return result;
+        }
+
+        //Get HydroServer Log Context
+        public static DbLogContext GetHydroServerLogContext()
+        {
+            //Retrieve Http cache reference...
+            var cache = HttpRuntime.Cache;
+
+            var result = cache.Get("HydroServerLog") as DbLogContext;
+
+            return result;
+        }
+
+        //Get HydroServer Error Context 
+        public static DbErrorContext GetHydroServerErrorContext()
+        {
+            //Retrieve Http cache reference...
+            var cache = HttpRuntime.Cache;
+
+            var result = cache.Get("HydroServerError") as DbErrorContext;
 
             return result;
         }
