@@ -180,6 +180,43 @@ namespace HydroServerTools
             return userEmail;
         }
 
+        //Retrieve the Google e-mail associated with the input Network API key...
+        public static string GetGoogleEmailForNetworkApiKey(string networkApiKey)
+        {
+            string googleEmail = String.Empty;
+
+            //Validate/initialize input parameters...
+            if (!String.IsNullOrWhiteSpace(networkApiKey))
+            {
+                //Input parameters valid - allocate db context...
+                using (var applDbContext = new ApplicationDbContext())
+                {
+                    //Find connection parameters for input network API key...
+                    var connParameters = applDbContext.ConnectionParameters.FirstOrDefault(cp => networkApiKey == cp.HIScentralNetworkApiKey);
+                    if (null != connParameters)
+                    {
+                        //Connection parameters found - find referenced ConnectionParametersUsers record...
+                        var connParamsId = connParameters.Id;
+                        var connParamsUser = applDbContext.ConnectionParametersUser.FirstOrDefault(cpu => connParamsId == cpu.ConnectionParametersId);
+                        if ( null != connParamsUser)
+                        {
+                            //ConnectionParametersUsers record found - find referenced Users record...
+                            var userId = connParamsUser.UserId;
+                            var aspUser = applDbContext.Users.FirstOrDefault(user => userId == user.Id);
+                            if (null != aspUser)
+                            {
+                                //User record found - retrieve username...
+                                googleEmail = aspUser.UserName;
+                            }
+                        }
+                    }
+                }
+            }
+
+            //Processing complete - return user e-mail
+            return googleEmail;
+        }
+
         public static string GetConnectionName(string userName)
         {
             string connectionName = Resources.NOT_LINKED_TO_DATABASE;
@@ -220,6 +257,25 @@ namespace HydroServerTools
 
 
             return connectionId;
+        }
+
+        public static string GetConnectionHIScentralNetworkApiKey(string userId)
+        {
+            string HIScentralNetworkApiKey = Resources.NOT_LINKED_TO_DATABASE;
+            ApplicationDbContext context = new ApplicationDbContext();
+
+            var p = (from c in context.ConnectionParametersUser
+                     where c.User.Id == userId
+                     select new
+                     {
+                         c.ConnectionParameters.HIScentralNetworkApiKey
+                     }).FirstOrDefault();
+            if (p != null)
+            {
+                HIScentralNetworkApiKey = p.HIScentralNetworkApiKey;
+            }
+
+            return HIScentralNetworkApiKey;
         }
 
         public static string BuildConnectionStringForUserName(string userName)

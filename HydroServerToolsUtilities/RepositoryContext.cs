@@ -21,11 +21,12 @@ using HydroserverToolsBusinessObjects.Models;
 using HydroServerToolsRepository.Repository;
 using HydroServerToolsUtilities;
 
-using ODM_1_1_1EFModel;
+//using ODM_1_1_1EFModel;
 using System.Collections.Concurrent;
 using HydroserverToolsBusinessObjects.Interfaces;
+using ODM_1_1_1EFModel;
 
-namespace HydroServerTools.Utilities
+namespace HydroServerToolsUtilities
 {
     public class RepositoryContext
     {
@@ -33,7 +34,7 @@ namespace HydroServerTools.Utilities
         //Listed in table load order!!!
         private static Dictionary<Type, Type> modelTypesToRepositoryTypes = new Dictionary<Type, Type>
                                                                                 { //{typeof(SiteModel), typeof(SitesRepository)},
-                                                                                  {typeof(SiteModelBasicTemplate), typeof(SitesRepository)},
+                                                                                  {typeof(SiteModelBasicTemplate), typeof(HydroServerToolsRepository.Repository.SitesRepository)},
                                                                                   //{typeof(VariablesModel), typeof(VariablesRepository)},
                                                                                   {typeof(VariablesModelBasicTemplate), typeof(VariablesRepository)},
                                                                                   {typeof(OffsetTypesModel), typeof(OffsetTypesRepository)},
@@ -76,11 +77,15 @@ namespace HydroServerTools.Utilities
                                                                                   {typeof(DerivedFromModel), typeof(DerivedFrom)},
                                                                                   {typeof(CategoriesModel), typeof(Category)}
                                                                                 };
+        //Concurrent dictionary of model type names to table names...
+        private static ConcurrentDictionary<string, string> modelTypeNamesToDbTableNames = new ConcurrentDictionary<string, string>();
 
         //Dictionary of repository types to repository instances...
         private Dictionary<Type, object> repositoryInstances = new Dictionary<Type, object>();
 
         private string entityConnectionString;
+
+        private Repository repositoryInstance;
 
         //Utilities...
 
@@ -200,6 +205,51 @@ namespace HydroServerTools.Utilities
         public List<Type> RepositoryTypes { get; private set; }
 
         //Methods...
+
+        //Retrieve the table name per the input model type name...
+        public string GetTableName(string modelTypeName)
+        {
+            string result = string.Empty;
+
+            if (!String.IsNullOrWhiteSpace(modelTypeName))
+            {
+                modelTypeNamesToDbTableNames.TryGetValue(modelTypeName.ToLower(), out result);
+            }
+            
+            //Processing complete - return result...
+            return result;
+        }
+
+        //Retrieve the record counts for the input table name(s) 
+        //NOTE: Exposes Repository method...
+        public Dictionary<string, int> GetTableRecordCounts(List<string> tableNames)
+        {
+            Dictionary<string, int> result = new Dictionary<string, int>();
+
+            //Validate/initialize input parameters...
+            if ((null != tableNames) && (0 < tableNames.Count))
+            {
+                //Input parameters valid - get repository instance...
+                try
+                {
+                    if (null == repositoryInstance)
+                    {
+                        //Allocate new instance...
+                        repositoryInstance = new Repository(entityConnectionString);
+                    }
+
+                    //Call repository method...
+                    result = repositoryInstance.GetTableRecordCounts(tableNames);
+                }
+                catch (Exception)
+                {
+                    //For now take no action...
+                }
+            }
+
+            //Processing complete - return result...
+            return result; 
+        }
 
         //Retrieve the repository instance per the input type...
         // Returns null if no such instance found...
@@ -829,7 +879,7 @@ namespace HydroServerTools.Utilities
         }
 
         //Load content from specified <fileprefix>-<modeltypename>-validated.bin files into database... 
-        public async Task LoadDbBis(string validatedFileNamePrefix, string pathValidated, string pathProcessed, StatusContext statusContext, DbLoadContext dbLoadContext)
+        public async Task LoadDbBis(string validatedFileNamePrefix, string pathValidated, string pathProcessed, StatusContext statusContext, DbLoadContext dbLoadContext, bool bPurgeValidated = false)
         {
             //Validate/initialize input parameters...
             if ((!String.IsNullOrWhiteSpace(validatedFileNamePrefix)) &&
@@ -968,6 +1018,12 @@ namespace HydroServerTools.Utilities
                                 }
                             }
 
+                            //Delete the validated file, if indicated...
+                            if (bPurgeValidated)
+                            {
+                                File.Delete(binFilePathAndName);
+                            }
+
                             if ( null != itemList && 0 < itemList.Count)
                             {
                                 //Item(s) de-serialized - find the 'Add...' method from the associated repository type...
@@ -1043,7 +1099,10 @@ namespace HydroServerTools.Utilities
 
                                         if (!String.IsNullOrWhiteSpace(tableName))
                                         {
-                                            //Table name retrieved - commit new and updated records, if indicated...
+                                            //Table name retrieved - make concurrent dictionary entry...
+                                            modelTypeNamesToDbTableNames.TryAdd(modelType.Name.ToLower(), tableName.ToLower());
+
+                                            //Commit new and updated records, if indicated...
                                             RepositoryUtils repositoryUtils = new RepositoryUtils();
                                             Type typeRepositoryUtils = typeof(RepositoryUtils);
                                             MethodInfo methodInfoCommit = typeRepositoryUtils.GetMethod("CommitNewRecords");

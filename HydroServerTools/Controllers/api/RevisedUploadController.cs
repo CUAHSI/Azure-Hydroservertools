@@ -18,7 +18,6 @@ using Newtonsoft.Json;
 #endif
 
 using HydroServerTools.Utilities;
-using HydroServerTools.Validators;
 
 using HydroserverToolsBusinessObjects;
 using HydroserverToolsBusinessObjects.ModelMaps;
@@ -27,6 +26,7 @@ using HydroServerToolsUtilities;
 using System.Xml.Serialization;
 using HydroServerTools.Models;
 using HydroserverToolsBusinessObjects.Interfaces;
+using HydroServerToolsUtilities.Validators;
 
 namespace HydroServerTools.Controllers.api
 {
@@ -522,7 +522,7 @@ namespace HydroServerTools.Controllers.api
                     //Check for status context...
                     if (null == sc)
                     {
-                        response.StatusCode = HttpStatusCode.BadRequest;    //No repository context - return early
+                        response.StatusCode = HttpStatusCode.BadRequest;    //No status context - return early
                         response.ReasonPhrase = "Cannot find/create status context for current upload Id... (from get/dbloadstatusforfile/)";
                         return response;
                     }
@@ -1322,7 +1322,6 @@ namespace HydroServerTools.Controllers.api
                         Stream streamResult = task.GetType().GetProperty("Result").GetValue(task) as Stream;
                         if (null != streamResult)
                         {
-
                             //Reset stream position - add stream to response content...
                             streamResult.Position = 0;
                             response.Content = new StreamContent(streamResult);  
@@ -2001,7 +2000,7 @@ namespace HydroServerTools.Controllers.api
                                     }
                                 }
 
-                                Encoding currentEncoding = EncodingContext.GetFileEncoding(contentType, filePathAndName);
+                                //Encoding currentEncoding = EncodingContext.GetFileEncoding(contentType, filePathAndName);
 
                                 //Create output file --OR-- open file for append...
                                 using (var fileStream = new FileStream(filePathAndName, isFirstChunk ? FileMode.Create : FileMode.Append, FileAccess.Write, FileShare.None, 65536 * 16, true))

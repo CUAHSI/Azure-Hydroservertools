@@ -223,6 +223,9 @@ namespace HydroServerTools.Controllers
                         connectionParameters.Password = ConfigurationManager.AppSettings["Password"];
                         connectionParameters.HIScentralNetworkId = null;
                         connectionParameters.HIScentralNetworkName = null;
+                        // Create and display API Key.  
+                        connectionParameters.HIScentralNetworkApiKey = Guid.NewGuid().ToString().Replace("-", "").ToUpper(); 
+                        
                         db.ConnectionParameters.Add(connectionParameters);
                          
                         //add user connection 

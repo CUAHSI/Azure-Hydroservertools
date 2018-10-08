@@ -1,0 +1,82 @@
+﻿@{
+//
+// A simple Razor view for the reporting of validation processing results...
+//
+// Source: https://itechmanager.com/2013/09/10/web-api-and-returning-a-razor-view/
+}
+
+@model HydroServerToolsUtilities.Validators.CsvValidationResults
+@{
+    bool bErrorMessage = false;
+    Layout = "~/Views/Shared/_LayoutBulkUpload.cshtml";
+}
+
+<div>
+    <h1>Validation Summary for:&nbsp;@(ViewBag.serviceName)</h1>
+    <div class="row">
+        <div class="col-md-12">
+            <div style="padding-left: 1.0em; padding-right: 1.0em;" class="uploader-border">
+                <table style="margin-top: 1.5em;" class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="col-md-2 text-center">Date&#x2FTime</th>
+                            <th class="col-md-4 text-center">File&nbsp;Name</th>
+                            <th class="col-md-6 text-center">Validation&nbsp;Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="col-md-2 text-center">
+                                <span style="font-size: 1.0em; font-weight: bold;" class="spanDateTime">
+                                    @(DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss"))
+                                </span>
+                            </td>
+                            <td class="col-md-4 text-center">
+                                <span style="font-size: 1.0em; font-weight: bold;" class="spanFileName">
+                                    @(ViewBag.fileName)
+                                </span>
+                            </td>
+                            <td class="col-md-6 text-center">
+                                <span style="font-size: 1.0em; font-weight: bold;" class="spanValidationStatus">
+                                    @(Model.ValidationMessage(ref bErrorMessage));
+                                </span>
+                            </td>
+                        </tr>
+                        @if (0 < Model.InvalidHeaderNames.Count)
+                        {
+                            <tr>
+                                <td class="col-md-2 text-center"></td>
+                                <td class="col-md-4 text-center"></td>
+                                <td class="col-md-6 text-center">
+                                    <span style="font-size: 1.0em; font-weight: bold;" class="spanInvalidHeaderNames">
+                                        @(String.Format("Invalid headers: {0}", String.Join(",", Model.InvalidHeaderNames)));
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                        @if (0 < Model.MissingRequiredHeaderNames.Count)
+                        {
+                            <tr>
+                                <td class="col-md-2 text-center"></td>
+                                <td class="col-md-4 text-center"></td>
+                                <td class="col-md-6 text-center">
+                                    <span style="font-size: 1.0em; font-weight: bold;" class="spanMissingHeaderNames">
+                                        @(String.Format("Missing headers: {0}", String.Join(",", Model.MissingRequiredHeaderNames)));
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+                                        });
+
+</script>

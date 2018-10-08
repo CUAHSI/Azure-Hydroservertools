@@ -33,6 +33,9 @@
         <th>
             @Html.DisplayNameFor(model => model.HIScentralNetworkName)
         </th>
+        <th>
+            @Html.DisplayNameFor(model => model.HIScentralNetworkApiKey)
+        </th>
         <th></th>
     </tr>
 
@@ -60,9 +63,12 @@
             @Html.DisplayFor(modelItem => item.HIScentralNetworkName)
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.Id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.Id })
+            @Html.DisplayFor(modelItem => item.HIScentralNetworkApiKey)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+            @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+            @Html.ActionLink("Delete", "Delete", new { id = item.Id })
         </td>
     </tr>
 }

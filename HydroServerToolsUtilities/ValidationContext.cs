@@ -5,9 +5,9 @@ using System.Web;
 
 using System.Threading;
 
-using HydroServerTools.Validators;
+using HydroServerToolsUtilities.Validators;
 
-namespace HydroServerTools.Utilities
+namespace HydroServerToolsUtilities
 {
     //A simple generic class for the association of file validator instances with an access semaphore...
     public class ValidationContext<TValidator> where TValidator: class, IValidationComplete

@@ -5,8 +5,9 @@ using System.Web;
 
 using System.Threading;
 using HydroServerToolsUtilities;
+using System.Text;
 
-namespace HydroServerTools.Utilities
+namespace HydroServerToolsUtilities
 {
 
     //A simple class for the association of db load results with an access semaphore...
@@ -22,6 +23,7 @@ namespace HydroServerTools.Utilities
         }
 
         private SemaphoreSlim _DbStateSemaphore;
+        private SemaphoreSlim _DbRenderSemaphore;
         private enumDbLoadState _enumDbLoadState;
 
         //Constructors...
@@ -31,6 +33,7 @@ namespace HydroServerTools.Utilities
         {
             DbLoadResults = new List<DbLoadResult>();
             DbLoadSemaphore = new SemaphoreSlim(1, 1);
+            _DbRenderSemaphore = new SemaphoreSlim(1, 1);
 
             _DbStateSemaphore = new SemaphoreSlim(1, 1);
             _enumDbLoadState = enumDbLoadState.dbls_NotStarted;
@@ -83,6 +86,27 @@ namespace HydroServerTools.Utilities
                     }
                 }
             }
-        } 
+        }
+
+        //Override ToString to produce 'human-readable' output...
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            using (_DbRenderSemaphore.UseWaitAsync())
+            {
+                foreach (var dbLoadResult in DbLoadResults)
+                {
+                    sb.AppendLine(dbLoadResult.ToString());
+                }
+
+                if (0 >= sb.Length)
+                {
+                    sb.AppendLine("No load results...");
+                }
+            }
+
+            return sb.ToString();
+        }
+
     }
 }
