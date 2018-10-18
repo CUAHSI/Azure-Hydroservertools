@@ -1,0 +1,5 @@
+
+  Visual Studio does not include empty directories in web deployments.
+  As a workaround, a copy of the current file is added to each otherwise
+  empty to-be-deployed directory...
+  
