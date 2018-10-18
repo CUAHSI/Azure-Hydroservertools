@@ -3,24 +3,37 @@
         <h3 class="panel-title">Status</h3>
     </div>
     <div class="panel-body">
+        @*NetworkName*@
+        <p><strong>Current Connection:</strong> @ViewBag.ConnectionName<a href="#" data-toggle="tooltip" style="padding-left:10px" title="Name for  current database connection"><img class="infobutton" src="~/Images/infobutton_60.jpg" /></a></p>
+
         <p><strong>Last Modified:</strong> @ViewBag.UpdateDateTime<a href="#" data-toggle="tooltip" style="padding-left:10px" title="Last time you added, deleted or modified your data."><img class="infobutton" src="~/Images/infobutton_60.jpg" /></a></p>
         <p><strong>Last Published:</strong> @ViewBag.LastHarvested<a href="#" data-toggle="tooltip" style="padding-left:10px" title="last time your data was updated for public access."><img class="infobutton" src="~/Images/infobutton_60.jpg" /></a></p>
+        
+        <p>
+            <a href="#NetworkApiKey" class="" data-toggle="collapse">API Key:</a>
+            <div id="NetworkApiKey" class="collapse">
+                @ViewBag.NetworkApiKey<a href="#" data-toggle="tooltip" style="padding-left:10px" title="Key for uploading through API"><img class="infobutton" src="~/Images/infobutton_60.jpg" /></a>
+            </div>
+        </p>
+        <br />
         @*<p><strong>Last Harvested:</strong>@ViewBag.LastHarvested</p>*@
-        @if (ViewBag.NetworkId == "unknown")
-        {
-            <form method="post">
-            <button class="btn btn-primary active" id="RequestPublication" value="val_1" name="buttonRequestPublication">Request First Time Publication</button>  
-                <a href="#" data-toggle="tooltip" style="padding-left:10px" title="Request to make your data accessible to the public."><img class="infobutton" src="~/Images/infobutton_60.jpg" /></a>
-            </form>
-        }
-        else
-        {
-            <h5>
-                Uploaded Data is made public automatically every week. For faster publication, to turn your data private, or for any data inquiries, please send requests to <a href="mailto:Help@cuahsi.org?Subject=Publication" target="_top">Help@cuahsi.org</a>
-            </h5>
-        }
-            
-    </div>
+       
+            @if (ViewBag.NetworkId == "unknown")
+            {
+                <form method="post">
+                    <button class="btn btn-primary active" id="RequestPublication" value="val_1" name="buttonRequestPublication">Request First Time Publication</button>
+                    <a href="#" data-toggle="tooltip" style="padding-left:10px" title="Request to make your data accessible to the public."><img class="infobutton" src="~/Images/infobutton_60.jpg" /></a>
+                </form>
+            }
+            else
+            {
+                <h5>
+                    Uploaded Data is made public automatically every week. For faster publication, to turn your data private, or for any data inquiries, please send requests to <a href="mailto:Help@cuahsi.org?Subject=Publication" target="_top">Help@cuahsi.org</a>
+                </h5>
+            }
+       
+
+</div>
         <div class="panel-heading">
             <h3 class="panel-title">Number of values</h3>
         </div>

@@ -2,6 +2,9 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+using log4net;
+using log4net.Config;
+
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
@@ -34,3 +37,13 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
+
+////Apply to the entire assembly...
+////NOTE: ConfigFile file path is relative to AppDomain.CurrentDomain.BaseDirectory
+////       as explained under 'Configuration Attributes' at https://logging.apache.org/log4net/release/manual/configuration.html
+////
+//// BCC - 17-Sep-2018 - For a better approach, please see HydroServerTools app settings...
+////
+//[assembly: log4net.Config.XmlConfigurator(ConfigFile=@"..\HydroServerTools\BulkUpload.log4net", Watch=true)]
+
+

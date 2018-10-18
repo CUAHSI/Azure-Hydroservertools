@@ -1,0 +1,23 @@
+
+ Changes for WDC Sprint 28 - WDC-2264 - Part 2
+
+
+>>> Summary <<<
+ - Add 'metadata first' check to HydroServer Bulk Upload API 
+
+
+>>>> Azure-Hydroservertools/HydroServerTools/Controllers/api <<<<
+ - BulkUploadController.cs
+   - Method: Post() 
+     - Add logic to check for minimal set of metadata entries when uploading data values...
+
+
+>>>> Azure-Hydroservertools/HydroServerTools/Templates <<<<
+ - Corrections to :  
+    - HydroServer Bulk Uploader API Guide.docx
+
+
+>>>> Azure-Hydroservertools/HydroServerToolsUtilities <<<<
+ - RepositoryContext.cs 
+   - New method: GetTableRecordCounts(...)
+

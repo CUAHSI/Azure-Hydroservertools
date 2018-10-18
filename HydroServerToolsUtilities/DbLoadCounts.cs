@@ -124,5 +124,11 @@ namespace HydroServerToolsUtilities
             Rejected = rejected;
             Duplicated = duplicated;
         }
+
+        //Override ToString to produce 'human-readable' output...
+        public override string ToString()
+        {
+            return String.Format("Inserted: {0}, Updated: {1}, Rejected: {2}, Duplicated: {3} ", Inserted, Updated, Rejected, Duplicated);
+        }
     }
 }

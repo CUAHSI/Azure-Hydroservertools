@@ -86,6 +86,7 @@ namespace HydroServerTools.Models
         public string Password { get; set; }
         public string HIScentralNetworkId { get; set; }
         public string HIScentralNetworkName { get; set; }
+        public string HIScentralNetworkApiKey { get; set; }
 
         //public virtual ICollection<User> User { get; set; }
         //public virtual newtable2 nt2 {get; set;}

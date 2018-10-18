@@ -1,0 +1,103 @@
+﻿@{
+    //
+    // A simple Razor view for the reporting of db insertion processing results...
+    //
+    // Source: https://itechmanager.com/2013/09/10/web-api-and-returning-a-razor-view/
+}
+
+@model HydroServerToolsUtilities.DbLoadResult
+@{
+    Layout = "~/Views/Shared/_LayoutBulkUpload.cshtml";
+}
+
+<div>
+    <h1>Database Load Summary for:&nbsp;@(ViewBag.serviceName)</h1>
+    <div class="row">
+        <div class="col-md-12">
+            <div style="padding-left: 1.0em; padding-right: 1.0em;" class="uploader-border">
+                <table style="margin-top: 1.5em;" class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="col-md-2 text-center">Date&#x2FTime</th>
+                            <th class="col-md-3 text-center">File&nbsp;Name</th>
+                            <th class="col-md-3 text-center">Table&nbsp;Name</th>
+                            <th class="col-md-1 text-center">Inserted</th>
+                            <th class="col-md-1 text-center">Updated</th>
+                            <th class="col-md-1 text-center" data-toggle="tooltip" data-placement="top" data-animation="true" data-container="body"
+                                data-template='<div class="tooltip" role="tooltip"><div class="tooltip-arrow"></div><div  style="font-size: 1.25em;" class="tooltip-inner"></div></div>'
+                                title="Duplicate records are not added to the database">Duplicates<span style="font-weight: bold;">&#42;</span></th>
+                            <th class="col-md-1 text-center">Rejected</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="col-md-2 text-center">
+                                <span style="font-size: 1.0em; font-weight: bold;" class="spanDateTime">
+                                    @(DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss"))
+                                </span>
+                            </td>
+                            <td class="col-md-4 text-center">
+                                <span style="font-size: 1.0em; font-weight: bold;" class="spanFileName">
+                                    @(ViewBag.fileName)
+                                </span>
+                            </td>
+                            <td class="col-md-3 text-center">
+                                <span style="font-size: 1.0em; font-weight: bold;" class="spanTableName">
+                                    @(Model.TableName)
+                                </span>
+                            </td>
+                            <td class="col-md-1 text-center">
+                                <span style="font-size: 1.0em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanInserted">
+                                    @Model.LoadCounts.Inserted
+                                </span>
+                            </td>
+                            <td class="col-md-1 text-center">
+                                <span style="font-size: 1.0em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanUpdated">
+                                    @Model.LoadCounts.Updated
+                                </span>
+                            </td>
+                            <td class="col-md-1 text-center">
+                                <span style="font-size: 1.0em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanDuplicated">
+                                    @Model.LoadCounts.Duplicated
+                                </span>
+                            </td>
+                            <td class="col-md-1 text-center">
+                                <span style="font-size: 1.0em; color: black; background-color: lightgray; vertical-align: -webkit-baseline-middle;" class="badge spanRejected">
+                                    @if (Model.LoadCounts.Rejected > 0)
+                                    {
+                                        <a href="@(ViewBag.urlBase)api/bulkupload/get/itemsfile/rejected/@(ViewBag.networkApiKey)/@(Model.TableName)">
+                                            @Model.LoadCounts.Rejected
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        @Model.LoadCounts.Rejected
+                                    }
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    @*<ul>
+            <li>Inserted:&nbsp;@Model.LoadCounts.Inserted &nbsp;<span style="display: @( (Model.LoadCounts.Inserted > 0) ? "normal" : "none");">
+                <a href="@(ViewBag.urlBase)api/bulkupload/get/itemsfile/inserted/@(ViewBag.uploadId)/@(Model.TableName)">Download</a></span></li>
+            <li>Updated:&nbsp;@Model.LoadCounts.Updated &nbsp;<span style="display: @( (Model.LoadCounts.Updated > 0) ? "normal" : "none") ;">
+                <a href="@(ViewBag.urlBase)api/bulkupload/get/itemsfile/updated/@(ViewBag.uploadId)/@(Model.TableName)">Download</a></span></li>
+            <li>Duplicate:&nbsp;@Model.LoadCounts.Duplicated &nbsp;<span style="display: @( (Model.LoadCounts.Duplicated > 0) ? "normal" : "none") ;">
+                <a href="@(ViewBag.urlBase)api/bulkupload/get/itemsfile/duplicate/@(ViewBag.uploadId)/@(Model.TableName)">Download</a></span></li>
+            <li>Rejected:&nbsp;@Model.LoadCounts.Rejected &nbsp;<span style="display: @( (Model.LoadCounts.Rejected > 0) ? "normal" : "none") ;">
+                <a href="@(ViewBag.urlBase)api/bulkupload/get/itemsfile/rejected/@(ViewBag.uploadId)/@(Model.TableName)">Download</a></span></li>
+        </ul>*@
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        //Initialize tooltips...
+        var ttItems = $('th[data-toggle="tooltip"]');
+        ttItems.tooltip();
+    });
+</script>

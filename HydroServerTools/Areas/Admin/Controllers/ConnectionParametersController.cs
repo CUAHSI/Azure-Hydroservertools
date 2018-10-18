@@ -47,11 +47,14 @@ namespace HydroServerTools.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Name,DataSource,InitialCatalog,UserId,Password,HIScentralNetworkId,HIScentralNetworkName")] ConnectionParameters connectionParameters)
+        public ActionResult Create([Bind(Include = "Id,Name,DataSource,InitialCatalog,UserId,Password,HIScentralNetworkId,HIScentralNetworkName,HIScentralNetworkApiKey")] ConnectionParameters connectionParameters)
         {
             if (ModelState.IsValid)
             {
+                // Create and display API Key.  
+                connectionParameters.HIScentralNetworkApiKey = Guid.NewGuid().ToString().Replace("-", "").ToUpper();
                 db.ConnectionParameters.Add(connectionParameters);
+                 
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
@@ -79,7 +82,7 @@ namespace HydroServerTools.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Name,DataSource,InitialCatalog,UserId,Password,HIScentralNetworkId,HIScentralNetworkName")] ConnectionParameters connectionParameters)
+        public ActionResult Edit([Bind(Include = "Id,Name,DataSource,InitialCatalog,UserId,Password,HIScentralNetworkId,HIScentralNetworkName,HIScentralNetworkApiKey")] ConnectionParameters connectionParameters)
         {
             if (ModelState.IsValid)
             {
