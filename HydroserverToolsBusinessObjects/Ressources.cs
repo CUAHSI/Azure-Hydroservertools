@@ -32,6 +32,7 @@ namespace HydroserverToolsBusinessObjects
         public const string IMPORT_VALUE_NOT_IN_CV = "The value {0} is not in {1} CV. Please validate your input.";
         public const string IMPORT_VALUE_NOT_IN_DATABASE = "The value {0} is not in {1} Table. Please validate your input.";
         public const string IMPORT_VALUE_INVALIDCHARACTERS = "The value in column {0} contains invalid characters";
+        public const string IMPORT_VALUE_EXCEEDS_MAX_LENGTH = "The value in column {0} exceeds the maximum length of {1}";
         public const string IMPORT_VALUE_CANNOTBENULL = "The value in column {0} can not be NULL";
         public const string IMPORT_VALUE_CANNOTBEEMPTY = "The value in column {0} can not be empty";
         public const string IMPORT_VALUE_INVALIDRANGE = "The value in column {0} is invalid. Valid range:{1}";
