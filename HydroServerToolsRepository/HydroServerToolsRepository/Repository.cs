@@ -41,12 +41,36 @@ namespace HydroServerToolsRepository.Repository
         //Properties...
         private string ConnectionString { get; set; }
 
-        private ODM_1_1_1Entities OdmEntities { get; set; }
+        protected ODM_1_1_1Entities OdmEntities { get; set; }
+
+        //Derived 'Properties'...
+        private object objDbSet;
+        private Type typeDbSet;
+
+        //protected DbSet<modelType> getDbSet<modelType>() where modelType : class
+        //{
+        //    //Returns null if null == objDbSet OR cast fails... 
+        //    return objDbSet as DbSet<modelType>;
+        //}
+
+        protected Type getDbSetType()
+        {
+            return typeDbSet;
+        }
+
+        protected void setDbSet<entityType>(DbSet<entityType> dbSet) where entityType : class
+        {
+            if (null != dbSet)
+            {
+                objDbSet = dbSet;
+                typeDbSet = typeof (entityType);
+            }
+        }
 
         //Constructors 
 
-        //Default constructor - private to prevent use...
-        private Repository() { }
+        //Default constructor - protected to limit access to derived classes
+        protected Repository() { }
 
         //Initializing - throw exception on empty connection string
         //TO DO - RegEx check for connection string format?
@@ -64,6 +88,80 @@ namespace HydroServerToolsRepository.Repository
             //Instantiate entities member...
             OdmEntities = new ODM_1_1_1Entities(connectionString);
         }
+
+        ////Destructor - handle disposable instances...
+        ////Source: https://www.c-sharpcorner.com/forums/difference-between-finialize-destructor-and-dispose 
+        //private bool bDisposed = false;
+        //~Repository()
+        //{
+        //    if (!bDisposed)
+        //    {
+        //        bDisposed = true;
+        //        OdmEntities.Dispose();
+        //        OdmEntities = null;
+        //    }
+        //}
+
+        //Virtual methods...
+
+        //Retrieve all items from member DbSet...
+        protected async Task<List<modelType>> GetAllAsync<entityType, modelType>()
+        {
+            List<modelType> result = new List<modelType>();
+
+            if (null != objDbSet)
+            {
+                //Member DbSet exists - created a non-generic instance...
+                var entities = OdmEntities;
+                DbSet dbSet = entities.Set(getDbSetType());
+
+                try
+                {
+                    //modelType mt;
+                    //int count = 0;
+                    Task task = dbSet.ForEachAsync(item => {
+                                                            //Debug.WriteLine("Processing: {0}", ++count);
+                                                            modelType mt = Mapper.Map<entityType, modelType>((entityType)item);
+                                                            result.Add(mt);
+                                                           });
+
+                    await task;
+                }
+                catch (Exception ex)
+                {
+                    //Exception - re-throw...
+                    throw ex;
+                }
+            } 
+
+            //Processing complete - return
+            return result;
+        }
+
+        //Delete all items from member DbSet...
+        public virtual void deleteAll()
+        {
+            if (null != objDbSet)
+            {
+                //Member DbSet exists - created a non-generic instance...
+                var entities = OdmEntities;
+                DbSet dbSet = entities.Set(getDbSetType());
+
+                try
+                {
+                    //Call non-generic instance to remove all items (if any), save changes...
+                    //NOTE: Calls to SaveChangesAsync() here appear to cause problems with the GUI... 
+                    dbSet.RemoveRange(dbSet.AsQueryable());
+                    entities.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    //Exception - re-throw...
+                    throw ex;
+                }
+            }
+        }
+
 
         //For the input table name(s), return a dictionary of table names and record counts...
         public Dictionary<string, int> GetTableRecordCounts(List<string> tableNames)
@@ -189,14 +287,18 @@ namespace HydroServerToolsRepository.Repository
             return tableNamesToRecordCounts;
         }
 
-        //Get the maximum length for the input table and property name
+        //Get the maximum length for the input entity and property names
         //Source: https://stackoverflow.com/questions/27024764/how-to-get-the-maximum-length-of-a-string-from-an-edmx-model-in-code
-        public static int? GetMaxLength(DbContext dbContext, string tableName, string propertyName)
+        //
+        //NOTE: Static method for use with ...Respository classes not derived from the Repository class.  This method can be 
+        //       removed once all ...Respository classes derive from the Repository class.
+        //
+        public static int? GetMaxLength(DbContext dbContext, string entityName, string propertyName)
         {
             int? result = null;
 
             //Validate/initialize input parameters...
-            if ((null != dbContext) && (!String.IsNullOrEmpty(tableName)) && (!String.IsNullOrEmpty(propertyName)))
+            if ((null != dbContext) && (!String.IsNullOrEmpty(entityName)) && (!String.IsNullOrEmpty(propertyName)))
             {
                 //Input parameters valid - cast to interface type...
                 var ioca = dbContext as IObjectContextAdapter;
@@ -208,7 +310,38 @@ namespace HydroServerToolsRepository.Repository
                     {
                         //Success - retrieve max. length value... 
                         result = oc.MetadataWorkspace.GetItems(dataSpace.CSpace).OfType<entityType>()
-                                 .Where(et => et.Name == tableName)
+                                 .Where(et => et.Name == entityName)
+                                 .SelectMany(et => et.Properties.Where(p => p.Name == propertyName))
+                                 .Select(p => p.MaxLength)
+                                 .FirstOrDefault();
+                    }
+                }
+            }
+
+            //Processing complete - return result
+            return result;
+        }
+
+        //Get the maximum length for the input entity and property names
+        //Source: https://stackoverflow.com/questions/27024764/how-to-get-the-maximum-length-of-a-string-from-an-edmx-model-in-code
+        public int? GetMaxLength(string entityName, string propertyName)
+        {
+            int? result = null;
+
+            //Validate/initialize input parameters...
+            if ((!String.IsNullOrEmpty(entityName)) && (!String.IsNullOrEmpty(propertyName)))
+            {
+                //Input parameters valid - cast to interface type...
+                var ioca = OdmEntities as IObjectContextAdapter;
+                if (null != ioca)
+                {
+                    //Successful cast - Retrieve object context...
+                    var oc = ioca.ObjectContext;
+                    if (null != oc)
+                    {
+                        //Success - retrieve max. length value... 
+                        result = oc.MetadataWorkspace.GetItems(dataSpace.CSpace).OfType<entityType>()
+                                 .Where(et => et.Name == entityName)
                                  .SelectMany(et => et.Properties.Where(p => p.Name == propertyName))
                                  .Select(p => p.MaxLength)
                                  .FirstOrDefault();
@@ -222,224 +355,246 @@ namespace HydroServerToolsRepository.Repository
     }
 
     //  Sites
-    public class SitesRepository : ISitesRepository
+    public class SitesRepository : Repository
     {
         public const string CacheName = "default";
-        
 
-        public List<SiteModel> GetAll(string connectionString)
+        //Constructors...
+
+        //Default - private to prevent use
+        private SitesRepository() : base() { }
+
+        //Initializing...
+        public SitesRepository(string connectionString) : base(connectionString)
         {
-            // Create an EntityConnection.
-            //EntityConnection conn = new EntityConnection(connectionString);
+            //Per constructor call order - call base class method(s)...
+            var entities = OdmEntities;
 
+            setDbSet(entities.Sites);
+        }
 
-            var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(connectionString);
-
-            var items = from site in context.Sites
-                        select site;
-            var sites = new List<SiteModel>();
-            foreach (var item in items)
+        public async Task<List<SiteModel>> GetAll()
             {
+            //Call base class method...
+            List<SiteModel> sites = null;
 
-                var model = Mapper.Map<Site, SiteModel>(item);
+            sites = await GetAllAsync<Site, SiteModel>();
 
-                sites.Add(model);
-            }
+            //Processing complete - return...
             return sites;
         }
 
-        public List<SiteModel> GetSites(string connectionString, int startIndex, int pageSize, System.Collections.ObjectModel.ReadOnlyCollection<jQuery.DataTables.Mvc.SortedColumn> sortedColumns, out int totalRecordCount, out int searchRecordCount, string searchString)
+        //NOTE: Use of 'out' parameters prevent method declaration as 'async'...
+        public List<SiteModel> GetSites(int startIndex, int pageSize, System.Collections.ObjectModel.ReadOnlyCollection<jQuery.DataTables.Mvc.SortedColumn> sortedColumns, out int totalRecordCount, out int searchRecordCount, string searchString)
         {
-            var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(connectionString);
+#if (DEBUG)
+            //Validate input parameters...
+            //Assumption: sortedColumns can be null...
+            //            searchString can be null or whitespace...
+            if (0 > startIndex ||
+                0 > pageSize)
+            {
+                ArgumentNullException ex = new ArgumentNullException("SitesRepository.GetSites(...) invalid parameter...");
+                throw ex;
+            }
+#endif
+            //Allocate result list...
             var result = new List<SiteModel>();
 
-            if (context.Sites.Count() != 0)
+            //Initialize input parameters...
+            if (OdmEntities.Sites.Count() != 0)
             {
-                totalRecordCount = context.Sites.Count();
+                totalRecordCount = OdmEntities.Sites.Count();
                 searchRecordCount = totalRecordCount;
             }
             else
             {
-                totalRecordCount = searchRecordCount = 0;
+                totalRecordCount = 0;
+                searchRecordCount = 0;
+
+                //Nothing to search - return early...
+                return result;
             }
-            //var test = DatatablesHelper.FilterSitesTable(context, searchString, pageSize);
 
             if (!string.IsNullOrWhiteSpace(searchString))
             {
-
-                var allItems = context.Sites.ToList();
-                var rst = allItems.
-                          Where(c =>
-                               c.SiteCode != null && c.SiteCode.ToLower().Contains(searchString.ToLower())
-                            || c.SiteName != null && c.SiteName.ToLower().Contains(searchString.ToLower())
-                            || c.Latitude.ToString().ToLower().Contains(searchString.ToLower())
-                            || c.Longitude.ToString().ToLower().Contains(searchString.ToLower())
-                            || c.SpatialReference.SRSName != null && c.SpatialReference.SRSName.ToLower().Contains(searchString.ToLower())
-                            || c.Elevation_m != null && c.Elevation_m.ToString().ToLower().Contains(searchString.ToLower())
-                            || c.LocalX != null && c.LocalX.ToString().ToLower().Contains(searchString.ToLower())
-                            || c.LocalY != null && c.LocalY.ToString().ToLower().Contains(searchString.ToLower())
-                            || c.VerticalDatum != null && c.VerticalDatum.ToString().ToLower().Contains(searchString.ToLower())
-                                   //|| c.LocalProjectionID != null && c.LocalProjectionID.ToString().Contains(searchString.ToLower())
-                            || c.PosAccuracy_m != null && c.PosAccuracy_m.ToString().ToLower().Contains(searchString.ToLower())
-                            || c.State != null && c.State.ToLower().Contains(searchString.ToLower())
-                            || c.County != null && c.County.ToLower().Contains(searchString.ToLower())
-                            || c.Comments != null && c.Comments.ToLower().Contains(searchString.ToLower())
-                            || c.SiteType != null && c.SiteType.ToLower().Contains(searchString.ToLower())
-                            );
+                //Non-empty search string - search per string contents...
+                var rst = OdmEntities.Sites.Where(c => c.SiteCode != null && c.SiteCode.ToLower().Contains(searchString.ToLower()) ||
+                                                       c.SiteName != null && c.SiteName.ToLower().Contains(searchString.ToLower()) ||
+                                                       c.Latitude.ToString().ToLower().Contains(searchString.ToLower()) ||
+                                                       c.Longitude.ToString().ToLower().Contains(searchString.ToLower()) ||
+                                                       c.SpatialReference.SRSName != null && c.SpatialReference.SRSName.ToLower().Contains(searchString.ToLower()) ||
+                                                       c.Elevation_m != null && c.Elevation_m.ToString().ToLower().Contains(searchString.ToLower()) ||
+                                                       c.LocalX != null && c.LocalX.ToString().ToLower().Contains(searchString.ToLower()) ||
+                                                       c.LocalY != null && c.LocalY.ToString().ToLower().Contains(searchString.ToLower()) ||
+                                                       c.VerticalDatum != null && c.VerticalDatum.ToString().ToLower().Contains(searchString.ToLower()) ||
+                                                       c.PosAccuracy_m != null && c.PosAccuracy_m.ToString().ToLower().Contains(searchString.ToLower()) ||
+                                                       c.State != null && c.State.ToLower().Contains(searchString.ToLower()) ||
+                                                       c.County != null && c.County.ToLower().Contains(searchString.ToLower()) ||
+                                                       c.Comments != null && c.Comments.ToLower().Contains(searchString.ToLower()) ||
+                                                       c.SiteType != null && c.SiteType.ToLower().Contains(searchString.ToLower()));
 
 
-                if (rst == null) return result;
-                //count
+                if (rst == null)
+                {
+                    //No items found - return empty list...
+                    return result;
+                }
+
+                //Set search count
                 searchRecordCount = rst.Count();
-                //take only top x
+
+                //Take only top 'page' of data...
                 var finalrst = rst.Take(pageSize).ToList();
 
+                //For each retrieved item...
                 foreach (var item in finalrst)
                 {
-
+                    //Map to model type...
                     var model = Mapper.Map<Site, SiteModel>(item);
 
-                    model.LatLongDatumSRSName = context.SpatialReferences
+                    model.LatLongDatumSRSName = OdmEntities.SpatialReferences
                                        .Where(a => a.SpatialReferenceID == item.LatLongDatumID)
                                        .Select(a => a.SRSName)
                                        .FirstOrDefault();
+                    //Append to results list...
                     result.Add(model);
                 }
             }
-
-            else
+            else if (null != sortedColumns)
             {
+                //Sorted columns specified - perform sort...
                 List<Site> sortedItems = null;
+                var sites = OdmEntities.Sites;
 
+                //For each input column...
                 foreach (var sortedColumn in sortedColumns)
                 {
                     switch (sortedColumn.PropertyName.ToLower())
                     {
                         case "0":
                             if (sortedColumn.Direction.ToString().ToLower() == "ascending")
-                            { sortedItems = context.Sites.OrderBy(a => a.SiteCode).Skip(startIndex).Take(pageSize).ToList(); }
+                            { sortedItems = sites.OrderBy(a => a.SiteCode).Skip(startIndex).Take(pageSize).ToList(); }
                             else
-                            { sortedItems = context.Sites.OrderByDescending(a => a.SiteCode).Skip(startIndex).Take(pageSize).ToList(); }
+                            { sortedItems = sites.OrderByDescending(a => a.SiteCode).Skip(startIndex).Take(pageSize).ToList(); }
                             break;
                         case "1":
                             if (sortedColumn.Direction.ToString().ToLower() == "ascending")
-                            { sortedItems = context.Sites.OrderBy(a => a.SiteName).Skip(startIndex).Take(pageSize).ToList(); }
+                            { sortedItems = sites.OrderBy(a => a.SiteName).Skip(startIndex).Take(pageSize).ToList(); }
                             else
-                            { sortedItems = context.Sites.OrderByDescending(a => a.SiteName).Skip(startIndex).Take(pageSize).ToList(); }
+                            { sortedItems = sites.OrderByDescending(a => a.SiteName).Skip(startIndex).Take(pageSize).ToList(); }
                             break;
                         case "2":
                             if (sortedColumn.Direction.ToString().ToLower() == "ascending")
-                            { sortedItems = context.Sites.OrderBy(a => a.Latitude).Skip(startIndex).Take(pageSize).ToList(); }
+                            { sortedItems = sites.OrderBy(a => a.Latitude).Skip(startIndex).Take(pageSize).ToList(); }
                             else
-                            { sortedItems = context.Sites.OrderByDescending(a => a.Latitude).Skip(startIndex).Take(pageSize).ToList(); }
+                            { sortedItems = sites.OrderByDescending(a => a.Latitude).Skip(startIndex).Take(pageSize).ToList(); }
                             break;
                         case "3":
                             if (sortedColumn.Direction.ToString().ToLower() == "ascending")
-                            { sortedItems = context.Sites.OrderBy(a => a.Longitude).Skip(startIndex).Take(pageSize).ToList(); }
+                            { sortedItems = sites.OrderBy(a => a.Longitude).Skip(startIndex).Take(pageSize).ToList(); }
                             else
-                            { sortedItems = context.Sites.OrderByDescending(a => a.Longitude).Skip(startIndex).Take(pageSize).ToList(); }
+                            { sortedItems = sites.OrderByDescending(a => a.Longitude).Skip(startIndex).Take(pageSize).ToList(); }
                             break;
                         case "4":
                             if (sortedColumn.Direction.ToString().ToLower() == "ascending")
-                            { sortedItems = context.Sites.OrderBy(a => a.SpatialReference.SRSName).Skip(startIndex).Take(pageSize).ToList(); }
+                            { sortedItems = sites.OrderBy(a => a.SpatialReference.SRSName).Skip(startIndex).Take(pageSize).ToList(); }
                             else
-                            { sortedItems = context.Sites.OrderByDescending(a => a.SpatialReference.SRSName).Skip(startIndex).Take(pageSize).ToList(); }
+                            { sortedItems = sites.OrderByDescending(a => a.SpatialReference.SRSName).Skip(startIndex).Take(pageSize).ToList(); }
                             break;
                         case "5":
                             if (sortedColumn.Direction.ToString().ToLower() == "ascending")
-                            { sortedItems = context.Sites.OrderBy(a => a.Elevation_m).Skip(startIndex).Take(pageSize).ToList(); }
+                            { sortedItems = sites.OrderBy(a => a.Elevation_m).Skip(startIndex).Take(pageSize).ToList(); }
                             else
-                            { sortedItems = context.Sites.OrderByDescending(a => a.Elevation_m).Skip(startIndex).Take(pageSize).ToList(); }
+                            { sortedItems = sites.OrderByDescending(a => a.Elevation_m).Skip(startIndex).Take(pageSize).ToList(); }
                             break;
                         case "6":
                             if (sortedColumn.Direction.ToString().ToLower() == "ascending")
-                            { sortedItems = context.Sites.OrderBy(a => a.VerticalDatum).Skip(startIndex).Take(pageSize).ToList(); }
+                            { sortedItems = sites.OrderBy(a => a.VerticalDatum).Skip(startIndex).Take(pageSize).ToList(); }
                             else
-                            { sortedItems = context.Sites.OrderByDescending(a => a.VerticalDatum).Skip(startIndex).Take(pageSize).ToList(); }
+                            { sortedItems = sites.OrderByDescending(a => a.VerticalDatum).Skip(startIndex).Take(pageSize).ToList(); }
                             break;
                         case "7":
                             if (sortedColumn.Direction.ToString().ToLower() == "ascending")
-                            { sortedItems = context.Sites.OrderBy(a => a.LocalX).Skip(startIndex).Take(pageSize).ToList(); }
+                            { sortedItems = sites.OrderBy(a => a.LocalX).Skip(startIndex).Take(pageSize).ToList(); }
                             else
-                            { sortedItems = context.Sites.OrderByDescending(a => a.LocalX).Skip(startIndex).Take(pageSize).ToList(); }
+                            { sortedItems = sites.OrderByDescending(a => a.LocalX).Skip(startIndex).Take(pageSize).ToList(); }
                             break;
                         case "8":
                             if (sortedColumn.Direction.ToString().ToLower() == "ascending")
-                            { sortedItems = context.Sites.OrderBy(a => a.LocalY).Skip(startIndex).Take(pageSize).ToList(); }
+                            { sortedItems = sites.OrderBy(a => a.LocalY).Skip(startIndex).Take(pageSize).ToList(); }
                             else
-                            { sortedItems = context.Sites.OrderByDescending(a => a.LocalY).Skip(startIndex).Take(pageSize).ToList(); }
+                            { sortedItems = sites.OrderByDescending(a => a.LocalY).Skip(startIndex).Take(pageSize).ToList(); }
                             break;
                         case "9":
                             if (sortedColumn.Direction.ToString().ToLower() == "ascending")
-                            { sortedItems = context.Sites.OrderBy(a => a.LocalProjectionID).Skip(startIndex).Take(pageSize).ToList(); }
+                            { sortedItems = sites.OrderBy(a => a.LocalProjectionID).Skip(startIndex).Take(pageSize).ToList(); }
                             else
-                            { sortedItems = context.Sites.OrderByDescending(a => a.LocalProjectionID).Skip(startIndex).Take(pageSize).ToList(); }
+                            { sortedItems = sites.OrderByDescending(a => a.LocalProjectionID).Skip(startIndex).Take(pageSize).ToList(); }
                             break;
                         case "10":
                             if (sortedColumn.Direction.ToString().ToLower() == "ascending")
-                            { sortedItems = context.Sites.OrderBy(a => a.PosAccuracy_m).Skip(startIndex).Take(pageSize).ToList(); }
+                            { sortedItems = sites.OrderBy(a => a.PosAccuracy_m).Skip(startIndex).Take(pageSize).ToList(); }
                             else
-                            { sortedItems = context.Sites.OrderByDescending(a => a.PosAccuracy_m).Skip(startIndex).Take(pageSize).ToList(); }
+                            { sortedItems = sites.OrderByDescending(a => a.PosAccuracy_m).Skip(startIndex).Take(pageSize).ToList(); }
                             break;
                         case "11":
                             if (sortedColumn.Direction.ToString().ToLower() == "ascending")
-                            { sortedItems = context.Sites.OrderBy(a => a.State).Skip(startIndex).Take(pageSize).ToList(); }
+                            { sortedItems = sites.OrderBy(a => a.State).Skip(startIndex).Take(pageSize).ToList(); }
                             else
-                            { sortedItems = context.Sites.OrderByDescending(a => a.State).Skip(startIndex).Take(pageSize).ToList(); }
+                            { sortedItems = sites.OrderByDescending(a => a.State).Skip(startIndex).Take(pageSize).ToList(); }
                             break;
                         case "12":
                             if (sortedColumn.Direction.ToString().ToLower() == "ascending")
-                            { sortedItems = context.Sites.OrderBy(a => a.County).Skip(startIndex).Take(pageSize).ToList(); }
+                            { sortedItems = sites.OrderBy(a => a.County).Skip(startIndex).Take(pageSize).ToList(); }
                             else
-                            { sortedItems = context.Sites.OrderByDescending(a => a.County).Skip(startIndex).Take(pageSize).ToList(); }
+                            { sortedItems = sites.OrderByDescending(a => a.County).Skip(startIndex).Take(pageSize).ToList(); }
                             break;
                         case "13":
                             if (sortedColumn.Direction.ToString().ToLower() == "ascending")
-                            { sortedItems = context.Sites.OrderBy(a => a.Comments).Skip(startIndex).Take(pageSize).ToList(); }
+                            { sortedItems = sites.OrderBy(a => a.Comments).Skip(startIndex).Take(pageSize).ToList(); }
                             else
-                            { sortedItems = context.Sites.OrderByDescending(a => a.Comments).Skip(startIndex).Take(pageSize).ToList(); }
+                            { sortedItems = sites.OrderByDescending(a => a.Comments).Skip(startIndex).Take(pageSize).ToList(); }
                             break;
                         case "14":
                             if (sortedColumn.Direction.ToString().ToLower() == "ascending")
-                            { sortedItems = context.Sites.OrderBy(a => a.SiteType).Skip(startIndex).Take(pageSize).ToList(); }
+                            { sortedItems = sites.OrderBy(a => a.SiteType).Skip(startIndex).Take(pageSize).ToList(); }
                             else
-                            { sortedItems = context.Sites.OrderByDescending(a => a.SiteType).Skip(startIndex).Take(pageSize).ToList(); }
+                            { sortedItems = sites.OrderByDescending(a => a.SiteType).Skip(startIndex).Take(pageSize).ToList(); }
                             break;
                     }
                 }
 
-                if (sortedItems == null) sortedItems = context.Sites.OrderByDescending(a => a.SiteCode).Skip(startIndex).Take(pageSize).ToList();
+                if (sortedItems == null)
+                {
+                    //No sorted columns specified - apply a default sort...
+                    sortedItems = OdmEntities.Sites.OrderByDescending(a => a.SiteCode).Skip(startIndex).Take(pageSize).ToList();
+                }
 
-                //map models
+                //For each sorted item...
                 foreach (var item in sortedItems)
                 {
-
+                    //Map to model type
                     var model = Mapper.Map<Site, SiteModel>(item);
-                    //model.LatLongDatumSRSName = from r in context.SpatialReferences
-                    //             where r.SpatialReferenceID == item.LatLongDatumID
-                    //             select r.SRSName.ToString()
-                    //             .FirstOrDefault();
 
-
-
-                    model.LatLongDatumSRSName = context.SpatialReferences
+                    model.LatLongDatumSRSName = OdmEntities.SpatialReferences
                                          .Where(a => a.SpatialReferenceID == item.LatLongDatumID)
                                          .Select(a => a.SRSName)
                                          .FirstOrDefault();
-
-
+                    //Append to results list...
                     result.Add(model);
                 }
             }
+
+            //Processing complete - return result...
             return result;
         }
 
-        public async Task AddSites(List<SiteModel> itemList, string entityConnectionString, string instanceIdentifier, List<SiteModel> listOfIncorrectRecords, List<SiteModel> listOfCorrectRecords, List<SiteModel> listOfDuplicateRecords, List<SiteModel> listOfEditedRecords, StatusContext statusContext)
+        public async Task AddSites(List<SiteModel> itemList, string instanceIdentifier, List<SiteModel> listOfIncorrectRecords, List<SiteModel> listOfCorrectRecords, List<SiteModel> listOfDuplicateRecords, List<SiteModel> listOfEditedRecords, StatusContext statusContext)
         {
 #if (DEBUG)
             //Validate/initialize input parameters...
             if (null == itemList ||
-                String.IsNullOrWhiteSpace(entityConnectionString) ||
                 String.IsNullOrWhiteSpace(instanceIdentifier) ||
                 null == listOfIncorrectRecords ||
                 null == listOfCorrectRecords ||
@@ -456,17 +611,14 @@ namespace HydroServerToolsRepository.Repository
             listOfDuplicateRecords.Clear();
             listOfEditedRecords.Clear();
 
-            var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
-            //var objContext = ((IObjectContextAdapter)context).ObjectContext;
+            var LatLongDatum = await OdmEntities.SpatialReferences.ToDictionaryAsync(p => p.SRSName.Trim(), p => p.SpatialReferenceID);
+            var LatLongDatumSRSID = OdmEntities.SpatialReferences.Where(p => p.SRSID != null).ToDictionary(p => p.SRSID, p => p.SpatialReferenceID);
 
-            var LatLongDatum = context.SpatialReferences.ToDictionary(p => p.SRSName.Trim(), p => p.SpatialReferenceID);
-            var LatLongDatumSRSID = context.SpatialReferences.Where(p => p.SRSID != null).ToDictionary(p => p.SRSID, p => p.SpatialReferenceID);
-
-            var VerticalDatumCV = context.VerticalDatumCVs.ToList();
-            var SiteTypeCV = context.SiteTypeCVs.ToList();
+            var VerticalDatumCV = await OdmEntities.VerticalDatumCVs.ToListAsync();
+            var SiteTypeCV = await OdmEntities.SiteTypeCVs.ToListAsync();
 
             //get all sites
-            var sitesInDatabase = context.Sites.Select(p => p.SiteCode.ToLower()).ToList();
+            var sitesInDatabase = OdmEntities.Sites.Select(p => p.SiteCode.ToLower()).ToList();
 
             var maxCount = itemList.Count;
             var count = 0;
@@ -484,8 +636,6 @@ namespace HydroServerToolsRepository.Repository
 
             foreach (var item in itemList)
             {
-                //var item = new ODM_1_1_1EFModel.Site();
-
                 try
                 {
                     statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, (count + 1), maxCount);
@@ -498,8 +648,6 @@ namespace HydroServerToolsRepository.Repository
                         await statusContext.AddStatusMessage(typeof (SiteModel).Name, statusMessage);
                     }
                     count++;                    
-                    //var model = Mapper.Map<SiteModel, Site>(item);
-
 
                     var model = new Site();
                     bool isRejected = false;
@@ -512,7 +660,7 @@ namespace HydroServerToolsRepository.Repository
                     {
                         //Check for truncation...
                         int length = item.SiteCode.Length;
-                        int? maxLength = Repository.GetMaxLength(context, "Site", "SiteCode");
+                        int? maxLength = GetMaxLength("Site", "SiteCode");
 
                         if ((null != maxLength) && (maxLength < length))
                         {
@@ -539,7 +687,18 @@ namespace HydroServerToolsRepository.Repository
                     //SiteName
                     if (!string.IsNullOrWhiteSpace(item.SiteName))
                     {
-                        if (RepositoryUtils.containsSpecialCharacters(item.SiteName))
+                        //Check for truncation...
+                        int length = item.SiteName.Length;
+                        int? maxLength = GetMaxLength("Site", "SiteName");
+
+                        if ((null != maxLength) && (maxLength < length))
+                        {
+                            //Truncation error...
+                            var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "SiteName", maxLength));
+                            listOfErrors.Add(err);
+                            isRejected = true;
+                        }
+                        else if (RepositoryUtils.containsSpecialCharacters(item.SiteName))
                         {
                             var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "SiteName")); listOfErrors.Add(err); isRejected = true;
                         }
@@ -610,7 +769,8 @@ namespace HydroServerToolsRepository.Repository
                         {
                             if (item.LatLongDatumSRSName.ToLower() == "unknown")
                             {
-                                var unknownID = context.SpatialReferences.Where(p => p.SRSName.ToLower() == "unknown").Select(p => p.SpatialReferenceID).FirstOrDefault();
+                                //var unknownID = context.SpatialReferences.Where(p => p.SRSName.ToLower() == "unknown").Select(p => p.SpatialReferenceID).FirstOrDefault();
+                                var unknownID = LatLongDatum.Where(nvp => nvp.Key.ToLower() == "unknown").Select(nvp => nvp.Value).FirstOrDefault();
                                 model.LatLongDatumID = unknownID;
                                 item.LatLongDatumID = unknownID.ToString();// write back to viewmodel to not have to convert again when values are committed to DB
                             }
@@ -675,12 +835,7 @@ namespace HydroServerToolsRepository.Repository
                         }
                         else
                         {
-                            //    if (result >= -180 && result <= 180) 
                             model.Elevation_m = result;
-                            //    else
-                            //    {
-                            //        var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_INVALIDRANGE, "Longitude", "-180 to +180")); listOfErrors.Add(err); isRejected = true;
-                            //    }
                         }
                     }
                     else
@@ -690,7 +845,18 @@ namespace HydroServerToolsRepository.Repository
                     //VerticalDatum
                     if (!string.IsNullOrWhiteSpace(item.VerticalDatum))
                     {
-                        if (RepositoryUtils.containsInvalidCharacters(item.VerticalDatum))
+                        //Check for truncation...
+                        int length = item.VerticalDatum.Length;
+                        int? maxLength = GetMaxLength("Site", "VerticalDatum");
+
+                        if ((null != maxLength) && (maxLength < length))
+                        {
+                            //Truncation error...
+                            var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "VerticalDatum", maxLength));
+                            listOfErrors.Add(err);
+                            isRejected = true;
+                        }
+                        else if (RepositoryUtils.containsInvalidCharacters(item.VerticalDatum))
                         {
                             var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "VerticalDatum")); listOfErrors.Add(err); isRejected = true;
                         }
@@ -766,7 +932,8 @@ namespace HydroServerToolsRepository.Repository
                         {
                             if (item.LatLongDatumSRSName.ToLower() == "unknown")
                             {
-                                var unknownID = context.SpatialReferences.Where(p => p.SRSName.ToLower() == "unknown").Select(p => p.SpatialReferenceID).FirstOrDefault();
+                                //var unknownID = context.SpatialReferences.Where(p => p.SRSName.ToLower() == "unknown").Select(p => p.SpatialReferenceID).FirstOrDefault();
+                                var unknownID = LatLongDatum.Where(nvp => nvp.Key.ToLower() == "unknown").Select(nvp => nvp.Value).FirstOrDefault();
                                 model.LatLongDatumID = unknownID;
                                 item.LatLongDatumID = unknownID.ToString();// write back to viewmodel to not have to convert again when values are committed to DB
                             }
@@ -843,7 +1010,18 @@ namespace HydroServerToolsRepository.Repository
                     //State
                     if (!string.IsNullOrWhiteSpace(item.State))
                     {
-                        if (RepositoryUtils.containsSpecialCharacters(item.State))
+                        //Check for truncation...
+                        int length = item.State.Length;
+                        int? maxLength = GetMaxLength("Site", "State");
+
+                        if ((null != maxLength) && (maxLength < length))
+                        {
+                            //Truncation error...
+                            var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "State", maxLength));
+                            listOfErrors.Add(err);
+                            isRejected = true;
+                        }
+                        else if (RepositoryUtils.containsSpecialCharacters(item.State))
                         {
                             var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "State")); listOfErrors.Add(err); isRejected = true;
                         }
@@ -860,7 +1038,18 @@ namespace HydroServerToolsRepository.Repository
                     //County
                     if (!string.IsNullOrWhiteSpace(item.County))
                     {
-                        if (RepositoryUtils.containsSpecialCharacters(item.County))
+                        //Check for truncation...
+                        int length = item.County.Length;
+                        int? maxLength = GetMaxLength("Site", "County");
+
+                        if ((null != maxLength) && (maxLength < length))
+                        {
+                            //Truncation error...
+                            var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "County", maxLength));
+                            listOfErrors.Add(err);
+                            isRejected = true;
+                        }
+                        else if (RepositoryUtils.containsSpecialCharacters(item.County))
                         {
                             var err = new ErrorModel("AddSites", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "County")); listOfErrors.Add(err); isRejected = true;
                         }
@@ -874,7 +1063,7 @@ namespace HydroServerToolsRepository.Repository
                         model.County = null;
                         item.County = null;
                     }
-                    //Comments
+                    //Comments - defined as nvarchar(max) - no truncation checks required...
                     if (!string.IsNullOrWhiteSpace(item.Comments))
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.Comments))
@@ -963,9 +1152,6 @@ namespace HydroServerToolsRepository.Repository
 
                     //check in list
                     var doesExist = sitesInDatabase.Find(p =>p == item.SiteCode.ToLower());                    
-                    
-                    
-                    //var j = context.Sites.Find(s.SiteCode);
 
                     if (doesExist == null)
                     {
@@ -974,8 +1160,6 @@ namespace HydroServerToolsRepository.Repository
                         var existInUpload = listOfCorrectRecords.Exists(a => a.SiteCode.ToLower() == item.SiteCode.ToLower());
                         if (!existInUpload)   
                         {
-                            //context.Sites.Add(model);
-                        //context.SaveChanges();
                             listOfCorrectRecords.Add(item);
                             if (null != statusContext)
                             {
@@ -1005,7 +1189,7 @@ namespace HydroServerToolsRepository.Repository
                     {
                        // var editedFields = new List<string>();
                         //retrieve all DatabaseRepository from db
-                        var existingItem = context.Sites.Where(a => a.SiteCode.ToLower() == item.SiteCode.ToLower()).FirstOrDefault();
+                        var existingItem = OdmEntities.Sites.Where(a => a.SiteCode.ToLower() == item.SiteCode.ToLower()).FirstOrDefault();
 
                         //if (existingItem.SiteCode != model.SiteCode) { listOfUpdates.Add(new UpdateFieldsModel("Sites", "SiteCode", existingItem.SiteCode.ToString(), item.SiteCode.ToString())); }
                         if (existingItem.Latitude != model.Latitude) { listOfUpdates.Add(new UpdateFieldsModel("Sites", "Latitude", existingItem.Latitude.ToString(), item.Latitude.ToString())); }
@@ -1022,10 +1206,8 @@ namespace HydroServerToolsRepository.Repository
                         if (model.Comments != null && existingItem.Comments != model.Comments) { listOfUpdates.Add(new UpdateFieldsModel("Sites", "Comments", existingItem.Comments, item.Comments)); }
                         if (model.SiteType != null && existingItem.SiteType != model.SiteType) { listOfUpdates.Add(new UpdateFieldsModel("Sites", "SiteType", existingItem.SiteType, item.SiteType)); }
 
-
                         if (listOfUpdates.Count() > 0)
                         {
-
                             listOfEditedRecords.Add(item);
                             if (null != statusContext)
                             {
@@ -1054,41 +1236,7 @@ namespace HydroServerToolsRepository.Repository
                                 await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(SiteModel).Name, 0, 0, 0, 1);
                             }
                         }
-                        //var modifiedEntries = this.ObjectStateManager.GetObjectStateEntries(EntityState.Modified);
-
                     }
-                    ////check if entry with this key exists
-                    //object value;
-
-                    //var key = Utils.GetEntityKey(objectSet, d);
-
-                    //if (!objContext.TryGetObjectByKey(key, out value))
-                    //{
-                    //     try
-                    //     {
-                    // var objContext = ((IObjectContextAdapter)context).ObjectContext;
-                    //objContext.Connection.Open();
-                    //objContext.ExecuteStoreCommand("SET IDENTITY_INSERT [dbo].[Sites] ON");
-                    //objContext.AddObject(objectSet.Name, d);
-
-                    //objContext.SaveChanges();
-
-                    //    objContext.Connection.Close();
-                    //}
-                    //catch (Exception ex)
-                    //{
-                    //    throw;
-                    //}
-                    //}
-                    //else
-                    //{
-
-                    //context.MyEntities.Attach(myEntity);
-                    //    listOfDuplicateRecords.Add(s);
-                    //}
-                   
-
-
                 }
                 //Datum not in CV
                 //catch (KeyNotFoundException ex)
@@ -1101,7 +1249,6 @@ namespace HydroServerToolsRepository.Repository
                         await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(SiteModel).Name, 0, 0, 1, 0);
                     }
                 }
-                //catch (Exception ex)
                 catch (Exception)
                 {
                     listOfIncorrectRecords.Add(item);
@@ -1122,27 +1269,6 @@ namespace HydroServerToolsRepository.Repository
             return;
         }
 
-        public void deleteAll(string entityConnectionString)
-        {
-            var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(entityConnectionString);
-            var rows = from o in context.Sites
-                       select o;
-            if (rows.Count() == 0) return;
-            //foreach (var row in rows)
-            //{
-            //    context.Sites.Remove(row);
-            //}
-            try
-            {
-                context.Sites.RemoveRange(rows);
-                context.SaveChanges();
-            }
-            catch (DbUpdateException ex)
-            {
-                throw ex;
-            }
-
-        }
     }
 
     //  Variables

@@ -1258,7 +1258,6 @@ namespace HydroServerTools.Controllers.api
             string binFilePathAndName = pathProcessed + uploadId + "-" + modelType.Name + "-IncorrectRecords.json";
 #endif
 
-
             using (await repositoryContext.RepositorySemaphore.UseWaitAsync())
             {
                 try

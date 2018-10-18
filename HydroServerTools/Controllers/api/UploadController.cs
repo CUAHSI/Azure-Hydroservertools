@@ -361,9 +361,11 @@ namespace HydroServerTools.Controllers.WebApi
                     {
                         if (values.Count > 0)
                         {
-                            var repository = new SitesRepository();
+                            //var repository = new SitesRepository();
+                            var repository = new SitesRepository(entityConnectionString);
 
-                            await repository.AddSites(values, entityConnectionString, instanceIdentifier, listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords, statusContext);
+                            //await repository.AddSites(values, entityConnectionString, instanceIdentifier, listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords, statusContext);
+                            await repository.AddSites(values, instanceIdentifier, listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords, statusContext);
                             PutRecordsInCache<SiteModel>(listOfIncorrectRecords, listOfCorrectRecords, listOfDuplicateRecords, listOfEditedRecords, instanceIdentifier);
                         }
                     }
