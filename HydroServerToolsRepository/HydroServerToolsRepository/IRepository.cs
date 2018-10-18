@@ -21,22 +21,22 @@ namespace HydroServerToolsRepository.Repository
 
     //"Sites", "Variables", "OffsetTypes", "ISOMetadata", "Sources", "Methods", "LabMethods", "Samples", "Qualifiers", "QualityControlLevels", "DataValues", "GroupDescriptions", "Groups", "DerivedFrom", "Categories"};
 
-    //Sites
-    interface ISitesRepository
-    {
-        List<SiteModel> GetAll(string connectionString);
+    ////Sites
+    //interface ISitesRepository
+    //{
+    //    //List<SiteModel> GetAll(string connectionString);
 
-        List<SiteModel> GetSites(string connectionString, int startIndex,
-            int pageSize,
-            ReadOnlyCollection<SortedColumn> sortedColumns,
-            out int totalRecordCount,
-            out int searchRecordCount,
-            string searchString);
+    //    //List<SiteModel> GetSites(string connectionString, int startIndex,
+    //    //    int pageSize,
+    //    //    ReadOnlyCollection<SortedColumn> sortedColumns,
+    //    //    out int totalRecordCount,
+    //    //    out int searchRecordCount,
+    //    //    string searchString);
 
-        Task AddSites(List<SiteModel> sites, string entityConnectionString, string instanceIdentifier, List<SiteModel> listOfIncorrectRecords, List<SiteModel> listOfCorrectRecords, List<SiteModel> listOfDuplicateRecords, List<SiteModel> listOfEditedRecords, StatusContext statusContext);
+    //    //Task AddSites(List<SiteModel> sites, string entityConnectionString, string instanceIdentifier, List<SiteModel> listOfIncorrectRecords, List<SiteModel> listOfCorrectRecords, List<SiteModel> listOfDuplicateRecords, List<SiteModel> listOfEditedRecords, StatusContext statusContext);
 
-        void deleteAll(string entityConnectionString);
-    }
+    //    //void deleteAll(string entityConnectionString);
+    //}
     
     //Variables
     interface IVariablesRepository

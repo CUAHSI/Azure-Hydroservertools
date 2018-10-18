@@ -1,0 +1,113 @@
+
+ Changes for WDC Sprint 29 - WDC-2265 - Proposed Repository Refactor 
+
+
+>>> Summary <<<
+ - Proposed changes for the following:
+   - *.csv file parsing - Truncation checks for text fields
+   - Refactoring of ...Repository classes for efficiency
+
+   - Sample changes made for classes: SitesRepository, Sites and SitesModel   
+      - IRepository.cs 
+        - Comment out ISitesRepository interface - not referenced, no longer needed
+      - Repository.cs
+        - Class Repository - refactor as a base class (see below)
+           - NOTE: Destructor code commented out - attempts to dispose the 'Entities' instance here 
+                          appears to cause issues with async calls
+        - Class SitesRepository
+           - Derive from Repository 
+           - Revise signatures, reference base class members
+           - Since SitesRepository has no special requirements, default to base class deleteAll()
+           - Add truncation checks for all text fields in *.csv parsing logic
+        
+
+>>>>  Azure-Hydroservertools\HydroServerTools\Controllers\ <<<<
+ - HomeController.cs
+   - ClearTablesHandler(...)
+      - Update method signatures: 
+        - SitesRepository constructor
+        - SitesRepository.deleteAll()
+ - ViewDataController.cs
+   - Search(...)
+      - Update method signatures: 
+        - SitesRepository constructor
+        - SitesRepository.GetSites()
+
+
+>>>>  Azure-Hydroservertools\HydroServerTools\Controllers\api\ <<<<
+ - RevisedUploadController.cs
+   - Remove empty lines
+ - UploadController.cs
+   - Update method signatures: 
+      - SitesRepository constructor
+      - SitesRepository.AddSites(...)
+
+
+>>>> Azure-Hydroservertools\HydroServerToolsRepository\HydroServerToolsRepository <<<<
+ - IRepository.cs
+   - Comment out unreferenced interface: ISitesRepository
+ - Repository.cs
+   - class Repository
+      - Refactor as base class
+        - Revise access levels of selected members
+        - New methods: 
+           - getDbSetType(), 
+           - setDbSet<entityType>(...),
+           - GetAllAsync(...)
+           - virtual void deleteAll() - to allow derived classes to override, if needed
+           - non-static GetMaxLength(...)
+      - static GetMaxLength(...)
+         r: tableName w: entityName
+   - class SitesRepository 
+      - Derive class from Repository, not ISitesRepository
+      - Add constructors:
+        - private SitesRepository()
+        - public SitesRepository(...)   
+     - GetAll()
+        - add 'async' modifier
+        - revise signature
+        - reference base class ODM_1_1_1Entities member
+     - GetSites()
+       - revise signature
+        - reference base class ODM_1_1_1Entities member
+        - refactor LINQ calls for efficiency
+    - AddSites(...)
+       - revise signature
+        - reference base class ODM_1_1_1Entities member
+        - add 'awaited' asynchronous method calls
+        - remove commented out code
+        - *.csv parsing 
+          - For text fields - add truncation check logic
+   - deleteAll(...) - 
+      - Remove method
+
+
+>>>> Azure-Hydroservertools\HydroServerToolsUtilities <<<<
+  - RepositoryContext.cs
+    - LoadDbBis(...)
+      - conditionally call revised 'SitesRepository' methods...
+      - remove commented out code
+
+
+>>>> Miscellaneous changes from prior pull requests <<<<
+
+- Azure-Hydroservertools\HydroServerTools\
+  - HydroServerTools.csproj
+    - Framework version to 4.7
+    - Disable IIS Express SSL for local testing
+    - New folder: BulkUploadCsv 
+ - Web.config
+   - Framework version to 4.7
+
+- Azure-Hydroservertools\HydroServerTools.Tests\
+  - App.config
+    - Framework version to 4.7
+  - HydroServerTools.Tests.csproj
+    - Framework version to 4.7
+
+- Azure-Hydroservertools\HydroServerTools\Controllers\api\
+  - BulkUploadController.cs
+    - method: GetItemsFile(...) 
+       - Refactor logic from file generation to file retrieval
+   - method: Post()
+     - Add logic to generate 'rejected items' *.csv file

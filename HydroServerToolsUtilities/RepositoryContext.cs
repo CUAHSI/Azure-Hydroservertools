@@ -1031,15 +1031,40 @@ namespace HydroServerToolsUtilities
                                 if ( null != methodAdd)
                                 {
                                     //Create repository instance...
-                                    ConstructorInfo constructorInfo = repositoryType.GetConstructor(Type.EmptyTypes);
+                                    ConstructorInfo constructorInfo = null;
+
+                                    if ("sitesrepository" == repositoryType.Name.ToLower())
+                                    {
+                                        constructorInfo = repositoryType.GetConstructor(new Type[] { typeof (string) });
+                                    }
+                                    else
+                                    {
+                                        constructorInfo = repositoryType.GetConstructor(Type.EmptyTypes);
+                                    }
+
                                     if (null != constructorInfo)
                                     {
-                                        //Allocate repository instance...
-                                        object repositoryInstance = constructorInfo.Invoke(new object[] { });
+                                        //Allocate repository instance and argument array...
+                                        object repositoryInstance = null;
+                                        object[] objArray = null;
 
-                                        //Create arguments array...
-                                        object[] objArray = new object[] { paramNamesToLists["itemList"],
-                                                                                entityConnectionString,
+                                        if ("sitesrepository" == repositoryType.Name.ToLower())
+                                        {
+                                            repositoryInstance = constructorInfo.Invoke(new object[] { entityConnectionString });
+                                            objArray = new object[] { paramNamesToLists["itemList"],
+                                                                      validatedFileNamePrefix,
+                                                                      paramNamesToLists["listOfIncorrectRecords"],
+                                                                      paramNamesToLists["listOfCorrectRecords"],
+                                                                      paramNamesToLists["listOfDuplicateRecords"],
+                                                                      paramNamesToLists["listOfEditedRecords"],
+                                                                      statusContext
+                                                                    };
+                                        }
+                                        else
+                                        {
+                                            repositoryInstance = constructorInfo.Invoke(new object[] { });
+                                            objArray = new object[] { paramNamesToLists["itemList"],
+                                                                      entityConnectionString,
                                                                                 validatedFileNamePrefix,
                                                                                 paramNamesToLists["listOfIncorrectRecords"],
                                                                                 paramNamesToLists["listOfCorrectRecords"],
@@ -1047,6 +1072,8 @@ namespace HydroServerToolsUtilities
                                                                                 paramNamesToLists["listOfEditedRecords"],
                                                                                 statusContext
                                                                                 };
+                                        }
+
                                         //Call 'Add...' method (as awaitable) on newly created instance...
                                         //Source: https://stackoverflow.com/questions/39674988/how-to-call-a-generic-async-method-using-reflection
                                         var task = (Task)methodAdd.Invoke(repositoryInstance, objArray);

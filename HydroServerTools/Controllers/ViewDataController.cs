@@ -60,9 +60,6 @@ namespace HydroServerTools.Controllers
         [HttpPost]
         public JsonResult Search(JQueryDataTablesModel jQueryDataTablesModel, string identifier)
         {
-            int totalRecordCount;
-            int searchRecordCount;
-
             //Get Connection string
             var entityConnectionString = HydroServerToolsUtils.BuildConnectionStringForUserName(HttpContext.User.Identity.Name);
             //var entityConnectionString = HydroServerToolsUtils.GetDBEntityConnectionStringByName(connectionName);
@@ -70,12 +67,17 @@ namespace HydroServerTools.Controllers
             if (String.IsNullOrEmpty(entityConnectionString))
             {
                 ModelState.AddModelError(String.Empty, Resources.HYDROSERVER_USERLOOKUP_FAILED);
-
             }
 
+            //var sitesRepository = new SitesRepository();
+            var sitesRepository = new SitesRepository(entityConnectionString);
+            //var items = sitesRepository.GetSites(entityConnectionString, startIndex: jQueryDataTablesModel.iDisplayStart,
+            //    pageSize: jQueryDataTablesModel.iDisplayLength, sortedColumns: jQueryDataTablesModel.GetSortedColumns(),
+            //    totalRecordCount: out totalRecordCount, searchRecordCount: out searchRecordCount, searchString: jQueryDataTablesModel.sSearch);
+            int totalRecordCount = 0;
+            int searchRecordCount = 0;
 
-            var sitesRepository = new SitesRepository();
-            var items = sitesRepository.GetSites(entityConnectionString, startIndex: jQueryDataTablesModel.iDisplayStart,
+            var items = sitesRepository.GetSites(startIndex: jQueryDataTablesModel.iDisplayStart,
                 pageSize: jQueryDataTablesModel.iDisplayLength, sortedColumns: jQueryDataTablesModel.GetSortedColumns(),
                 totalRecordCount: out totalRecordCount, searchRecordCount: out searchRecordCount, searchString: jQueryDataTablesModel.sSearch);
 
