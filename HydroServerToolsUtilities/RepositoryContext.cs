@@ -1131,7 +1131,6 @@ namespace HydroServerToolsUtilities
                                                                                         iList2,
                                                                                         statusContext
                                                                                         };
-                                                //methodInfo_G.Invoke(repositoryUtils, objArrayC);
                                                 task_1 = (Task)methodInfo_G.Invoke(repositoryUtils, objArrayC);
                                             }
 
@@ -1246,26 +1245,6 @@ namespace HydroServerToolsUtilities
                                                         currentIndexToInitialId.Add(currentIndex++, initialId);
                                                     }
                                                 }
-
-                                                //if ("IncorrectRecords" == recordType)
-                                                //{
-                                                //    //Processing incorrect records - update 'IsError' status message ItemIds...
-                                                //    using (await statusContext.StatusMessagesSemaphore.UseWaitAsync())
-                                                //    {
-                                                //        var keyVal = useProxy ? proxyType.Name : modelType.Name;
-                                                //        if (statusContext.StatusMessages.ContainsKey(keyVal))
-                                                //        {
-                                                //            var statusMessages = statusContext.StatusMessages[keyVal];
-
-                                                //            var myStatusMessages = statusMessages.Where(sm => (sm.IsError && (currentIndex == sm.ItemId)));
-                                                //            foreach (var statusMessage in myStatusMessages)
-                                                //            {
-                                                //                statusMessage.ItemId = initialId;
-                                                //            }
-                                                //        }
-                                                //    }
-                                                //    ++currentIndex;
-                                                //}
                                             }
 
                                             if ("IncorrectRecords" == recordType)

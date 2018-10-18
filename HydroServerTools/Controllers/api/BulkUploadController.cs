@@ -24,6 +24,8 @@ using RazorEngine.Templating;
 using System.Web.Routing;
 using System.Runtime.Remoting.Messaging;
 using log4net.Core;
+using Encoding = System.Text.Encoding;
+using System.Threading;
 
 namespace HydroServerTools.Controllers.api
 {
@@ -45,6 +47,8 @@ namespace HydroServerTools.Controllers.api
                                                                                     };
 
         private Random _random = new Random(DateTime.Now.Millisecond);
+
+        private static SemaphoreSlim _csvSemaphoreSlim = new SemaphoreSlim(1, 1);
 
         //Private methods...
         //An asynchronous method for file content validation...
@@ -211,201 +215,42 @@ namespace HydroServerTools.Controllers.api
                 return response;
             }
 
-            //Retrieve DbLoad context...
-            DbLoadContext dbLoadContext = CacheCollections.GetContext<DbLoadContext>(uploadId);
-            if (null == dbLoadContext)
+            //Retrieve the associated file stub and file path and name...
+            //var fileStub = _itemTypesToFileStubs[itemsType.ToLowerInvariant()];
+            string pathCsv = System.Web.Hosting.HostingEnvironment.MapPath("~/BulkUploadCsv/");
+
+            //Retrieve the associated *.csv file...
+            using (await _csvSemaphoreSlim.UseWaitAsync())
             {
-                response.StatusCode = HttpStatusCode.NotFound;    //Unknown uploadId - return early
-                response.ReasonPhrase = String.Format("No dbLoadContext for upload id: {0}", uploadId);
-                return response;
-            }
+                string csvFilePathAndName = pathCsv + uploadId + "-" + itemsType + "-" + tableName + ".csv";
+                int bufferSize = 65536 * 16;
 
-            //Check context for input table name...
-            using (await dbLoadContext.DbLoadSemaphore.UseWaitAsync())
-            {
-                bool bFound = false;    //Assume failure
-                var dbLoadResults = dbLoadContext.DbLoadResults;
-                foreach (var dbLoadResult in dbLoadResults)
-                {
-                    if (tableName.ToLowerInvariant() == dbLoadResult.TableName.ToLowerInvariant())
-                    {
-                        bFound = true;
-                        break;
-                    }
-                }
-
-                if (!bFound)
-                {
-                    response.StatusCode = HttpStatusCode.NotFound;    //Invalid table name - return early
-                    response.ReasonPhrase = String.Format("Unknown table name {0} for upload id: {1}", tableName, uploadId);
-                    return response;
-                }
-            }
-
-            //Retrieve the associated repository context...
-            RepositoryContext repositoryContext = CacheCollections.GetContext<RepositoryContext>(uploadId);
-            if (null == repositoryContext)
-            {
-                response.StatusCode = HttpStatusCode.NotFound;    //Unknown uploadId - return early
-                response.ReasonPhrase = String.Format("No repositoryContext for upload id: {0}", uploadId);
-                return response;
-            }
-
-            //Retrieve the associated model type...
-            Dictionary<String, Type> modelTypes = await repositoryContext.ModelTypeByTableName(tableName);
-
-            Type modelType = modelTypes["tSourceType"];
-
-            //Retrieve required and optional property names for model type...
-            Type tGenericMap = typeof(GenericMap<>);
-            Type tModelMap = tGenericMap.MakeGenericType(modelType);
-            List<string> listRequiredPropertyNames = null;
-            List<string> listOptionalPropertyNames = null;
-
-            //Construct a map type instance...
-            ConstructorInfo constructorInfo = tModelMap.GetConstructor(Type.EmptyTypes);
-            if (null != constructorInfo)
-            {
-                object mapTypeInstance = constructorInfo.Invoke(new object[] { });
-
-                MethodInfo miGetRequiredPropertyNames = tModelMap.GetMethod("GetRequiredPropertyNames");
-                listRequiredPropertyNames = miGetRequiredPropertyNames.Invoke(mapTypeInstance, new object[] { }) as List<string>;
-
-                MethodInfo miGetOptionalPropertyNames = tModelMap.GetMethod("GetOptionalPropertyNames");
-                listOptionalPropertyNames = miGetOptionalPropertyNames.Invoke(mapTypeInstance, new object[] { }) as List<string>;
-            }
-
-            if (null == listRequiredPropertyNames && null == listOptionalPropertyNames)
-            {
-                //Cannot retrieve property names - return early
-                response.StatusCode = HttpStatusCode.NotFound;
-                response.ReasonPhrase = String.Format("Cannot find property names for map type {0} for upload id {1}", tModelMap.Name, uploadId);
-                return response;
-            }
-
-            //Retrieve validation context...
-            ValidationContext<CsvValidator> validationContext = CacheCollections.GetContext<ValidationContext<CsvValidator>>(uploadId);
-            if (null == validationContext)
-            {
-                response.StatusCode = HttpStatusCode.NotFound;    //Unknown uploadId - return early
-                response.ReasonPhrase = String.Format("No validationContext for upload id: {0}", uploadId);
-                return response;
-            }
-
-            //Retrieve the associated file encoding...
-            System.Text.Encoding fileEncoding = System.Text.Encoding.GetEncoding("iso-8859-1"); //Default usage...
-            using (await validationContext.ValidationResultSemaphore.UseWaitAsync())
-            {
-                foreach (var validationRes in validationContext.ValidationResults)
-                {
-                    if (modelType == validationRes.FileValidator.ValidatedModelType)
-                    {
-                        fileEncoding = validationRes.FileValidator.FileEncoding;
-                    }
-                }
-            }
-
-            //Retrieve the associated file stub...
-            var fileStub = _itemTypesToFileStubs[itemsType.ToLowerInvariant()];
-
-            //Retrieve the list of UpdateableItem<> from the indicated records file...
-            string pathProcessed = System.Web.Hosting.HostingEnvironment.MapPath("~/Processed/");
-#if (USE_BINARY_FORMATTER)
-            string binFilePathAndName = pathProcessed + uploadId + "-" + modelType.Name + "-" + fileStub + ".bin";
-#else
-            string binFilePathAndName = pathProcessed + uploadId + "-" + modelType.Name + "-" + fileStub + ".json";
-#endif
-
-            using (await repositoryContext.RepositorySemaphore.UseWaitAsync())
-            {
+                //Open file for reading...
                 try
                 {
-                    int bufferSize = 65536 * 16;
-                    using (var fileStream = new FileStream(binFilePathAndName, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize, true))
-                    {
-#if (USE_BINARY_FORMATTER)
-                        //De-serialize binary file to generic list...
-                        BinaryFormatter binFor = new BinaryFormatter();
-                        var iUpdateableItemsList = binFor.Deserialize(fileStream);
-#else
-                        //De-serialize JSON file to generic list...
-                        Type tGenericList = typeof(List<>);
-                        Type tUpdateableItem = typeof(UpdateableItem<>);
-                        Type gUpdateableItem = tUpdateableItem.MakeGenericType(modelType);
-                        Type updateableItemsListType = tGenericList.MakeGenericType(gUpdateableItem);
-                        System.Collections.IList iUpdateableItemsList = (System.Collections.IList)Activator.CreateInstance(updateableItemsListType);
-
-                        using (StreamReader sr = new StreamReader(fileStream))
+                    using (var fileStream = new FileStream(csvFilePathAndName, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize, true))
                         {
-                            //Find the generic Deserialize method: public T Deserialize<T>(JsonReader reader);
-                            //Source: https://forums.asp.net/t/1664599.aspx?+Ask+How+to+get+generic+method+using+reflection+
-                            JsonSerializer jsonSerializer = new JsonSerializer();
-                            var serializerType = typeof(JsonSerializer);
+                        //Stream file contents to response content...
+                        MemoryStream ms = new MemoryStream(bufferSize);
 
-                            //var methodInfos = serializerType.GetMethods();
-                            //var miDeserialize = methodInfos.Where(m => m.IsGenericMethod && m.Name.Equals("Deserialize", StringComparison.OrdinalIgnoreCase)).SingleOrDefault();
-                            //if (null != miDeserialize)
-                            //{
-                                //MethodInfo miDeserialize_g = miDeserialize.MakeGenericMethod(updateableItemsListType);
+                        fileStream.Seek(0, SeekOrigin.Begin);
+                        await fileStream.CopyToAsync(ms);
+                        await fileStream.FlushAsync();
+                        ms.Position = 0;
 
-                                using (JsonReader jsonReader = new Newtonsoft.Json.JsonTextReader(sr))
-                                {
-                                    ////iUpdateableItemsList = (System.Collections.IList)miDeserialize_g.Invoke(jsonSerializer, new object[] { sr });
-
-                                    //iUpdateableItemsList = (System.Collections.IList)jsonSerializer.Deserialize(jsonReader, updateableItemsListType);
-                                    jsonReader.SupportMultipleContent = true;
-                                    while (await jsonReader.ReadAsync())
-                                    {
-                                        iUpdateableItemsList.Add(jsonSerializer.Deserialize(jsonReader, gUpdateableItem));
-                                    }
-                                }
-                            //}
-                        }
-#endif
-                        //Prepare call to RepositoryContext method to stream list to model type...
-                        Type resContextType = repositoryContext.GetType();
-                        MethodInfo miStreamItemsToModelList = resContextType.GetMethod("StreamItemsToModelList");
-                        MethodInfo miStreamItemsToModelList_G = miStreamItemsToModelList.MakeGenericMethod(modelType);
-
-                        //Call the async method via reflection...
-                        //Source: https://stackoverflow.com/questions/43426533/how-to-invoke-async-method-in-c-sharp-by-using-reflection-and-wont-cause-deadlo
-                        var task = (Task)miStreamItemsToModelList_G.Invoke(repositoryContext, new object[] { iUpdateableItemsList,
-                                                                                                             fileEncoding,
-                                                                                                             listRequiredPropertyNames,
-                                                                                                             listOptionalPropertyNames });
-                        await task;
-
-                        //Retrieve result...
-                        Stream streamResult = task.GetType().GetProperty("Result").GetValue(task) as Stream;
-                        if (null != streamResult)
-                        {
-                            //Reset stream position - add stream to response content...
-                            streamResult.Position = 0;
-                            response.Content = new StreamContent(streamResult);
+                        response.Content = new StreamContent(ms);
                             response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/octet-stream");
                             response.Content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("attachment");
-                            response.Content.Headers.ContentDisposition.FileName = itemsType + "-" + modelType.Name + ".csv";
-                            response.Content.Headers.ContentLength = streamResult.Length;
+                        response.Content.Headers.ContentDisposition.FileName = itemsType + "-" + tableName + ".csv";
+                        response.Content.Headers.ContentLength = ms.Length;
 
                             response.StatusCode = httpStatusCode;
                         }
-                        else
-                        {
-                            //Streaming error...
-                            response.StatusCode = HttpStatusCode.InternalServerError;
-                            response.ReasonPhrase = String.Format("Unable to stream {0} items to output for upload id: {1}", itemsType, uploadId);
-                            return response;
-                        }
-                    }
                 }
                 catch (Exception ex)
                 {
-                    //File not found - return early
-                    string msg = ex.Message;
-
-                    response.StatusCode = HttpStatusCode.NotFound;
-                    response.ReasonPhrase = String.Format("{0} items file not found: {1}", itemsType, binFilePathAndName);
-                    return response;
+                    //Exception - for now take no action...
+                    var msg = ex.Message;
                 }
             }
 
@@ -763,12 +608,14 @@ namespace HydroServerTools.Controllers.api
                                         if (null != validationContext2)
                                         {
                                             var valiDATORResults2 = validationContext2.ValidationResults;     //Type: CsvValidator
+                                            Encoding fileEncoding = Encoding.GetEncoding("iso-8859-1"); //Default usage...
                                             foreach (var valiDATORResult2 in valiDATORResults2)
                                             {
                                                 if (valiDATORResult2.ValidationComplete && (fileName.ToLower() == valiDATORResult2.FileName.ToLower()))
                                                 {
                                                     //File validation complete - retrieve repository context...
                                                     Type modelType = valiDATORResult2.FileValidator.ValidatedModelType;
+                                                    fileEncoding = valiDATORResult2.FileValidator.FileEncoding;
 
                                                     RepositoryContext repositoryContext = CacheCollections.GetContext<RepositoryContext>(networkApiKey);
                                                     if (null == repositoryContext)
@@ -1026,6 +873,136 @@ namespace HydroServerTools.Controllers.api
                                                                 myDbLogContext.addParameter("dbLoadResult", dbLoadResult);
                                                                 dtUTC = DateTime.UtcNow;
                                                                 myDbLogContext.createLogEntry(System.Web.HttpContext.Current, dtUTC, dtUTC, methodName, "Db Load Results", Level.Info);
+
+                                                                //Write out 'rejected items' *.csv file to BulkUploadCsv folder, if indicated...
+                                                                if (0 < dbLoadResult.LoadCounts.Rejected)
+                                                                {
+#if (USE_BINARY_FORMATTER)
+                                                                    string binFilePathAndName = pathProcessed + networkApiKey + "-" + modelType.Name + "-IncorrectRecords.bin";
+#else
+                                                                    string binFilePathAndName = pathProcessed + networkApiKey + "-" + modelType.Name + "-IncorrectRecords.json";
+#endif
+                                                                    using (await repositoryContext.RepositorySemaphore.UseWaitAsync())
+                                                                    {
+                                                                        try
+                                                                        {
+                                                                            using (var fileStream = new FileStream(binFilePathAndName, FileMode.Open, FileAccess.Read, FileShare.Read, 65536 * 16, true))
+                                                                            {
+#if (USE_BINARY_FORMATTER)
+                                                                                //De-serialize binary file to generic list...
+                                                                                BinaryFormatter binFor = new BinaryFormatter();
+                                                                                var iUpdateableItemsList = binFor.Deserialize(fileStream);
+#else
+                                                                                //De-serialize JSON file to generic list...
+                                                                                Type tGenericList = typeof(List<>);
+                                                                                Type tUpdateableItem = typeof(UpdateableItem<>);
+                                                                                Type gUpdateableItem = tUpdateableItem.MakeGenericType(modelType);
+                                                                                Type updateableItemsListType = tGenericList.MakeGenericType(gUpdateableItem);
+                                                                                System.Collections.IList iUpdateableItemsList = (System.Collections.IList)Activator.CreateInstance(updateableItemsListType);
+                                                                                using (StreamReader sr = new StreamReader(fileStream))
+                                                                                {
+                                                                                    //Find the generic Deserialize method: public T Deserialize<T>(JsonReader reader);
+                                                                                    //Source: https://forums.asp.net/t/1664599.aspx?+Ask+How+to+get+generic+method+using+reflection+
+                                                                                    JsonSerializer jsonSerializer = new JsonSerializer();
+                                                                                    var serializerType = typeof(JsonSerializer);
+
+                                                                                    var methodInfos = serializerType.GetMethods();
+                                                                                    var miDeserialize = methodInfos.Where(m => m.IsGenericMethod && m.Name.Equals("Deserialize", StringComparison.OrdinalIgnoreCase)).SingleOrDefault();
+                                                                                    if (null != miDeserialize)
+                                                                                    {
+                                                                                        MethodInfo miDeserialize_g = miDeserialize.MakeGenericMethod(updateableItemsListType);
+
+                                                                                        using (JsonReader jsonReader = new Newtonsoft.Json.JsonTextReader(sr))
+                                                                                        {
+                                                                                            ////iUpdateableItemsList = (System.Collections.IList)miDeserialize_g.Invoke(jsonSerializer, new object[] { sr });
+
+                                                                                            //iUpdateableItemsList = (System.Collections.IList)jsonSerializer.Deserialize(jsonReader, updateableItemsListType);
+                                                                                            jsonReader.SupportMultipleContent = true;
+                                                                                            while (await jsonReader.ReadAsync())
+                                                                                            {
+                                                                                                iUpdateableItemsList.Add(jsonSerializer.Deserialize(jsonReader, gUpdateableItem));
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+#endif
+                                                                                //Prepare call to RepositoryContext method to stream list to model type...
+                                                                                Type resContextType = repositoryContext.GetType();
+                                                                                MethodInfo miStreamItemsToModelList = resContextType.GetMethod("StreamItemsToModelList");
+                                                                                MethodInfo miStreamItemsToModelList_G = miStreamItemsToModelList.MakeGenericMethod(modelType);
+
+                                                                                //Call the async method via reflection...
+                                                                                //Source: https://stackoverflow.com/questions/43426533/how-to-invoke-async-method-in-c-sharp-by-using-reflection-and-wont-cause-deadlo
+                                                                                Type tGenericMap = typeof(GenericMap<>);
+                                                                                Type tModelMap = tGenericMap.MakeGenericType(modelType);
+                                                                                List<string> listRequiredPropertyNames = null;
+                                                                                List<string> listOptionalPropertyNames = null;
+
+                                                                                //Construct a map type instance...
+                                                                                ConstructorInfo constructorInfo = tModelMap.GetConstructor(Type.EmptyTypes);
+                                                                                if (null != constructorInfo)
+                                                                                {
+                                                                                    object mapTypeInstance = constructorInfo.Invoke(new object[] { });
+
+                                                                                    MethodInfo miGetRequiredPropertyNames = tModelMap.GetMethod("GetRequiredPropertyNames");
+                                                                                    listRequiredPropertyNames = miGetRequiredPropertyNames.Invoke(mapTypeInstance, new object[] { }) as List<string>;
+
+                                                                                    MethodInfo miGetOptionalPropertyNames = tModelMap.GetMethod("GetOptionalPropertyNames");
+                                                                                    listOptionalPropertyNames = miGetOptionalPropertyNames.Invoke(mapTypeInstance, new object[] { }) as List<string>;
+
+                                                                                    if ((null != listRequiredPropertyNames) && (null != listOptionalPropertyNames))
+                                                                                    {
+                                                                                        var task = (Task)miStreamItemsToModelList_G.Invoke(repositoryContext, new object[] { iUpdateableItemsList,
+                                                                                                             fileEncoding,
+                                                                                                             listRequiredPropertyNames,
+                                                                                                             listOptionalPropertyNames });
+                                                                                        await task;
+
+                                                                                        //Retrieve result...
+                                                                                        Stream streamResult = task.GetType().GetProperty("Result").GetValue(task) as Stream;
+                                                                                        if (null != streamResult)
+                                                                                        {
+                                                                                            //Write stream contents to BulkUploadCsv folder...
+                                                                                            string pathBulkUploadCsv = System.Web.Hosting.HostingEnvironment.MapPath("~/BulkUploadCsv/");
+
+                                                                                            streamResult.Seek(0, SeekOrigin.Begin);
+                                                                                            var filePathAndName = pathBulkUploadCsv + networkApiKey + "-rejected-" + tableName + ".csv";
+                                                                                            using (var fileStreamOut = new FileStream(filePathAndName, FileMode.Create, FileAccess.Write, FileShare.None, 65536 * 16, true))
+                                                                                            {
+                                                                                                //Copy content to file...
+                                                                                                await streamResult.CopyToAsync(fileStreamOut, 65536 * 16);
+
+                                                                                                //Close all streams...
+                                                                                                fileStreamOut.Close();
+                                                                                                streamResult.Close();
+                                                                                            }
+                                                                                        }
+                                                                                        else
+                                                                                        {
+                                                                                            //Streaming error...
+                                                                                            //For now - take not action...
+                                                                                        }
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        //Failure to retrieve property name list(s) 
+                                                                                        //For now take no action...
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                        catch (Exception ex)
+                                                                        {
+                                                                            //File not found - return early
+                                                                            string msg = ex.Message;
+                                                                            //For now - take no action...
+
+                                                                            //    response.StatusCode = HttpStatusCode.NotFound;
+                                                                            //    response.ReasonPhrase = String.Format("Incorrect records file not found: {0}", binFilePathAndName);
+                                                                            //    return response;
+                                                                        }
+                                                                    }
+                                                                }
                                                             }
                                                         }
                                                     }
