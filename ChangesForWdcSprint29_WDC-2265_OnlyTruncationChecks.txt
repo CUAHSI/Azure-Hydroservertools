@@ -1,0 +1,12 @@
+
+ Changes for WDC Sprint 29 - WDC-2265 - Only Truncation Checks
+
+
+>>>> Summary <<<<
+ - Addition of truncation checks to text fields in ...Repository classes  
+
+
+>>>> HydroServerToolsRepository/HydroServerToolsRepository <<<< 
+ - Repository.cs
+   - Addition of truncation checks to various ...Repository classes
+

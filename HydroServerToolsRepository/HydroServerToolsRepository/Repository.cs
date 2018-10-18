@@ -1608,8 +1608,18 @@ namespace HydroServerToolsRepository.Repository
                         else
                         {
                             model.VariableName = variableName.Term;
-                        }
-                        
+                            //Check for truncation...
+                            int length = model.VariableName.Length;
+                            int? maxLength = Repository.GetMaxLength(context, "Variable", "VariableName");
+
+                            if ((null != maxLength) && (maxLength < length))
+                            {
+                                //Truncation error...
+                                var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "VariableName", maxLength));
+                                listOfErrors.Add(err);
+                                isRejected = true;
+                            }
+                        }     
                     }
                     else
                     {
@@ -1630,8 +1640,18 @@ namespace HydroServerToolsRepository.Repository
                         else
                         {
                             model.Speciation = item.Speciation;
-                        }
+                            //Check for truncation...
+                            int length = model.Speciation.Length;
+                            int? maxLength = Repository.GetMaxLength(context, "Variable", "Speciation");
 
+                            if ((null != maxLength) && (maxLength < length))
+                            {
+                                //Truncation error...
+                                var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "Speciation", maxLength));
+                                listOfErrors.Add(err);
+                                isRejected = true;
+                            }
+                        }
                     }
                     else
                     {
@@ -1698,8 +1718,18 @@ namespace HydroServerToolsRepository.Repository
                         else
                         {
                             model.SampleMedium = sampleMedium.Term;
-                        }
+                            //Check for truncation...
+                            int length = model.SampleMedium.Length;
+                            int? maxLength = Repository.GetMaxLength(context, "Variable", "SampleMedium");
 
+                            if ((null != maxLength) && (maxLength < length))
+                            {
+                                //Truncation error...
+                                var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "SampleMedium", maxLength));
+                                listOfErrors.Add(err);
+                                isRejected = true;
+                            }
+                        }
                     }
                     else
                     {
@@ -1719,8 +1749,18 @@ namespace HydroServerToolsRepository.Repository
                         else
                         {
                             model.ValueType = valueType.Term;
-                        }
+                            //Check for truncation...
+                            int length = model.ValueType.Length;
+                            int? maxLength = Repository.GetMaxLength(context, "Variable", "ValueType");
 
+                            if ((null != maxLength) && (maxLength < length))
+                            {
+                                //Truncation error...
+                                var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "ValueType", maxLength));
+                                listOfErrors.Add(err);
+                                isRejected = true;
+                            }
+                        }
                     }
                     else
                     {
@@ -1742,7 +1782,6 @@ namespace HydroServerToolsRepository.Repository
                         {
                             model.IsRegular = result;
                         }
-
                     }
                     else
                     {
@@ -1764,7 +1803,6 @@ namespace HydroServerToolsRepository.Repository
                         {
                             model.TimeSupport = result;
                         }
-
                     }
                     else
                     {
@@ -1779,12 +1817,10 @@ namespace HydroServerToolsRepository.Repository
                         }
                         else
                         {
-
                             int result;
                             bool canConvert = UniversalTypeConverter.TryConvertTo<int>(item.TimeUnitsName, out result);
                             if (canConvert)//user used id
                             {
-
                                 if (result != 0)
                                 {
                                     model.TimeUnitsID = result;
@@ -1831,8 +1867,18 @@ namespace HydroServerToolsRepository.Repository
                         else
                         {
                             model.DataType = dataType.Term;
-                        }
+                            //Check for truncation...
+                            int length = model.DataType.Length;
+                            int? maxLength = Repository.GetMaxLength(context, "Variable", "DataType");
 
+                            if ((null != maxLength) && (maxLength < length))
+                            {
+                                //Truncation error...
+                                var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "DataType", maxLength));
+                                listOfErrors.Add(err);
+                                isRejected = true;
+                            }
+                        }
                     }
                     else
                     {
@@ -1852,8 +1898,18 @@ namespace HydroServerToolsRepository.Repository
                         else
                         {
                             model.GeneralCategory = generalCategory.Term;
-                        }
+                            //Check for truncation...
+                            int length = model.GeneralCategory.Length;
+                            int? maxLength = Repository.GetMaxLength(context, "Variable", "GeneralCategory");
 
+                            if ((null != maxLength) && (maxLength < length))
+                            {
+                                //Truncation error...
+                                var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "GeneralCategory", maxLength));
+                                listOfErrors.Add(err);
+                                isRejected = true;
+                            }
+                        }
                     }
                     else
                     {
@@ -2204,7 +2260,6 @@ namespace HydroServerToolsRepository.Repository
 
             foreach (var item in itemList)
             {
-
                 try
                 {
                     statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, (count + 1), maxCount);
@@ -2225,8 +2280,7 @@ namespace HydroServerToolsRepository.Repository
                     var model = new OffsetType(); 
 
                     //OffsetUnitsID
-                    if (!string.IsNullOrWhiteSpace(item.OffsetUnitsName))
-                                
+                    if (!string.IsNullOrWhiteSpace(item.OffsetUnitsName))                                
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.OffsetUnitsName))
                         {
@@ -2234,12 +2288,10 @@ namespace HydroServerToolsRepository.Repository
                         }
                         else
                         {
-
                             int result;
                             bool canConvert = UniversalTypeConverter.TryConvertTo<int>(item.OffsetUnitsName, out result);
                             if (canConvert)//user used id
                             {
-
                                 if (result != 0) model.OffsetUnitsID = result;
                                 else
                                 {
@@ -2272,7 +2324,18 @@ namespace HydroServerToolsRepository.Repository
                     //OffsetDescription
                     if (!string.IsNullOrWhiteSpace(item.OffsetDescription))
                     {
-                        if (RepositoryUtils.containsSpecialCharacters(item.OffsetDescription))
+                        //Check for truncation...
+                        int length = item.OffsetDescription.Length;
+                        int? maxLength = Repository.GetMaxLength(context, "OffsetType", "OffsetDescription");
+
+                        if ((null != maxLength) && (maxLength < length))
+                        {
+                            //Truncation error...
+                            var err = new ErrorModel("AddOffsetTypes", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "OffsetDescription", maxLength));
+                            listOfErrors.Add(err);
+                            isRejected = true;
+                        }
+                        else if (RepositoryUtils.containsSpecialCharacters(item.OffsetDescription))
                         {
                             var err = new ErrorModel("AddOffsetTypes", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "OffsetDescription")); listOfErrors.Add(err); isRejected = true;
                         }
@@ -2289,7 +2352,18 @@ namespace HydroServerToolsRepository.Repository
                     //OffsetTypeCode
                     if (!string.IsNullOrWhiteSpace(item.OffsetTypeCode))
                     {
-                        if (RepositoryUtils.containsNotOnlyAllowedCharacters(item.OffsetTypeCode))
+                        //Check for truncation...
+                        int length = item.OffsetTypeCode.Length;
+                        int? maxLength = Repository.GetMaxLength(context, "OffsetType", "OffsetTypeCode");
+
+                        if ((null != maxLength) && (maxLength < length))
+                        {
+                            //Truncation error...
+                            var err = new ErrorModel("AddOffsetTypes", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "OffsetTypeCode", maxLength));
+                            listOfErrors.Add(err);
+                            isRejected = true;
+                        }
+                        else if (RepositoryUtils.containsNotOnlyAllowedCharacters(item.OffsetTypeCode))
                         {
                             var err = new ErrorModel("AddOffsetType", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "OffsetTypeCode")); listOfErrors.Add(err); isRejected = true;
                         }
@@ -2862,7 +2936,18 @@ namespace HydroServerToolsRepository.Repository
                     //Organization
                     if (!string.IsNullOrWhiteSpace(item.Organization))
                     {
-                        if (RepositoryUtils.containsSpecialCharacters(item.Organization))
+                        //Check for truncation...
+                        int length = item.Organization.Length;
+                        int? maxLength = Repository.GetMaxLength(context, "Source", "Organization");
+
+                        if ((null != maxLength) && (maxLength < length))
+                        {
+                            //Truncation error...
+                            var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "Organization", maxLength));
+                            listOfErrors.Add(err);
+                            isRejected = true;
+                        }
+                        else if (RepositoryUtils.containsSpecialCharacters(item.Organization))
                         {
                             var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "Organization")); listOfErrors.Add(err); isRejected = true;
                         }
@@ -2878,7 +2963,18 @@ namespace HydroServerToolsRepository.Repository
                     //SourceDescription
                     if (!string.IsNullOrWhiteSpace(item.SourceDescription))
                     {
-                        if (RepositoryUtils.containsSpecialCharacters(item.SourceDescription))
+                        //Check for truncation...
+                        int length = item.SourceDescription.Length;
+                        int? maxLength = Repository.GetMaxLength(context, "Source", "SourceDescription");
+
+                        if ((null != maxLength) && (maxLength < length))
+                        {
+                            //Truncation error...
+                            var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "SourceDescription", maxLength));
+                            listOfErrors.Add(err);
+                            isRejected = true;
+                        }
+                        else if (RepositoryUtils.containsSpecialCharacters(item.SourceDescription))
                         {
                             var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "SourceDescription")); listOfErrors.Add(err); isRejected = true;
                         }
@@ -2894,7 +2990,18 @@ namespace HydroServerToolsRepository.Repository
                     //SourceLink
                     if (!string.IsNullOrWhiteSpace(item.SourceLink))
                     {
-                        if (RepositoryUtils.containsSpecialCharacters(item.SourceLink))
+                        //Check for truncation...
+                        int length = item.SourceLink.Length;
+                        int? maxLength = Repository.GetMaxLength(context, "Source", "SourceLink");
+
+                        if ((null != maxLength) && (maxLength < length))
+                        {
+                            //Truncation error...
+                            var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "SourceLink", maxLength));
+                            listOfErrors.Add(err);
+                            isRejected = true;
+                        }
+                        else if (RepositoryUtils.containsSpecialCharacters(item.SourceLink))
                         {
                             var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "SourceLink")); listOfErrors.Add(err); isRejected = true;
                         }
@@ -2907,7 +3014,18 @@ namespace HydroServerToolsRepository.Repository
                     //ContactName
                     if (!string.IsNullOrWhiteSpace(item.ContactName))
                     {
-                        if (RepositoryUtils.containsSpecialCharacters(item.ContactName))
+                        //Check for truncation...
+                        int length = item.ContactName.Length;
+                        int? maxLength = Repository.GetMaxLength(context, "Source", "ContactName");
+
+                        if ((null != maxLength) && (maxLength < length))
+                        {
+                            //Truncation error...
+                            var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "ContactName", maxLength));
+                            listOfErrors.Add(err);
+                            isRejected = true;
+                        }
+                        else if (RepositoryUtils.containsSpecialCharacters(item.ContactName))
                         {
                             var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "ContactName")); listOfErrors.Add(err); isRejected = true;
                         }
@@ -2923,7 +3041,18 @@ namespace HydroServerToolsRepository.Repository
                     //Phone
                     if (!string.IsNullOrWhiteSpace(item.Phone))
                     {
-                        if (RepositoryUtils.containsSpecialCharacters(item.Phone))
+                        //Check for truncation...
+                        int length = item.Phone.Length;
+                        int? maxLength = Repository.GetMaxLength(context, "Source", "Phone");
+
+                        if ((null != maxLength) && (maxLength < length))
+                        {
+                            //Truncation error...
+                            var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "Phone", maxLength));
+                            listOfErrors.Add(err);
+                            isRejected = true;
+                        }
+                        else if (RepositoryUtils.containsSpecialCharacters(item.Phone))
                         {
                             var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "Phone")); listOfErrors.Add(err); isRejected = true;
                         }
@@ -2939,7 +3068,18 @@ namespace HydroServerToolsRepository.Repository
                     //Email
                     if (!string.IsNullOrWhiteSpace(item.Email))
                     {
-                        if (RepositoryUtils.containsSpecialCharacters(item.Email))
+                        //Check for truncation...
+                        int length = item.Email.Length;
+                        int? maxLength = Repository.GetMaxLength(context, "Source", "Email");
+
+                        if ((null != maxLength) && (maxLength < length))
+                        {
+                            //Truncation error...
+                            var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "Email", maxLength));
+                            listOfErrors.Add(err);
+                            isRejected = true;
+                        }
+                        else if (RepositoryUtils.containsSpecialCharacters(item.Email))
                         {
                             var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "Email")); listOfErrors.Add(err); isRejected = true;
                         }
@@ -2955,7 +3095,18 @@ namespace HydroServerToolsRepository.Repository
                     //Address
                     if (!string.IsNullOrWhiteSpace(item.Address))
                     {
-                        if (RepositoryUtils.containsSpecialCharacters(item.Address))
+                        //Check for truncation...
+                        int length = item.Address.Length;
+                        int? maxLength = Repository.GetMaxLength(context, "Source", "Address");
+
+                        if ((null != maxLength) && (maxLength < length))
+                        {
+                            //Truncation error...
+                            var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "Address", maxLength));
+                            listOfErrors.Add(err);
+                            isRejected = true;
+                        }
+                        else if (RepositoryUtils.containsSpecialCharacters(item.Address))
                         {
                             var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "Address")); listOfErrors.Add(err); isRejected = true;
                         }
@@ -2971,7 +3122,18 @@ namespace HydroServerToolsRepository.Repository
                     //City
                     if (!string.IsNullOrWhiteSpace(item.City))
                     {
-                        if (RepositoryUtils.containsSpecialCharacters(item.City))
+                        //Check for truncation...
+                        int length = item.City.Length;
+                        int? maxLength = Repository.GetMaxLength(context, "Source", "City");
+
+                        if ((null != maxLength) && (maxLength < length))
+                        {
+                            //Truncation error...
+                            var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "City", maxLength));
+                            listOfErrors.Add(err);
+                            isRejected = true;
+                        }
+                        else if (RepositoryUtils.containsSpecialCharacters(item.City))
                         {
                             var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "City")); listOfErrors.Add(err); isRejected = true;
                         }
@@ -2987,7 +3149,18 @@ namespace HydroServerToolsRepository.Repository
                     //State
                     if (!string.IsNullOrWhiteSpace(item.State))
                     {
-                        if (RepositoryUtils.containsSpecialCharacters(item.State))
+                        //Check for truncation...
+                        int length = item.State.Length;
+                        int? maxLength = Repository.GetMaxLength(context, "Source", "State");
+
+                        if ((null != maxLength) && (maxLength < length))
+                        {
+                            //Truncation error...
+                            var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "State", maxLength));
+                            listOfErrors.Add(err);
+                            isRejected = true;
+                        }
+                        else if (RepositoryUtils.containsSpecialCharacters(item.State))
                         {
                             var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "State")); listOfErrors.Add(err); isRejected = true;
                         }
@@ -3003,7 +3176,18 @@ namespace HydroServerToolsRepository.Repository
                     //ZipCode
                     if (!string.IsNullOrWhiteSpace(item.ZipCode))
                     {
-                        if (RepositoryUtils.containsSpecialCharacters(item.ZipCode))
+                        //Check for truncation...
+                        int length = item.ZipCode.Length;
+                        int? maxLength = Repository.GetMaxLength(context, "Source", "ZipCode");
+
+                        if ((null != maxLength) && (maxLength < length))
+                        {
+                            //Truncation error...
+                            var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "ZipCode", maxLength));
+                            listOfErrors.Add(err);
+                            isRejected = true;
+                        }
+                        else if (RepositoryUtils.containsSpecialCharacters(item.ZipCode))
                         {
                             var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "ZipCode")); listOfErrors.Add(err); isRejected = true;
                         }
@@ -3016,7 +3200,7 @@ namespace HydroServerToolsRepository.Repository
                     {
                         var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "ZipCode")); listOfErrors.Add(err); isRejected = true;
                     }
-                    //Citation
+                    //Citation - defined as nvarchar(max) - no truncation checks required...
                     if (!string.IsNullOrWhiteSpace(item.Citation))
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.Citation))
@@ -3033,7 +3217,6 @@ namespace HydroServerToolsRepository.Repository
                         var err = new ErrorModel("AddSources", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "Citation")); listOfErrors.Add(err); isRejected = true;
                     }
 
-
                     //TopicCategory
                     if (!string.IsNullOrWhiteSpace(item.TopicCategory))
                     {
@@ -3049,7 +3232,6 @@ namespace HydroServerToolsRepository.Repository
                         {
                             isometadata.TopicCategory = item.TopicCategory;
                         }
-
                     }
                     else
                     {
@@ -3225,8 +3407,6 @@ namespace HydroServerToolsRepository.Repository
                                 await statusContext.AddStatusMessage(typeof(SourcesModel).Name, statMsg);
                             }
                         }
-
-
                     }
                     else
                     {
@@ -3539,7 +3719,18 @@ namespace HydroServerToolsRepository.Repository
                     //MethodDescription
                     if (!string.IsNullOrWhiteSpace(item.MethodDescription))
                     {
-                        if (RepositoryUtils.containsSpecialCharacters(item.MethodDescription))
+                        //Check for truncation...
+                        int length = item.MethodDescription.Length;
+                        int? maxLength = Repository.GetMaxLength(context, "Method", "MethodDescription");
+
+                        if ((null != maxLength) && (maxLength < length))
+                        {
+                            //Truncation error...
+                            var err = new ErrorModel("AddMethods", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "MethodDescription", maxLength));
+                            listOfErrors.Add(err);
+                            isRejected = true;
+                        }
+                        else if (RepositoryUtils.containsSpecialCharacters(item.MethodDescription))
                         {
                             var err = new ErrorModel("AddMethods", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "MethodDescription")); listOfErrors.Add(err); isRejected = true;
                         }
@@ -3555,7 +3746,18 @@ namespace HydroServerToolsRepository.Repository
                     //MethodLink
                     if (!string.IsNullOrWhiteSpace(item.MethodLink))
                     {
-                        if (RepositoryUtils.containsSpecialCharacters(item.MethodLink))
+                        //Check for truncation...
+                        int length = item.MethodLink.Length;
+                        int? maxLength = Repository.GetMaxLength(context, "Method", "MethodLink");
+
+                        if ((null != maxLength) && (maxLength < length))
+                        {
+                            //Truncation error...
+                            var err = new ErrorModel("AddMethods", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "MethodLink", maxLength));
+                            listOfErrors.Add(err);
+                            isRejected = true;
+                        }
+                        else if (RepositoryUtils.containsSpecialCharacters(item.MethodLink))
                         {
                             var err = new ErrorModel("AddMethods", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "MethodLink")); listOfErrors.Add(err); isRejected = true;
                         }
@@ -3877,7 +4079,6 @@ namespace HydroServerToolsRepository.Repository
 
             foreach (var item in itemList)
             {
-
                 try
                 {
                     statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, (count + 1), maxCount);
@@ -3904,28 +4105,21 @@ namespace HydroServerToolsRepository.Repository
                     model.LabMethodName = unk;
                     model.LabMethodDescription = unk;
 
-                    ////LabMethodCode
-                    //if (!string.IsNullOrWhiteSpace(item.LabMethodCode))
-                    //{
-                    //    if (RepositoryUtils.containsNotOnlyAllowedCaracters(item.LabMethodCode))
-                    //    {
-                    //        var err = new ErrorModel("AddLabMethod", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "LabMethodCode")); listOfErrors.Add(err); isRejected = true;
-                    //    }
-                    //    else
-                    //    {
-                    //        model.LabMethodCode = item.LabMethodCode;
-                    //    }
-
-                    //}
-                    //else
-                    //{
-                    //    var err = new ErrorModel("AddLabMethod", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "LabMethodCode")); listOfErrors.Add(err); isRejected = true;
-                    //}	
-
                     //LabName
                     if (!string.IsNullOrWhiteSpace(item.LabName))
                     {
-                        if (RepositoryUtils.containsSpecialCharacters(item.LabName))
+                        //Check for truncation...
+                        int length = item.LabName.Length;
+                        int? maxLength = Repository.GetMaxLength(context, "LabMethod", "LabName");
+
+                        if ((null != maxLength) && (maxLength < length))
+                        {
+                            //Truncation error...
+                            var err = new ErrorModel("AddLabMethods", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "LabName", maxLength));
+                            listOfErrors.Add(err);
+                            isRejected = true;
+                        }
+                        else if (RepositoryUtils.containsSpecialCharacters(item.LabName))
                         {
                             var err = new ErrorModel("AddLabMethods", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "LabName")); listOfErrors.Add(err); isRejected = true;
                         }
@@ -3941,7 +4135,18 @@ namespace HydroServerToolsRepository.Repository
                     //LabOrganization
                     if (!string.IsNullOrWhiteSpace(item.LabOrganization))
                     {
-                        if (RepositoryUtils.containsSpecialCharacters(item.LabOrganization))
+                        //Check for truncation...
+                        int length = item.LabOrganization.Length;
+                        int? maxLength = Repository.GetMaxLength(context, "LabMethod", "LabOrganization");
+
+                        if ((null != maxLength) && (maxLength < length))
+                        {
+                            //Truncation error...
+                            var err = new ErrorModel("AddLabMethods", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "LabOrganization", maxLength));
+                            listOfErrors.Add(err);
+                            isRejected = true;
+                        }
+                        else if (RepositoryUtils.containsSpecialCharacters(item.LabOrganization))
                         {
                             var err = new ErrorModel("AddLabMethods", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "LabOrganization")); listOfErrors.Add(err); isRejected = true;
                         }
@@ -3957,7 +4162,18 @@ namespace HydroServerToolsRepository.Repository
                     //LabMethodName
                     if (!string.IsNullOrWhiteSpace(item.LabMethodName))
                     {
-                        if (RepositoryUtils.containsSpecialCharacters(item.LabMethodName))
+                        //Check for truncation...
+                        int length = item.LabMethodName.Length;
+                        int? maxLength = Repository.GetMaxLength(context, "LabMethod", "LabMethodName");
+
+                        if ((null != maxLength) && (maxLength < length))
+                        {
+                            //Truncation error...
+                            var err = new ErrorModel("AddLabMethods", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "LabMethodName", maxLength));
+                            listOfErrors.Add(err);
+                            isRejected = true;
+                        }
+                        else if (RepositoryUtils.containsSpecialCharacters(item.LabMethodName))
                         {
                             var err = new ErrorModel("AddLabMethods", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "LabMethodName")); listOfErrors.Add(err); isRejected = true;
                         }
@@ -3973,7 +4189,18 @@ namespace HydroServerToolsRepository.Repository
                     //LabMethodDescription
                     if (!string.IsNullOrWhiteSpace(item.LabMethodDescription))
                     {
-                        if (RepositoryUtils.containsSpecialCharacters(item.LabMethodDescription))
+                        //Check for truncation...
+                        int length = item.LabMethodDescription.Length;
+                        int? maxLength = Repository.GetMaxLength(context, "LabMethod", "LabMethodDescription");
+
+                        if ((null != maxLength) && (maxLength < length))
+                        {
+                            //Truncation error...
+                            var err = new ErrorModel("AddLabMethods", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "LabMethodDescription", maxLength));
+                            listOfErrors.Add(err);
+                            isRejected = true;
+                        }
+                        else if (RepositoryUtils.containsSpecialCharacters(item.LabMethodDescription))
                         {
                             var err = new ErrorModel("AddLabMethods", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "LabMethodDescription")); listOfErrors.Add(err); isRejected = true;
                         }
@@ -4378,6 +4605,17 @@ namespace HydroServerToolsRepository.Repository
                         else
                         {
                             model.SampleType = item.SampleType;
+                            //Check for truncation...
+                            int length = model.SampleType.Length;
+                            int? maxLength = Repository.GetMaxLength(context, "Sample", "SampleType");
+
+                            if ((null != maxLength) && (maxLength < length))
+                            {
+                                //Truncation error...
+                                var err = new ErrorModel("AddVariables", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "SampleType", maxLength));
+                                listOfErrors.Add(err);
+                                isRejected = true;
+                            }
                         }
                     }
                     else
@@ -4388,7 +4626,18 @@ namespace HydroServerToolsRepository.Repository
                     //LabSampleCode
                     if (!string.IsNullOrWhiteSpace(item.LabSampleCode))
                     {
-                        if (RepositoryUtils.containsSpecialCharacters(item.LabSampleCode))
+                        //Check for truncation...
+                        int length = item.LabSampleCode.Length;
+                        int? maxLength = Repository.GetMaxLength(context, "Sample", "LabSampleCode");
+
+                        if ((null != maxLength) && (maxLength < length))
+                        {
+                            //Truncation error...
+                            var err = new ErrorModel("AddSamples", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "LabSampleCode", maxLength));
+                            listOfErrors.Add(err);
+                            isRejected = true;
+                        }
+                        else if (RepositoryUtils.containsSpecialCharacters(item.LabSampleCode))
                         {
                             var err = new ErrorModel("AddSamples", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "LabSampleCode")); listOfErrors.Add(err); isRejected = true;
                         }
@@ -4782,7 +5031,18 @@ namespace HydroServerToolsRepository.Repository
                     //QualifierCode
                     if (!string.IsNullOrWhiteSpace(item.QualifierCode))
                     {
-                        if (RepositoryUtils.containsNotOnlyAllowedCharacters(item.QualifierCode))
+                        //Check for truncation...
+                        int length = item.QualifierCode.Length;
+                        int? maxLength = Repository.GetMaxLength(context, "Qualifier", "QualifierCode");
+
+                        if ((null != maxLength) && (maxLength < length))
+                        {
+                            //Truncation error...
+                            var err = new ErrorModel("AddQualifiers", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "QualifierCode", maxLength));
+                            listOfErrors.Add(err);
+                            isRejected = true;
+                        }
+                        else if (RepositoryUtils.containsNotOnlyAllowedCharacters(item.QualifierCode))
                         {
                             var err = new ErrorModel("AddQualifiers", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "QualifierCode")); listOfErrors.Add(err); isRejected = true;
                         }
@@ -4796,7 +5056,18 @@ namespace HydroServerToolsRepository.Repository
                     //QualifierDescription
                     if (!string.IsNullOrWhiteSpace(item.QualifierDescription))
                     {
-                        if (RepositoryUtils.containsSpecialCharacters(item.QualifierDescription))
+                        //Check for truncation...
+                        int length = item.QualifierDescription.Length;
+                        int? maxLength = Repository.GetMaxLength(context, "Qualifier", "QualifierDescription");
+
+                        if ((null != maxLength) && (maxLength < length))
+                        {
+                            //Truncation error...
+                            var err = new ErrorModel("AddQualifiers", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "QualifierDescription", maxLength));
+                            listOfErrors.Add(err);
+                            isRejected = true;
+                        }
+                        else if (RepositoryUtils.containsSpecialCharacters(item.QualifierDescription))
                         {
                             var err = new ErrorModel("AddQualifiers", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "QualifierDescription")); listOfErrors.Add(err); isRejected = true;
                         }
@@ -4809,7 +5080,6 @@ namespace HydroServerToolsRepository.Repository
                     {
                         var err = new ErrorModel("AddQualifiers", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "QualifierDescription")); listOfErrors.Add(err); isRejected = true;
                     }
-
 
                     if (isRejected)
                     {
@@ -4869,8 +5139,6 @@ namespace HydroServerToolsRepository.Repository
                                 await statusContext.AddStatusMessage(typeof(QualifiersModel).Name, statMsg);
                             }
                         }
-
-
                     }
                     else
                     {
@@ -4919,7 +5187,6 @@ namespace HydroServerToolsRepository.Repository
                         await statusContext.AddToCounts(StatusContext.enumCountType.ct_DbProcess, typeof(QualifiersModel).Name, 0, 0, 1, 0);
                     }
                 }
-
             }
 
             //Finalize status context...
@@ -4968,7 +5235,6 @@ namespace HydroServerToolsRepository.Repository
             var modelList = new List<QualityControlLevelModel>();
             foreach (var item in items)
             {
-
                 var model = Mapper.Map<ODM_1_1_1EFModel.QualityControlLevel, HydroserverToolsBusinessObjects.Models.QualityControlLevelModel>(item);
 
                 modelList.Add(model);
@@ -5121,7 +5387,18 @@ namespace HydroServerToolsRepository.Repository
                     //QualityControlLevelCode
                     if (!string.IsNullOrWhiteSpace(item.QualityControlLevelCode))
                     {
-                        if (RepositoryUtils.containsSpecialCharacters(item.QualityControlLevelCode))
+                        //Check for truncation...
+                        int length = item.QualityControlLevelCode.Length;
+                        int? maxLength = Repository.GetMaxLength(context, "QualityControlLevel", "QualityControlLevelCode");
+
+                        if ((null != maxLength) && (maxLength < length))
+                        {
+                            //Truncation error...
+                            var err = new ErrorModel("AddQualityControlLevels", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "QualityControlLevelCode", maxLength));
+                            listOfErrors.Add(err);
+                            isRejected = true;
+                        }
+                        else if (RepositoryUtils.containsSpecialCharacters(item.QualityControlLevelCode))
                         {
                             var err = new ErrorModel("AddQualityControlLevel", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "QualityControlLevelCode")); listOfErrors.Add(err); isRejected = true;
                         }
@@ -5129,7 +5406,6 @@ namespace HydroServerToolsRepository.Repository
                         {
                             model.QualityControlLevelCode = item.QualityControlLevelCode;
                         }
-
                     }
                     else
                     {
@@ -5138,7 +5414,18 @@ namespace HydroServerToolsRepository.Repository
                     //Definition
                     if (!string.IsNullOrWhiteSpace(item.Definition))
                     {
-                        if (RepositoryUtils.containsSpecialCharacters(item.Definition))
+                        //Check for truncation...
+                        int length = item.Definition.Length;
+                        int? maxLength = Repository.GetMaxLength(context, "QualityControlLevel", "Definition");
+
+                        if ((null != maxLength) && (maxLength < length))
+                        {
+                            //Truncation error...
+                            var err = new ErrorModel("AddQualityControlLevels", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "Definition", maxLength));
+                            listOfErrors.Add(err);
+                            isRejected = true;
+                        }
+                        else if (RepositoryUtils.containsSpecialCharacters(item.Definition))
                         {
                             var err = new ErrorModel("AddQualityControlLevel", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "Definition")); listOfErrors.Add(err); isRejected = true;
                         }
@@ -5146,13 +5433,12 @@ namespace HydroServerToolsRepository.Repository
                         {
                             model.Definition = item.Definition;
                         }
-
                     }
                     else
                     {
                         var err = new ErrorModel("AddQualityControlLevel", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "Definition")); listOfErrors.Add(err); isRejected = true;
                     }
-                    //Explanation
+                    //Explanation - defined as nvarchar(max) - no truncation checks required...
                     if (!string.IsNullOrWhiteSpace(item.Explanation))
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.Explanation))
@@ -5163,13 +5449,11 @@ namespace HydroServerToolsRepository.Repository
                         {
                             model.Explanation = item.Explanation;
                         }
-
                     }
                     else
                     {
                         var err = new ErrorModel("AddQualityControlLevel", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "Explanation")); listOfErrors.Add(err); isRejected = true;
                     }
-
 
                     if (isRejected)
                     {
@@ -5327,7 +5611,6 @@ namespace HydroServerToolsRepository.Repository
     public class DataValuesRepository : IDataValuesRepository
     {
         public const string CacheName = "default";
-
         
         public List<DataValuesModel> GetAll(string connectionString)
         {
@@ -6047,6 +6330,18 @@ namespace HydroServerToolsRepository.Repository
                                         {
                                             model.CensorCode = item.CensorCode;
                                             item.CensorCode = censorCode.Term;
+
+                                            //Check for truncation...
+                                            int length = model.CensorCode.Length;
+                                            int? maxLength = Repository.GetMaxLength(context, "DataValue", "CensorCode");
+
+                                            if ((null != maxLength) && (maxLength < length))
+                                            {
+                                                //Truncation error...
+                                                var err = new ErrorModel("AddDataValues", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "CensorCode", maxLength));
+                                                listOfErrors.Add(err);
+                                                isRejected = true;
+                                            }
                                         }
                                         else
                                         {
@@ -6534,7 +6829,7 @@ namespace HydroServerToolsRepository.Repository
                     var model = new GroupDescription();
                     var listOfErrors = new List<ErrorModel>();
                     bool isRejected = false;
-                    //GroupDescription
+                    //GroupDescription - defined as nvarchar(max) - no truncation checks required...
                     if (!string.IsNullOrWhiteSpace(item.GroupDescription))
                     {
                         if (RepositoryUtils.containsSpecialCharacters(item.GroupDescription))
@@ -6787,7 +7082,6 @@ namespace HydroServerToolsRepository.Repository
 
             foreach (var item in itemList)
             {
-
                 try
                 {
                     statusMessage = String.Format(Resources.IMPORT_STATUS_PROCESSING, (count + 1), maxCount);
@@ -6838,7 +7132,7 @@ namespace HydroServerToolsRepository.Repository
                         var err = new ErrorModel("AddGroups", string.Format(Resources.IMPORT_VALUE_CANNOTBEEMPTY, "GroupID")); listOfErrors.Add(err); isRejected = true;
                     }
 
-                    //ValuerID                    
+                    //ValueID                    
                     if (!string.IsNullOrWhiteSpace(item.ValueID))
                     {
                         int result;
@@ -7417,7 +7711,6 @@ namespace HydroServerToolsRepository.Repository
 
             foreach (var item in itemList)
             {
-
                 try
                 {
                     //Updating status
@@ -7486,7 +7779,18 @@ namespace HydroServerToolsRepository.Repository
                     //CategoryDescription
                     if (!string.IsNullOrWhiteSpace(item.CategoryDescription))
                     {
-                        if (RepositoryUtils.containsSpecialCharacters(item.CategoryDescription))
+                        //Check for truncation...
+                        int length = item.CategoryDescription.Length;
+                        int? maxLength = Repository.GetMaxLength(context, "Category", "CategoryDescription");
+
+                        if ((null != maxLength) && (maxLength < length))
+                        {
+                            //Truncation error...
+                            var err = new ErrorModel("AddCategories", string.Format(Resources.IMPORT_VALUE_EXCEEDS_MAX_LENGTH, "CategoryDescription", maxLength));
+                            listOfErrors.Add(err);
+                            isRejected = true;
+                        }
+                        else if (RepositoryUtils.containsSpecialCharacters(item.CategoryDescription))
                         {
                             var err = new ErrorModel("AddCategories", string.Format(Resources.IMPORT_VALUE_INVALIDCHARACTERS, "CategoryDescription")); listOfErrors.Add(err); isRejected = true;
                         }
