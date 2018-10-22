@@ -8039,27 +8039,74 @@ namespace HydroServerToolsRepository.Repository
 
     public class DatabaseRepository : IDatabaseRepository
     {
+        public class TableValueCount
+        {
+            //string servername { get; set; }
+            //string databasename { get; set; }
+            //string schemaname { get; set; }
+            public string tablename { get; set; }
+            public Int64 rowcounts { get; set; }
+            //DateTime captureddatetime { get; set; }
+        }
+
         public DatabaseTableValueCountModel GetDatabaseTableValueCount(string connectionString)
         {
             var databaseTableValueCountModel = new DatabaseTableValueCountModel();
 
             var context = new ODM_1_1_1EFModel.ODM_1_1_1Entities(connectionString);
 
-            databaseTableValueCountModel.SiteCount = context.Sites.Count();
-            databaseTableValueCountModel.VariablesCount = context.Variables.Count();
-            databaseTableValueCountModel.OffsetTypesCount = context.OffsetTypes.Count();
-            databaseTableValueCountModel.SourcesCount = context.Sources.Count();
-            databaseTableValueCountModel.MethodsCount = context.Methods.Count();
-            databaseTableValueCountModel.LabMethodsCount = context.LabMethods.Count();
-            databaseTableValueCountModel.SamplesCount = context.Samples.Count();
-            databaseTableValueCountModel.QualifiersCount = context.Qualifiers.Count();
-            databaseTableValueCountModel.QualityControlLevelsCount = context.QualityControlLevels.Count();
-            databaseTableValueCountModel.DataValuesCount = context.DataValues.Count();
-            databaseTableValueCountModel.GroupDescriptionsCount = context.GroupDescriptions.Count();
-            databaseTableValueCountModel.GroupsCount = context.Groups.Count();
-            databaseTableValueCountModel.DerivedFromCount = context.DerivedFroms.Count();
-            databaseTableValueCountModel.CategoriesCount = context.Categories.Count();
-            databaseTableValueCountModel.SeriesCatalog = context.SeriesCatalogs.Count();
+            var sb = new StringBuilder();
+            //sb.Append("SELECT @@servername as servername, db_name() as databasename, s.name AS schemaname, t.name AS tablename,  p.rows AS rowcounts, getdate() as captureddatetime ");
+            sb.Append("SELECT t.name AS tablename, p.rows  AS rowcounts ");
+
+            sb.Append("FROM sys.tables t ");
+            sb.Append("INNER JOIN sys.indexes i ON t.OBJECT_ID = i.object_id ");
+            sb.Append("INNER JOIN sys.partitions p ON i.object_id = p.OBJECT_ID AND i.index_id = p.index_id ");
+            sb.Append("LEFT OUTER JOIN sys.schemas s ON t.schema_id = s.schema_id ");
+            sb.Append("WHERE t.NAME NOT LIKE 'dt%' ");
+            sb.Append("AND t.is_ms_shipped = 0 ");
+            sb.Append("AND i.OBJECT_ID > 255 ");
+            sb.Append("--and t.name = ''XXXX''---- replace the XXXX with table name ");
+            sb.Append("GROUP BY ");
+            sb.Append("t.name, s.name, p.Rows");
+
+            var t = context.Database.SqlQuery<TableValueCount>(sb.ToString()).ToList();
+
+            for (int i = 0; i < t.Count; i++)
+            {
+                if (t[i].tablename.ToLower() == "sites") { databaseTableValueCountModel.SiteCount = t[i].rowcounts; };
+                if (t[i].tablename.ToLower() == "variables") { databaseTableValueCountModel.VariablesCount = t[i].rowcounts; };
+                if (t[i].tablename.ToLower() == "offsettypes") { databaseTableValueCountModel.OffsetTypesCount = t[i].rowcounts; };
+                if (t[i].tablename.ToLower() == "sources") { databaseTableValueCountModel.SourcesCount = t[i].rowcounts; };
+                if (t[i].tablename.ToLower() == "methods") { databaseTableValueCountModel.MethodsCount = t[i].rowcounts; };
+                if (t[i].tablename.ToLower() == "labmethods") { databaseTableValueCountModel.LabMethodsCount = t[i].rowcounts; };
+                if (t[i].tablename.ToLower() == "samples") { databaseTableValueCountModel.SamplesCount = t[i].rowcounts; };
+                if (t[i].tablename.ToLower() == "qualifiers") { databaseTableValueCountModel.QualifiersCount = t[i].rowcounts; };
+                if (t[i].tablename.ToLower() == "qualitycontrollevels") { databaseTableValueCountModel.QualityControlLevelsCount = t[i].rowcounts; };
+                if (t[i].tablename.ToLower() == "datavalues") { databaseTableValueCountModel.DataValuesCount = t[i].rowcounts; };
+                if (t[i].tablename.ToLower() == "groupdescriptions") { databaseTableValueCountModel.GroupDescriptionsCount = t[i].rowcounts; };
+                if (t[i].tablename.ToLower() == "groups") { databaseTableValueCountModel.GroupsCount = t[i].rowcounts; };
+                if (t[i].tablename.ToLower() == "derivedfrom") { databaseTableValueCountModel.DerivedFromCount = t[i].rowcounts; };
+                if (t[i].tablename.ToLower() == "categories") { databaseTableValueCountModel.CategoriesCount = t[i].rowcounts; };
+                if (t[i].tablename.ToLower() == "seriescatalog") { databaseTableValueCountModel.SeriesCatalog = t[i].rowcounts; };
+            }
+
+
+            //databaseTableValueCountModel.SiteCount = context.Sites.Count();
+            //databaseTableValueCountModel.VariablesCount = context.Variables.Count();
+            //databaseTableValueCountModel.OffsetTypesCount = context.OffsetTypes.Count();
+            //databaseTableValueCountModel.SourcesCount = context.Sources.Count();
+            //databaseTableValueCountModel.MethodsCount = context.Methods.Count();
+            //databaseTableValueCountModel.LabMethodsCount = context.LabMethods.Count();
+            //databaseTableValueCountModel.SamplesCount = context.Samples.Count();
+            //databaseTableValueCountModel.QualifiersCount = context.Qualifiers.Count();
+            //databaseTableValueCountModel.QualityControlLevelsCount = context.QualityControlLevels.Count();
+            //databaseTableValueCountModel.DataValuesCount = context.DataValues.Count();
+            //databaseTableValueCountModel.GroupDescriptionsCount = context.GroupDescriptions.Count();
+            //databaseTableValueCountModel.GroupsCount = context.Groups.Count();
+            //databaseTableValueCountModel.DerivedFromCount = context.DerivedFroms.Count();
+            //databaseTableValueCountModel.CategoriesCount = context.Categories.Count();
+            //databaseTableValueCountModel.SeriesCatalog = context.SeriesCatalogs.Count();
 
             return databaseTableValueCountModel;
         }
