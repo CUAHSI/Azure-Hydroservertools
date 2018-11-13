@@ -488,8 +488,7 @@ namespace HydroServerTools.Controllers
                     if (collection.AllKeys.Contains("sources")) { var repo = new SourcesRepository(); repo.deleteAll(entityConnectionString); }
                     if (collection.AllKeys.Contains("offsettypes")) { var repo = new OffsetTypesRepository(); repo.deleteAll(entityConnectionString); }
                     if (collection.AllKeys.Contains("variables")) { var repo = new VariablesRepository(); repo.deleteAll(entityConnectionString); }
-                    //if (collection.AllKeys.Contains("sites")) { var repo = new SitesRepository(); repo.deleteAll(entityConnectionString); }
-                    if (collection.AllKeys.Contains("sites")) { var repo = new SitesRepository(entityConnectionString); repo.deleteAll(); }
+                    if (collection.AllKeys.Contains("sites")) { var repo = new SitesRepository(); repo.deleteAll(entityConnectionString); }
                 }
             }
             //catch (DbUpdateException ex)
