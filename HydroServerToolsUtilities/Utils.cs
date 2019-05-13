@@ -433,6 +433,7 @@ namespace HydroServerToolsRepository.Repository
                             existingItem.SourceDescription = sourceModel.SourceDescription;
                             existingItem.SourceLink = sourceModel.SourceLink;
                             existingItem.ContactName = sourceModel.ContactName;
+                            existingItem.Citation = sourceModel.Citation;
                             existingItem.Phone = sourceModel.Phone;
                             existingItem.Email = sourceModel.Email;
                             existingItem.Address = sourceModel.Address;

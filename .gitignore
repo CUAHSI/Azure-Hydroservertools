@@ -156,10 +156,15 @@ $RECYCLE.BIN/
 .DS_Store
 
 # bin files from upload
-Uploads/*.bin
-Processed/*.bin
-Validated/*.bin
+HydroServerTools/Uploads/*.bin
+HydroServerTools/Processed/*.bin
+HydroServerTools/Validated/*.bin
 
+# files from upload
+HydroServerTools/Uploads/*.csv
+HydroServerTools/BulkUploadCsv/*.csv
+HydroServerTools/Processed/*.json
+HydroServerTools/Validated/*.json
 
 # ignore connectionString
 connectionString.config
@@ -170,3 +175,6 @@ AppSettings.config
 # ignore SMTP settings
 smtp.config
 /.vs/HydroServerTools/v15/Server/sqlite3
+
+#publish profiles
+HydroServerTools/Properties/PublishProfiles/
