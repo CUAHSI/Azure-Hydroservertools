@@ -227,15 +227,14 @@ namespace HydroServerTools.Controllers
         public ActionResult ExternalLogin(string provider, string returnUrl)
         {
             // Request a redirect to the external login provider
-            return new ChallengeResult(provider, Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl }));
+            return new ChallengeResult(provider, Url.Action("ExternalLoginCallback/", "Account", new { ReturnUrl = returnUrl }));
         }
 
         //
         // GET: /Account/ExternalLoginCallback
         [AllowAnonymous]
         public async Task<ActionResult> ExternalLoginCallback(string returnUrl)
-        {
-            //https://stackoverflow.com/questions/36459051/getexternallogininfoasync-logininfo-return-null-but-only-after-a-few-hours/36903338#36903338
+        {            //https://stackoverflow.com/questions/36459051/getexternallogininfoasync-logininfo-return-null-but-only-after-a-few-hours/36903338#36903338
             // added this to fix problem with login nt working after a while and only restrat fixes it. ms 8/9/17
             ControllerContext.HttpContext.Session.RemoveAll();
 
