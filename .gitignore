@@ -171,3 +171,7 @@ AppSettings.config
 smtp.config
 /.vs/HydroServerTools/v15/Server/sqlite3
 /.vs/HydroServerTools
+
+# publishProfiles
+*.pubxml
+
