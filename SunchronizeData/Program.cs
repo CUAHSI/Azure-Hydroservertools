@@ -23,10 +23,15 @@ namespace SynchronizeData
             UnknownError = 10
         }
 
+
+
         static void Main(string[] args)
         {
+            // set core
+            string solrCore = "wof-prod-synonym2-import";
             try
             {
+
                 //get connection string to user DB
                 var userdbConnectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
 
@@ -35,9 +40,9 @@ namespace SynchronizeData
 
                 //get connection details for database to update
                 if (list.Count != 0)
-                { 
-                var connectionParameters = getConnectionParameters(userdbConnectionString, list[0].DatabaseName);
-                    
+                {
+                    var connectionParameters = getConnectionParameters(userdbConnectionString, list[0].DatabaseName);
+
 
                     //build connection string from parameters
                     var connection = BuildConnnectionString(connectionParameters);
@@ -66,7 +71,7 @@ namespace SynchronizeData
                             SendSupportInfoEmail("SeriescatalogUpdateStarted", service.UserName, service.DatabaseName, string.Empty);
                             recreateSeriescatalog(connection);
                             //update trackUpdates table with success
-                            setTrackUpdates(userdbConnectionString, service.DatabaseName, service.ConnectionId);
+                            //setTrackUpdates(userdbConnectionString, service.DatabaseName, service.ConnectionId);
                             SendSupportInfoEmail("SeriescatalogUpdateCompletedSuccess", service.UserName, service.DatabaseName, string.Empty);
                         }
                         catch (Exception e)
@@ -80,13 +85,13 @@ namespace SynchronizeData
                         {
                             //find networkid for given databse name to start harvest
                             string networkId = GetNetworkId(userdbConnectionString, service.DatabaseName);
-                            
+
                             if (!String.IsNullOrEmpty(networkId))
                             {
                                 SendSupportInfoEmail("HarvestStarted", service.UserName, networkId.ToString(), string.Empty);
-                                HarvestNetwork(networkId);
+                                HarvestNetwork(networkId, solrCore);
                                 //update trackUpdates table with success
-                                //setTrackUpdates(userdbConnectionString, service.DatabaseName, service.ConnectionId);
+                                setTrackUpdates(userdbConnectionString, service.DatabaseName, service.ConnectionId);
                                 SendSupportInfoEmail("HarvestCompletedSuccess", networkId.ToString(), service.DatabaseName, string.Empty);
 
                             }
@@ -97,7 +102,7 @@ namespace SynchronizeData
                             SendSupportInfoEmail("HarvestCompletedFailure", service.UserName, service.DatabaseName, e.Message);
                             throw;
                         }
-                        
+
                     }
                 }
             }
@@ -105,14 +110,14 @@ namespace SynchronizeData
             {
                 SendSupportInfoEmail("unknownException", null, null, ex.Message);
             }
-            
+
             //for registered services do harvest
             //Harvest().GetAwaiter().GetResult();
         }
         private static void recreateSeriescatalog(string connectionstring)
         {
-           
-           // var seriesCatalogRepository = new SeriesCatalogRepository();
+
+            // var seriesCatalogRepository = new SeriesCatalogRepository();
             //seriesCatalogRepository.deleteAll(connectionString);
             using (var conn = new SqlConnection(connectionstring))
             using (var command = new SqlCommand("dbo.spUpdateSeriesCatalog", conn)
@@ -134,7 +139,7 @@ namespace SynchronizeData
         {
             try
             {
-               
+
                 using (var con = new SqlConnection(connection))
                 using (var command = new SqlCommand("spDeleteDuplicatesDatavalues", con)
                 {
@@ -161,14 +166,14 @@ namespace SynchronizeData
         }
 
         //static async Task HarvestNetwork(int networkId )
-        static void HarvestNetwork(string networkId)
-        { 
-         var client = new HttpClient();
-        //public static void Run()
-        //get name of jenkinsjob
-        var jenkinsJobName = ConfigurationManager.AppSettings["jenkinsJobName"].ToString();
-        //get job token
-        var token = ConfigurationManager.AppSettings["token"].ToString();
+        static void HarvestNetwork(string networkId, string solrCore)
+        {
+            var client = new HttpClient();
+            //public static void Run()
+            //get name of jenkinsjob
+            var jenkinsJobName = ConfigurationManager.AppSettings["jenkinsJobName"].ToString();
+            //get job token
+            var token = ConfigurationManager.AppSettings["token"].ToString();
             try
             {
                 client.BaseAddress = new Uri("https://ci.cuahsi.org:8888");
@@ -176,7 +181,7 @@ namespace SynchronizeData
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Host = "ci.cuahsi.org";
                 client.DefaultRequestHeaders.Add("Authorization", "Basic amVua2luczphYmNAMTIzIQ==");
-                var response =  client.GetAsync("/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,\":\",//crumb)").Result;
+                var response = client.GetAsync("/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,\":\",//crumb)").Result;
 
 
                 //var response =  client.GetAsync("/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,\":\",//crumb)").Result;
@@ -189,8 +194,11 @@ namespace SynchronizeData
 
                     var tmp = responseString.ToString().Split(':');
                     client.DefaultRequestHeaders.Add(tmp[0], tmp[1]);
-                    var content = new StringContent("json={\"parameter\": [{\"name\":\"ID\", \"value\":\""+ networkId +"\"},{\"name\":\"PRODCORE\", \"value\":\"wof-prod-synonym2\"}]}", Encoding.UTF8, "application/x-www-form-urlencoded");
-                    var retvar = client.PostAsync("/job/"+ jenkinsJobName + "//build?delay=0sec&token="+ token, content).Result;
+                    ;
+                    var content1 = new StringContent("json={\"parameter\": [{\"name\":\"ID\", \"value\":\"" + networkId + "\"},{\"name\":\"PRODCORE\", \"value\":\"wof-prod-synonym2-import\"}]}", Encoding.UTF8, "application/x-www-form-urlencoded");
+                    var content = new StringContent("json={\"parameter\": [{\"name\":\"ID\", \"value\":\"" + networkId + "\"},{\"name\":\"PRODCORE\", \"value\":\"" + solrCore + "\"}]}", Encoding.UTF8, "application/x-www-form-urlencoded");
+
+                    var retvar = client.PostAsync("/job/" + jenkinsJobName + "//build?delay=0sec&token=" + token, content).Result;
                     if (retvar.IsSuccessStatusCode)
                     {
                         var responseContent2 = retvar.Content;
@@ -208,16 +216,16 @@ namespace SynchronizeData
                 Console.WriteLine(e.Message);
             }
 
-            Console.ReadLine();
+            //Console.ReadLine();
         }
 
         private static List<UpdateDatabasesModel> getListofDatabasesToUpdate(string connectionstring)
         {
             var list = new List<UpdateDatabasesModel>();
 
-            
-        using (var con = new SqlConnection(connectionstring))   
-        using (var command = new SqlCommand("GetDatabasesNotSynchronized", con)
+
+            using (var con = new SqlConnection(connectionstring))
+            using (var command = new SqlCommand("GetDatabasesNotSynchronized", con)
             {
                 CommandType = CommandType.StoredProcedure
             })
@@ -225,20 +233,20 @@ namespace SynchronizeData
                 con.Open();
                 using (var reader = command.ExecuteReader())
                 {
-                
+
                     while (reader.Read())
                         list.Add(new UpdateDatabasesModel { DatabaseName = reader.GetString(0), UserName = reader.GetString(1), ConnectionId = reader.GetInt32(2) });
-                        list = list.ToList();
+                    list = list.ToList();
                 }
                 con.Close();
             }
-        
+
             return list;
         }
 
         private static void setTrackUpdates(string connection, string serviceName, int connectionId)
         {
-            var sql = "update TrackUpdates set isSynchronized = 1 where connectionid = " +  connectionId + "; update TrackUpdates set SynchronizedDateTime = GETDATE() where connectionid = " +  connectionId;
+            var sql = "update TrackUpdates set isSynchronized = 1 where connectionid = " + connectionId + "; update TrackUpdates set SynchronizedDateTime = GETDATE() where connectionid = " + connectionId;
 
             using (var con = new SqlConnection(connection))
             using (var command = new SqlCommand(sql, con)
@@ -249,10 +257,10 @@ namespace SynchronizeData
             })
             {
 
-                con.Open();                
+                con.Open();
 
                 command.ExecuteScalar();
-                
+
                 con.Close();
             }
         }
@@ -261,41 +269,41 @@ namespace SynchronizeData
         {
             var connectionParameters = new ConnectionParameters();
 
-            var sql = "SELECT  [Name], [DataSource], [InitialCatalog], [UserId], [Password] FROM[dbo].[ConnectionParameters] where Name ='" + DatabaseName +"'";
+            var sql = "SELECT  [Name], [DataSource], [InitialCatalog], [UserId], [Password] FROM[dbo].[ConnectionParameters] where Name ='" + DatabaseName + "'";
 
             using (var con = new SqlConnection(connectionstring))
-                using (var command = new SqlCommand(sql, con)
-                {                
-                    CommandType = CommandType.Text,
-                    
-                
-                })
-                {
-                
-                    con.Open();
-                    using (var reader = command.ExecuteReader())
-                    {
+            using (var command = new SqlCommand(sql, con)
+            {
+                CommandType = CommandType.Text,
 
-                        while (reader.Read())
-                            connectionParameters =   new ConnectionParameters { Name = reader.GetString(0), DataSource = reader.GetString(1), InitialCatalog = reader.GetString(2), UserId = reader.GetString(3), Password = reader.GetString(4)};
-                    
-                    }
-                    con.Close();
+
+            })
+            {
+
+                con.Open();
+                using (var reader = command.ExecuteReader())
+                {
+
+                    while (reader.Read())
+                        connectionParameters = new ConnectionParameters { Name = reader.GetString(0), DataSource = reader.GetString(1), InitialCatalog = reader.GetString(2), UserId = reader.GetString(3), Password = reader.GetString(4) };
+
                 }
+                con.Close();
+            }
 
             return connectionParameters;
         }
 
         private static void SendSupportInfoEmail(string action, string userName, string serviceName, string message)
         {
-            
+
             var userEmail = ConfigurationManager.AppSettings["SupportEmailRecipients"];
             var userFromEmail = ConfigurationManager.AppSettings["SupportFromEmail"].ToString();
-            var now = DateTime.Now.ToString("s"); 
+            var now = DateTime.Now.ToString("s");
             using (MailMessage mm = new MailMessage(userFromEmail, userEmail))
             {
-                
-                
+
+
                 if (action == "DeduplicationStarted")
                 {
 
@@ -360,6 +368,37 @@ namespace SynchronizeData
                     mm.Body = body;
                     mm.IsBodyHtml = true;
                 }
+                if (action == "HarvestStarted")
+                {
+
+                    mm.Subject = "Harvest has been requested:";
+                    string body = "For user " + userName + " and service: " + serviceName;
+                    body += "<br />" + DateTime.Now.ToString("s") + "<br /> ";
+                    body += "<br /><br />Thanks";
+                    mm.Body = body;
+                    mm.IsBodyHtml = true;
+                }
+                if (action == "HarvestCompletedSuccess")
+                {
+
+                    mm.Subject = "Harvest has been completed:";
+                    string body = "For user " + userName + " and service: " + serviceName;
+                    body += "<br />" + DateTime.Now.ToString("s") + "<br /> ";
+                    body += "<br /><br />Thanks";
+                    mm.Body = body;
+                    mm.IsBodyHtml = true;
+                }
+                if (action == "HarvestCompletedFailure")
+                {
+
+                    mm.Subject = "Harvest has failed:";
+                    string body = "For user " + userName + " and service: " + serviceName;
+                    body += "<br /> Exception:" + message;
+                    body += "<br />" + DateTime.Now.ToString("s") + "<br /> ";
+                    body += "<br /><br />Thanks";
+                    mm.Body = body;
+                    mm.IsBodyHtml = true;
+                }
                 if (action == "unknownException")
                 {
 
@@ -371,8 +410,8 @@ namespace SynchronizeData
                     mm.Body = body;
                     mm.IsBodyHtml = true;
                 }
-                
-               
+
+
                 try
                 {
                     using (var smtp = new SmtpClient())
@@ -382,7 +421,7 @@ namespace SynchronizeData
                         //smtp.EnableSsl = true;
                         smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
                         smtp.Send(mm);
-                        
+
                         return;
                     }
                 }

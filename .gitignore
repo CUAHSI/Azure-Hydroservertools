@@ -175,3 +175,7 @@ smtp.config
 # publishProfiles
 *.pubxml
 
+/HydroServerTools/Processed
+/HydroServerTools/Validated
+/HydroServerTools/Uploads
+/SunchronizeData/Settings.job

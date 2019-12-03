@@ -11,7 +11,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>publish\</PublishUrl>
+    <PublishUrl>C:\Temp\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
     <UpdateEnabled>false</UpdateEnabled>
@@ -21,7 +21,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>1</ApplicationRevision>
+    <ApplicationRevision>2</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -98,7 +98,6 @@
     <None Include="Properties\PublishProfiles\dev-Hydroservertools - Web Deploy %282%29.pubxml" />
     <None Include="Properties\PublishProfiles\dev-Hydroservertools - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\hydroserver - FTP.pubxml" />
-    <None Include="Properties\PublishProfiles\hydroserver - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\QA-HydroServer - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\QA-HydroServer - Web Deploy.pubxml" />
     <None Include="Properties\webjob-publish-settings.json" />
@@ -114,6 +113,9 @@
     <Content Include="smtp.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Settings.job">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
