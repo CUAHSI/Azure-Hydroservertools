@@ -194,8 +194,8 @@ namespace SynchronizeData
 
                     var tmp = responseString.ToString().Split(':');
                     client.DefaultRequestHeaders.Add(tmp[0], tmp[1]);
-                    ;
-                    var content1 = new StringContent("json={\"parameter\": [{\"name\":\"ID\", \"value\":\"" + networkId + "\"},{\"name\":\"PRODCORE\", \"value\":\"wof-prod-synonym2-import\"}]}", Encoding.UTF8, "application/x-www-form-urlencoded");
+                    
+                    //var content1 = new StringContent("json={\"parameter\": [{\"name\":\"ID\", \"value\":\"" + networkId + "\"},{\"name\":\"PRODCORE\", \"value\":\"wof-prod-synonym2-import\"}]}", Encoding.UTF8, "application/x-www-form-urlencoded");
                     var content = new StringContent("json={\"parameter\": [{\"name\":\"ID\", \"value\":\"" + networkId + "\"},{\"name\":\"PRODCORE\", \"value\":\"" + solrCore + "\"}]}", Encoding.UTF8, "application/x-www-form-urlencoded");
 
                     var retvar = client.PostAsync("/job/" + jenkinsJobName + "//build?delay=0sec&token=" + token, content).Result;
