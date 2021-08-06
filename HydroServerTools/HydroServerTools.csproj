@@ -714,6 +714,7 @@
     </None>
     <Content Include="Powershell\copyDBTemplateAzure.ps1" />
     <Content Include="Powershell\azureprofile.json" />
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\hydroserver - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\hydroserver - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\hydroserver-staging - FTP.pubxml" />
@@ -725,6 +726,7 @@
     <None Include="Properties\PublishProfiles\hydroservertools.pubxml" />
     <None Include="Properties\PublishProfiles\HydroServerToolsBCTest - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\local.pubxml" />
+    <None Include="Properties\PublishProfiles\Prod-Hydroserver-v3 - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\QA-HydroServer - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\QA-HydroServer - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\QA-HydroServer-staging - FTP.pubxml" />

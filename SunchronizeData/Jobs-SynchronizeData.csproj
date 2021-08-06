@@ -93,7 +93,6 @@
     <Content Include="connectionString.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
     <None Include="Properties\PublishProfiles\dev-Hydroservertools - Web Deploy %282%29.pubxml" />
     <None Include="Properties\PublishProfiles\dev-Hydroservertools - Web Deploy.pubxml" />
