@@ -270,6 +270,14 @@ namespace HydroServerTools.Controllers
             //});
             //usersEntities.SaveChanges();
 
+            var securityProtocol = (int)System.Net.ServicePointManager.SecurityProtocol;
+
+            // 0 = SystemDefault in .NET 4.7+
+            if (securityProtocol != 0)
+            {
+                System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
+            }
+
             var userFromEmail = ConfigurationManager.AppSettings["SupportFromEmail"].ToString();
 
             using (MailMessage mm = new MailMessage(userFromEmail, userEmail))
@@ -277,12 +285,12 @@ namespace HydroServerTools.Controllers
                 mm.Subject = "Account Activation";
                 string body = "Hello ";
                 body += "<p />Welcome to CUAHSI Data Services. This email address " + userEmail + " was used to request an account on  </p>";
-                body += "<br /><br />http://hydroserver.cuahsi.org";
+                body += "<br /><br />https://hydroserver.cuahsi.org";
                 body += "<p>If you originated the request, please use the link below to verify your email address and activate your account.</p>";
                 body += "<p><a href = '" + string.Format("{0}://{1}/ServiceRegistrations/Activation/{2}/{3}", Request.Url.Scheme, Request.Url.Authority, activationCode, Server.UrlEncode(userEmail).Replace(".", "%2E")) + "'>Click here to activate your account.</a></p>";//need to convert to allow routing to pick it up
                 //body += "<p><a href = '" + string.Format("{0}://{1}/ServiceRegistrations/Activation/{2}", Request.Url.Scheme, Request.Url.Authority, activationCode) + "'>Click here to activate your account.</a></p>";//need to convert to allow routing to pick it up
 
-                body += "<p>Please find attached a guide to formatting data prior to uploading data.</p>"; 
+                body += "<p>Please find attached a guides to formatting data prior to uploading data.</p>"; 
                 body += "<p>Please do not hesitate to contact us at help@cuahsi.org if you encounter any problems.</p>";
                 body += "<br /><br />Thank you";
                 body += "<br /><br />The CUAHSI Water Data Services Team";
@@ -291,7 +299,7 @@ namespace HydroServerTools.Controllers
                 mm.IsBodyHtml = true;
 
                 System.Net.Mail.Attachment attachment;
-                attachment = new System.Net.Mail.Attachment(Server.MapPath("~/Templates/Standard Formatting Template.xlsx"));
+                attachment = new System.Net.Mail.Attachment(Server.MapPath("~/Templates/Standard_Uploading_Material.zip"));
                 mm.Attachments.Add(attachment);
 
                 //smtp.Host = "smtp.gmail.com";
@@ -304,6 +312,7 @@ namespace HydroServerTools.Controllers
                 {
                     using (var smtp = new SmtpClient())
                     {
+                       
                         smtp.Send(mm);
                         return;
                     }
