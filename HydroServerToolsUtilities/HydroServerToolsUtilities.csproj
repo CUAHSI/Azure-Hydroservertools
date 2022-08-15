@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="DbLoadCounts.cs" />
     <Compile Include="DbLoadResult.cs" />
+    <Compile Include="ExportData.cs" />
     <Compile Include="RejectedItemsData.cs" />
     <Compile Include="SemaphoreSlimExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

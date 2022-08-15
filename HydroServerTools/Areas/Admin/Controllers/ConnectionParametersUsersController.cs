@@ -19,7 +19,20 @@ namespace HydroServerTools.Areas.Admin.Controllers
         // GET: EntityConnectionstringParametersUsers
         public ActionResult Index()
         {
-            return View(db.ConnectionParametersUser.ToList().OrderBy(p=>p.User.UserName));
+           
+            if(User.IsInRole("PowerUser"))
+            {
+                var user = User.Identity.Name.ToString();
+                //return filtered list
+                var l = db.ConnectionParametersUser.ToList().Where(p => p.User.UserName.ToString() == user).OrderBy(p => p.User.UserName).ToList();
+                return View(l);
+            }
+            else
+            {
+                //return all
+                return View(db.ConnectionParametersUser.ToList().OrderBy(p => p.User.UserName));
+            }
+           
         }
 
         // GET: EntityConnectionstringParametersUsers/Details/5
@@ -40,8 +53,28 @@ namespace HydroServerTools.Areas.Admin.Controllers
         // GET: EntityConnectionstringParametersUsers/Create
         public ActionResult Create()
         {
-            ViewBag.Users = new SelectList(db.Users.OrderBy(p=>p.UserName) , "Id", "UserName");
-            ViewBag.ConnectionParameters = new SelectList(db.ConnectionParameters.OrderBy(p => p.Name), "Id", "Name");
+            if (User.IsInRole("PowerUser"))
+            {
+                var user = User.Identity.Name.ToString();
+                var userid = db.Users.FirstOrDefault(p => p.UserName == user).Id;
+                //return filtered list
+               ViewBag.Users = new SelectList(db.Users.Where(p => p.UserName.ToString() == user).OrderBy(p => p.UserName), "Id", "UserName");
+              //  ViewBag.ConnectionParameters = new SelectList(db.ConnectionParameters.Where(p => p.UserId.ToString() == userid).OrderBy(p => p.Name), "Id", "Name");
+                ViewBag.ConnectionParameters = new SelectList(from cpu in db.ConnectionParametersUser
+                                                              join cp in db.ConnectionParameters on cpu.ConnectionParametersId equals cp.Id
+                                                              where cpu.UserId == userid
+                                                              select cp.Name);
+
+
+            }
+            else
+            {
+                //return all
+                ViewBag.Users = new SelectList(db.Users.OrderBy(p => p.UserName), "Id", "UserName");
+                ViewBag.ConnectionParameters = new SelectList(db.ConnectionParameters.OrderBy(p => p.Name), "Id", "Name");
+            }
+
+
             return View();
         }
 
@@ -62,7 +95,8 @@ namespace HydroServerTools.Areas.Admin.Controllers
                 m.ConnectionParametersId = Convert.ToInt32(collection["ConnectionParameters"]);
                // m.EntityConnectionstringParameters.UserId = model.UserName.ToString();
                 m.UserId =collection["UserName"];
-
+                var existingConnectionID = db.ConnectionParametersUser.FirstOrDefault(p => p.UserId == m.UserId && p.ConnectionParametersId == m.ConnectionParametersId);
+                var existingConnectionName = db.ConnectionParametersUser.FirstOrDefault(p => p.UserId == m.UserId && p.ConnectionParametersId == m.ConnectionParametersId).ConnectionParameters.Name;
                 var isDuplicate = db.ConnectionParametersUser.Where(p => p.UserId == m.UserId && p.ConnectionParametersId == m.ConnectionParametersId).Count() > 0;
 
                 if (!isDuplicate)
@@ -77,7 +111,12 @@ namespace HydroServerTools.Areas.Admin.Controllers
                     }
                     else
                     {
-                        ModelState.AddModelError("hasConnection", "User already has a connection assigned. Any user can be linked to only one connection");
+                        ModelState.AddModelError("hasConnection", "User already has a connection assigned. Replacing the current connection");
+                        ConnectionParametersUser entityConnectionstringParametersUser = db.ConnectionParametersUser.Find(existingConnectionID);
+                        db.ConnectionParametersUser.Remove(entityConnectionstringParametersUser);
+                        db.ConnectionParametersUser.Add(m);
+                        db.SaveChanges();
+
                     }
                 }
                 else
