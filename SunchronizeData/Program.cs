@@ -10,6 +10,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Configuration;
 using System.Net.Mail;
+using Newtonsoft.Json.Linq;
+using System.Security.Cryptography.X509Certificates;
+using System.Net.Security;
 
 namespace SynchronizeData
 {
@@ -166,49 +169,71 @@ namespace SynchronizeData
         }
 
         //static async Task HarvestNetwork(int networkId )
+
+
         static void HarvestNetwork(string networkId, string solrCore)
         {
-            var client = new HttpClient();
-            //public static void Run()
-            //get name of jenkinsjob
+
             var jenkinsJobName = ConfigurationManager.AppSettings["jenkinsJobName"].ToString();
+            
+            string jenkinsUrl = "https://ci.cuahsi.org/";
+
+            string jenkinsUsername = "admin";
             //get job token
-            var token = ConfigurationManager.AppSettings["token"].ToString();
+            var jenkinsApiToken = ConfigurationManager.AppSettings["token"].ToString();
+
+            var jenkinspassword = "91970a0d0a8945b8b44ef9f8d93ab6d5";
             try
             {
-                client.BaseAddress = new Uri("https://ci.cuahsi.org:8888");
+                string authInfo = Convert.ToBase64String(Encoding.UTF8.GetBytes(jenkinsUsername + ":" + jenkinspassword));
+
                 System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Host = "ci.cuahsi.org";
-                client.DefaultRequestHeaders.Add("Authorization", "Basic amVua2luczphYmNAMTIzIQ==");
-                var response = client.GetAsync("/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,\":\",//crumb)").Result;
+
+                // Get the crumb from Jenkins
+                var crumbClient = new WebClient();
+
+                crumbClient.Headers["Authorization"] = "Basic " + authInfo;
+                string crumbUrl = jenkinsUrl + "/crumbIssuer/api/json";
+                string crumbJson = crumbClient.DownloadString(crumbUrl);
+                //JObject crumbObject = JObject.Parse(crumbJson);
+                string crumb = (string)JObject.Parse(crumbJson)["crumb"];
+
+                // Trigger the job with the crumb in the request headers
+
+                WebClient jobClient = new WebClient();
+                jobClient.Headers["Authorization"] = "Basic " + authInfo;
+                jobClient.Headers["Jenkins-Crumb"] = crumb;
+                string jobUrl = jenkinsUrl + "/job/" + jenkinsJobName + "/buildWithParameters" + "?token=" + jenkinsApiToken + "&ID="+ networkId + "&PRODCORE="+ solrCore;
+                //var content = "{\"parameter\": [{\"name\":\"ID\", \"value\":\"" + networkId + "\"},{\"name\":\"PRODCORE\", \"value\":\"" + solrCore + "\"}]}";
+
+                jobClient.UploadString(jobUrl, "");
 
 
                 //var response =  client.GetAsync("/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,\":\",//crumb)").Result;
-                if (response.IsSuccessStatusCode)
-                {
-                    var responseContent = response.Content;
+                //if (response.IsSuccessStatusCode)
+                //{
+                //    var responseContent = response.Content;
 
-                    // by calling .Result you are synchronously reading the result
-                    string responseString = responseContent.ReadAsStringAsync().Result;
+                //    // by calling .Result you are synchronously reading the result
+                //    string responseString = responseContent.ReadAsStringAsync().Result;
 
-                    var tmp = responseString.ToString().Split(':');
-                    client.DefaultRequestHeaders.Add(tmp[0], tmp[1]);
+                //    var tmp = responseString.ToString().Split(':');
+                //    client.DefaultRequestHeaders.Add(tmp[0], tmp[1]);
                     
-                    //var content1 = new StringContent("json={\"parameter\": [{\"name\":\"ID\", \"value\":\"" + networkId + "\"},{\"name\":\"PRODCORE\", \"value\":\"wof-prod-synonym2-import\"}]}", Encoding.UTF8, "application/x-www-form-urlencoded");
-                    var content = new StringContent("json={\"parameter\": [{\"name\":\"ID\", \"value\":\"" + networkId + "\"},{\"name\":\"PRODCORE\", \"value\":\"" + solrCore + "\"}]}", Encoding.UTF8, "application/x-www-form-urlencoded");
+                //    //var content1 = new StringContent("json={\"parameter\": [{\"name\":\"ID\", \"value\":\"" + networkId + "\"},{\"name\":\"PRODCORE\", \"value\":\"wof-prod-synonym2-import\"}]}", Encoding.UTF8, "application/x-www-form-urlencoded");
+                //    var content = new StringContent("json={\"parameter\": [{\"name\":\"ID\", \"value\":\"" + networkId + "\"},{\"name\":\"PRODCORE\", \"value\":\"" + solrCore + "\"}]}", Encoding.UTF8, "application/x-www-form-urlencoded");
 
-                    var retvar = client.PostAsync("/job/" + jenkinsJobName + "//build?delay=0sec&token=" + token, content).Result;
-                    if (retvar.IsSuccessStatusCode)
-                    {
-                        var responseContent2 = retvar.Content;
+                //    var retvar = client.PostAsync("/job/" + jenkinsJobName + "//build?delay=0sec&token=" + token, content).Result;
+                //    if (retvar.IsSuccessStatusCode)
+                //    {
+                //        var responseContent2 = retvar.Content;
 
-                        // by calling .Result you are synchronously reading the result
-                        string responseString2 = responseContent.ReadAsStringAsync().Result;
+                //        // by calling .Result you are synchronously reading the result
+                //        string responseString2 = responseContent.ReadAsStringAsync().Result;
 
-                        Console.WriteLine(responseString);
-                    }
-                }
+                //        Console.WriteLine(responseString);
+                //    }
+                //}
 
             }
             catch (Exception e)
@@ -217,6 +242,11 @@ namespace SynchronizeData
             }
 
             //Console.ReadLine();
+        }
+
+        static bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        {
+            return true;
         }
 
         private static List<UpdateDatabasesModel> getListofDatabasesToUpdate(string connectionstring)
