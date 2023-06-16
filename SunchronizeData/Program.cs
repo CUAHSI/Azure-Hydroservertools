@@ -98,6 +98,10 @@ namespace SynchronizeData
                                 SendSupportInfoEmail("HarvestCompletedSuccess", networkId.ToString(), service.DatabaseName, string.Empty);
 
                             }
+                            else
+                            {
+                                setTrackUpdates(userdbConnectionString, service.DatabaseName, service.ConnectionId);
+                            }
 
                         }
                         catch (Exception e)
